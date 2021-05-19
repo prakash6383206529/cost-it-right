@@ -30,7 +30,7 @@ function ApprovalListing() {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [selectedIds, setSelectedIds] = useState('')
-
+  const [reasonId, setReasonId] = useState('')
   const [showApprovalSumary, setShowApprovalSummary] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
   const dispatch = useDispatch()
@@ -167,7 +167,7 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-    console.log('cell: ', cell);
+
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
@@ -261,6 +261,24 @@ function ApprovalListing() {
     if (selectedRowData.length === 0) {
       toastr.warning('Please select atleast one approval to send for approval.')
       return false
+    }
+    let count = 0
+    selectedRowData.forEach((element, index, arr) => {
+
+      if (index > 0) {
+        if (element.ReasonId !== arr[index - 1].ReasonId) {
+          count = count + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
+    if (count > 0) {
+      return toastr.warning("Reason should be same for sending multiple costing for approval")
+    } else {
+      setReasonId(selectedRowData[0].ReasonId)
     }
     setApproveDrawer(true)
   }
@@ -451,8 +469,9 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
-
+              <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField={'Reason'} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
               <TableHeaderColumn dataField="RequestedBy" columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
@@ -470,6 +489,7 @@ function ApprovalListing() {
         <ApproveRejectDrawer
           type={'Approve'}
           isOpen={approveDrawer}
+          reasonId={reasonId}
           closeDrawer={closeDrawer}
           //tokenNo={approvalNumber}
           approvalData={selectedRowData}

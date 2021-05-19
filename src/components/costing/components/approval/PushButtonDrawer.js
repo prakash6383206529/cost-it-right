@@ -39,12 +39,22 @@ function PushButtonDrawer(props) {
 * @description RENDER LISTING IN DROPDOWN
 */
   const renderListing = (label) => {
+    let tempArr = []
     if (label === 'MaterialGroup') {
-      return materialGroup;
+      const material = materialGroup;
+      material && material.map(item => {
+        tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+        return null
+      })
     }
     if (label === 'PurchasingGroup') {
-      return purchasingGroup;
+      const purchase = purchasingGroup;
+      purchase && purchase.map(item => {
+        tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+        return null
+      })
     }
+    return tempArr
   }
 
   /**
@@ -81,10 +91,10 @@ function PushButtonDrawer(props) {
       netPrice: dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : '',
       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : '',
       currencyKey: dataSend[0].POCurrency ? dataSend[0].POCurrency : '',
-      materialGroup: MaterialGroup, //DROPDOWN VALUE
+      materialGroup: MaterialGroup.label, //DROPDOWN VALUE
       taxCode: '', //THIS WILL COME IN RELATION WITH MATERIAL GROUP
-      basicUOM: "Number",
-      purchasingGroup: PurchasingGroup, //DROPDOWN VALUE
+      basicUOM: "NO",
+      purchasingGroup: PurchasingGroup.label, //DROPDOWN VALUE
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''
     }
     console.log(pushdata, 'pppppppp')

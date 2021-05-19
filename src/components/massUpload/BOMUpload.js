@@ -117,7 +117,7 @@ class BOMUpload extends Component {
   responseHandler = (res) => {
     const { messageLabel, } = this.props;
     if (res && res.data.Result === true) {
-        toastr.success(`BOM uploaded successfully.`)
+      toastr.success(`BOM uploaded successfully.`)
     }
     this.toggleDrawer('')
   }
@@ -135,6 +135,7 @@ class BOMUpload extends Component {
 
     let uploadData = {
       Records: fileData,
+      IsMultipleUpload: true,
       LoggedInUserId: loggedInUserId(),
     }
 
@@ -162,7 +163,7 @@ class BOMUpload extends Component {
     }
 
     return (
-      <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+      <Drawer anchor={this.props.anchor} open={this.props.isOpen}
       // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>

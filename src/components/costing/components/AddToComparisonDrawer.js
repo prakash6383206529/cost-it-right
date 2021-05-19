@@ -26,7 +26,7 @@ function AddToComparisonDrawer(props) {
       // comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
       comparisonValue: 'VBC',
       plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
-      costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
+      costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
       vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
       vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : ''
     },
@@ -92,26 +92,34 @@ function AddToComparisonDrawer(props) {
     }
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
-
-      if (typeOfCosting === 0) { //ZBC COSTING CONDITION
-
-        setIsZbcSelected(true)
-        dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-        dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
-        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
-
-        setIsZbcSelected(false)
-        setIsVbcSelected(true)
-        setisCbcSelected(false)
-        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      /***************************FOR MINDA***************************************** */
+      setIsZbcSelected(false)
+      setIsVbcSelected(true)
+      setisCbcSelected(false)
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      if (VendorId && VendorId !== '-') {
         dispatch(getPlantBySupplier(VendorId, (res) => { }))
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, () => { }))
-      } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
-        setIsZbcSelected(false)
-        setIsVbcSelected(false)
-        setisCbcSelected(true)
       }
+      // if (typeOfCosting === 0) { //ZBC COSTING CONDITION
+
+      //   setIsZbcSelected(true)
+      //   dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
+      //   dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
+      //   dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      // } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
+
+      //   setIsZbcSelected(false)
+      //   setIsVbcSelected(true)
+      //   setisCbcSelected(false)
+      //   dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      //   dispatch(getPlantBySupplier(VendorId, (res) => { }))
+      //   dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, () => { }))
+      // } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
+      //   setIsZbcSelected(false)
+      //   setIsVbcSelected(false)
+      //   setisCbcSelected(true)
+      // }
     }
   }, [])
 
@@ -366,9 +374,11 @@ function AddToComparisonDrawer(props) {
             }
           }
           dispatch(setCostingViewData(temp))
-          setIsVbcSelected(false)
-          setIsZbcSelected(true)
-          setisCbcSelected(false)
+          //COMENTED FOR MINDA
+          // setIsVbcSelected(false)
+          // setIsZbcSelected(true)
+          // setisCbcSelected(false)
+
           props.closeDrawer('')
         }
       }),

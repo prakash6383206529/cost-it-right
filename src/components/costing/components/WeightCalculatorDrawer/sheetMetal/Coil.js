@@ -20,6 +20,29 @@ function Coil(props) {
 
     const { rmRowData, isEditFlag } = props
 
+
+    const convert = (FinishWeightOfSheet, dimmension) => {
+        switch (dimmension) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
+    }
+
     const costData = useContext(costingInfoContext)
 
     const defaultValues = {
@@ -47,12 +70,15 @@ function Coil(props) {
             : [],
     )
     let extraObj = {}
-    const [dataToSend, setDataToSend] = useState({})
+    const [dataToSend, setDataToSend] = useState({
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
     const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
-    const [GrossWeight, setGrossWeights] = useState('')
-    const [FinishWeight, setFinishWeights] = useState('')
+    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
+    const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
 
 
@@ -209,7 +235,7 @@ function Coil(props) {
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
-            GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
+            GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
             FinishWeight: getValues('FinishWeight'),
             LoggedInUserId: loggedInUserId()
         }

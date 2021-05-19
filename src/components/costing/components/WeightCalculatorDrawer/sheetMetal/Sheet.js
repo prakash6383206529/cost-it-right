@@ -22,6 +22,30 @@ function Sheet(props) {
 
     const costData = useContext(costingInfoContext)
 
+
+
+    const convert = (FinishWeightOfSheet, dimmension) => {
+        switch (dimmension) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
+    }
+
     const defaultValues = {
         SheetWidth: WeightCalculatorRequest && WeightCalculatorRequest.Width !== null ? WeightCalculatorRequest.Width : '',
         SheetThickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
@@ -58,12 +82,16 @@ function Sheet(props) {
             : [],
     )
     let extraObj = {}
-    const [dataToSend, setDataToSend] = useState({})
+    const [dataToSend, setDataToSend] = useState({
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
     const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
-    const [GrossWeight, setGrossWeights] = useState('')
-    const [FinishWeightOfSheet, setFinishWeights] = useState('')
+    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
+    const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
+    // const [FinishWeightOfSheet, setFinishWeights] = useState('')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 

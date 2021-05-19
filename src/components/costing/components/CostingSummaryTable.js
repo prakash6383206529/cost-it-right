@@ -81,7 +81,7 @@ const CostingSummaryTable = (props) => {
   //   console.log("Now rendering after use effect");
   // }, [showWarningMsg])
   useEffect(() => {
-    if (!viewMode && viewCostingData) {
+    if (!viewMode && viewCostingData && partInfo) {
       let obj = {}
       obj.TechnologyId = partInfo.TechnologyId
       obj.DepartmentId = '00000000-0000-0000-0000-000000000000'

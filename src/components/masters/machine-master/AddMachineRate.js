@@ -195,9 +195,10 @@ class AddMachineRate extends Component {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-
+          this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
+            console.log('machineTypeSelectList: ', machineTypeSelectList);
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
 
@@ -216,6 +217,7 @@ class AddMachineRate extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
+            console.log('machineTypeObj: ', machineTypeObj);
 
             this.setState({
               isEditFlag: true,
@@ -230,6 +232,7 @@ class AddMachineRate extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
+              // Description: Data.Description,
               files: Data.Attachements,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
             }, () => this.setState({ isLoader: false }))

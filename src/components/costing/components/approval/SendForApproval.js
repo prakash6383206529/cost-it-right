@@ -76,6 +76,7 @@ const SendForApproval = (props) => {
               LoggedInUserId: userData.LoggedInUserId,
               DepartmentId: departObj[0].Value,
               TechnologyId: partNo.technologyId,
+              ReasonId: 0 // key only for minda
             }, (res) => {
               const Data = res.data.DataList[1]
               console.log('Data: ', Data);
@@ -288,33 +289,41 @@ const SendForApproval = (props) => {
     let tempObj = {}
     let plantCount = 0
     let venderCount = 0
-    viewApprovalData.forEach((element, index, arr) => {
 
-      if (element.plantId !== '-' && index > 0) {
-        if (element.plantId === arr[index - 1].plantId) {
-          return false
+    viewApprovalData.forEach((element, index, arr) => {
+      if (element.plantId !== '-') {
+        if (index > 0) {
+          if (element.plantId === arr[index - 1].plantId) {
+            plantCount = plantCount + 1
+          } else {
+            return false
+          }
         } else {
-          plantCount = plantCount + 1
+          return false
         }
       }
-      else if (element.vendorId !== '-' && index > 0) {
-        if (element.vendorId === arr[index - 1].vendorId) {
-          return false
+      else if (element.vendorId !== '-') {
+        if (index > 0) {
+
+          if (element.vendorId === arr[index - 1].vendorId) {
+            venderCount = venderCount + 1
+          } else {
+            return false
+          }
         } else {
-          venderCount = venderCount + 1
+          return false
         }
-      }
-      else {
-        plantCount = plantCount + 1
-        venderCount = venderCount + 1
       }
     });
-    console.log(plantCount, "plantCount", venderCount);
-    if (plantCount === 0) {
-      return toastr.warning('Costings with same plant cannot be sent for approval')
-    }
-    if (venderCount === 0) {
-      return toastr.warning('Costings with same vendor cannot be sent for approval')
+
+    if (viewApprovalData.length > 1) {
+
+      if (plantCount > 0) {
+        return toastr.warning('Costings with same plant cannot be sent for approval')
+      }
+      if (venderCount > 0) {
+        return toastr.warning('Costings with same vendor cannot be sent for approval')
+      }
     }
 
     viewApprovalData.map((data) => {
@@ -374,9 +383,6 @@ const SendForApproval = (props) => {
     console.log(obj, "OBJ");
     dispatch(
       sendForApprovalBySender(obj, (res) => {
-        // if(res.data.Result){
-
-        // }
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
