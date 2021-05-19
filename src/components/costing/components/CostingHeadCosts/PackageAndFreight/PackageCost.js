@@ -118,7 +118,7 @@ function PackageCost(props) {
                       <th>{`Packaging Description`}</th>
                       <th>{`Packaging Type/Percentage`}</th>
                       <th>{`Cost`}</th>
-                      <th style={{ width: "130px" }} className="costing-border-right"  >{`Action`}</th>
+                      <th style={{ width: "130px",textAlign:"right"}} className="costing-border-right"  >{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -129,7 +129,7 @@ function PackageCost(props) {
                             <td>{item.PackagingDescription}</td>
                             <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
                             <td>{item.PackagingCost}</td>
-                            <td>
+                            <td style={{textAlign:"right"}}>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>

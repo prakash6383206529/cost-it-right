@@ -31,6 +31,7 @@ import { FILE_URL, ZBC } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 const selector = formValueSelector('AddRMDomestic')
 
@@ -923,6 +924,7 @@ class AddRMDomestic extends Component {
             })
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent/>,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
