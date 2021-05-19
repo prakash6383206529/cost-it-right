@@ -174,7 +174,7 @@ function ApprovalListing() {
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <img className="arrow-ico mr-1 arrow-green" src={require("../../../../assests/images/arrow-up.svg")} alt="arro-up" />
+        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" />
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
@@ -183,7 +183,7 @@ function ApprovalListing() {
   const oldpriceFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <img className="mr-1 arrow-ico arrow-red" src={require("../../../../assests/images/arrow-down.svg")} alt="arro-down" />
+        {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
@@ -484,7 +484,7 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
               {/* <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn> */}
-              <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
 
               <TableHeaderColumn dataField={'Reason'} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>

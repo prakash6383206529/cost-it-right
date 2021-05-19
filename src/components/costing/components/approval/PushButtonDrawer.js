@@ -8,11 +8,12 @@ import { useForm, Controller } from "react-hook-form";
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
+import { INR } from '../../../../config/constants'
 
 function PushButtonDrawer(props) {
 
   const { approvalData, dataSend } = props
-  console.log('approvalData: ', approvalData);
+  console.log(dataSend, 'approvalData: ', approvalData);
 
   const dispatch = useDispatch()
   const { register, handleSubmit, errors, control } = useForm();
@@ -89,10 +90,10 @@ function PushButtonDrawer(props) {
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
       materialNumber: dataSend[1].PartNumber,
       netPrice: dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : '',
-      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : '',
-      currencyKey: dataSend[0].POCurrency ? dataSend[0].POCurrency : '',
+      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '', // ASK FROM KAMAL SIR TO SEND DESTINATION PLANT CODE
+      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR, //NEED TO MAKE IT DYNAMIC AFTER COMING FROM BACKEND
       materialGroup: MaterialGroup.label, //DROPDOWN VALUE
-      taxCode: '', //THIS WILL COME IN RELATION WITH MATERIAL GROUP
+      taxCode: 'YW', //THIS WILL COME IN RELATION WITH MATERIAL GROUP ASK WITH TR
       basicUOM: "NO",
       purchasingGroup: PurchasingGroup.label, //DROPDOWN VALUE
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''
@@ -140,7 +141,7 @@ function PushButtonDrawer(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    // defaultValue={dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''}
+                    defaultValue={dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''}
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.CompanyCode}
@@ -207,7 +208,7 @@ function PushButtonDrawer(props) {
                   <button
                     type="button"
                     className="submit-button mr5 save-btn"
-                    onClick={() => { }}
+                    onClick={onSubmit}
                   >
                     <div className={'check-icon'}>
                       <img

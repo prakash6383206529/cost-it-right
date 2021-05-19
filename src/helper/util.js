@@ -634,7 +634,9 @@ export function formViewData(costingSummary) {
   obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
   obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
   obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
-
+  obj.destinationPlantCode = dataFromAPI.DestinationPlantCode ? dataFromAPI.DestinationPlantCode : '-'
+  obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
+  obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
   temp.push(obj)
   return temp
 }

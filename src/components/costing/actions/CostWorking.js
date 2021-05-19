@@ -838,11 +838,11 @@ export function getErrorFile(costingId, callback) {
 
 /**
  * @method bulkUploadCosting
- * @description Costing Bulk Upload
+ * @description Costing Bulk Upload (SHEET METAL)
 */
 
 export function bulkUploadCosting(data, callback) {
-  console.log('data: ', data);
+
   return (dispatch) => {
     const request = axios.post(API.uploadCosting, data, headers);
     request.then((response) => {
@@ -855,6 +855,8 @@ export function bulkUploadCosting(data, callback) {
     });
   };
 }
+
+
 
 /**
  * @method sendForApprovalFromBulkUpload
@@ -920,6 +922,26 @@ export function getProcessCalculation(costingId, processId, processCalculationId
       dispatch({ type: API_FAILURE });
       callback(error);
       // apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method bulkUploadCosting
+ * @description Costing Bulk Upload
+*/
+
+export function plasticBulkUploadCosting(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.uploadPlasticCosting, data, headers);
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      //apiErrors(error);
     });
   };
 }

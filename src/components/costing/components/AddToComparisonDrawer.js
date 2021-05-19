@@ -354,7 +354,9 @@ function AddToComparisonDrawer(props) {
           obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
           obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
           obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
-
+          obj.destinationPlantCode = dataFromAPI.DestinationPlantCode ? dataFromAPI.DestinationPlantCode : '-'
+          obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
+          obj.DestinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
 
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {

@@ -79,7 +79,7 @@ function ApproveRejectDrawer(props) {
 
   const closePushButton = () => {
     setOpenPushButton(false)
-    props.closeDrawer('')
+    props.closeDrawer('', 'Cancel')
   }
   const onSubmit = (data) => {
     let obj = {}
