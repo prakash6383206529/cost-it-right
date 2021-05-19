@@ -21,6 +21,7 @@ import AddChildDrawer from './AddChildDrawer';
 import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddAssemblyPart')
@@ -403,7 +404,8 @@ class AddAssemblyPart extends Component {
       onOk: () => {
         this.confirmDraftItem(updateData)
       },
-      onCancel: () => { }
+      onCancel: () => { },
+      component: () => <ConfirmComponent />,
     };
     return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
   }
@@ -513,6 +515,7 @@ class AddAssemblyPart extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
