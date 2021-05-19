@@ -6,11 +6,12 @@ import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI } from "../../actions/auth/AuthActions";
+import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import moment from "moment";
+import { userDetails } from "../../helper";
 
 class Department extends Component {
 	constructor(props) {
@@ -88,10 +89,18 @@ class Department extends Component {
 				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
 				CompanyId: departmentDetail.CompanyId
 			}
+			let comObj = {
+				CompanyId: departmentDetail.CompanyId,
+				LoggedInUserId: userDetails().LoggedInUserId,
+				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
+			}
 			console.log(formReq, "formReq");
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
-					toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+					this.props.updateCompanyAPI(comObj, () => {
+						toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+					})
 				}
 				reset();
 				this.toggleDrawer('')
@@ -257,7 +266,8 @@ export default connect(mapStateToProps, {
 	getDepartmentAPI,
 	updateDepartmentAPI,
 	setEmptyDepartmentAPI,
-	addCompanyAPI
+	addCompanyAPI,
+	updateCompanyAPI
 })(reduxForm({
 	form: 'Department',
 	enableReinitialize: true,
