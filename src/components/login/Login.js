@@ -26,6 +26,14 @@ class Login extends Component {
 
   UNSAFE_componentWillMount() {
 
+    if (this?.props?.location?.search) {
+      const queryParams = new URLSearchParams(this.props.location.search);
+      const token = queryParams.get('token')
+      const username = queryParams.get('username')
+      const email = queryParams.get('email')
+      console.log('queryParams: ', token, username, email);
+    }
+
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
       this.setState({
@@ -115,18 +123,18 @@ class Login extends Component {
                       />
                       :
                       <span className="inputbox input-group ">
-                      <Field
-                        label=""
-                        name={"UserName"}
-                        type="text"
-                        placeholder={'User Name'}
-                        validate={[required, maxLength70]}
-                        component={renderText}
-                        required={true}
-                        onClickCapture={(e) => this.setState({ flag: false })}
-                        // maxLength={26}
-                        className={'withBorder'}
-                      /></span>
+                        <Field
+                          label=""
+                          name={"UserName"}
+                          type="text"
+                          placeholder={'User Name'}
+                          validate={[required, maxLength70]}
+                          component={renderText}
+                          required={true}
+                          onClickCapture={(e) => this.setState({ flag: false })}
+                          // maxLength={26}
+                          className={'withBorder'}
+                        /></span>
                     }
                   </div>
                   <div className="input-group phone" onClickCapture={(e) => this.setState({ flag: false })}>
@@ -169,6 +177,7 @@ class Login extends Component {
             </div>
           </div>
         </div >
+        {/* <a href="http://localhost:3000/login?token=46675TgCsOE1mc&username=4667" >Login</a> */}
       </div>
     );
   }

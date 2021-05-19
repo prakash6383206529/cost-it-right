@@ -586,7 +586,6 @@ function TabRMCC(props) {
   }
 
   const setProcessCostInDataList = (conversionGrid, params, arr) => {
-    console.log('setProcessCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -656,7 +655,6 @@ function TabRMCC(props) {
   }
 
   const setOperationCostInDataList = (operationGrid, params, arr) => {
-    console.log('setOperationCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -705,7 +703,6 @@ function TabRMCC(props) {
   }
 
   const setToolCostInDataList = (toolGrid, params, arr) => {
-    console.log('setToolCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -853,7 +850,6 @@ function TabRMCC(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (BOMLevel, PartNumber, Data, RMCCTabData) => {
-    console.log('formatData')
     let tempArr = [];
     try {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
@@ -909,7 +905,6 @@ function TabRMCC(props) {
   }
 
   const setAssemblyOperationCostInDataList = (OperationGrid, params, arr, IsGridChanged) => {
-    console.log('setAssemblyOperationCost: ');
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -978,7 +973,6 @@ function TabRMCC(props) {
   }
 
   const setAssemblyToolCostInDataList = (ToolGrid, params, arr) => {
-    console.log('setAssemblyToolCostInDataList: ');
     let tempArr = [];
     try {
 
