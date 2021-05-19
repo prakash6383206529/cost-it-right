@@ -177,7 +177,7 @@ class Login extends Component {
             </div>
           </div>
         </div >
-        {/* <a href="http://localhost:3000/login?token=46675TgCsOE1mc&username=4667" >Login</a> */}
+        <a href="http://localhost:3000/login?token=46675TgCsOE1mc&username=4667" >Login</a>
       </div>
     );
   }

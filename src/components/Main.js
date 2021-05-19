@@ -60,22 +60,22 @@ class Main extends Component {
 
   UNSAFE_componentWillMount() {
     if (this?.props?.location?.search) {
+
+      if (reactLocalStorage.getObject('isUserLoggedIn') === true) return false;
+
       const queryParams = new URLSearchParams(this.props.location.search);
       const token = queryParams.get('token')
       const username = queryParams.get('username')
       const email = queryParams.get('email')
-      console.log('queryParams: ', token, username, email);
 
-      // http://costmanagementqa.unominda.com/login?token=46675TgCsOE1mc&username=4667&email=RMANCHANDA@MINDAGROUP.COM
       let reqParams = {
         Token: token,
         UserName: username,
-        //Email: email,
       }
 
       this.props.AutoSignin(reqParams, (res) => {
         if (res && res.status === 200) {
-          let userDetail = formatLoginResult(res.data);
+          let userDetail = formatLoginResult(res.data.Data);
           reactLocalStorage.setObject("userDetail", userDetail);
           this.props.logUserIn();
           setTimeout(() => {
