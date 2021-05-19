@@ -73,7 +73,7 @@ export function AutoSignin(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
         let queryParams = `Token=${requestData.Token}&UserName=${requestData.UserName}`;
-        axios.post(API.AutoSignin, queryParams, CustomHeader)
+        axios.post(API.AutoSignin, requestData, CustomHeader)
             .then((response) => {
                 console.log('response success: ', response);
                 if (response && response.status === 200) {
