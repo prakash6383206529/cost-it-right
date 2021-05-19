@@ -78,6 +78,10 @@ function AssemblyOverheadProfit(props) {
         checkForNull(item.CostingPartDetails.RejectionCost) +
         checkForNull(item.CostingPartDetails.ICCCost) +
         checkForNull(item.CostingPartDetails.PaymentTermCost),
+      "CostingPartDetails": {
+        ...item.CostingPartDetails,
+        NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+      },
       "CostingPartDetails": item.CostingPartDetails,
     }
     dispatch(saveAssemblyOverheadProfitTab(reqData, res => {

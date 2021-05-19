@@ -436,6 +436,7 @@ function ApprovalSummary(props) {
           //  tokenNo={approvalNumber}
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
+          reasonId={approvalDetails.ReasonId}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
         />

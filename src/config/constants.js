@@ -14,6 +14,7 @@ export const config = {
   },
 }
 
+
 // DEVELOPMENT
 // const BASE_URL = 'http://10.10.1.100:1002/api/v1';
 
@@ -574,6 +575,7 @@ export const API = {
   //LOGIN API
   login: `${BASE_URL}/user/login`,
   tokenAPI: `${BASE_URL}/token`,
+  AutoSignin: `${BASE_URL}/user/external-login`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,

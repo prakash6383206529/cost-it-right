@@ -17,7 +17,7 @@ import { REASON_ID } from '../../../../config/constants'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId } = props
   console.log('dataSend: ', dataSend);
 
   const userLoggedIn = loggedInUserId()
@@ -47,6 +47,7 @@ function ApproveRejectDrawer(props) {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: departObj[0].Value,
         TechnologyId: approvalData[0].TechnologyId,
+        ReasonId: reasonId
       }
       console.log(obj, "OBJ");
       dispatch(
@@ -102,7 +103,7 @@ function ApproveRejectDrawer(props) {
         ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
         Remark: data.remark,
         IsApproved: type === 'Approve' ? true : false,
-        IsFinalApprovalProcess: ele.ReasonId === REASON_ID ? true : false
+        IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
       })
     })
 
