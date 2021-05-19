@@ -21,6 +21,7 @@ import {
   GET_RATE_CRITERIA_BY_CAPACITY,
   SET_RMCC_TAB_DATA,
   SET_COSTING_DATALIST_BY_COSTINGID,
+  SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID,
   SET_PO_PRICE,
   SET_RMCCBOP_DATA,
   SET_SURFACE_COST_DATA,
@@ -278,6 +279,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         CostingDataList: action.payload
+      };
+    case SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID:
+      return {
+        ...state,
+        loading: false,
+        ActualCostingDataList: action.payload
       };
     case SET_PO_PRICE:
       return {

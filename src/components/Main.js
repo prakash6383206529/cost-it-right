@@ -63,7 +63,7 @@ class Main extends Component {
     if (Object.keys(Detail).length > 0) {
 
       const token_expires_at = new Date(Detail.expires);
-      // const token_expires_at = new Date('Mon, 17 May 2021 12:09:15');
+      // const token_expires_at = new Date('Tue, 18 May 2021 17:57:23');
       const current_time = new Date();
       const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
       const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 

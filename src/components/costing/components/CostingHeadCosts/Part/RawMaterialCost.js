@@ -57,6 +57,7 @@ function RawMaterialCost(props) {
       default:
         return setGridLength(0)
     }
+
   }, [])
 
   useEffect(() => {
@@ -517,7 +518,7 @@ function RawMaterialCost(props) {
               </Col>
             </Row>
 
-              <Row >
+            <Row >
               {costData.TechnologyId === 6 &&
                 <Col md="2" className="py-3 ">
                   <label

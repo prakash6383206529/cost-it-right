@@ -66,6 +66,7 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
+    console.log('Called save', item)
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
@@ -73,12 +74,11 @@ function PartOverheadProfit(props) {
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
       "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
-      "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
-        checkForNull(item.CostingPartDetails.ProfitCost) +
-        checkForNull(item.CostingPartDetails.RejectionCost) +
-        checkForNull(item.CostingPartDetails.ICCCost) +
-        checkForNull(item.CostingPartDetails.PaymentTermCost),
-      "CostingPartDetails": item.CostingPartDetails,
+      "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+      "CostingPartDetails": {
+        ...item.CostingPartDetails,
+        NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+      },
       "EffectiveDate": CostingEffectiveDate,
     }
     dispatch(saveComponentOverheadProfitTab(reqData, res => {

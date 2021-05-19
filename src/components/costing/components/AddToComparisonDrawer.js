@@ -23,7 +23,8 @@ function AddToComparisonDrawer(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC',
+      // comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
+      comparisonValue: 'VBC',
       plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
       costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
       vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
@@ -50,10 +51,10 @@ function AddToComparisonDrawer(props) {
   const [cbcValue, setCbcValue] = useState('')
 
   /* constant for checkbox rendering condition */
-  const [isZbcSelected, setIsZbcSelected] = useState(true)
-  console.log('isZbcSelected: ', isZbcSelected);
-  const [isVbcSelected, setIsVbcSelected] = useState(false)
-  console.log('isVbcSelected: ', isVbcSelected);
+  const [isZbcSelected, setIsZbcSelected] = useState(false)  // FALSE FOR MINDA 
+
+  const [isVbcSelected, setIsVbcSelected] = useState(true) //TRUE FOR MINDA AS BY DEFAULT TO SHOW VBC
+
   const [isCbcSelected, setisCbcSelected] = useState(false)
 
   /* For vendor dropdown */
@@ -73,29 +74,33 @@ function AddToComparisonDrawer(props) {
     /******FIRST TIME RENDER ADD TO COMPARISION******/
     if (!isEditFlag) {
       const temp = []
-      setIsZbcSelected(true)
-      setIsVbcSelected(false)
-      setisCbcSelected(false)
-      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
-        dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-        dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
+      // THIS CONDITION IS TEMPORARY COMMENTED FOR MINDA
+      // setIsZbcSelected(true)
+      // setIsVbcSelected(false)
+      // setisCbcSelected(false)
+      // dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
+      //   dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
+      //   dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
+      // }),
+      // )
 
-      }),
-      )
+      // THIS CONDITION IS FOR MINDA 
+      setIsVbcSelected(true)
+      setIsZbcSelected(false)
+      setisCbcSelected(false)
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
     }
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
-      console.log(typeOfCosting, "typeOfCosting");
+
       if (typeOfCosting === 0) { //ZBC COSTING CONDITION
-        console.log("COMING ?");
 
         setIsZbcSelected(true)
-
         dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
         dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
         dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
-        console.log("COMING VBC?");
+
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
@@ -302,7 +307,7 @@ function AddToComparisonDrawer(props) {
             currencyValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.CurrencyExchangeRate ? dataFromAPI.CostingPartDetails.OtherCostDetails.CurrencyExchangeRate : '-',
           }
           obj.nPOPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceINR !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceINR : 0
-          obj.effectiveDate = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.EffectiveDate !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.EffectiveDate : ''
+          obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
           // // // obj.attachment = "Attachment";
           obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : ''
           obj.approvalButton = ''
@@ -495,12 +500,13 @@ function AddToComparisonDrawer(props) {
                   name={"comparisonValue"}
                   register={register}
                   onChange={handleComparison}
-                  defaultValue={"ZBC"}
+                  defaultValue={"VBC"}
                   dataArray={[
-                    {
-                      label: "ZBC",
-                      optionsValue: "ZBC",
-                    },
+                    // THIS IS FOR MINDA 
+                    // { 
+                    //   label: "ZBC",
+                    //   optionsValue: "ZBC",
+                    // },
                     {
                       label: "VBC",
                       optionsValue: "VBC",

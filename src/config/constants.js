@@ -23,12 +23,15 @@ const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 //FOR MINDA OTHER
 // const BASE_URL = 'http://10.253.2.10:10132/api/v1';
 // const BASE_URL = 'http://20.193.243.188:10132/api/v1';
+// const BASE_URL = 'http://costmanagementqa.unominda.com:10132/api/v1';
 
 //STAGING
 // const BASE_URL = 'http://10.10.1.10:1002/api/v1';
 
-export const FILE_URL = 'http://10.10.1.100:1002/';
+// export const FILE_URL = 'http://10.10.1.100:1002/';
+export const FILE_URL = 'http://10.10.1.100:10132/';
 // export const FILE_URL = 'http://20.193.243.188:10132/';
+// export const FILE_URL = 'http://costmanagementqa.unominda.com:10132/';
 
 /** Export API */
 export const API = {
@@ -1118,6 +1121,7 @@ export const SAVE_BOP_COSTING_SUCCESS = 'SAVE_BOP_COSTING_SUCCESS';
 export const GET_COSTING_DATA_BY_COSTINGID = 'GET_COSTING_DATA_BY_COSTINGID';
 export const GET_RATE_CRITERIA_BY_CAPACITY = 'GET_RATE_CRITERIA_BY_CAPACITY';
 export const SET_COSTING_DATALIST_BY_COSTINGID = 'SET_COSTING_DATALIST_BY_COSTINGID';
+export const SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID = 'SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID';
 export const SET_PO_PRICE = 'SET_PO_PRICE';
 export const SET_RMCCBOP_DATA = 'SET_RMCCBOP_DATA';
 export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
@@ -1487,6 +1491,7 @@ export const DIMENSIONLESS = 'Dimensionless'
 
 //UOM CATEGORY
 export const STD = 'STD'
+
 
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = 'Raw Material(Domestic)'
