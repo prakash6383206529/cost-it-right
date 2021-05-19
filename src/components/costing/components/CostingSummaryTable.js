@@ -499,6 +499,7 @@ const CostingSummaryTable = (props) => {
                 obj.remainingQty = checkForNull(totalBudgetedQty - actualQty)
                 obj.annualImpact = variance != '' ? totalBudgetedQty * variance : 0
                 obj.yearImpact = variance != '' ? (totalBudgetedQty - actualQty) * variance : 0
+
               }
             })
 
@@ -513,6 +514,9 @@ const CostingSummaryTable = (props) => {
           obj.effectiveDate = viewCostingData[index].effectiveDate
           obj.isDate = viewCostingData[index].effectiveDate ? true : false
           obj.partNo = viewCostingData[index].partId
+          obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
+          obj.destinationPlantName = viewCostingData[index].destinationPlantName
+          obj.destinationPlantId = viewCostingData[index].destinationPlantId
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))

@@ -559,6 +559,7 @@ export const API = {
   getCostingBulkUploadList: `${BASE_URL}/bulk-costing/get-all-bulk-costings-files-info-by-filter`,
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
+  uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
 
 

@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
@@ -13,12 +13,14 @@ import { toastr } from 'react-redux-toastr'
 function Plastic(props) {
   const { item, rmRowData } = props
   const { CostingPartDetails } = item
-  const { IsApplyMasterBatch, MasterBatchTotal } = CostingPartDetails
+  const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
 
   let totalRM
-  //IF MASTER BATCH IS ADDED OTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
+  //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
   if (IsApplyMasterBatch) {
-    totalRM = Number(rmRowData.RMRate) + Number(MasterBatchTotal)
+    const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
+    const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
+    totalRM = RMRatePlusMasterBatchRate
   } else {
     totalRM = Number(rmRowData.RMRate)
   }

@@ -323,7 +323,8 @@ function RawMaterialCost(props) {
       setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), value))
 
       const RMRate = calculatePercentageValue(tempData.RMRate, (100 - value));
-      const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
+      const RMRatePlusMasterBatchRate = RMRate + checkForNull(getValues('RMTotal'))
+      const RMRatePlusMasterBatch = RMRatePlusMasterBatchRate * checkForNull(tempData.GrossWeight);
       const ScrapRate = (tempData.ScrapRate * tempData.FinishWeight)
       // console.log('ScrapRate: ', ScrapRate);
 

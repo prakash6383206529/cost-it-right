@@ -37,6 +37,10 @@ function ApprovalSummary(props) {
 
 
   useEffect(() => {
+    approvalSummaryHandler()
+  }, [])
+
+  const approvalSummaryHandler = () => {
     dispatch(
       getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
@@ -64,7 +68,7 @@ function ApprovalSummary(props) {
         })
       }),
     )
-  }, [])
+  }
 
   const handleApproveAndPushButton = () => {
     setShowPushDrawer(true)
@@ -80,6 +84,7 @@ function ApprovalSummary(props) {
       setApproveDrawer(false)
       setRejectDrawer(false)
       setShowListing(false)
+      approvalSummaryHandler()
     }
   }
 
@@ -94,6 +99,7 @@ function ApprovalSummary(props) {
         setShowListing(true)
       } else {
         setShowListing(false)
+        approvalSummaryHandler()
       }
     }
   }
