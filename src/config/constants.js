@@ -14,24 +14,25 @@ export const config = {
   },
 }
 
-// DEVELOPMENT
-// const BASE_URL = 'http://10.10.1.100:1002/api/v1';
-
 // DEVELOPMENT MIL URL
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
-//FOR MINDA OTHER
-// const BASE_URL = 'http://10.253.2.10:10132/api/v1';
-// const BASE_URL = 'http://20.193.243.188:10132/api/v1';
+//MINDA QA
 // const BASE_URL = 'http://costmanagementqa.unominda.com:10132/api/v1';
 
-//STAGING
-// const BASE_URL = 'http://10.10.1.10:1002/api/v1';
+//MINDA PRODUCTION
+// const BASE_URL = 'https://costmanagement.unominda.com:10132/api/v1';
 
-// export const FILE_URL = 'http://10.10.1.100:1002/';
+
+//DEVELOPMENT MIL URL
 export const FILE_URL = 'http://10.10.1.100:10132/';
-// export const FILE_URL = 'http://20.193.243.188:10132/';
+
+//MINDA QA FILE URL
 // export const FILE_URL = 'http://costmanagementqa.unominda.com:10132/';
+
+//MINDA PRODUCTION FILE URL
+// export const FILE_URL = 'https://costmanagement.unominda.com';
+
 
 /** Export API */
 export const API = {

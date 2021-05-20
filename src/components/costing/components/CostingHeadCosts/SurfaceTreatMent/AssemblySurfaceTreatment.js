@@ -94,7 +94,9 @@ function AssemblySurfaceTreatment(props) {
   return (
     <>
       <tr>
-        <div className="accordian-row" style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, true)}>
+        <div className="accordian-row" style={{ display: 'contents' }} onClick={() => {
+          // toggle(item.BOMLevel, item.PartNumber, true)
+        }}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
               {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
@@ -145,9 +147,9 @@ function AssemblySurfaceTreatment(props) {
         </td>
       </tr>
 
-      {item.IsOpen && nestedPartComponent}
+      {/* {item.IsOpen && nestedPartComponent} */}
 
-      {item.IsOpen && nestedAssembly}
+      {/* {item.IsOpen && nestedAssembly} */}
 
       {IsDrawerOpen && <SurfaceTreatment
         isOpen={IsDrawerOpen}
@@ -162,6 +164,7 @@ function AssemblySurfaceTreatment(props) {
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
       />}
+
     </ >
   );
 }
