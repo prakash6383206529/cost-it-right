@@ -33,7 +33,6 @@ export const FILE_URL = 'http://10.10.1.100:10132/';
 //MINDA PRODUCTION FILE URL
 // export const FILE_URL = 'https://costmanagement.unominda.com';
 
-
 /** Export API */
 export const API = {
 
