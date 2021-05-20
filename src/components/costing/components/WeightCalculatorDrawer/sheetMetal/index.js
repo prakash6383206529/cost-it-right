@@ -18,7 +18,7 @@ function WeightCalculator(props) {
 
   const dispatch = useDispatch()
   const { rmRowData } = props
-  console.log('rmRowData: ', Object.keys(rmRowData.WeightCalculatorRequest).length);
+
 
   const getTabno = (layout) => {
     switch (layout) {

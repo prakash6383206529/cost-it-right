@@ -19,7 +19,7 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-  console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
+
 
 
   const convert = (FinishWeightOfSheet, dimmension) => {
@@ -96,9 +96,9 @@ function Pipe(props) {
   const tempOldObj = WeightCalculatorRequest
   const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
   const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
-  console.log('FinishWeight: ', FinishWeight);
+
   const [useFinishWeight, setUseFinishWeight] = useState(false)
-  console.log(useFinishWeight, "in  finish Weight");
+
 
 
   const fieldValues = useWatch({
@@ -142,7 +142,7 @@ function Pipe(props) {
           : { label: kgObj.Text, value: kgObj.Value })
       }, 100);
       if (WeightCalculatorRequest.FinishWeight !== null || WeightCalculatorRequest.FinishWeight !== undefined) {
-        console.log("ENTERD IN IF");
+
         setUseFinishWeight(false)
       } else {
         setUseFinishWeight(true)
@@ -350,9 +350,9 @@ function Pipe(props) {
    * @description SET FINISH WEIGHT
    */
   const setFinishWeight = () => {
-    console.log(useFinishWeight, "in set finish Weight");
+
     if (!useFinishWeight) return false
-    console.log("COMING IN FINISH ");
+
     const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
     const updatedValue = dataToSend
 
@@ -487,10 +487,10 @@ function Pipe(props) {
     setUOMDimension(value)
     let grossWeight = GrossWeight
     // let finishWeight = setValueAccToUOM(getValues('FinishWeight'), value.label)
-    //console.log(finishWeight, "FW");
+    //
     grossWeight = setValueAccToUOM(grossWeight, value.label)
     let finishWeight = setValueAccToUOM(FinishWeight, value.label)
-    console.log('finishWeight: ', finishWeight);
+
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 
     setUnit(value.label)
@@ -515,9 +515,9 @@ function Pipe(props) {
   const onFinishChange = (e) => {
     // if(e.target.value > getValues())
     setUseFinishWeight(false)
-    console.log("COMING ?");
+
     let FW = getValues('FinishWeight')
-    console.log(Number(FW), "FinishWeight");
+
     if (UOMDimension.label === KG) {
       setFinishWeights(Number(FW) * 1000)
       let updatedValue = dataToSend

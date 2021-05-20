@@ -11,7 +11,7 @@ import { runSimulationOnSelectedCosting } from '../actions/Simulation';
 
 function RunSimulationDrawer(props) {
     const { objs } = props
-    console.log('objs: ', objs);
+
 
     const [isProfitChecked, setIsProfitChecked] = useState(false)
     const [isOverheadChecked, setIsOverheadChecked] = useState(false)
@@ -60,7 +60,7 @@ function RunSimulationDrawer(props) {
     }
 
     const onSubmit = () => {
-        // console.log("ENTERD IN ON SUBMITss");
+        // 
         // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
         //     if (res.data.Result) {
         //         toastr.success('Simulation process has been run successfully.')
@@ -70,7 +70,7 @@ function RunSimulationDrawer(props) {
     }
 
     const SimulationRun = () => {
-        console.log("ENTERD IN ON SUBMITss");
+
         dispatch(runSimulationOnSelectedCosting(objs, (res) => {
             if (res.data.Result) {
                 toastr.success('Simulation process has been run successfully.')

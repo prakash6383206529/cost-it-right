@@ -811,7 +811,7 @@ class AddMoreDetails extends Component {
     if (depreciationType.value === SLM) {
       //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear Or (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
       depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) / checkForNull(LifeOfAssetPerYear));
-      console.log('depreciationAmount: ', depreciationAmount);
+
       // depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
     }
 
@@ -1438,7 +1438,7 @@ class AddMoreDetails extends Component {
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue, effectiveDate } = this.state;
-    console.log(selectedTechnology, "selectedTechnology");
+
 
     if (this.state.processGrid.length === 0) {
 
@@ -1451,7 +1451,7 @@ class AddMoreDetails extends Component {
     const userDetail = userDetails()
 
     let technologyArray = selectedTechnology && { Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value, }
-    console.log('technologyArray: ', technologyArray);
+
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 

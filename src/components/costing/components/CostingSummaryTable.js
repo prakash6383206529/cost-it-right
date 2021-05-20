@@ -72,13 +72,13 @@ const CostingSummaryTable = (props) => {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const [warningMsg, setShowWarningMsg] = useState(false)
-  console.log('warningMsg: ', warningMsg);
+
   useEffect(() => {
 
   }, [multipleCostings])
 
   // useEffect(() => {
-  //   console.log("Now rendering after use effect");
+  //   
   // }, [showWarningMsg])
   useEffect(() => {
     if (!viewMode && viewCostingData && partInfo) {
@@ -390,14 +390,14 @@ const CostingSummaryTable = (props) => {
     let temp = multipleCostings
     if (temp.includes(id)) {
       const ind = multipleCostings.findIndex((data) => data === id)
-      console.log('ind: ', ind);
+
       if (ind !== -1) {
 
         temp.splice(ind, 1)
       }
       const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
       if (checkInd !== -1) {
-        console.log(viewCostingData[checkInd].IsApprovalLocked, "IN IF", viewCostingData);
+
         if (viewCostingData[checkInd].IsApprovalLocked) {
           setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
         }
@@ -407,8 +407,8 @@ const CostingSummaryTable = (props) => {
       temp.push(id)
       const ind = multipleCostings.findIndex((data) => data === id)
       const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
-      console.log(checkInd, "IN ELSE");
-      console.log(viewCostingData[checkInd].IsApprovalLocked, "IN ESLE");
+
+
       if (temp.length > 1 && isWarningFlag) {
         if (viewCostingData[checkInd].IsApprovalLocked === true) {
           setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
@@ -534,7 +534,7 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
-    console.log(viewCostingData && viewCostingData[0], "viewCostingData");
+
     if (viewCostingData.length === 1) {
       setIsWarningFlag(viewCostingData && viewCostingData.length > 0 && viewCostingData[0].IsApprovalLocked)
       // setIsWarningFlag(false)

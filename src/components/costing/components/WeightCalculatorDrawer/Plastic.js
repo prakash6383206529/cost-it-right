@@ -50,7 +50,7 @@ function Plastic(props) {
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
   })
-  console.log('dataToSend: ', dataToSend);
+
 
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
@@ -106,14 +106,14 @@ function Plastic(props) {
    * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
-    console.log("HOW MANY TIMES COMING ?");
-    console.log('lostSum: ', lostSum);
+
+
     let scrapWeight = 0
 
     const netWeight = Number(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
     const runnerWeight = Number(getValues('runnerWeight'))
     const finishedWeight = Number(getValues('finishedWeight'))
-    console.log('finishedWeight: ', finishedWeight);
+
 
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostSum //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
     // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
@@ -122,7 +122,7 @@ function Plastic(props) {
       return false
     }
     if (finishedWeight !== 0) {
-      console.log("Coming here in scrap cond?");
+
       scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
@@ -187,7 +187,7 @@ function Plastic(props) {
     })
     obj.LossOfTypeDetails = tempArr
     obj.NetLossWeight = lostWeight
-    console.log(obj, "OBBJ");
+
     dispatch(saveRawMaterialCalciData(obj, res => {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity

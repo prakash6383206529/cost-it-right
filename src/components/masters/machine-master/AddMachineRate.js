@@ -198,7 +198,7 @@ class AddMachineRate extends Component {
           this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
-            console.log('machineTypeSelectList: ', machineTypeSelectList);
+
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
 
@@ -217,7 +217,7 @@ class AddMachineRate extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-            console.log('machineTypeObj: ', machineTypeObj);
+
 
             this.setState({
               isEditFlag: true,
@@ -507,9 +507,9 @@ class AddMachineRate extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
-    console.log('processName: ', processName);
-    console.log('processGrid: ', processGrid);
-    console.log('UOM: ', UOM);
+
+
+
     const { fieldsObj } = this.props;
     const tempArray = [];
 
@@ -794,8 +794,8 @@ class AddMachineRate extends Component {
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
+
+
       // if (DropdownChange) {
 
       // }
@@ -890,7 +890,7 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-    console.log('data: ', data);
+
     this.props.getVendorListByVendorType(data.IsVendor, () => { })
     if (data.IsVendor) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
@@ -902,7 +902,7 @@ class AddMachineRate extends Component {
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
       let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
-      console.log('technologyArray: ', technologyArray);
+
 
       let MachineProcessArray = data && data.MachineProcessRates.map(el => {
         return {

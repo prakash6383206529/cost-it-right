@@ -17,9 +17,7 @@ function SheetMetalBaicDrawer(props) {
 
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
-  console.log('props: ', props);
-  console.log('calculatorData: ', props.calculatorData);
-  console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
+
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const defaultValues = {
@@ -27,7 +25,7 @@ function SheetMetalBaicDrawer(props) {
     CycleTime: WeightCalculatorRequest && WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : '',
     Efficiency: WeightCalculatorRequest && WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100,
     Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,
-    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? WeightCalculatorRequest.Quantity : 1,
+    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? checkForNull(WeightCalculatorRequest.Quantity) : 1,
     ProcessCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " "
   }
 
@@ -117,7 +115,7 @@ function SheetMetalBaicDrawer(props) {
     obj.LoggedInUserId = loggedInUserId()
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
-    console.log('obj: ', obj);
+
 
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
@@ -202,7 +200,7 @@ function SheetMetalBaicDrawer(props) {
     if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
       setValue('Efficiency', e.target.value)
     } else {
-      console.log("IN ELSE");
+
       setTimeout(() => {
 
         setValue('Efficiency', 100)
@@ -343,7 +341,7 @@ function SheetMetalBaicDrawer(props) {
                         // maxLength: 4,
                       }}
                       handleChange={calculateProcessCost}
-                      defaultValue={''}
+                      defaultValue={defaultValues.Quantity}
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Quantity}

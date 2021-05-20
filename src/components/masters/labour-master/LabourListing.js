@@ -30,7 +30,7 @@ class LabourListing extends Component {
     super(props)
     this.state = {
       tableData: [],
-      shown:false,
+      shown: false,
       EmploymentTerms: [],
       vendorName: [],
       stateName: [],
@@ -96,7 +96,7 @@ class LabourListing extends Component {
    * @description Get Data List
    */
   getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
-    console.log(state, "state");
+
     let filterData = {
       employment_terms: employment_terms,
       state: state,
@@ -104,7 +104,7 @@ class LabourListing extends Component {
       labour_type: labour_type,
       machine_type: machine_type,
     }
-    console.log(filterData, "FD");
+
     this.props.getLabourDataList(filterData, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
