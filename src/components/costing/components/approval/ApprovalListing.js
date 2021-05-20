@@ -477,15 +477,15 @@ function ApprovalListing() {
               pagination
             >
               <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ApprovalNumber" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
+              <TableHeaderColumn dataField="ApprovalNumber" columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
               <TableHeaderColumn dataField="CostingNumber" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartNumber" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
               {/* <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn> */}
-              <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="NetPOPrice" columnTitle={false} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="OldPOPrice" columnTitle={false} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
 
               <TableHeaderColumn dataField={'Reason'} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>

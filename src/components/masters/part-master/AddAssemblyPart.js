@@ -645,9 +645,9 @@ class AddAssemblyPart extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={""}
-                            validate={[required, maxLength80, checkWhiteSpaces]}
+                            validate={[maxLength80, checkWhiteSpaces]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             className=""
                             customClassName={"withBorder"}
                           />

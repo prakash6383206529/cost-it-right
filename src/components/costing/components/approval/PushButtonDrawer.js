@@ -2,18 +2,19 @@ import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch } from 'react-redux'
-import { pushedApprovedCosting, createRawMaterialSAP } from '../../actions/Approval'
+import { pushedApprovedCosting, createRawMaterialSAP, approvalPushedOnSap } from '../../actions/Approval'
 import { loggedInUserId } from '../../../../helper'
 import { useForm, Controller } from "react-hook-form";
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
 import { INR } from '../../../../config/constants'
+import { toastr } from 'react-redux-toastr'
 
 function PushButtonDrawer(props) {
 
   const { approvalData, dataSend } = props
-  console.log(dataSend, 'approvalData: ', approvalData);
+
 
   const dispatch = useDispatch()
   const { register, handleSubmit, errors, control } = useForm();
@@ -80,11 +81,9 @@ function PushButtonDrawer(props) {
     }
   }
   const onSubmit = () => {
-    console.log("ENTERING IN SUBMIT");
-    let obj = {
-      LoggedInUserId: loggedInUserId(),
-      CostingId: approvalData[0].CostingId
-    }
+
+
+
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? dataSend[0].EffectiveDate : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
@@ -93,21 +92,38 @@ function PushButtonDrawer(props) {
       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '', // ASK FROM KAMAL SIR TO SEND DESTINATION PLANT CODE
       currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR, //NEED TO MAKE IT DYNAMIC AFTER COMING FROM BACKEND
       materialGroup: MaterialGroup.label, //DROPDOWN VALUE
-      taxCode: 'YW', //THIS WILL COME IN RELATION WITH MATERIAL GROUP ASK WITH TR
+      taxCode: 'YW',
       basicUOM: "NO",
       purchasingGroup: PurchasingGroup.label, //DROPDOWN VALUE
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''
     }
-    console.log(pushdata, 'pppppppp')
-    dispatch(pushedApprovedCosting(obj, res => {
-      if (res.data.Result) {
-        dispatch(createRawMaterialSAP(pushdata, res => {
-          if (res.data.Result) {
-            props.closeDrawer('', 'Push')
-          }
-        }))
+
+    let obj = {
+      LoggedInUserId: loggedInUserId(),
+      CostingId: approvalData[0].CostingId,
+      Request: pushdata
+    }
+    console.log(obj, "OBJ");
+
+    dispatch(approvalPushedOnSap(obj, res => {
+      if (res.data.result) {
+        toastr.success('Approval pushed successfully.')
+      }
+      props.closeDrawer('', 'Push')
+      if (res.Result) {
+        props.closeDrawer('', 'Push')
       }
     }))
+
+    // dispatch(pushedApprovedCosting(obj, res => {
+    //   if (res.data.Result) {
+    //     dispatch(createRawMaterialSAP(pushdata, res => {
+    //       if (res.data.Result) {
+    //         props.closeDrawer('', 'Push')
+    //       }
+    //     }))
+    //   }
+    // }))
   }
   return (
     <>

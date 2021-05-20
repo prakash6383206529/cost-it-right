@@ -83,7 +83,9 @@ class AddRMDomestic extends Component {
       showLoader: false,
       DropdownChanged: true,
       DataToChange: [],
-      isDateChange: false
+      isDateChange: false,
+      isSourceChange: false,
+      source: ''
     }
   }
   /**
@@ -259,11 +261,22 @@ class AddRMDomestic extends Component {
    */
   handleSourceSupplierCity = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ sourceLocation: newValue })
+
+      this.setState({ sourceLocation: newValue, isSourceChange: true })
+
     } else {
       this.setState({ sourceLocation: [] })
     }
-    this.setState({ DropdownChanged: false })
+    // this.setState({ DropdownChanged: false })
+  }
+
+  handleSource = (newValue, actionMeta) => {
+    console.log('newValue: ', newValue);
+    if (newValue && newValue !== '') {
+      //  if (newValue !== thissource) {
+      this.setState({ source: newValue, isSourceChange: true })
+
+    }
   }
 
   /**
@@ -843,7 +856,7 @@ class AddRMDomestic extends Component {
     //  console.log(DataToChange, "DataToChange");
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state
     const { initialConfiguration } = this.props
     console.log('isDateChange: ', isDateChange);
     // if (!anyTouched) {
@@ -893,10 +906,21 @@ class AddRMDomestic extends Component {
       LoggedInUserId: loggedInUserId(),
       EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       Attachements: updatedFiles,
-      IsForcefulUpdated: isDateChange ? false : true
+      IsConvertIntoCopy: isDateChange ? true : false,
+      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
     }
     if (isEditFlag) {
       console.log(DataToChange, "kkk", values);
+      if (isSourceChange) {
+        this.props.reset()
+        this.props.updateRMDomesticAPI(requestData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            this.clearForm()
+            // this.cancel()
+          }
+        })
+      }
       if (isDateChange) {
         console.log("COMING IN DATE CHANGE");
         this.props.reset()
@@ -924,7 +948,7 @@ class AddRMDomestic extends Component {
             })
           },
           onCancel: () => { },
-          component: () => <ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -1308,6 +1332,8 @@ class AddRMDomestic extends Component {
                                     component={renderText}
                                     //required={true}
                                     disabled={false}
+                                    onChange={this.handleSource}
+                                    valueDescription={this.state.source}
                                     className=" "
                                     customClassName=" withBorder"
                                   />

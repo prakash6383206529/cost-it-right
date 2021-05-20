@@ -352,7 +352,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15]}
+                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength15]}
                       component={renderText}
                       required={true}
                       className=""

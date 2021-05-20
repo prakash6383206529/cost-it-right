@@ -24,7 +24,7 @@ function SheetMetalBaicDrawer(props) {
 
   const defaultValues = {
     MachineTonnage: props.calculatorData ? props.calculatorData.Tonnage : '',
-    CycleTime: WeightCalculatorRequest && WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : '',
+    CycleTime: WeightCalculatorRequest && WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : 1,
     Efficiency: WeightCalculatorRequest && WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100,
     Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,
     Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? WeightCalculatorRequest.Quantity : 1,
@@ -51,6 +51,13 @@ function SheetMetalBaicDrawer(props) {
     control,
     name: ['Efficiency', 'Cavity', 'CycleTime'],
   })
+
+  useEffect(() => {
+    if (props.calculatorData.UOMType === TIME) {
+      setValue('Quantity', props?.calculatorData?.WeightCalculatorRequest?.Quantity !== null ? checkForNull(props?.calculatorData?.WeightCalculatorRequest?.Quantity) : 1)
+    }
+  }, [defaultValues])
+
   useEffect(() => {
     handleProductionPerHour()
     calculateProcessCost()
