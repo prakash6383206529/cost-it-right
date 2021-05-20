@@ -477,15 +477,15 @@ function ApprovalListing() {
               pagination
             >
               <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ApprovalNumber" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
+              <TableHeaderColumn dataField="ApprovalNumber" width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
               <TableHeaderColumn dataField="CostingNumber" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartNumber" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PlantName"  width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
               {/* <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn> */}
-              <TableHeaderColumn dataField="NetPOPrice" width={100} columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="NetPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
 
               <TableHeaderColumn dataField={'Reason'} width={100} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>

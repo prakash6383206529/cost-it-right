@@ -576,7 +576,9 @@ export function getBOPData(data, callback) {
 export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`, headers,)
+    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}`
+    // const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`, headers,)
+    const request = axios.get(`${API.getRMDrawerDataList}?${queryParams}`, headers)
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -599,8 +601,9 @@ export function getRMDrawerDataList(data, callback) {
  */
 export function getRMDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
-    const request = axios.get(`${API.getRMDrawerVBCDataList}/${queryParams}`, headers);
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&effectiveDate=${data.EffectiveDate}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}`
+    //const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
+    const request = axios.get(`${API.getRMDrawerVBCDataList}?${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({

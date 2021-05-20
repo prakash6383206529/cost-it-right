@@ -23,7 +23,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { ZBC } from '../../../config/constants'
+import { INR, ZBC } from '../../../config/constants'
 import { costingHeadObjs } from '../../../config/masterData';
 
 class RMImportListing extends Component {
@@ -179,7 +179,7 @@ class RMImportListing extends Component {
 
   costFormatter = (cell, row, enumObject, rowIndex) => {
     const { initialConfiguration } = this.props
-    return (cell != null && cell !== 0) ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, initialConfiguration.NoOfDecimalForPrice);
+    return row.Currency !== INR ? checkForDecimalAndNull(row.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, initialConfiguration.NoOfDecimalForPrice);
   }
 
   /**

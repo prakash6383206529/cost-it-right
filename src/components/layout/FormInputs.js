@@ -552,6 +552,7 @@ export const focusOnError = (errors) => {
 export function renderText(field) {
   const {
     input,
+
     meta: { touched, error },
     ...others
   } = field;
@@ -575,6 +576,7 @@ export function renderText(field) {
         maxLength={field.maxLength}
         {...input}
         {...others}
+
         className={InputClassName}
       />
 

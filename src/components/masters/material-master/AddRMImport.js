@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -86,7 +86,9 @@ class AddRMImport extends Component {
       singlePlantSelected: [],
       DropdownChanged: true,
       DataToChange: [],
-      isDateChange: false
+      isDateChange: false,
+      isSourceChange: false,
+      source: ''
     }
   }
 
@@ -244,16 +246,29 @@ class AddRMImport extends Component {
   };
 
   /**
-  * @method handleSourceSupplierCity
-  * @description called
-  */
+   * @method handleSourceSupplierCity
+   * @description called
+   */
   handleSourceSupplierCity = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ sourceLocation: newValue, });
+
+      this.setState({ sourceLocation: newValue, isSourceChange: true })
+
     } else {
-      this.setState({ sourceLocation: [], })
+      this.setState({ sourceLocation: [] })
     }
-  };
+    // this.setState({ DropdownChanged: false })
+  }
+
+  handleSource = (newValue, actionMeta) => {
+    console.log('newValue: ', newValue);
+    if (newValue && newValue !== '') {
+      //  if (newValue !== thissource) {
+      this.setState({ source: newValue, isSourceChange: true })
+
+    }
+  }
+
 
   /**
   * @method handleUOM
@@ -372,6 +387,7 @@ class AddRMImport extends Component {
                 this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
                 this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+                this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
                 // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 // this.props.change('NetLandedCost')
 
@@ -414,9 +430,9 @@ class AddRMImport extends Component {
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
-                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
+                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
                   // FreightCharge:Data.FreightCharge
-                  // netCost:Data
+                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : ''
                 }, () => this.setState({ isLoader: false }))
               }, 200);
             });
@@ -819,7 +835,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -866,9 +882,20 @@ class AddRMImport extends Component {
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        IsForcefulUpdated: isDateChange ? false : true
+        IsConvertIntoCopy: isDateChange ? true : false,
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
       }
       if (isEditFlag) {
+        if (isSourceChange) {
+          this.props.reset()
+          this.props.updateRMImportAPI(requestData, (res) => {
+            if (res.data.Result) {
+              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm()
+              // this.cancel()
+            }
+          })
+        }
         if (isDateChange) {
 
           this.props.reset()
@@ -1266,11 +1293,12 @@ class AddRMImport extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={"Enter"}
-                                    validate={acceptAllExceptSingleSpecialCharacter}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
                                     //required={true}
                                     disabled={false}
-                                    maxLength="70"
+                                    onChange={this.handleSource}
+                                    valueDescription={this.state.source}
                                     className=" "
                                     customClassName=" withBorder"
                                   />

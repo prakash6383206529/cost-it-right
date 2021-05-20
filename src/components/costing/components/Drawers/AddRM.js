@@ -63,7 +63,7 @@ function AddRM(props) {
   const options = {
     clearSearch: true,
     noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal(),
+    paginationShowsTotal: renderPaginationShowsTotal,
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
     firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -335,7 +335,8 @@ function AddRM(props) {
                   //exportCSV
                   //ignoreSinglePage
                   //ref={'table'}
-                  pagination>
+                  pagination
+                >
                   <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
