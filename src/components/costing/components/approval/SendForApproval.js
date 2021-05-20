@@ -380,7 +380,7 @@ const SendForApproval = (props) => {
         data.typeOfCosting == 1 ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
-      tempObj.destinationPlantName = data.destinationPlantName
+      tempObj.DestinationPlantName = data.destinationPlantName
       tempObj.DestinationPlantId = data.destinationPlantId
       temp.push(tempObj)
     })

@@ -95,7 +95,7 @@ function PushButtonDrawer(props) {
       taxCode: 'YW',
       basicUOM: "NO",
       purchasingGroup: PurchasingGroup.label, //DROPDOWN VALUE
-      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''
+      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : 'C-123'
     }
 
     let obj = {

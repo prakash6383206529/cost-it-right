@@ -277,8 +277,8 @@ function ApprovalListing() {
       return false
     }
     let count = 0
+    let technologyCount = 0
     selectedRowData.forEach((element, index, arr) => {
-
       if (index > 0) {
         if (element.ReasonId !== arr[index - 1].ReasonId) {
           count = count + 1
@@ -289,6 +289,20 @@ function ApprovalListing() {
         return false
       }
     })
+    selectedRowData.forEach((element, index, arr) => {
+      if (index > 0) {
+        if (element.TechnologyId !== arr[index - 1].TechnologyId) {
+          technologyCount = technologyCount + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
+    if (technologyCount > 0) {
+      return toastr.warning("Technology should be same for sending multiple costing for approval")
+    }
     if (count > 0) {
       return toastr.warning("Reason should be same for sending multiple costing for approval")
     } else {
@@ -486,7 +500,6 @@ function ApprovalListing() {
               {/* <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn> */}
               <TableHeaderColumn dataField="NetPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
-
               <TableHeaderColumn dataField={'Reason'} width={100} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
