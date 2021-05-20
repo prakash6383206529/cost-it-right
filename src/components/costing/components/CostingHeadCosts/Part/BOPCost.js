@@ -46,7 +46,9 @@ function BOPCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      props.setBOPCost(gridData, Params)
+      if (!CostingViewMode) {
+        props.setBOPCost(gridData, Params)
+      }
     }, 100)
     selectedIds(gridData)
   }, [gridData]);
@@ -195,7 +197,9 @@ function BOPCost(props) {
           BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
           BOPHandlingCharges: getValues('BOPHandlingCharges'),
         }
-        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        if (!CostingViewMode) {
+          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        }
       }, 200)
 
     } else {
@@ -224,7 +228,9 @@ function BOPCost(props) {
         BOPHandlingPercentage: 0,
         BOPHandlingCharges: 0,
       }
-      props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      if (!CostingViewMode) {
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      }
     }
   }, [IsApplyBOPHandlingCharges]);
 

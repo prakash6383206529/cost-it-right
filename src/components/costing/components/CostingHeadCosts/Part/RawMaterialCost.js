@@ -68,7 +68,9 @@ function RawMaterialCost(props) {
         PartNumber: props.item.PartNumber,
       }
 
-      props.setRMCost(gridData, Params)
+      if (!CostingViewMode) {
+        props.setRMCost(gridData, Params)
+      }
     }, 100)
   }, [gridData]);
 
@@ -400,7 +402,9 @@ function RawMaterialCost(props) {
           "MasterBatchPercentage": 0,
           "MasterBatchTotal": 0,
         }
-        props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+        if (!CostingViewMode) {
+          props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+        }
       }, 200)
     }
   }, [IsApplyMasterBatch])
