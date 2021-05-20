@@ -1551,7 +1551,17 @@ button.user-btn.pull-right {
 .react-bs-table-container.client-table {
   position: relative;
 }
-
+.hidepage-size{
+  .react-bs-table-container{
+    .react-bs-table-pagination{
+      .row{
+        .col-md-6:nth-child(1){
+          display: none;
+        }
+      }
+    }
+  }
+}
 .client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-8 {
   display: none;
 }
@@ -1894,6 +1904,15 @@ body {
 // =================Costing Approval=========================
 
 // =================approval-summary=========================
+.approval-listing-page{
+  .react-bs-table-container {
+    th,td{
+      >input[type=checkbox]{
+        min-width: 12px;
+      }
+    }
+  }
+}
 .card-border {
 	border: 1px solid #C2CBE8;
 	position: relative;
@@ -4613,6 +4632,15 @@ body{
           th,td{
             >input[type=checkbox]{
               min-width: 14px;
+            }
+          }
+        }
+      }
+      .approval-listing-page{
+        .react-bs-table-container {
+          th,td{
+            >input[type=checkbox]{
+              min-width: 21px;
             }
           }
         }

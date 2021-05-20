@@ -174,7 +174,7 @@ function AddOperation(props) {
 
 
             <Row className="mb-3 mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={tableData}
                   striped={false}
