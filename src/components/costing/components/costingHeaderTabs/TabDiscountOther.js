@@ -175,11 +175,11 @@ function TabDiscountOther(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     const { DiscountTabData } = props;
-    setValue('NetPOPriceINR', DiscountTabData && checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice))
+    setValue('NetPOPriceINR', DiscountTabData && checkForDecimalAndNull(props.netPOPrice, initialConfiguration.NoOfDecimalForPrice))
     setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
 
     if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && DiscountTabData.NetPOPriceINR / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && props.netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
     }
   }, [props]);
 
@@ -421,7 +421,8 @@ function TabDiscountOther(props) {
                         <tr>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%.33" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
+                          {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(props.netPOPrice, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>

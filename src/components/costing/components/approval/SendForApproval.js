@@ -78,6 +78,10 @@ const SendForApproval = (props) => {
               TechnologyId: partNo.technologyId,
               ReasonId: 0 // key only for minda
             }, (res) => {
+              if (res.data.DataList.length === 1) {
+                setShowValidation(true)
+                return false
+              }
               const Data = res.data.DataList[1]
               console.log('Data: ', Data);
               setApprover(Data.Text)
@@ -375,6 +379,9 @@ const SendForApproval = (props) => {
       tempObj.VendorPlantName =
         data.typeOfCosting == 1 ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
+      tempObj.DestinationPlantCode = data.destinationPlantCode
+      tempObj.DestinationPlantCode = data.destinationPlantName
+      tempObj.DestinationPlantId = data.destinationPlantId
       temp.push(tempObj)
     })
 
