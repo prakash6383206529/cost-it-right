@@ -250,7 +250,9 @@ function OverheadProfit(props) {
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
       }
 
-      props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 500)
 
   }, [overheadObj, profitObj]);
@@ -276,7 +278,9 @@ function OverheadProfit(props) {
         "IsSurfaceTreatmentApplicable": true,
       }
 
-      props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 200)
 
   }, [rejectionFieldValues]);
@@ -306,7 +310,9 @@ function OverheadProfit(props) {
         "EffectiveDate": "",
       }
 
-      props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 200)
   }, [ICCFieldValues, interestRateValues, IsIncludedSurfaceInOverheadProfit]);
 
@@ -332,7 +338,9 @@ function OverheadProfit(props) {
         "EffectiveDate": ""
       }
 
-      props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 200)
   }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues]);
 
@@ -945,7 +953,9 @@ function OverheadProfit(props) {
       }))
     } else {
       setICCapplicability([])
-      props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }
   }, [IsInventoryApplicable])
 
@@ -1080,7 +1090,9 @@ function OverheadProfit(props) {
       }))
     } else {
       setPaymentTermsApplicability([])
-      props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }
   }, [IsPaymentTermsApplicable])
 
