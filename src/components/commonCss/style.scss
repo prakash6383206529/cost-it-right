@@ -4157,7 +4157,6 @@ body{
   // spacing
   .mt9{margin-top: calc(9px * 80 / 100);}
   // spacing
-  
   .form-control,.input-form-control.bg-grey,
   .manageuser .css-yk16xz-control {
     font-size: calc(14px * 80 / 100) !important;
@@ -4810,6 +4809,15 @@ body{
      }
      .add-volume-table td .form-control,.login-form .inputbox.input-group .form-control,.form-control, .manageuser .css-yk16xz-control{
        height: calc(40px * 80 / 100);
+     }
+     .basic-multi-select.select--is-disabled{
+      border: none;
+      }
+     .content-page .basic-multi-select .select__control{
+       height: calc(40px * 80 / 100);
+     }
+     .select--is-disabled .css-12jo7m5{
+       font-size: calc(14px * 80 / 100);
      }
      textarea.form-control{
        height: auto;
