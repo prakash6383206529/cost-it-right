@@ -170,7 +170,7 @@ class AddExchangeRate extends Component {
         this.cancel()
         return false;
       }
-      console.log(this.props.anyTouched, 'a')
+
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,

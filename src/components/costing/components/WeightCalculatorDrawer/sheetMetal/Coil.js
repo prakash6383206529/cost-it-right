@@ -239,7 +239,7 @@ function Coil(props) {
             FinishWeight: getValues('FinishWeight'),
             LoggedInUserId: loggedInUserId()
         }
-        console.log(data, "DATA");
+
         let obj = {}
         dispatch(saveRawMaterialCalciData(data, res => {
             if (res.data.Result) {

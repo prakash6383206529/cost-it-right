@@ -18,7 +18,7 @@ function SimulationUpload(props) {
     const dispatch = useDispatch()
     const [master, setMaster] = useState({})
     const [uploadData, setUploadData] = useState({})
-    console.log('uploadData: ', uploadData);
+
     const [isBulkUpload, setIsBulkUpload] = useState(false)
     const masterList = useSelector(state => state.simulation.masterSelectList)
 

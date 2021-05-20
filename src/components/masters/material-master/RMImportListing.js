@@ -401,7 +401,7 @@ class RMImportListing extends Component {
   */
   filterList = () => {
     const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
-    console.log('costingHead: ', costingHead);
+
 
     const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
     const plantId = plant ? plant.value : null;

@@ -240,7 +240,7 @@ class AddInterestRate extends Component {
         Data.PaymentTermApplicability == PaymentTermsApplicability.label &&
         Data.PaymentTermPercent == values.PaymentTermPercent &&
         Data.RepaymentPeriod == values.RepaymentPeriod && DropdownChanged) {
-        console.log('cancle')
+
         this.cancel()
         return false;
       }
@@ -318,7 +318,7 @@ class AddInterestRate extends Component {
     if (window.screen.width > 1366) {
       pos_drop_down = "auto";
     }
-    else{
+    else {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;

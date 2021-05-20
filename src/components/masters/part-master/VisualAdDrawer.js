@@ -14,7 +14,7 @@ const schema = yup.object().shape({
 
 export default function VishualAdDrawer(props) {
     const { partType } = props
-    console.log('partType: ', partType);
+
     const { register, handleSubmit, watch, errors, control } = useForm({
         // resolver: yupResolver(schema),
         mode: 'onChange',

@@ -95,7 +95,7 @@ class Department extends Component {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
 			}
-			console.log(formReq, "formReq");
+
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
 					this.props.updateCompanyAPI(comObj, () => {

@@ -78,7 +78,7 @@ export function getSimulationHistory(callback) {
         //   dispatch({ type: API_REQUEST });
         //   const request = axios.get(`${API.getSimulationHistory}`, headers);
         //   request.then((response) => {
-        //     console.log(response, "REQUEST");
+        //     
         //     if (response.data.Result) {
         //       dispatch({
         //         type: GET_BULKUPLOAD_COSTING_LIST,

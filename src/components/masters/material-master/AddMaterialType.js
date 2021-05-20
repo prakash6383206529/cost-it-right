@@ -60,8 +60,8 @@ class AddMaterialType extends Component {
     const { reset, ID, isEditFlag, DataToChange, initialValues } = this.props;
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(initialValues, 'initialValues')
+
+
 
       if (initialValues.CalculatedDensityValue == values.CalculatedDensityValue && initialValues.MaterialType == values.MaterialType) {
         this.cancel()

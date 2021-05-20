@@ -261,7 +261,7 @@ class AddRMImport extends Component {
   }
 
   handleSource = (newValue, actionMeta) => {
-    console.log('newValue: ', newValue);
+
     if (newValue && newValue !== '') {
       //  if (newValue !== thissource) {
       this.setState({ source: newValue, isSourceChange: true })
