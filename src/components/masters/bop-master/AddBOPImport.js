@@ -556,8 +556,8 @@ class AddBOPImport extends Component {
     }
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
+
+
       if (DataToChange.IsVendor) {
         if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
           DataToChange.BasicRate == values.BasicRate) {

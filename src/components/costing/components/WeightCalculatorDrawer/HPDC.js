@@ -45,10 +45,10 @@ function HPDC(props) {
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
         materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
     })
-    console.log('dataToSend: ', dataToSend);
+
     const { rmRowData } = props
 
-    console.log('rmRowData: ', rmRowData);
+
 
     const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
         mode: 'onChange',
@@ -96,8 +96,8 @@ function HPDC(props) {
     }
 
     const calculateRemainingCalculation = (lostSum = 0) => {
-        console.log("HOW MANY TIMES COMING ?");
-        console.log('lostSum: ', lostSum);
+
+
         let scrapWeight = 0
 
 
@@ -110,7 +110,7 @@ function HPDC(props) {
             return false
         }
         if (finishedWeight !== 0) {
-            console.log("Coming here in scrap cond?");
+
             scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
         }
@@ -193,7 +193,7 @@ function HPDC(props) {
         })
         obj.LossOfTypeDetails = tempArr
         obj.NetLossWeight = lostWeight
-        console.log(obj, "OBBJ");
+
         dispatch(saveRawMaterialCalciData(obj, res => {
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity

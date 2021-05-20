@@ -113,7 +113,7 @@ class CostingBulkUploadDrawer extends Component {
         //             //         obj = {}
 
         //             //     }
-        //             //     console.log(fileData, "FD");
+        //             //     
         //             //     return null;
         //             // })
 
@@ -204,15 +204,15 @@ class CostingBulkUploadDrawer extends Component {
     }
 
     onSubmit = (value) => {
-        console.log('value: ', value);
+
 
         const { fileData } = this.state
-        console.log(fileData, "fileData");
+
         let data = new FormData()
         data.append('file', fileData)
-        console.log(this.state.Technology, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+
         if (this.state.Technology.label == SHEET_METAL) {
-            console.log("SHEET METAL");
+
             this.props.bulkUploadCosting(data, (res) => {
                 let Data = res.data[0]
                 const { files } = this.state
@@ -220,7 +220,7 @@ class CostingBulkUploadDrawer extends Component {
             })
             this.cancel()
         } if (this.state.Technology.label == 'Plastic') {
-            console.log("PLASTIC");
+
             this.props.plasticBulkUploadCosting(data, (res) => {
                 let Data = res.data[0]
                 const { files } = this.state

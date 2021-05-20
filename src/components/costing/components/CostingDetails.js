@@ -446,8 +446,8 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
-      console.log('vendorData: ', vendorData);
-      console.log(vbcVendorGrid, "VBC");
+
+
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId))
       if (isExist !== -1) {

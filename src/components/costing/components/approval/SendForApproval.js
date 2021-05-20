@@ -29,7 +29,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-  console.log('viewApprovalData: ', viewApprovalData);
+
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partInfo = useSelector((state) => state.costing.partInfo)
@@ -65,7 +65,7 @@ const SendForApproval = (props) => {
         dispatch(getAllApprovalDepartment((res) => {
           const Data = res.data.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-          console.log('departObj: ', departObj);
+
           setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
           setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
 
@@ -83,7 +83,7 @@ const SendForApproval = (props) => {
                 return false
               }
               const Data = res.data.DataList[1]
-              console.log('Data: ', Data);
+
               setApprover(Data.Text)
               setSelectedApprover(Data.Value)
               setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
@@ -387,7 +387,7 @@ const SendForApproval = (props) => {
 
     obj.CostingsList = temp
 
-    console.log(obj, "OBJ");
+
     dispatch(
       sendForApprovalBySender(obj, (res) => {
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
@@ -440,7 +440,7 @@ const SendForApproval = (props) => {
             </Row>
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
-                console.log(data.consumptionQty !== undefined ? data.consumptionQty : 0, "DATE");
+
                 return (
                   <div className="" key={index}>
                     <Row className="px-3">

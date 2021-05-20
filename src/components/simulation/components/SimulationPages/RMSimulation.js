@@ -39,7 +39,7 @@ function RMSimulation(props) {
         let basicScrapCount = 0
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-                console.log("COMING IN IFFFFFFFFFFFFFFFFFFF");
+
                 basicRateCount = basicRateCount + 1
             }
             if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
@@ -80,9 +80,9 @@ function RMSimulation(props) {
             tempArr.push(tempObj)
         })
         obj.SimulationRawMaterials = tempArr
-        console.log(obj, "OBJ");
+
         dispatch(runVerifySimulation(obj, res => {
-            console.log(res, "RESP");
+
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
@@ -91,7 +91,7 @@ function RMSimulation(props) {
     }
 
     const cancelVerifyPage = () => {
-        console.log("VERIFY");
+
         setShowVerifyPage(false)
     }
 
@@ -220,7 +220,7 @@ function RMSimulation(props) {
     }
 
     const afterSaveCell = (row, cellName, cellValue, index) => {
-        console.log('index: ', index);
+
         if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
             setColorClass('red-value form-control')
         } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {

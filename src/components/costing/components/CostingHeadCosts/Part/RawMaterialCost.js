@@ -88,7 +88,7 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempObj = {
-        RMName: rowData.RawMaterial,
+        RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
         RMRate: rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
         MaterialType: rowData.MaterialType,
         RMGrade: rowData.RMGrade,
@@ -387,7 +387,6 @@ function RawMaterialCost(props) {
       const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
 
       const ScrapRate = (tempData.ScrapRate * (tempData.GrossWeight - tempData.FinishWeight))
-      // console.log('ScrapRate: ', ScrapRate);
 
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 

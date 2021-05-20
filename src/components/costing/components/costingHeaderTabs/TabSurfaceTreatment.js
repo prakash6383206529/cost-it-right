@@ -93,7 +93,7 @@ function TabSurfaceTreatment(props) {
         return accummlator + checkForNull(el?.CostingPartDetails?.SurfaceTreatmentCost);
       }
     }, 0)
-    console.log('getTotalSurfaceCost NetCost: ', NetCost);
+
     return NetCost;
   }
 
@@ -187,7 +187,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const setAssembly = (params, Children, arr) => {
-    console.log('params: ', params);
+
     let tempArr = [];
     try {
 

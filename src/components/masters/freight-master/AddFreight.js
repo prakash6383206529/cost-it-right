@@ -464,11 +464,7 @@ class AddFreight extends Component {
     const { fieldsObj } = this.props;
     const userDetail = userDetails();
     if (isEditFlag) {
-      console.log(values, 'gridTable')
-      console.log(DataToChange, 'DataToChange')
-      console.log(AddUpdate, 'AddUpdate')
-      console.log(HandleChanged, 'HandleChanged')
-      console.log(DeleteChanged, 'DeleteChanged')
+
       if (
         DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
         DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
@@ -477,7 +473,7 @@ class AddFreight extends Component {
         (AddUpdate && HandleChanged) &&
         DeleteChanged
       ) {
-        console.log('in exit')
+
         this.cancel()
         return false
       }

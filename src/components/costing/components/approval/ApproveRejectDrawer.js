@@ -18,7 +18,7 @@ import { REASON_ID } from '../../../../config/constants'
 function ApproveRejectDrawer(props) {
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId } = props
-  console.log('dataSend: ', dataSend);
+
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -40,7 +40,7 @@ function ApproveRejectDrawer(props) {
     dispatch(getAllApprovalDepartment((res) => {
       const Data = res.data.SelectList
       const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-      console.log('departObj: ', departObj);
+
 
       setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
       let obj = {
@@ -49,11 +49,11 @@ function ApproveRejectDrawer(props) {
         TechnologyId: approvalData[0].TechnologyId,
         ReasonId: reasonId
       }
-      console.log(obj, "OBJ");
+
       dispatch(
         getAllApprovalUserFilterByDepartment(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          console.log('Data: ', Data);
+
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           // setApprover(Data.Text)
           // setSelectedApprover(Data.Value)

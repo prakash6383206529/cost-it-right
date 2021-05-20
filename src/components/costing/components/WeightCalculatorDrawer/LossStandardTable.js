@@ -57,7 +57,7 @@ function LossStandardTable(props) {
     const LossPercentage = Number(getValues('LossPercentage'))
 
     const inputWeight = props.weightValue //Need to Ask what to do
-    console.log('inputWeight: ', inputWeight);
+
     // if (!inputWeight || !LossPercentage) {
     //   return ''
     // }
@@ -97,9 +97,9 @@ function LossStandardTable(props) {
       props.calculation(NetWeight)
       setNetWeight(NetWeight)
     } else {
-      console.log(netWeight, "netWeight");
+
       NetWeight = checkForNull(checkForNull(netWeight) + LossWeight)
-      console.log('NetWeight: ', NetWeight);
+
       setTimeout(() => {
         setNetWeight(NetWeight)
       }, 400);

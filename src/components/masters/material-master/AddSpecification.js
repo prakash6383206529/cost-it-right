@@ -300,8 +300,8 @@ class AddSpecification extends Component {
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
+
+
       if (DataToChange.Specification == values.Specification && DropdownChanged) {
         this.cancel()
         return false

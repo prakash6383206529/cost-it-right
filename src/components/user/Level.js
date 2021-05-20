@@ -72,12 +72,12 @@ class Level extends Component {
 
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-          console.log('Data: ', Data, "hhhhhhhhhhhhhhh", technologyList);
+
 
           setTimeout(() => {
 
             let technologyObj = technologyList && technologyList.filter(item => Number(item.Value) === Data.TechnologyId)
-            console.log('technologyObj: ', technologyObj);
+
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
 
             this.setState({
