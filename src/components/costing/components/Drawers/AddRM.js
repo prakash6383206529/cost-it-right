@@ -322,7 +322,7 @@ function AddRM(props) {
             </form >
 
             <Row className="mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={rmDrawerList}
                   striped={false}
