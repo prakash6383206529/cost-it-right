@@ -211,7 +211,7 @@ function Sheet(props) {
         const cavity = getValues('Cavity')
 
         grossWeight = (sheetWeight / noOfComponent) / cavity
-        console.log('grossWeight: ', grossWeight);
+
         const updatedValue = dataToSend
         updatedValue.GrossWeight = grossWeight
         setTimeout(() => {
@@ -257,7 +257,7 @@ function Sheet(props) {
      * @description Used to Submit the form
      */
     const onSubmit = (values) => {
-        console.log('values: ', values);
+
 
 
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
@@ -303,7 +303,7 @@ function Sheet(props) {
             FinishWeight: getValues('FinishWeightOfSheet'),
             LoggedInUserId: loggedInUserId()
         }
-        console.log(data, "Sheet Data");
+
 
         let obj = {
         }

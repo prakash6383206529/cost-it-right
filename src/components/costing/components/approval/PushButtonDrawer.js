@@ -13,7 +13,7 @@ import { INR } from '../../../../config/constants'
 function PushButtonDrawer(props) {
 
   const { approvalData, dataSend } = props
-  console.log(dataSend, 'approvalData: ', approvalData);
+
 
   const dispatch = useDispatch()
   const { register, handleSubmit, errors, control } = useForm();
@@ -80,7 +80,7 @@ function PushButtonDrawer(props) {
     }
   }
   const onSubmit = () => {
-    console.log("ENTERING IN SUBMIT");
+
     let obj = {
       LoggedInUserId: loggedInUserId(),
       CostingId: approvalData[0].CostingId
@@ -98,7 +98,7 @@ function PushButtonDrawer(props) {
       purchasingGroup: PurchasingGroup.label, //DROPDOWN VALUE
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''
     }
-    console.log(pushdata, 'pppppppp')
+
     dispatch(pushedApprovedCosting(obj, res => {
       if (res.data.Result) {
         dispatch(createRawMaterialSAP(pushdata, res => {

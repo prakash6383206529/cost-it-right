@@ -522,8 +522,8 @@ class AddBOPDomestic extends Component {
     }
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'DatatoCheck')
+
+
       if (DataToCheck.IsVendor) {
         if (DataToCheck.Source == values.Source && DataToCheck.BasicRate == values.BasicRate && DropdownChanged) {
           this.cancel()

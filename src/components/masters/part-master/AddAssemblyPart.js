@@ -464,8 +464,8 @@ class AddAssemblyPart extends Component {
     })
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'datatocheck')
+
+
       // if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
       //   DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
       //   DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode) {

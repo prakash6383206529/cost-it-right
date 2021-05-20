@@ -31,7 +31,7 @@ class Login extends Component {
       const token = queryParams.get('token')
       const username = queryParams.get('username')
       const email = queryParams.get('email')
-      console.log('queryParams: ', token, username, email);
+
     }
 
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');

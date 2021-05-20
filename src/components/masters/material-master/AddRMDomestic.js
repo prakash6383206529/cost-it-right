@@ -296,7 +296,7 @@ class AddRMDomestic extends Component {
    */
   handleEffectiveDateChange = (date) => {
     if (date !== this.state.effectiveDate) {
-      console.log(("Date change"));
+
       this.setState({ isDateChange: true, effectiveDate: date, })
     } else {
       this.setState({ isDateChange: false, effectiveDate: date, })
@@ -331,7 +331,7 @@ class AddRMDomestic extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data }, () => {
-            console.log('DataToChange: ', this.state.DataToChange);
+
 
           })
           if (Data.IsVendor) {
@@ -349,16 +349,16 @@ class AddRMDomestic extends Component {
 
               setTimeout(() => {
                 const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
-                console.log('gradeSelectList: ', gradeSelectList);
+
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
                 const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
-                console.log('gradeObj: ', gradeObj);
+
                 const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
-                console.log('specObj: ', specObj);
+
                 const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
                 const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-                console.log('destinationPlantObj: ', destinationPlantObj);
+
                 const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
 
 
@@ -839,13 +839,13 @@ class AddRMDomestic extends Component {
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
-    console.log('values: ', values);
-    //  console.log(DataToChange, "DataToChange");
+
+    //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange } = this.state
     const { initialConfiguration } = this.props
-    console.log('isDateChange: ', isDateChange);
+
     // if (!anyTouched) {
     //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
     // }
@@ -896,9 +896,9 @@ class AddRMDomestic extends Component {
       IsForcefulUpdated: isDateChange ? false : true
     }
     if (isEditFlag) {
-      console.log(DataToChange, "kkk", values);
+
       if (isDateChange) {
-        console.log("COMING IN DATE CHANGE");
+
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
           if (res.data.Result) {
@@ -924,7 +924,7 @@ class AddRMDomestic extends Component {
             })
           },
           onCancel: () => { },
-          component: () => <ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }

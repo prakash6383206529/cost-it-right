@@ -294,7 +294,7 @@ class AddRMImport extends Component {
   */
   handleEffectiveDateChange = (date) => {
     if (date !== this.state.effectiveDate) {
-      console.log(("Date change"));
+
       this.setState({ isDateChange: true, effectiveDate: date }, () => { this.handleNetCost() })
     } else {
       this.setState({ isDateChange: false, effectiveDate: date }, () => { this.handleNetCost() })
@@ -870,7 +870,7 @@ class AddRMImport extends Component {
       }
       if (isEditFlag) {
         if (isDateChange) {
-          console.log("COMING IN DATE CHANGE");
+
           this.props.reset()
           this.props.updateRMImportAPI(requestData, (res) => {
             if (res.data.Result) {
@@ -895,7 +895,7 @@ class AddRMImport extends Component {
               })
             },
             onCancel: () => { },
-            component: () => <ConfirmComponent/>,
+            component: () => <ConfirmComponent />,
           }
           return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }

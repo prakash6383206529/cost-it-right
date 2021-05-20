@@ -243,7 +243,7 @@ function ProcessCost(props) {
       return true
     })
 
-    console.log('deleteItem: ', tempArr);
+
     setTimeout(() => {
       let ProcessCostTotal = 0
       ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {

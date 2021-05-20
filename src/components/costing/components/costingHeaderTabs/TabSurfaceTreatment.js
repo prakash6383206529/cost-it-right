@@ -93,7 +93,7 @@ function TabSurfaceTreatment(props) {
         return accummlator + checkForNull(el?.CostingPartDetails?.SurfaceTreatmentCost);
       }
     }, 0)
-    console.log('getTotalSurfaceCost NetCost: ', NetCost);
+
     return NetCost;
   }
 
@@ -120,6 +120,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
+    console.log('setPartDetails: ',);
     let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -178,6 +179,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
+    console.log('toggleAssembly: ',);
     let arr = setAssembly(params, Children, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -187,7 +189,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const setAssembly = (params, Children, arr) => {
-    console.log('params: ', params);
+
     let tempArr = [];
     try {
 
@@ -254,6 +256,7 @@ function TabSurfaceTreatment(props) {
   * @description SET SURFACE TREATMENT COST
   */
   const setSurfaceCost = (surfaceGrid, params) => {
+    console.log('setSurfaceCost: ',);
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -340,6 +343,7 @@ function TabSurfaceTreatment(props) {
   * @description SET TRANSPORTATION COST
   */
   const setTransportationCost = (transportationObj, params) => {
+    console.log('setTransportationCost: ',);
     let arr = dispatchTransportationCost(transportationObj, params, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -416,6 +420,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY SURFACE COST
   */
   const setAssemblySurfaceCost = (surfaceGrid, params, IsGridChanged) => {
+    console.log('setAssemblySurfaceCost: ',);
     let arr = dispatchAssemblySurfaceCost(surfaceGrid, params, SurfaceTabData, IsGridChanged)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -480,6 +485,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY TRANSPORTATION COST
   */
   const setAssemblyTransportationCost = (TransportationObj, params) => {
+    console.log('setAssemblyTransportationCost: ',);
     let arr = dispatchAssemblyTransportationCost(TransportationObj, params, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }

@@ -519,7 +519,7 @@ class AddOverhead extends Component {
   //   onUploadProgress: (progressEvent) => {
   //     const { loaded, total } = progressEvent
   //     let percent = Math.floor((loaded * 100) / total)
-  //     console.log(` ${loaded}kb of ${total}kb | ${percent}% `)
+  //     
   //   }
   //   {uploadPercentage > 0 <ProgressBar now={uploadPercentage} active label={`${uploadPercentage}%`}>}
   // }
@@ -534,8 +534,8 @@ class AddOverhead extends Component {
     const userDetail = userDetails()
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'datatochange')
+
+
 
       if (values.OverheadPercentage == '') {
         values.OverheadPercentage = null
@@ -554,7 +554,7 @@ class AddOverhead extends Component {
         DropdownChanged && DataToChange.OverheadPercentage == values.OverheadPercentage && DataToChange.OverheadRMPercentage == values.OverheadRMPercentage
         && DataToChange.OverheadMachiningCCPercentage == values.OverheadMachiningCCPercentage && DataToChange.OverheadBOPPercentage == values.OverheadBOPPercentage
         && DataToChange.Remark == values.Remark) {
-        console.log('asdf')
+
         this.cancel()
         return false
       }

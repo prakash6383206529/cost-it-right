@@ -383,35 +383,35 @@ class AddFuel extends Component {
 
     if (isEditFlag) {
 
-      console.log(this.state.RateChange, 'DataToCRateChangehange')
-      console.log(rateGrid, 'rateGrid')
+
+
       let addRow = 0
-        let count = 0
-        if (rateGrid.length > this.state.RateChange.FuelDetatils.length) {
-          addRow = 1
-        }
-        if (addRow == 0) {
-          for (let i = 0; i < rateGrid.length; i++) {
-            let grid = this.state.RateChange.FuelDetatils[i]
-            let sgrid = rateGrid[i]
-            if (grid.Rate == sgrid.Rate && grid.StateName == sgrid.StateLabel) {
-              count++
-            }
+      let count = 0
+      if (rateGrid.length > this.state.RateChange.FuelDetatils.length) {
+        addRow = 1
+      }
+      if (addRow == 0) {
+        for (let i = 0; i < rateGrid.length; i++) {
+          let grid = this.state.RateChange.FuelDetatils[i]
+          let sgrid = rateGrid[i]
+          if (grid.Rate == sgrid.Rate && grid.StateName == sgrid.StateLabel) {
+            count++
           }
         }
-        // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
-        if ( HandleChanged && addRow == 0 && count == rateGrid.length && DeleteChanged) {
-          this.cancel()
-          return false
-        }
+      }
+      // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
+      if (HandleChanged && addRow == 0 && count == rateGrid.length && DeleteChanged) {
+        this.cancel()
+        return false
+      }
 
 
-      // console.log(city, 'city')
-      // console.log(AddUpdate, 'country')
-      // console.log(RateChange, 'country')
-      // console.log(DeleteChanged, 'country')
+      // 
+      // 
+      // 
+      // 
       // if (AddUpdate && (HandleChanged) && DeleteChanged) {
-      //   console.log('chaNGES')
+      //   
       //   this.cancel()
       //   return false
       // }
