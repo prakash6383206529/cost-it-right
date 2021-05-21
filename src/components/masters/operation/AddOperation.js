@@ -604,7 +604,7 @@ class AddOperation extends Component {
                           component={renderMultiSelectField}
                           mendatory={true}
                           className="multiselect-with-border"
-                          disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                          disabled={isEditFlag ? true : false}
                         />
                       </Col>
                       <Col md="3">

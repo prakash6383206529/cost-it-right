@@ -40,9 +40,9 @@ function ApproveRejectDrawer(props) {
     dispatch(getAllApprovalDepartment((res) => {
       const Data = res.data.SelectList
       const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-
-
+      console.log('departObj: ', departObj);
       setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+
       let obj = {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: departObj[0].Value,
@@ -53,7 +53,8 @@ function ApproveRejectDrawer(props) {
       dispatch(
         getAllApprovalUserFilterByDepartment(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-
+          console.log('Data: ', Data);
+          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           // setApprover(Data.Text)
           // setSelectedApprover(Data.Value)

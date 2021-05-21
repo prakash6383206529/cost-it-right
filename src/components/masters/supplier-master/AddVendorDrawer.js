@@ -88,7 +88,7 @@ class AddVendorDrawer extends Component {
             //Selected Vendor Type IDs.
             let SelectedVendorTypeIds = [];
             e && e.map((item, index) => {
-                SelectedVendorTypeIds.push(item.Value)
+                SelectedVendorTypeIds.push(Number(item.Value))
                 return null;
             })
 
@@ -271,10 +271,10 @@ class AddVendorDrawer extends Component {
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
                     this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
-                        tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
+                        tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
                         return null;
                     })
-
+                    console.log(tempArr, "tempArr");
                     Data && Data.VendorPlants && Data.VendorPlants.map((item) => {
                         tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
                         return null;
