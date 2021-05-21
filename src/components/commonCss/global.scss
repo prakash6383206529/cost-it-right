@@ -1274,7 +1274,25 @@ p {
   align-content: stretch;
 }
 /*Right Content Css*/
+
 .content-page{
+  .dashboard-text{
+      position: absolute;
+      background: rgba(114, 132, 158, 0.75);
+      display: flex;
+      justify-content: center;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      h2{
+        position: relative;
+        z-index: 1;
+        color: #fff;
+        padding-top: 41vh;
+        font-size: 32px;
+      }
+  }
   &.full_size_content {
     width: 100%;
     padding-bottom: 35px;

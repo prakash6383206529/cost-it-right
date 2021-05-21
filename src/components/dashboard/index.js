@@ -30,11 +30,15 @@ class Dashboard extends Component {
    */
   render() {
     return (
-      <div className="dashboard-top">
+      <div className="dashboard-top position-relative">
+        <div className="dashboard-text">
+          <h2>Dashboard Will Come Here</h2>
+        </div>
+        <img src={require('../../assests/images/dashboard-img.png')} alt='dashboard-background' />
         {/* {(this.props.loading || this.state.showLoader) && <Loader />} */}
         {/* <Row>
                     <Col> */}
-        <div>
+        {/* <div>
           <div className="row">
             <div className="col-md-12">
               <h2 className="text-success bdr-bottom">Dashboard</h2>
@@ -197,7 +201,7 @@ class Dashboard extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* </Col>
                 </Row> */}
       </div>
