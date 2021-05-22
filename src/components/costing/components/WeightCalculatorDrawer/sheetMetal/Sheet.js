@@ -166,8 +166,8 @@ function Sheet(props) {
         let data = {
             density: rmRowData.Density,
             thickness: getValues('SheetThickness'),
-            length: length,
-            width: SheetWidth
+            length: checkForNull(getValues('SheetLength')),
+            width: checkForNull(getValues('SheetWidth'))
         }
         const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000).toFixed(6)
         const updatedValue = dataToSend
@@ -180,13 +180,13 @@ function Sheet(props) {
 
     const setNoOfStrips = () => {
         const stripWidth = getValues('StripWidth')
-        const stripNo = parseInt(length / stripWidth)
+        const stripNo = parseInt(checkForNull(getValues('SheetLength')) / checkForNull(getValues('StripWidth')))
         setValue('StripsNumber', checkForNull(stripNo))
     }
 
     const setComponentPerStrips = () => {
         const blankSize = getValues('BlankSize')
-        const componentPerStrip = parseInt(SheetWidth / blankSize)
+        const componentPerStrip = parseInt(checkForNull(getValues('SheetWidth')) / blankSize)
         setValue('ComponentPerStrip', checkForNull(componentPerStrip))
 
     }

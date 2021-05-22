@@ -88,7 +88,7 @@ function Pipe(props) {
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({
     GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    FinishWeight: WeightCalculatorRequest?.FinishWeight ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
   })
   const [manualFinish, setManualFinish] = useState(false)
   const [isChangeApplies, setIsChangeApplied] = useState(true)
@@ -189,7 +189,6 @@ function Pipe(props) {
     const updatedValue = dataToSend
     updatedValue.InnerDiameter = ID
     setDataToSend(updatedValue)
-    // setDataToSend({ ...dataToSend, updatedValue })
   }
 
   /**
@@ -198,14 +197,12 @@ function Pipe(props) {
    */
   const calculateNumberOfPartPerSheet = () => {
     if (fieldValues.SheetLength === '') {
-      // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
       setValue('NumberOfPartsPerSheet', 1)
       const updatedValue = dataToSend
       updatedValue.NumberOfPartsPerSheet = 1
       setDataToSend(updatedValue)
     } else {
       const NumberParts = checkForNull(fieldValues.SheetLength / fieldValues.PartLength)
-      // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: NumberParts })
       setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
       const updatedValue = dataToSend
       updatedValue.NumberOfPartsPerSheet = parseInt(NumberParts)
@@ -359,7 +356,9 @@ function Pipe(props) {
     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
     updatedValue.FinishWeight = FinishWeight
     setDataToSend(updatedValue)
-    setFinishWeights(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+    setTimeout(() => {
+      setFinishWeights(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+    }, 200)
 
   }
 
@@ -489,7 +488,7 @@ function Pipe(props) {
     // let finishWeight = setValueAccToUOM(getValues('FinishWeight'), value.label)
     //
     grossWeight = setValueAccToUOM(grossWeight, value.label)
-    let finishWeight = setValueAccToUOM(FinishWeight, value.label)
+    let finishWeight = setValueAccToUOM(dataToSend?.FinishWeight ? dataToSend.FinishWeight : FinishWeight, value.label)
 
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 
@@ -512,30 +511,33 @@ function Pipe(props) {
     // return (<sup>2</sup>)
   }
 
-  const onFinishChange = (e) => {
+  const onFinishChange = (value) => {
     // if(e.target.value > getValues())
-    setUseFinishWeight(false)
 
-    let FW = getValues('FinishWeight')
+    if (Number(value)) {
+      setUseFinishWeight(false)
 
-    if (UOMDimension.label === KG) {
-      setFinishWeights(Number(FW) * 1000)
-      let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(FW) * 1000
-      setDataToSend(updatedValue)
+      let FW = getValues('FinishWeight')
 
-    } else if (UOMDimension.label === MG) {
-      setFinishWeights(Number(FW) / 1000)
-      let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(FW) / 1000
-      setDataToSend(updatedValue)
+      if (UOMDimension.label === KG) {
+        setFinishWeights(Number(value) * 1000)
+        let updatedValue = dataToSend
+        updatedValue.FinishWeight = Number(value) * 1000
+        setDataToSend(updatedValue)
 
-    } else {
-      setFinishWeights(Number(FW))
-      let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(FW)
-      setDataToSend(updatedValue)
+      } else if (UOMDimension.label === MG) {
+        setFinishWeights(Number(value) / 1000)
+        let updatedValue = dataToSend
+        updatedValue.FinishWeight = Number(value) / 1000
+        setDataToSend(updatedValue)
 
+      } else {
+        setFinishWeights(Number(value))
+        let updatedValue = dataToSend
+        updatedValue.FinishWeight = Number(value)
+        setDataToSend(updatedValue)
+
+      }
     }
   }
 
@@ -953,7 +955,7 @@ function Pipe(props) {
                       // },
                       // maxLength: 4,
                     }}
-                    handleChange={onFinishChange}
+                    handleChange={(e) => onFinishChange(e.target.value)}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}

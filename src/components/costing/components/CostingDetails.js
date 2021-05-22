@@ -10,10 +10,10 @@ import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
-import { checkForNull, checkPermission, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
+import { checkForNull, checkPermission, checkVendorPlantConfigurable, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, SHEET_METAL, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
+import { APPROVED, SHEET_METAL, PLASTIC, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -67,11 +67,12 @@ function CostingDetails(props) {
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
   //ROLE AND PERMISSION
-  const [ViewAccessibility, setViewAccessibility] = useState(true)
-  const [AddAccessibility, setAddAccessibility] = useState(true)
-  const [EditAccessibility, setEditAccessibility] = useState(true)
-  const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
-  const [CopyAccessibility, setCopyAccessibility] = useState(true)
+  const [ViewAccessibility, setViewAccessibility] = useState(false)
+  const [AddAccessibility, setAddAccessibility] = useState(false)
+  const [EditAccessibility, setEditAccessibility] = useState(false)
+  const [DeleteAccessibility, setDeleteAccessibility] = useState(false)
+  const [CopyAccessibility, setCopyAccessibility] = useState(false)
+  const [SOBAccessibility, setSOBAccessibility] = useState(false)
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
@@ -107,12 +108,12 @@ function CostingDetails(props) {
    * @method InjectRolePermission
    * @description SET ROLE AND PERMISSION
   */
-  const InjectRolePermission = () => {
+  const InjectRolePermission = (selectedTechnology) => {
     let ModuleId = reactLocalStorage.get('ModuleId');
     dispatch(getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       if (leftMenuData !== undefined) {
         let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === SHEET_METAL)
+        const accessData = Data && Data.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
         const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
         if (permmisionData !== undefined) {
           setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
@@ -120,6 +121,7 @@ function CostingDetails(props) {
           setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
           setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
           setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+          setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
         }
       }
     }))
@@ -235,6 +237,7 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
       setShowNextBtn(false)
+      InjectRolePermission(newValue.label)
       reset({
         Part: '',
       })
@@ -753,7 +756,7 @@ function CostingDetails(props) {
         confirmUpdateCosting(index, type)
       },
       onCancel: () => { },
-      component:() => <ConfirmComponent/>
+      component: () => <ConfirmComponent />
     }
     return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
@@ -1071,7 +1074,7 @@ function CostingDetails(props) {
         confirmSOBUpdate(type)
       },
       onCancel: () => { setPreviousSOBValue() },
-      component:() => <ConfirmComponent/>
+      component: () => <ConfirmComponent />
     }
     return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
@@ -1496,7 +1499,7 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB(%)`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
@@ -1635,7 +1638,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor`}</th>
                                   {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB(%)`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
@@ -1716,11 +1719,11 @@ function CostingDetails(props) {
                                       </td>
                                       <td>{item.Price ? item.Price : ''}</td>
                                       <td>
-                                        <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
-                                        {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
+                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
+                                        {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
+                                        {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
+                                        {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                         {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                       </td>
                                     </tr>

@@ -17,10 +17,9 @@ export const config = {
 
 // DEVELOPMENT MIL URL
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
-// const BASE_URL = 'http://10.10.10.43/mil/api/v1';
 
 //MINDA QA
-// const BASE_URL = 'http://costmanagementqa.unominda.com:10132/api/v1';
+// const BASE_URL = 'https://apicostmanagementqa.unominda.com/api/v1';
 
 //MINDA PRODUCTION
 // const BASE_URL = 'https://costmanagement.unominda.com:10132/api/v1';
@@ -30,7 +29,7 @@ const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 export const FILE_URL = 'http://10.10.1.100:10132/';
 
 //MINDA QA FILE URL
-// export const FILE_URL = 'http://costmanagementqa.unominda.com:10132/';
+// export const FILE_URL = 'https://apicostmanagementqa.unominda.com/';
 
 //MINDA PRODUCTION FILE URL
 // export const FILE_URL = 'https://costmanagement.unominda.com:10132';
@@ -1397,7 +1396,19 @@ export const Simulation_Upload = 'Simulation Upload'
 
 export const TAX = 'Tax'
 
-export const SHEET_METAL = 'Sheet Metal'
+export const SHEET_METAL = 'Sheet Metal';
+export const PLASTIC = 'Plastic';
+export const WIRING_HARNESS = 'Wiring Harness';
+export const NON_FERROUS_GDC = 'Non Ferrous GDC';
+export const PLATING = 'Plating';
+export const SPRINGS = 'Springs';
+export const HARDWARE = 'Hardware';
+export const NON_FERROUS_LPDDC = 'Non Ferrous LPDC';
+export const MACHINING = 'Machining';
+export const ELECTRONICS = 'Electronics';
+export const RIVET = 'Rivet';
+export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
+export const RUBBER = 'Rubber';
 
 export const USER = 'User'
 export const ROLE = 'Role'
