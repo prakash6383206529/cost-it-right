@@ -3,7 +3,10 @@ import Moment from 'moment'
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
-import { G, KG, MG } from '../config/constants'
+import {
+  G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC,
+} from '../config/constants'
 
 /**
  * @method  apiErrors
@@ -411,6 +414,7 @@ export function checkPermission(Data) {
     BulkUpload: false,
     Activate: false,
     Copy: false,
+    SOB: false,
   }
 
   Data && Data.map((item) => {
@@ -437,6 +441,9 @@ export function checkPermission(Data) {
     }
     if (item.ActionName === 'Copy All Costing' && item.IsChecked === true) {
       setAccessibleData.Copy = true
+    }
+    if (item.ActionName === 'SOB' && item.IsChecked === true) {
+      setAccessibleData.SOB = true
     }
     return null;
   })
@@ -682,6 +689,7 @@ export function convertmmTocm(value) {
 
 /**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
+  console.log('value, UOM: ', value, UOM);
   switch (UOM) {
     case G:
       return checkForNull(value)
@@ -694,4 +702,35 @@ export function setValueAccToUOM(value, UOM) {
   }
 }
 
-
+export function getTechnologyPermission(technology) {
+  switch (technology) {
+    case SHEET_METAL:
+      return SHEET_METAL;
+    case PLASTIC:
+      return PLASTIC;
+    case WIRING_HARNESS:
+      return WIRING_HARNESS;
+    case NON_FERROUS_GDC:
+      return NON_FERROUS_GDC;
+    case PLATING:
+      return PLATING;
+    case SPRINGS:
+      return SPRINGS;
+    case HARDWARE:
+      return HARDWARE;
+    case NON_FERROUS_LPDDC:
+      return NON_FERROUS_LPDDC;
+    case MACHINING:
+      return MACHINING;
+    case ELECTRONICS:
+      return ELECTRONICS;
+    case RIVET:
+      return RIVET;
+    case NON_FERROUS_HPDC:
+      return NON_FERROUS_HPDC;
+    case RUBBER:
+      return RUBBER;
+    default:
+      break;
+  }
+}

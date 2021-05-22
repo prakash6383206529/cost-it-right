@@ -36,7 +36,7 @@ function AddVendorDrawer(props) {
       tempArr.push(el.VendorId)
       return null;
     })
-    setSelectedVendors(tempArr)
+    { initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr) }
 
   }, []);
 

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, convertObjectToArray, getConfigurationKey } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -92,26 +92,45 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
 
-      let rowArray = rowData && rowData.map(el => {
-        return {
-          RMName: `${el.RawMaterial} - ${el.RMGrade}`,
-          RMRate: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
-          MaterialType: el.MaterialType,
-          RMGrade: el.RMGrade,
-          Density: el.Density,
-          UOM: el.UOM,
-          UOMId: el.UOMId,
-          ScrapRate: el.ScrapRate,
+      if (costData.TechnologyId === 6) {
+        let rowArray = rowData && rowData.map(el => {
+          return {
+            RMName: `${el.RawMaterial} - ${el.RMGrade}`,
+            RMRate: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
+            MaterialType: el.MaterialType,
+            RMGrade: el.RMGrade,
+            Density: el.Density,
+            UOM: el.UOM,
+            UOMId: el.UOMId,
+            ScrapRate: el.ScrapRate,
+            FinishWeight: '',
+            GrossWeight: '',
+            NetLandedCost: '',
+            RawMaterialId: el.RawMaterialId,
+            RawMaterialCategory: el.Category
+          }
+        })
+
+        setGridData([...gridData, ...rowArray])
+        selectedIds([...gridData, ...rowArray])
+      } else {
+        let tempObj = {
+          RMName: rowData.RawMaterial,
+          RMRate: rowData.NetLandedCost,
+          MaterialType: rowData.MaterialType,
+          RMGrade: rowData.RMGrade,
+          Density: rowData.Density,
+          UOM: rowData.UOM,
+          UOMId: rowData.UOMId,
+          ScrapRate: rowData.ScrapRate,
           FinishWeight: '',
           GrossWeight: '',
           NetLandedCost: '',
-          RawMaterialId: el.RawMaterialId,
-          RawMaterialCategory: el.Category
+          RawMaterialId: rowData.RawMaterialId,
+          RawMaterialCategory: rowData.Category
         }
-      })
-
-      setGridData([...gridData, ...rowArray])
-      selectedIds([...gridData, ...rowArray])
+        setGridData([...gridData, tempObj])
+      }
       dispatch(gridDataAdded(true))
 
     }

@@ -74,7 +74,7 @@ function SheetMetalBaicDrawer(props) {
 
 
   useEffect(() => {
-    setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
+    //setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
     if (props.calculatorData.UOMType === MASS) {
 
       setValue('Quantity', rmFinishWeight ? rmFinishWeight : 1)
@@ -150,25 +150,26 @@ function SheetMetalBaicDrawer(props) {
     switch (props.calculatorData.UOMType) {
       case MASS:
         setDisabled(true)
-        cost = ((100 / efficiency) * quantity * rate) / cavity
+        cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
       case TIME:
         //This need to be done later
-        cost = rate / quantity
+        cost = rate / (quantity === 0 ? 1 : quantity);
+
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return;
       case DIMENSIONLESS:
         setDisabled(true)
-        cost = ((100 / efficiency) * (rate / quantity)) / cavity
+        cost = ((100 / efficiency) * (rate / (quantity === 0 ? 1 : quantity))) / cavity
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
       case VOLUMETYPE:
         setDisabled(true)
-        cost = ((100 / efficiency) * (quantity * rate)) / cavity
+        cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true

@@ -79,21 +79,30 @@ function AddRM(props) {
   // const onSelectAll = (isSelected, rows) => { }
 
   const onRowSelect = (row, isSelected, e) => {
-    if (isSelected) {
-      let tempArr = [...selectedRowData, row]
-      setSelectedRowData(tempArr)
+    //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
+    if (costData.TechnologyId === 6) {
+      if (isSelected) {
+        let tempArr = [...selectedRowData, row]
+        setSelectedRowData(tempArr)
+      } else {
+        const RawMaterialId = row.RawMaterialId;
+        let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
+        setSelectedRowData(tempArr)
+      }
     } else {
-      const RawMaterialId = row.RawMaterialId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
-      setSelectedRowData(tempArr)
+      setSelectedRowData(row)
     }
   }
 
   const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
+    if (costData.TechnologyId === 6) {
+      if (isSelected) {
+        setSelectedRowData(rows)
+      } else {
+        setSelectedRowData([])
+      }
     } else {
-      setSelectedRowData([])
+
     }
   }
 
