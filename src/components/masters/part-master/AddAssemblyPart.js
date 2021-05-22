@@ -231,8 +231,7 @@ class AddAssemblyPart extends Component {
     const { fieldsObj } = this.props;
     if (fieldsObj.BOMNumber === undefined ||
       fieldsObj.AssemblyPartNumber === undefined ||
-      fieldsObj.AssemblyPartName === undefined ||
-      fieldsObj.Description === undefined) {
+      fieldsObj.AssemblyPartName === undefined) {
       return false;
     } else {
       return true;

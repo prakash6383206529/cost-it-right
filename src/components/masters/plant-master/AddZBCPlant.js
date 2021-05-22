@@ -39,8 +39,15 @@ class AddZBCPlant extends Component {
   componentDidMount() {
     this.props.fetchCountryDataAPI(() => { })
     this.props.getComapanySelectList(() => { })
+    // this.props.fetchStateDataAPI(0, () => { })
+    // this.props.fetchCityDataAPI(0, () => { })
     this.getDetails()
 
+  }
+
+  UNSAFE_componentWillMount() {
+    this.props.fetchStateDataAPI(0, () => { })
+    this.props.fetchCityDataAPI(0, () => { })
   }
 
   /**

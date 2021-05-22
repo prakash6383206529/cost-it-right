@@ -10,6 +10,7 @@ import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
 import { INR } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
+import moment from 'moment'
 
 function PushButtonDrawer(props) {
 
@@ -85,17 +86,30 @@ function PushButtonDrawer(props) {
 
 
     let pushdata = {
-      effectiveDate: dataSend[0].EffectiveDate ? dataSend[0].EffectiveDate : '',
+      effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
       materialNumber: dataSend[1].PartNumber,
       netPrice: dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : '',
-      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '', // ASK FROM KAMAL SIR TO SEND DESTINATION PLANT CODE
-      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR, //NEED TO MAKE IT DYNAMIC AFTER COMING FROM BACKEND
-      materialGroup: MaterialGroup.label, //DROPDOWN VALUE
+      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+      materialGroup: MaterialGroup.label.split('(')[0],
       taxCode: 'YW',
       basicUOM: "NO",
-      purchasingGroup: PurchasingGroup.label, //DROPDOWN VALUE
-      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : 'C-123'
+      purchasingGroup: PurchasingGroup.label.split('(')[0],
+      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''
+
+      // effectiveDate: '11/30/2021',
+      // vendorCode: '203670',
+      // materialNumber: 'S07004-003A0Y',
+      // materialGroup: 'M089',
+      // taxCode: 'YW',
+      // plant: '1401',
+      // netPrice: '30.00',
+      // currencyKey: 'INR',
+      // basicUOM: 'NO',
+      // purchasingOrg: 'MRPL',
+      // purchasingGroup: 'O02'
+
     }
 
     let obj = {
@@ -106,13 +120,10 @@ function PushButtonDrawer(props) {
 
 
     dispatch(approvalPushedOnSap(obj, res => {
-      if (res.data.result) {
+      if (res && res.status && (res.status === 200 || res.status === 204)) {
         toastr.success('Approval pushed successfully.')
       }
       props.closeDrawer('', 'Push')
-      if (res.Result) {
-        props.closeDrawer('', 'Push')
-      }
     }))
 
     // dispatch(pushedApprovedCosting(obj, res => {

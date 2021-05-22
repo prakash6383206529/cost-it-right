@@ -1242,7 +1242,9 @@ export function getMenuByUser(UserId, callback) {
  */
 export function getLeftMenu(ModuleId, UserId, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        dispatch({
+            type: API_REQUEST
+        });
         const request = axios.get(`${API.getLeftMenu}/${ModuleId}/${UserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {

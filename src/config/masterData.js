@@ -1226,7 +1226,7 @@ export const MachineVBCTempData = [
         'DestinationPlantCode': '1032',
         'VendorPlantCode': 'VPlant01',
         'MachineNo': 'SM101',
-        'MachineSpecification': 'Mechanical Power Press',
+        'Description': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
         'MachineCapicityAndTonnage': '40',
@@ -1681,7 +1681,7 @@ export const SurfaceTreatmentPartGetJSON = [
 ]
 
 export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
-export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume']
+export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
