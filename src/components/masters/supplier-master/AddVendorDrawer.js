@@ -50,6 +50,8 @@ class AddVendorDrawer extends Component {
         this.props.getVendorTypesSelectList()
         this.props.getVendorPlantSelectList(() => { })
         this.props.fetchCountryDataAPI(() => { })
+        this.props.fetchStateDataAPI(0, () => { })
+        this.props.fetchCityDataAPI(0, () => { })
     }
 
     /**

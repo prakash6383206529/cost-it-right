@@ -25,7 +25,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddBOPDomestic');
@@ -267,7 +267,7 @@ class AddBOPDomestic extends Component {
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
-        const accept = AcceptableRMUOM.includes(item.Type)
+        const accept = AcceptableBOPUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
         // let display = this.applySuperScriptFormatter(item.Display)

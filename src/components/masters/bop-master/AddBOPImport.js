@@ -28,7 +28,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 
@@ -265,7 +265,7 @@ class AddBOPImport extends Component {
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
-        const accept = AcceptableRMUOM.includes(item.Type)
+        const accept = AcceptableBOPUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })

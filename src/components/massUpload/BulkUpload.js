@@ -108,6 +108,7 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
+                    console.log('fileHeads: ', fileHeads);
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
@@ -128,6 +129,9 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
                                     el = parseInt(el)
+                                }
+                                if (fileHeads[i] === 'MachineSpecification') {
+                                    fileHeads[i] = 'Description'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -268,7 +272,7 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'Machine' && costingHead === 'VBC') {
-
+            console.log(uploadData, "UPLOAD DATA");
             this.props.bulkUploadMachineVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });

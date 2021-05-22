@@ -271,7 +271,7 @@ class AddRMDomestic extends Component {
   }
 
   handleSource = (newValue, actionMeta) => {
-    console.log('newValue: ', newValue);
+
     if (newValue && newValue !== '') {
       //  if (newValue !== thissource) {
       this.setState({ source: newValue, isSourceChange: true })
@@ -910,7 +910,7 @@ class AddRMDomestic extends Component {
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
     }
     if (isEditFlag) {
-      console.log(DataToChange, "kkk", values);
+
       if (isSourceChange) {
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {

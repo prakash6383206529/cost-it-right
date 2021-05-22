@@ -470,6 +470,7 @@ export function approvalPushedOnSap(data, callback) {
       })
       .catch((error) => {
         dispatch({ type: API_FAILURE })
+        callback(error)
         apiErrors(error)
       })
   }
