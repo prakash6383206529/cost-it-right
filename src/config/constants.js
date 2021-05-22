@@ -16,6 +16,7 @@ export const config = {
 
 // DEVELOPMENT MIL URL
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
+// const BASE_URL = 'http://10.10.10.43/mil/api/v1';
 
 //MINDA QA
 // const BASE_URL = 'http://costmanagementqa.unominda.com:10132/api/v1';
@@ -31,7 +32,7 @@ export const FILE_URL = 'http://10.10.1.100:10132/';
 // export const FILE_URL = 'http://costmanagementqa.unominda.com:10132/';
 
 //MINDA PRODUCTION FILE URL
-// export const FILE_URL = 'https://costmanagement.unominda.com';
+// export const FILE_URL = 'https://costmanagement.unominda.com:10132';
 
 /** Export API */
 export const API = {

@@ -271,7 +271,7 @@ class AddRMDomestic extends Component {
   }
 
   handleSource = (newValue, actionMeta) => {
-    console.log('newValue: ', newValue);
+
     if (newValue && newValue !== '') {
       //  if (newValue !== thissource) {
       this.setState({ source: newValue, isSourceChange: true })
@@ -862,9 +862,7 @@ class AddRMDomestic extends Component {
     // if (!anyTouched) {
     //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
     // }
-    console.log(
-      "fffffffffffffffffffffffffffffffffffffffffffffffffffffff", Number(DataToChange.RMShearingCost)
-    );
+
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -910,7 +908,7 @@ class AddRMDomestic extends Component {
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
     }
     if (isEditFlag) {
-      console.log(DataToChange, "kkk", values);
+
       if (isSourceChange) {
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {

@@ -67,7 +67,9 @@ function ProcessCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    props.setProcessCost(tabData, Params)
+    if (!CostingViewMode) {
+      props.setProcessCost(tabData, Params)
+    }
   }, [tabData]);
 
   /**

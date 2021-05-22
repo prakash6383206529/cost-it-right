@@ -25,6 +25,7 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(props.Ids);
 
   const dispatch = useDispatch()
 
@@ -71,15 +72,39 @@ function AddRM(props) {
 
   };
 
+  // const onRowSelect = (row, isSelected, e) => {
+  //   setSelectedRowData(row)
+  // }
+
+  // const onSelectAll = (isSelected, rows) => { }
+
   const onRowSelect = (row, isSelected, e) => {
-    setSelectedRowData(row)
+    if (isSelected) {
+      let tempArr = [...selectedRowData, row]
+      setSelectedRowData(tempArr)
+    } else {
+      const RawMaterialId = row.RawMaterialId;
+      let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
+      setSelectedRowData(tempArr)
+    }
   }
 
-  const onSelectAll = (isSelected, rows) => { }
+  const onSelectAll = (isSelected, rows) => {
+    if (isSelected) {
+      setSelectedRowData(rows)
+    } else {
+      setSelectedRowData([])
+    }
+  }
 
   const selectRowProp = {
-    mode: 'radio',
+    mode: costData.TechnologyId === 6 ? 'checkbox' : 'radio',
+    //onSelect: onRowSelect,
+    //mode: 'checkbox',
+    clickToSelect: true,
+    unselectable: selectedIds,
     onSelect: onRowSelect,
+    onSelectAll: onSelectAll
   };
 
   const renderBasicRate = () => {

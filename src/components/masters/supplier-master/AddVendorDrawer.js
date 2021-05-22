@@ -274,7 +274,7 @@ class AddVendorDrawer extends Component {
                         tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
                         return null;
                     })
-                    console.log(tempArr, "tempArr");
+
                     Data && Data.VendorPlants && Data.VendorPlants.map((item) => {
                         tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
                         return null;
@@ -386,7 +386,7 @@ class AddVendorDrawer extends Component {
                 DataToCheck.Extension == values.Extension && DataToCheck.MobileNumber == values.MobileNumber &&
                 DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
                 DataToCheck.AddressLine2 == values.AddressLine2) {
-                console.log('chaNGES')
+
                 this.toggleDrawer('')
                 return false
             }

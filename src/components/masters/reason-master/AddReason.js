@@ -98,7 +98,7 @@ class AddReason extends Component {
     /** Update detail of the existing UOM  */
     if (isEditFlag) {
       if (DataToCheck.Reason == values.Reason) {
-        console.log('chaNGES')
+
         this.toggleDrawer('')
         return false
       }

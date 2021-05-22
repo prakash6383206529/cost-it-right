@@ -120,7 +120,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
-    console.log('loggs setPartDetails: ',);
+
     let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -179,7 +179,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-    console.log('loggs toggleAssembly: ',);
+
     let arr = setAssembly(params, Children, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -256,7 +256,7 @@ function TabSurfaceTreatment(props) {
   * @description SET SURFACE TREATMENT COST
   */
   const setSurfaceCost = (surfaceGrid, params) => {
-    console.log('loggs setSurfaceCost: ',);
+
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -343,7 +343,7 @@ function TabSurfaceTreatment(props) {
   * @description SET TRANSPORTATION COST
   */
   const setTransportationCost = (transportationObj, params) => {
-    console.log('loggs setTransportationCost: ',);
+
     let arr = dispatchTransportationCost(transportationObj, params, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -420,7 +420,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY SURFACE COST
   */
   const setAssemblySurfaceCost = (surfaceGrid, params, IsGridChanged) => {
-    console.log('loggs setAssemblySurfaceCost: ',);
+
     let arr = dispatchAssemblySurfaceCost(surfaceGrid, params, SurfaceTabData, IsGridChanged)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -492,7 +492,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY TRANSPORTATION COST
   */
   const setAssemblyTransportationCost = (TransportationObj, params) => {
-    console.log('loggs setAssemblyTransportationCost: ',);
+
     let arr = dispatchAssemblyTransportationCost(TransportationObj, params, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }

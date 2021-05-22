@@ -103,7 +103,7 @@ function PushButtonDrawer(props) {
       CostingId: approvalData[0].CostingId,
       Request: pushdata
     }
-    console.log(obj, "OBJ");
+
 
     dispatch(approvalPushedOnSap(obj, res => {
       if (res.data.result) {

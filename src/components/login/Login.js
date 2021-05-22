@@ -25,15 +25,6 @@ class Login extends Component {
   }
 
   UNSAFE_componentWillMount() {
-
-    if (this?.props?.location?.search) {
-      const queryParams = new URLSearchParams(this.props.location.search);
-      const token = queryParams.get('token')
-      const username = queryParams.get('username')
-      const email = queryParams.get('email')
-
-    }
-
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
       this.setState({
@@ -42,14 +33,12 @@ class Login extends Component {
     } else {
       reactLocalStorage.setObject('isUserLoggedIn', false);
     }
-
-
-
   }
 
-  forgotConfirm = () => {
-    this.setState({ flag: true })
-  }
+  /**
+   * @method FORGOT CONFIRM
+   */
+  forgotConfirm = () => this.setState({ flag: true })
 
   /**
    * Submit the login form

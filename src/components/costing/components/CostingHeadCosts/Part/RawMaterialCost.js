@@ -17,7 +17,7 @@ import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing'
 
 function RawMaterialCost(props) {
   const { item } = props;
-  const { register, handleSubmit, control, setValue, getValues, errors, reset } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, errors, reset, setError } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -38,6 +38,7 @@ function RawMaterialCost(props) {
   const [gridLength, setGridLength] = useState(0)
   const [gridData, setGridData] = useState(props.data)
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
+  const [Ids, setIds] = useState([])
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -68,7 +69,10 @@ function RawMaterialCost(props) {
         PartNumber: props.item.PartNumber,
       }
 
-      props.setRMCost(gridData, Params)
+      if (!CostingViewMode) {
+        props.setRMCost(gridData, Params)
+      }
+      selectedIds(gridData)
     }, 100)
   }, [gridData]);
 
@@ -87,30 +91,35 @@ function RawMaterialCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
-      let tempObj = {
-        RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
-        RMRate: rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
-        MaterialType: rowData.MaterialType,
-        RMGrade: rowData.RMGrade,
-        Density: rowData.Density,
-        UOM: rowData.UOM,
-        UOMId: rowData.UOMId,
-        ScrapRate: rowData.ScrapRate,
-        FinishWeight: '',
-        GrossWeight: '',
-        NetLandedCost: '',
-        RawMaterialId: rowData.RawMaterialId,
-        RawMaterialCategory: rowData.Category
-      }
-      setGridData([...gridData, tempObj])
+
+      let rowArray = rowData && rowData.map(el => {
+        return {
+          RMName: `${el.RawMaterial} - ${el.RMGrade}`,
+          RMRate: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
+          MaterialType: el.MaterialType,
+          RMGrade: el.RMGrade,
+          Density: el.Density,
+          UOM: el.UOM,
+          UOMId: el.UOMId,
+          ScrapRate: el.ScrapRate,
+          FinishWeight: '',
+          GrossWeight: '',
+          NetLandedCost: '',
+          RawMaterialId: el.RawMaterialId,
+          RawMaterialCategory: el.Category
+        }
+      })
+
+      setGridData([...gridData, ...rowArray])
+      selectedIds([...gridData, ...rowArray])
       dispatch(gridDataAdded(true))
+
     }
 
     if (IsApplyMasterBatch) {
-      setValue('MBName', rowData.RawMaterial)
-      setValue('MBPrice', rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion)
+      setValue('MBName', rowData && rowData[0].RawMaterial)
+      setValue('MBPrice', rowData && rowData[0].Currency === '-' ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
-
     setDrawerOpen(false)
   }
 
@@ -345,16 +354,42 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
+        setError(`${rmGridFields}[${editIndex}]GrossWeight`, {})
+        setError(`${rmGridFields}[${editIndex}]FinishWeight`, {})
         setValue(`${rmGridFields}[${editIndex}]GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}[${editIndex}]FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-      }, 200)
+      }, 500)
 
     }
   }
 
+  /**
+  * @method selectedIds
+  * @description SELECTED IDS
+  */
+  const selectedIds = (tempArr) => {
+    tempArr && tempArr.map(el => {
+      if (Ids.includes(el.RawMaterialId) === false) {
+        let selectedIds = Ids;
+        selectedIds.push(el.RawMaterialId)
+        setIds(selectedIds)
+      }
+      return null;
+    })
+  }
+
   const deleteItem = (index) => {
-    setGridData([])
-    onPressApplyMasterBatch()
+    let tempArr = gridData && gridData.filter((el, i) => {
+      if (i === index) return false;
+      return true;
+    })
+    setGridData(tempArr)
+
+    let selectedIds = []
+    tempArr.map(el => { selectedIds.push(el.RawMaterialId) })
+    setIds(selectedIds)
+
+    setIsApplyMasterBatch(false)
   }
 
   /**
@@ -400,7 +435,9 @@ function RawMaterialCost(props) {
           "MasterBatchPercentage": 0,
           "MasterBatchTotal": 0,
         }
-        props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+        if (!CostingViewMode) {
+          props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+        }
       }, 200)
     }
   }, [IsApplyMasterBatch])
@@ -481,6 +518,21 @@ function RawMaterialCost(props) {
     //dispatch(setRMCCErrors(errors))
   }
 
+  const isShowAddBtn = () => {
+    let isShow = false;
+
+    if (gridData.length <= gridLength) {
+      isShow = true;
+    }
+
+    if (costData && costData.TechnologyId === 6) {
+      isShow = true;
+    }
+
+    return isShow;
+
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -494,11 +546,12 @@ function RawMaterialCost(props) {
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && gridData && gridData.length <= gridLength &&
+              {!CostingViewMode && gridData && isShowAddBtn() &&
                 <button
                   type="button"
                   className={'user-btn'}
                   onClick={DrawerToggle}
+                  disabled={IsApplyMasterBatch}
                 >
                   <div className={'plus'}></div>ADD RM
                 </button>
@@ -630,7 +683,7 @@ function RawMaterialCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
-                      disabled={(CostingViewMode || gridData.length === 0) ? true : false}
+                      disabled={(CostingViewMode || gridData.length !== 1) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -742,6 +795,7 @@ function RawMaterialCost(props) {
           ID={''}
           anchor={'right'}
           IsApplyMasterBatch={IsApplyMasterBatch}
+          Ids={Ids}
         />
       )}
       {isWeightDrawerOpen && (

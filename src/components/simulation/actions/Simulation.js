@@ -120,7 +120,7 @@ export function getSelectListOfMasters(callback) {
         //   dispatch({ type: API_REQUEST });
         //   const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
         //   request.then((response) => {
-        //     console.log(response, "REQUEST");
+        //     
         //     if (response.data.Result) {
         //       dispatch({
         //         type: GET_BULKUPLOAD_COSTING_LIST,
@@ -151,7 +151,7 @@ export function runVerifySimulation(data, callback) {
 }
 
 export function getVerifySimulationList(token, callback) {
-    console.log('token in action: ', token);
+
     return (dispatch) => {
         const request = axios.get(`${API.getVerifySimulationList}/${token}`, headers);
         request.then((response) => {

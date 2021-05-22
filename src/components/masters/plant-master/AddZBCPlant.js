@@ -221,7 +221,7 @@ class AddZBCPlant extends Component {
       if (DropdownChanged && DataToCheck.PlantName == values.PlantName && DataToCheck.PhoneNumber == values.PhoneNumber &&
         DataToCheck.Extension == values.Extension && DataToCheck.AddressLine1 == values.AddressLine1 &&
         DataToCheck.AddressLine2 == values.AddressLine2 && DataToCheck.ZipCode == values.ZipCode) {
-        console.log('chaNGES')
+
         this.toggleDrawer('')
         return false
       }
