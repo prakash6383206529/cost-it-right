@@ -14,6 +14,7 @@ export const config = {
   },
 }
 
+
 // DEVELOPMENT MIL URL
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 // const BASE_URL = 'http://10.10.10.43/mil/api/v1';
