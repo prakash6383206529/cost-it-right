@@ -75,7 +75,6 @@ export function AutoSignin(requestData, callback) {
         let queryParams = `Token=${requestData.Token}&UserName=${requestData.UserName}`;
         axios.post(API.AutoSignin, requestData, CustomHeader)
             .then((response) => {
-
                 if (response && response.status === 200) {
                     callback(response);
                 }

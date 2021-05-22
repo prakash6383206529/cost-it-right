@@ -194,34 +194,34 @@ function CostingDetailStepTwo(props) {
 
     if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
-    //setTimeout(() => {
-    let DataList = CostingDataList;
-    let tempData = CostingDataList && CostingDataList[headerIndex];
+    setTimeout(() => {
+      let DataList = CostingDataList;
+      let tempData = CostingDataList && CostingDataList[headerIndex];
 
-    let OverAllCost = 0;
-    if (tempData && tempData !== undefined) {
-      const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
-      OverAllCost =
-        tempData.NetTotalRMBOPCC +
-        tempData.NetSurfaceTreatmentCost +
-        tempData.NetOverheadAndProfitCost +
-        tempData.NetPackagingAndFreight +
-        ApplyCost - checkForNull(tempData.NetDiscountsCost)
-    }
+      let OverAllCost = 0;
+      if (tempData && tempData !== undefined) {
+        const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
+        OverAllCost =
+          tempData.NetTotalRMBOPCC +
+          tempData.NetSurfaceTreatmentCost +
+          tempData.NetOverheadAndProfitCost +
+          tempData.NetPackagingAndFreight +
+          ApplyCost - checkForNull(tempData.NetDiscountsCost)
+      }
 
-    tempData = {
-      ...tempData,
-      // ToolCost: data.ToolCost,
-      ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
-      TotalCost: OverAllCost,
-    }
-    let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+      tempData = {
+        ...tempData,
+        // ToolCost: data.ToolCost,
+        ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
+        TotalCost: OverAllCost,
+      }
+      let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-    dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
-    dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
-    //dispatch(setSurfaceCostData(data, () => { }))
+      dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
+      dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+      //dispatch(setSurfaceCostData(data, () => { }))
 
-    //}, 200)
+    }, 200)
 
   }
 
