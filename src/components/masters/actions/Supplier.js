@@ -1,0 +1,325 @@
+import axios from 'axios';
+import {
+    API,
+    API_REQUEST,
+    API_FAILURE,
+    API_SUCCESS,
+    CREATE_SUPPLIER_SUCCESS,
+    CREATE_SUPPLIER_FAILURE,
+    GET_SUPPLIER_DATALIST_SUCCESS,
+    GET_SUPPLIER_DATA_SUCCESS,
+    GET_RADIO_SUPPLIER_TYPE_SUCCESS,
+    GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+    GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+    GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+    GET_VENDOR_TYPE_BOP_SELECTLIST,
+    config
+} from '../../../config/constants';
+import { apiErrors } from '../../../helper/util';
+import { toastr } from 'react-redux-toastr'
+import { MESSAGES } from '../../../config/message';
+
+const headers = config
+
+/**
+ * @method createSupplierAPI
+ * @description create supplier master
+ */
+export function createSupplierAPI(data, callback) {
+    return (dispatch) => {
+        // dispatch({
+        //     type:  API_REQUEST,
+        // });
+        const request = axios.post(API.createSupplierAPI, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: CREATE_SUPPLIER_SUCCESS,
+                    payload: response.data.Data
+                });
+                callback(response);
+            } else {
+                dispatch({ type: CREATE_SUPPLIER_FAILURE });
+                if (response.data.Message) {
+                    toastr.error(response.data.Message);
+                }
+            }
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSupplierDataList
+ * @description get Supplier's DataList 
+ */
+export function getSupplierDataList(filterData, callback) {
+    return (dispatch) => {
+        const QueryParams = `vendor_type=${filterData.vendor_type}&vendor_name=${filterData.vendor_name}&country=${filterData.country}`
+        const request = axios.get(`${API.getAllSupplierAPI}?${QueryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_SUPPLIER_DATALIST_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                });
+            }
+            callback(response)
+        }).catch((error) => {
+            dispatch({
+                type: API_FAILURE
+            });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSupplierByIdAPI
+ * @description get one labour based on id
+ */
+export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if (isEditFlag) {
+            axios.get(`${API.getSupplierAPI}/${supplierId}`, headers)
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_SUPPLIER_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    } else {
+                        toastr.error(MESSAGES.SOME_ERROR);
+                    }
+                    callback(response);
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_SUPPLIER_DATA_SUCCESS,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+/**
+ * @method deleteSupplierAPI
+ * @description delete supplier
+ */
+export function deleteSupplierAPI(Id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteSupplierAPI}/${Id}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method updateSupplierAPI
+ * @description update supplier
+ */
+export function updateSupplierAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateSupplierAPI}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getRadioButtonSupplierType
+ * @description get radio button supplier type
+ */
+export function getRadioButtonSupplierType() {
+    return (dispatch) => {
+        const request = axios.get(API.getRadioButtonSupplierType, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_RADIO_SUPPLIER_TYPE_SUCCESS,
+                payload: response.data.SelectList,
+            });
+
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method activeInactiveVendorStatus
+ * @description active Inactive Status
+ */
+export function activeInactiveVendorStatus(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.activeInactiveVendorStatus}`, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method vendorBulkUpload
+ * @description create Vendor by Bulk Upload
+ */
+export function vendorBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.vendorBulkUpload, data, headers);
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorTypesSelectList
+ * @description GET VENDOR TYPE SELECTLIST
+ */
+export function getVendorTypesSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorTypesSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllVendorSelectList
+ * @description GET ALL VENDORS SELECTLIST
+ */
+export function getAllVendorSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorsByVendorTypeID
+ * @description GET VENDOR SELECTLIST BY VENDOR TYPE
+ */
+export function getVendorsByVendorTypeID(VendorID, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getVendorsByVendorTypeID}/${VendorID}`, headers)
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getVendorTypeByVendorSelectList
+ * @description GET ALL VENDORS TYPE SELECTLIST BY VENDOR
+ */
+export function getVendorTypeByVendorSelectList(VendorId) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorTypeByVendorSelectList}/${VendorId}`, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_TYPE_SELECTLIST_SUCCESS,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorWithVendorCodeSelectList
+ * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
+ */
+export function getVendorWithVendorCodeSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getVendorTypeBOPSelectList
+ * @description GET BOP TYPE VENDOR'S SELECTLIST
+ */
+export function getVendorTypeBOPSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getVendorTypeBOPSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VENDOR_TYPE_BOP_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}

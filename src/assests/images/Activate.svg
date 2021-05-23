@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <g id="Activate-4" transform="translate(-285 -132)">
+    <g id="Group_11080" data-name="Group 11080" transform="translate(-1171 -262.41)">
+      <rect id="Rectangle_2012" data-name="Rectangle 2012" width="32" height="32" rx="4" transform="translate(1456 394.41)" fill="#dbf4e2"/>
+    </g>
+    <g id="Group_11081" data-name="Group 11081" transform="translate(-907.996 -62.988)">
+      <path id="Subtraction_12" data-name="Subtraction 12" d="M15.785,10.867H9.552V6.908a2.652,2.652,0,0,0-5.3,0v3.828A5.436,5.436,0,0,1,.071,4.555,5.433,5.433,0,0,1,5.434,0H15.785A5.433,5.433,0,0,1,21.2,5c.013.151.019.3.019.435a5.434,5.434,0,0,1-5.434,5.433Zm-.373-9.557a4.118,4.118,0,1,0,.671.054A4.129,4.129,0,0,0,15.413,1.309Zm-.659,7.017a1,1,0,0,1-.652-.241L12.785,6.956A.762.762,0,0,1,13.776,5.8l.87.746,2.026-3.038a.762.762,0,0,1,1.268.845L15.588,7.88A1,1,0,0,1,14.754,8.327Z" transform="translate(1197.996 199.988)" fill="#4dc771"/>
+      <g id="booking" transform="translate(1198.77 205.214)">
+        <path id="Path_16412" data-name="Path 16412" d="M98.811,113.953l-4.4-.457v-5.227a1.687,1.687,0,1,0-3.373,0v8.749h-.015l-1.665-1.39a1.622,1.622,0,1,0-2.079,2.491l3.379,2.82h9.953v-4.948A2.051,2.051,0,0,0,98.811,113.953Z" transform="translate(-86.694 -106.581)" fill="#4dc771"/>
+        <path id="Path_16413" data-name="Path 16413" d="M181.95,452.868a.684.684,0,0,0,.684.683h8.206a.684.684,0,0,0,.684-.683V451.5H181.95Z" transform="translate(-177.608 -435.777)" fill="#4dc771"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,64 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { getBOPData, } from '../../../actions/Costing';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkForDecimalAndNull } from '../../../../../helper';
+
+function BoughtOutPart(props) {
+  const { children, item } = props;
+
+  const dispatch = useDispatch()
+  const [IsOpen, setIsOpen] = useState(false);
+
+  const costData = useContext(costingInfoContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
+  useEffect(() => {
+    if (Object.keys(costData).length > 0) {
+      const data = {
+        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
+        PartId: item.PartId,
+        //PlantId: costData.PlantId,
+      }
+      setTimeout(() => {
+        dispatch(getBOPData(data, (res) => {
+          if (res && res.data && res.data.Result) {
+            // let Data = res.data.DataList[0].CostingPartDetails;
+            // props.setPartDetails(BOMLevel, PartNumber, Data)
+          }
+        }))
+      }, 500)
+    }
+  }, [])
+
+  const toggle = () => {
+    setIsOpen(!IsOpen)
+  }
+
+  /**
+  * @method render
+  * @description Renders the component
+  */
+  return (
+    <>
+      <tr>
+        <td>
+          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+            {item && item.PartNumber}
+          </span>
+        </td>
+        <td>{item && item.BOMLevel}</td>
+        <td>{item && item.PartType}</td>
+        <td>{'-'}</td>
+        <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{'-'}</td>
+        <td>{item?.CostingPartDetails?.Quantity ? item.CostingPartDetails.Quantity : 1}</td>
+        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull((item.CostingPartDetails.BoughtOutPartRate * item.CostingPartDetails.Quantity), initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        <td>{''}</td>
+      </tr>
+    </ >
+  );
+}
+
+export default BoughtOutPart;
