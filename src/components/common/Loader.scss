@@ -1,0 +1,68 @@
+.sf-organisation {
+    position: relative;
+  }
+  
+  .spinner-border {
+  border: 5px solid #fff;
+  border-radius: 50%;
+  border-top: 5px solid #145adb;
+  width: 40px;
+    height: 40px;
+  //   -webkit-animation: spin 1s linear infinite; /* Safari */
+  // animation: spin 1s linear infinite;
+  }
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+  .sf-loaderview {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .sf-cstm-loader {
+    position: fixed;
+    z-index: 999999;
+    background: rgba(255, 255, 255, 0.8);
+    top: 0;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    img{
+      max-width: 330px;
+    object-fit: contain;
+    max-height: calc(100% - 2em);
+    }
+  }
+  
+  .sf-loginloader .sf-cstm-loader {
+    top: 19%;
+    left: 5%;
+  }
+  
+  .choose-role-name .modal-body {
+    background-color: #E8E9ED;
+    max-height: 375px;
+    overflow-y: auto;
+  }
+  
+  .loader-position {
+    position: relative;
+    z-index: 1041;  
+    color: #135ecf !important;
+  }
+  .loader-wait-text{
+    text-align: center;
+    color: #fff;
+  }
