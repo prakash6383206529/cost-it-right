@@ -209,6 +209,7 @@ class DepartmentsListing extends Component {
               pagination
             >
               <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Company</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Company Code</TableHeaderColumn>
               <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>

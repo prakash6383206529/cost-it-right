@@ -35,6 +35,7 @@ class MachineRateListing extends Component {
             machineType: [],
 
             isBulkUpload: false,
+            isLoader: false
         }
     }
 
@@ -61,6 +62,7 @@ class MachineRateListing extends Component {
             plant_id: plant_id,
         }
         this.props.getMachineDataList(filterData, (res) => {
+            this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -378,6 +380,7 @@ class MachineRateListing extends Component {
     */
     filterList = () => {
         const { costingHead, plant, technology, vendorName, processName, machineType } = this.state;
+        this.setState({ isLoader: true })
 
         const costingId = costingHead ? costingHead.value : '';
         const technologyId = technology ? technology.value : 0;
@@ -385,6 +388,7 @@ class MachineRateListing extends Component {
         const machineTypeId = machineType ? machineType.value : 0;
         const processId = processName ? processName.value : '';
         const plantId = plant ? plant.value : '';
+
 
         this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
     }
@@ -401,6 +405,7 @@ class MachineRateListing extends Component {
             vendorName: [],
             processName: [],
             machineType: [],
+            isLoader: true
         }, () => {
             this.props.getTechnologySelectList(() => { })
             this.props.getInitialPlantSelectList(() => { })
@@ -430,7 +435,7 @@ class MachineRateListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
-        const { isBulkUpload, } = this.state;
+        const { isBulkUpload, isLoader } = this.state;
         const options = {
             clearSearch: true,
             noDataText: (this.props.machineDatalist === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -601,6 +606,7 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
+                        {isLoader && <LoaderCustom />}
                         <BootstrapTable
                             data={this.props.machineDatalist}
                             striped={false}

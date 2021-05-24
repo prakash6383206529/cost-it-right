@@ -199,7 +199,10 @@ const CostingSummaryTable = (props) => {
       VendorId: viewCostingData[index].vendorId,
       vendorName: viewCostingData[index].vendorName,
       vendorPlantName: viewCostingData[index].vendorPlantName,
-      vendorPlantId: viewCostingData[index].vendorPlantId
+      vendorPlantId: viewCostingData[index].vendorPlantId,
+      destinationPlantCode: viewCostingData[index].destinationPlantCode,
+      destinationPlantName: viewCostingData[index].destinationPlantName,
+      destinationPlantId: viewCostingData[index].destinationPlantId,
     }
 
     setIsEditFlag(true)
@@ -516,8 +519,8 @@ const CostingSummaryTable = (props) => {
           obj.partNo = viewCostingData[index].partId
           obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
           obj.destinationPlantName = viewCostingData[index].destinationPlantName
-          obj.destinationPlantId = viewCostingData[index].destinationPlantId
-          temp.push(obj)
+          obj.destinationPlantId = viewCostingData[index].
+            temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
       })
@@ -612,7 +615,7 @@ const CostingSummaryTable = (props) => {
                 <table class="table table-bordered costing-summary-table">
                   <thead>
                     <tr className="main-row">
-                      <th scope="col">ZBC v/s VBC</th>
+                      <th scope="col">VBC</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
 

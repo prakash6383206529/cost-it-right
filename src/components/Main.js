@@ -319,7 +319,7 @@ class Main extends Component {
 
                     <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
-                    <Route path="/costing" component={CostingRoutes} />
+                    <Route path="/costing" component={CostingRoutes} exact={true} />
 
                     <Route path="/costing-summary" component={CostingRoutes} />
 

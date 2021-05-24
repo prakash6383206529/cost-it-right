@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { getJsDateFromExcel } from "../../helper/validation";
+import { checkForNull, getJsDateFromExcel } from "../../helper/validation";
 import {
     bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
     bulkfileUploadRM, bulkUploadRMSpecification,
@@ -22,6 +22,7 @@ import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
+import moment from 'moment';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -108,7 +109,7 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
-                    console.log('fileHeads: ', fileHeads);
+
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
@@ -124,11 +125,12 @@ class BulkUpload extends Component {
 
                             let obj = {}
                             val.map((el, i) => {
-                                if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+
+                                if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                                    el = parseInt(el)
+                                    el = parseInt(checkForNull(el))
                                 }
                                 if (fileHeads[i] === 'MachineSpecification') {
                                     fileHeads[i] = 'Description'
@@ -272,7 +274,7 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'Machine' && costingHead === 'VBC') {
-            console.log(uploadData, "UPLOAD DATA");
+
             this.props.bulkUploadMachineVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });

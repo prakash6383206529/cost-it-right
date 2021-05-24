@@ -316,7 +316,7 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return moment((excelDate - (25567 + 2)) * 86400 * 1000).format('DD-MM-YYYY');
+    return moment((excelDate - (25567 + 2)) * 86400 * 1000).local().format('YYYY-MM-DD HH:mm:ss');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
