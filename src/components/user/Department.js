@@ -120,6 +120,7 @@ class Department extends Component {
 					const id = res.data.Identity
 					let formReq = {
 						DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+						DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
 						CompanyId: id
 					}
 					this.props.addDepartmentAPI(formReq, (res) => {
