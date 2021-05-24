@@ -221,7 +221,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       //dispatch(setSurfaceCostData(data, () => { }))
 
-    }, 200)
+    }, 1000)
 
   }
 

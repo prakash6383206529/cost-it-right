@@ -15,6 +15,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import { G, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing'
 
+let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
   const { register, handleSubmit, control, setValue, getValues, errors, reset, setError } = useForm({
@@ -28,6 +29,7 @@ function RawMaterialCost(props) {
     }
   })
 
+  const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -373,10 +375,10 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setError(`${rmGridFields}[${editIndex}]GrossWeight`, {})
-        setError(`${rmGridFields}[${editIndex}]FinishWeight`, {})
         setValue(`${rmGridFields}[${editIndex}]GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}[${editIndex}]FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
+        counter = 0 //USED FOR ERROR HANDLING
       }, 500)
 
     }
@@ -521,20 +523,17 @@ function RawMaterialCost(props) {
     }
   }
 
-  const rmGridFields = 'rmGridFields'
-
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  const onSubmit = (values) => { }
 
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   const isShowAddBtn = () => {
@@ -551,6 +550,14 @@ function RawMaterialCost(props) {
     return isShow;
 
   }
+
+  /**
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => { }
+
+  // const rmGridFields = 'rmGridFields'
 
   /**
    * @method render

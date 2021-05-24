@@ -11,6 +11,7 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
 
+let counter = 0;
 function OperationCost(props) {
 
   const { register, control, errors, setValue } = useForm({
@@ -197,11 +198,15 @@ function OperationCost(props) {
   }
 
   /**
-  * @method setRMCCErrors
-  * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-  */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+   * @method setRMCCErrors
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   const OperationGridFields = 'OperationGridFields';

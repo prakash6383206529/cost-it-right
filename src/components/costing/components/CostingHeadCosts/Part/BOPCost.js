@@ -10,9 +10,9 @@ import { toastr } from 'react-redux-toastr';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
-import { curry } from 'lodash';
 import { INR } from '../../../../../config/constants';
 
+let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
 
@@ -243,11 +243,15 @@ function BOPCost(props) {
   const onSubmit = (values) => { }
 
   /**
-  * @method setRMCCErrors
-  * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-  */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+   * @method setRMCCErrors
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   /**
