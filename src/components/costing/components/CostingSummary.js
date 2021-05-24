@@ -275,6 +275,7 @@ function CostingSummary(props) {
     dispatch(setCostingViewData([]))
     setShowWarningMsg(false)
     dispatch(getPartSelectListByTechnology('', () => { }))
+    dispatch(getPartInfo('', () => { }))
   }
 
   /**

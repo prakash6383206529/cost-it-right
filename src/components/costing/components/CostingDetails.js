@@ -141,6 +141,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
+      InjectRolePermission(partNumber.technologyName)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
       setTimeout(() => {
@@ -172,6 +173,7 @@ function CostingDetails(props) {
   useEffect(() => {
 
     if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
+      // InjectRolePermission()
       nextToggle()
     }
   }, [technology])
@@ -449,6 +451,7 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
+      console.log('vendorData: ', vendorData);
 
 
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -796,7 +799,8 @@ function CostingDetails(props) {
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         LoggedInUserId: loggedInUserId(),
         VendorId: tempData.VendorId,
-        VendorPlantId: tempData.VendorPlantId
+        VendorPlantId: tempData.VendorPlantId,
+        DestinationPlantId: tempData.DestinationPlantId
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
@@ -1069,14 +1073,15 @@ function CostingDetails(props) {
    * @description CONFIRMATION FOR ZBC SOB UPDATE
    */
   const SOBUpdateAlert = (type) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmSOBUpdate(type)
-      },
-      onCancel: () => { setPreviousSOBValue() },
-      component: () => <ConfirmComponent />
-    }
-    return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+    confirmSOBUpdate(type)
+    // const toastrConfirmOptions = {
+    //   onOk: () => {
+    //     confirmSOBUpdate(type)
+    //   },
+    //   onCancel: () => { setPreviousSOBValue() },
+    //   component: () => <ConfirmComponent />
+    // }
+    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -1155,7 +1160,8 @@ function CostingDetails(props) {
             ShareOfBusinessPercent: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
-            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID
+            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+            DestinationPlantId: el.DestinationPlantId
           }
           tempArr.push(data)
         }
@@ -1189,7 +1195,8 @@ function CostingDetails(props) {
               ShareOfBusinessPercent: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
-              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID
+              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+              DestinationPlantId: el.DestinationPlantId
             }
             tempArr.push(data)
           }
