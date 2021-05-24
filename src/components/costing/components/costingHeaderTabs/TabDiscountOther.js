@@ -32,7 +32,6 @@ function TabDiscountOther(props) {
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
   const [files, setFiles] = useState([]);
-  console.log('files: ', files);
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
@@ -708,7 +707,6 @@ function TabDiscountOther(props) {
                       <div className={"attachment-wrapper"}>
                         {files &&
                           files.map((f) => {
-                            console.log(f, "FILE NAME");
                             const withOutTild = f.FileURL.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
                             return (

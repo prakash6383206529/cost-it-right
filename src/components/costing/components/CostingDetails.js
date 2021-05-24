@@ -629,10 +629,11 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-          setIsCostingViewMode(false)
-          setStepTwo(true)
-          setStepOne(false)
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
         }
       }),
       )
@@ -669,12 +670,13 @@ function CostingDetails(props) {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
-          setIsCostingViewMode(false)
-          setStepTwo(true)
-          setStepOne(false)
         }
       }),
       )

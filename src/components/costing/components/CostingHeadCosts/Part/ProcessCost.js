@@ -18,6 +18,7 @@ import { gridDataAdded, setIsToolCostUsed, setRMCCErrors } from '../../../action
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
 
+let counter = 0;
 function ProcessCost(props) {
   const { data } = props
 
@@ -479,10 +480,14 @@ function ProcessCost(props) {
 
   /**
    * @method setRMCCErrors
-   * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   const ProcessGridFields = 'ProcessGridFields'
