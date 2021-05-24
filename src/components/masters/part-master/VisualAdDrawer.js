@@ -79,7 +79,7 @@ export default function VishualAdDrawer(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: props.partType === 'BoughtOutPart' ? /^\d*\.?\d*$/ : /^\d*\?\d*$/,
+                                                value: props.partType === 'BoughtOutPart' ? /^\d*\.?\d*$/ : /^[1-9]\d*$/,
                                                 //value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
                                                 message: 'Invalid Number.',
                                             },
