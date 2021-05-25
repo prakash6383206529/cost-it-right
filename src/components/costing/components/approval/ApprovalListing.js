@@ -56,6 +56,7 @@ function ApprovalListing() {
   useEffect(() => {
 
   }, [selectedIds])
+
   /**
    * @method getTableData
    * @description getting approval list table
