@@ -27,7 +27,6 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
-import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -55,9 +54,7 @@ class AddOperation extends Component {
       isOpenUOM: false,
       OperationId: '',
       effectiveDate: '',
-      destinationPlant: [],
-      DataToCheck: [],
-      DropdownChanged: true
+      destinationPlant: []
     }
   }
 
@@ -176,7 +173,6 @@ class AddOperation extends Component {
   */
   handleTechnology = (e) => {
     this.setState({ selectedTechnology: e })
-    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -230,7 +226,6 @@ class AddOperation extends Component {
     } else {
       this.setState({ UOM: [] })
     }
-    this.setState({ DropdownChanged: false })
   };
 
   uomToggler = () => {
@@ -286,7 +281,7 @@ class AddOperation extends Component {
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-          this.setState({ DataToCheck: Data })
+
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
           let plantArray = [];
@@ -328,8 +323,9 @@ class AddOperation extends Component {
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
-            }, () => this.setState({ isLoader: false }))
+            })
           }, 500)
+
         }
       })
     }
@@ -450,7 +446,7 @@ class AddOperation extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, DataToCheck, DropdownChanged } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
@@ -474,12 +470,6 @@ class AddOperation extends Component {
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'DataToCheck')
-      if (DataToCheck.Rate == values.Rate && DropdownChanged) {
-        this.cancel()
-        return false;
-      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
@@ -544,12 +534,6 @@ class AddOperation extends Component {
 
   }
 
-  handleKeyDown = function (e) {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
-    }
-  };
-
   /**
   * @method render
   * @description Renders the component
@@ -559,7 +543,7 @@ class AddOperation extends Component {
     const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
     return (
       <div className="container-fluid">
-        {this.state.isLoader && <LoaderCustom />}
+        {/* {isLoader && <Loader />} */}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
@@ -577,7 +561,6 @@ class AddOperation extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
@@ -618,11 +601,10 @@ class AddOperation extends Component {
                           selectionChanged={this.handleTechnology}
                           optionValue={(option) => option.Value}
                           optionLabel={(option) => option.Text}
-                          validate={[required]}
                           component={renderMultiSelectField}
                           mendatory={true}
                           className="multiselect-with-border"
-                        //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                          disabled={isEditFlag ? true : false}
                         />
                       </Col>
                       <Col md="3">

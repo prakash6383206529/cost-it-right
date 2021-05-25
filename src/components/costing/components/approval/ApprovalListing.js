@@ -30,7 +30,7 @@ function ApprovalListing() {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [selectedIds, setSelectedIds] = useState('')
-
+  const [reasonId, setReasonId] = useState('')
   const [showApprovalSumary, setShowApprovalSummary] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
   const dispatch = useDispatch()
@@ -56,6 +56,7 @@ function ApprovalListing() {
   useEffect(() => {
 
   }, [selectedIds])
+
   /**
    * @method getTableData
    * @description getting approval list table
@@ -167,12 +168,26 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-    console.log('cell: ', cell);
+
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+    return (
+      <>
+        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" />
+        {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+      </>
+    )
+  }
+
+  const oldpriceFormatter = (cell, row, enumObject, rowIndex) => {
+    return (
+      <>
+        {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
+        {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+      </>
+    )
   }
 
   const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
@@ -261,6 +276,38 @@ function ApprovalListing() {
     if (selectedRowData.length === 0) {
       toastr.warning('Please select atleast one approval to send for approval.')
       return false
+    }
+    let count = 0
+    let technologyCount = 0
+    selectedRowData.forEach((element, index, arr) => {
+      if (index > 0) {
+        if (element.ReasonId !== arr[index - 1].ReasonId) {
+          count = count + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
+    selectedRowData.forEach((element, index, arr) => {
+      if (index > 0) {
+        if (element.TechnologyId !== arr[index - 1].TechnologyId) {
+          technologyCount = technologyCount + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
+    if (technologyCount > 0) {
+      return toastr.warning("Technology should be same for sending multiple costing for approval")
+    }
+    if (count > 0) {
+      return toastr.warning("Reason should be same for sending multiple costing for approval")
+    } else {
+      setReasonId(selectedRowData[0].ReasonId)
     }
     setApproveDrawer(true)
   }
@@ -445,19 +492,21 @@ function ApprovalListing() {
               pagination
             >
               <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ApprovalNumber" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CostingNumber" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PartNumber" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
-
-              <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CreatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
-              <TableHeaderColumn dataField="RequestedBy" columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
-              <TableHeaderColumn dataField="RequestedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
-              <TableHeaderColumn dataField="Status" width={200} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+              <TableHeaderColumn dataField="ApprovalNumber" width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CostingNumber" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PartNumber" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
+              {/* <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn> */}
+              <TableHeaderColumn dataField="NetPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField={'Reason'} width={100} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CreatedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CreatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
+              <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
+              <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
+              <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
             </BootstrapTable>
           </div>
           :
@@ -470,6 +519,7 @@ function ApprovalListing() {
         <ApproveRejectDrawer
           type={'Approve'}
           isOpen={approveDrawer}
+          reasonId={reasonId}
           closeDrawer={closeDrawer}
           //tokenNo={approvalNumber}
           approvalData={selectedRowData}

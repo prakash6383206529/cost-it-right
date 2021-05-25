@@ -98,17 +98,17 @@ function AddPackaging(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateApplicabilityCost = (Text) => {
-    console.log('Text: ', Text);
+
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     switch (Text) {
       case 'RM':
         if (!PackageType) {
-          console.log('ifffff')
+
           setValue('PackagingCost', '')
         } else {
-          console.log('ellllssee')
+
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;

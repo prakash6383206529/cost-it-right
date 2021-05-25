@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
 
 function ApprovalWorkFlow(props) {
-  const { approvalLevelStep } = props
+  const { approvalLevelStep, approvalNo } = props
 
 
 
@@ -13,7 +13,7 @@ function ApprovalWorkFlow(props) {
   }, [])
   /* TODO SORTING OF LEVEL ACC TO DATA*/
   return approvalLevelStep &&
-    <div className="row process workflow-row mb-4">
+    <div className="row process workflow-row">
       {/* <div className="col-lg-3 col-md-6 col-sm-12 ">
         <div className="card-border card-green">
           <div className="top d-flex">
@@ -41,10 +41,10 @@ function ApprovalWorkFlow(props) {
       </div> */}
       {approvalLevelStep &&
         approvalLevelStep.map((item, index) => {
-          if (index > 4) return false
+          if (index > 3) return false
           return (
             <>
-              <div key={index} className="col-lg-3 col-md-6 col-sm-12 ">
+              <div key={index} className="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : item.Title.split(' ')[0] === APPROVED ? 'card-green' : item.Status === PENDING ? 'card-yellow' : ''}`}>
                   <div className="top d-flex">
                     <div className="left text-center">

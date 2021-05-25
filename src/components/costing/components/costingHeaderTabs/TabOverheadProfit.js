@@ -316,7 +316,6 @@ function TabOverheadProfit(props) {
   * @description SET REJECTION DETAIL 
   */
   const dispatchRejectionDetail = (rejectionObj, params, arr) => {
-
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -369,7 +368,6 @@ function TabOverheadProfit(props) {
   * @description SET ICC DETAIL 
   */
   const dispatchICCDetail = (ICCObj, params, arr) => {
-
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -523,7 +521,7 @@ function TabOverheadProfit(props) {
             <div className="shadow-lgg login-formg">
 
               <Row className="m-0">
-                {costData.IsAssemblyPart &&
+                {/* {costData.IsAssemblyPart &&
                   <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                     <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                     <div className="switch d-inline-flex">
@@ -551,7 +549,7 @@ function TabOverheadProfit(props) {
                       </label>
                     </div>
                   </Col>
-                }
+                } */}
 
                 <Col md="12" className="px-30 py-4 costing-border-x costing-border-top">
                   <label

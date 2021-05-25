@@ -16,6 +16,7 @@ import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { REASON_ID } from '../../../../config/constants'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -28,7 +29,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-  console.log('viewApprovalData: ', viewApprovalData);
+
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partInfo = useSelector((state) => state.costing.partInfo)
@@ -51,13 +52,48 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
-    dispatch(getReasonSelectList((res) => { }))
-    dispatch(getAllApprovalDepartment((res) => { }))
+
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
         // setIsFinalApproverShow(false)
       }
+
+      dispatch(getReasonSelectList((res) => { }))
+      if (!res.data.Data.IsFinalApprovar) {
+
+        dispatch(getAllApprovalDepartment((res) => {
+          const Data = res.data.SelectList
+          const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+
+          setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
+          setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+
+          let tempDropdownList = []
+
+          dispatch(
+            getAllApprovalUserFilterByDepartment({
+              LoggedInUserId: userData.LoggedInUserId,
+              DepartmentId: departObj[0].Value,
+              TechnologyId: partNo.technologyId,
+              ReasonId: 0 // key only for minda
+            }, (res) => {
+              if (res.data.DataList.length === 1) {
+                setShowValidation(true)
+                return false
+              }
+              const Data = res.data.DataList[1]
+
+              setApprover(Data.Text)
+              setSelectedApprover(Data.Value)
+              setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+              setValue('approver', { label: Data.Text, value: Data.Value })
+            },
+            ),
+          )
+        }))
+      }
+
     }))
   }, [])
   useEffect(() => {
@@ -238,11 +274,11 @@ const SendForApproval = (props) => {
       return
     }
     let obj = {
-      ApproverDepartmentId: !isFinalApproverShow ? selectedDepartment.value : '',
-      ApproverDepartmentName: !isFinalApproverShow ? selectedDepartment.label : '',
-      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : '',
-      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : '',
-      ApproverId: !isFinalApproverShow ? selectedApprover : '',
+      ApproverDepartmentId: selectedDepartment.value,
+      ApproverDepartmentName: selectedDepartment.label,
+      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
+      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
+      ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
 
       // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
       // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
@@ -257,31 +293,41 @@ const SendForApproval = (props) => {
     let tempObj = {}
     let plantCount = 0
     let venderCount = 0
-    viewApprovalData.forEach((element, index, arr) => {
 
-      if (element.plantId !== '-' && index > 0) {
-        if (element.plantId === arr[index - 1].plantId) {
-          return false
+    viewApprovalData.forEach((element, index, arr) => {
+      if (element.plantId !== '-') {
+        if (index > 0) {
+          if (element.plantId === arr[index - 1].plantId) {
+            plantCount = plantCount + 1
+          } else {
+            return false
+          }
         } else {
-          plantCount = plantCount + 1
-        }
-      } else if (element.vendorId !== '-' && index > 0) {
-        if (element.vendorId === arr[index - 1].vendorId) {
           return false
-        } else {
-          venderCount = venderCount + 1
         }
-      } else {
-        plantCount = plantCount + 1
-        venderCount = venderCount + 1
+      }
+      else if (element.vendorId !== '-') {
+        if (index > 0) {
+
+          if (element.vendorId === arr[index - 1].vendorId) {
+            venderCount = venderCount + 1
+          } else {
+            return false
+          }
+        } else {
+          return false
+        }
       }
     });
 
-    if (plantCount === 0) {
-      return toastr.warning('Costings with same plant cannot be sent for approval')
-    }
-    if (venderCount === 0) {
-      return toastr.warning('Costings with same vendor cannot be sent for approval')
+    if (viewApprovalData.length > 1) {
+
+      if (plantCount > 0) {
+        return toastr.warning('Costings with same plant cannot be sent for approval')
+      }
+      if (venderCount > 0) {
+        return toastr.warning('Costings with same vendor cannot be sent for approval')
+      }
     }
 
     viewApprovalData.map((data) => {
@@ -332,17 +378,18 @@ const SendForApproval = (props) => {
         data.typeOfCosting == 1 ? data.vendorName : ''
       tempObj.VendorPlantName =
         data.typeOfCosting == 1 ? data.vendorPlantName : ''
-      tempObj.IsFinalApproved = false
+      tempObj.IsFinalApproved = isFinalApproverShow ? true : false
+      tempObj.DestinationPlantCode = data.destinationPlantCode
+      tempObj.DestinationPlantName = data.destinationPlantName
+      tempObj.DestinationPlantId = data.destinationPlantId
       temp.push(tempObj)
     })
 
     obj.CostingsList = temp
 
+
     dispatch(
       sendForApprovalBySender(obj, (res) => {
-        // if(res.data.Result){
-
-        // }
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
@@ -393,7 +440,7 @@ const SendForApproval = (props) => {
             </Row>
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
-                console.log(data.consumptionQty !== undefined ? data.consumptionQty : 0, "DATE");
+
                 return (
                   <div className="" key={index}>
                     <Row className="px-3">
@@ -510,7 +557,7 @@ const SendForApproval = (props) => {
                                     />
                                 }
                               </div>
-                              <i className="fa fa-calendar icon-small-primary ml-2"></i>
+                              {/* <i className="fa fa-calendar icon-small-primary ml-2"></i> */}
                             </div>
                             {/* </div> */}
                           </Col>
@@ -595,16 +642,17 @@ const SendForApproval = (props) => {
                       <Row className="px-3">
                         <Col md="6">
                           <SearchableSelectHookForm
-                            label={"Department"}
+                            label={"Company"}
                             name={"dept"}
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
                             options={renderDropdownListing("Dept")}
-                            mandatory={true}
+                            disabled={true}
+                            mandatory={false}
                             handleChange={handleDepartmentChange}
                             errors={errors.dept}
                           />
@@ -616,11 +664,12 @@ const SendForApproval = (props) => {
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
                             options={approvalDropDown}
-                            mandatory={true}
+                            mandatory={false}
+                            disabled={true}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
                           />

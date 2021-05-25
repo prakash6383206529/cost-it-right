@@ -247,7 +247,7 @@ class ClientListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <div className="container-fluid">
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                        <h1 className="mb-0">Client Master</h1>
+                        <h1 className="mb-0">Customer Master</h1>
                         <Row className="pt-4 no-filter-row">
                             <Col md="10" className="filter-block"></Col>
                             <Col md="2" className="search-user-block">

@@ -28,9 +28,10 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
+import WarningMessage from '../../common/WarningMessage'
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -67,7 +68,8 @@ class AddBOPImport extends Component {
       showCurrency: false,
       netLandedConverionCost: '',
       DataToChange: [],
-      DropdownChange: true
+      DropdownChange: true,
+      showWarning: false
     }
   }
 
@@ -265,7 +267,7 @@ class AddBOPImport extends Component {
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
-        const accept = AcceptableRMUOM.includes(item.Type)
+        const accept = AcceptableBOPUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Display, value: item.Value })
@@ -394,7 +396,23 @@ class AddBOPImport extends Component {
 
       } else {
         this.setState({ showCurrency: true }, () => {
-          this.handleCalculation()
+          if (this.state.effectiveDate) {
+            this.props.getExchangeRateByCurrency(newValue.label, moment(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
+              //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+
+              if (Object.keys(res.data.Data).length === 0) {
+
+                this.setState({ showWarning: true })
+              }
+              else {
+                this.setState({ showWarning: false })
+              }
+              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+                this.handleCalculation()
+              })
+            })
+          }
+          // this.handleCalculation()
         })
       }
       this.setState({ currency: newValue, })
@@ -406,10 +424,15 @@ class AddBOPImport extends Component {
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
+    // COMMENTED FOR MINDA
+    // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
+    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    // this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
+    // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
+    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
   }
 
@@ -430,6 +453,14 @@ class AddBOPImport extends Component {
     } else {
       this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+
+        if (Object.keys(res.data.Data).length === 0) {
+
+          this.setState({ showWarning: true })
+        }
+        else {
+          this.setState({ showWarning: false })
+        }
         this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
           this.handleCalculation()
         })
@@ -551,8 +582,8 @@ class AddBOPImport extends Component {
     }
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
+
+
       if (DataToChange.IsVendor) {
         if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
           DataToChange.BasicRate == values.BasicRate) {
@@ -582,7 +613,8 @@ class AddBOPImport extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
         const toastrConfirmOptions = {
@@ -950,14 +982,37 @@ class AddBOPImport extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <div className="inputbox date-section mb-3 form-group">
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              //minDate={moment()}
+                              />
+                              {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            </div>
+
+                          </Col>
+                          <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, postiveNumber, maxLength10]}
+                              validate={[postiveNumber, maxLength10]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               className=""
                               customClassName=" withBorder"
                             />
@@ -1010,49 +1065,7 @@ class AddBOPImport extends Component {
                           {/* </Row>
 
                         <Row> */}
-                          <Col md="3">
-                            <div className="form-group">
-                              {/* <label>
-                                Effective Date */}
-                              {/* <span className="asterisk-required">*</span> */}
-                              {/* </label> */}
-                              <div className="inputbox date-section mb-3">
-                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    //e.preventDefault()
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                  disabled={isEditFlag ? true : false}
-                                //minDate={moment()}
-                                />
-                              </div>
-                            </div>
-                          </Col>
+
                         </Row>
 
                         <Row>

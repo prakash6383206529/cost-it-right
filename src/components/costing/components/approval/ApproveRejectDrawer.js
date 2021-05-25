@@ -12,11 +12,13 @@ import {
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
+import { REASON_ID } from '../../../../config/constants'
 
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId } = props
+
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -33,7 +35,35 @@ function ApproveRejectDrawer(props) {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
 
   useEffect(() => {
-    dispatch(getAllApprovalDepartment((res) => { }))
+    // dispatch(getAllApprovalDepartment((res) => { }))
+
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res.data.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+
+      setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+
+      let obj = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj[0].Value,
+        TechnologyId: approvalData[0].TechnologyId,
+        ReasonId: reasonId
+      }
+
+      dispatch(
+        getAllApprovalUserFilterByDepartment(obj, (res) => {
+          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+
+          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          // setApprover(Data.Text)
+          // setSelectedApprover(Data.Value)
+          // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+          // setValue('approver', { label: Data.Text, value: Data.Value })
+        },
+        ),
+      )
+    }))
 
     // DO IT AFTER GETTING DATA
   }, [])
@@ -50,7 +80,7 @@ function ApproveRejectDrawer(props) {
 
   const closePushButton = () => {
     setOpenPushButton(false)
-    props.closeDrawer('')
+    props.closeDrawer('', 'Cancel')
   }
   const onSubmit = (data) => {
     let obj = {}
@@ -74,18 +104,19 @@ function ApproveRejectDrawer(props) {
         ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
         Remark: data.remark,
         IsApproved: type === 'Approve' ? true : false,
+        IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
       })
     })
 
     if (type === 'Approve') {
-      if (IsPushDrawer) {
-        toastr.success('The costing has been approved')
-        setOpenPushButton(true)
+      // if (IsPushDrawer) {
+      //   toastr.success('The costing has been approved')
+      //   setOpenPushButton(true)
 
-      } else {
-        toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-        props.closeDrawer('', 'submit')
-      }
+      // } else {
+      //   toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+      //   props.closeDrawer('', 'submit')
+      // }
 
       dispatch(approvalRequestByApprove(Data, res => {
         if (res.data.Result) {
@@ -101,7 +132,7 @@ function ApproveRejectDrawer(props) {
           // props.closeDrawer()
         }
       }))
-      props.closeDrawer('')
+      //     props.closeDrawer('')
     } else {
       // REJECT CONDITION
       dispatch(rejectRequestByApprove(Data, res => {
@@ -183,18 +214,19 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={"Department"}
+                        label={"Company"}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         defaultValue={""}
                         options={renderDropdownListing("Dept")}
-                        mandatory={true}
+                        mandatory={false}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
+                        disabled={true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -204,12 +236,13 @@ function ApproveRejectDrawer(props) {
                         placeholder={'-Select-'}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         //defaultValue={isEditFlag ? plantName : ''}
                         options={approvalDropDown}
-                        mandatory={true}
+                        mandatory={false}
                         handleChange={() => { }}
+                        disabled={true}
                         errors={errors.approver}
                       />
                     </div>
@@ -311,6 +344,7 @@ function ApproveRejectDrawer(props) {
           isOpen={openPushButton}
           closeDrawer={closePushButton}
           approvalData={[approvalData]}
+          dataSend={dataSend}
           anchor={'right'}
         />
       )}

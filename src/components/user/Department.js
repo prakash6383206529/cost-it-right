@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { langs } from "../../config/localization";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, alphabetsOnlyForName, number, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
-import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI } from "../../actions/auth/AuthActions";
+import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
+import moment from "moment";
+import { userDetails } from "../../helper";
 
 class Department extends Component {
 	constructor(props) {
@@ -73,7 +74,7 @@ class Department extends Component {
 	 * @returns {{}}
 	 */
 	onSubmit(values) {
-		const { isEditFlag, DepartmentId } = this.props;
+		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
 		this.setState({ isLoader: true })
 
@@ -83,11 +84,23 @@ class Department extends Component {
 			let formReq = {
 				DepartmentId: DepartmentId,
 				IsActive: true,
+				CreatedDate: moment(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
+				CompanyId: departmentDetail.CompanyId
 			}
+			let comObj = {
+				CompanyId: departmentDetail.CompanyId,
+				LoggedInUserId: userDetails().LoggedInUserId,
+				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
+			}
+
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
-					toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+					this.props.updateCompanyAPI(comObj, () => {
+						toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+					})
 				}
 				reset();
 				this.toggleDrawer('')
@@ -95,17 +108,29 @@ class Department extends Component {
 			})
 
 		} else {
-			let formReq = {
-				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+			const randomNo = Math.floor(Math.random() * (2000 - 1) + 1)
+			let obj = {
+				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
+				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
 			}
 
-			// Add new department
-			this.props.addDepartmentAPI(formReq, (res) => {
+			// ADD NEW COMPANY VIA DEPARTMENT
+			this.props.addCompanyAPI(obj, (res) => {
 				if (res && res.data && res.data.Result) {
-					toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+					const id = res.data.Identity
+					let formReq = {
+						DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+						DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
+						CompanyId: id
+					}
+					this.props.addDepartmentAPI(formReq, (res) => {
+						if (res && res.data && res.data.Result) {
+							toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+							reset();
+							this.toggleDrawer('')
+						}
+					})
 				}
-				reset();
-				this.toggleDrawer('')
 			})
 
 		}
@@ -121,7 +146,7 @@ class Department extends Component {
 				{this.props.loading && <Loader />}
 				<Drawer className="add-department-drawer" anchor={this.props.anchor} open={this.props.isOpen}
 				//  onClose={(e) => this.toggleDrawer(e)}
-				 >
+				>
 					<Container>
 						<div className={'drawer-wrapper'}>
 							<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -129,7 +154,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? 'Update Department' : 'Add Department'}</h3>
+											<h3>{isEditFlag ? 'Update Company' : 'Add Company'}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e)}
@@ -142,7 +167,7 @@ class Department extends Component {
 									<Row className="pr-0">
 										<div className="input-group col-md-12 input-withouticon" >
 											<Field
-												label="Department Name"
+												label="Name"
 												name={"DepartmentName"}
 												type="text"
 												placeholder={''}
@@ -150,6 +175,18 @@ class Department extends Component {
 												component={renderText}
 												required={true}
 												maxLength={26}
+												customClassName={'withBorder'}
+											/>
+										</div>
+										<div className="input-group col-md-12 input-withouticon" >
+											<Field
+												label="Code"
+												name={"CompanyCode"}
+												type="text"
+												placeholder={''}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												component={renderText}
+												required={true}
 												customClassName={'withBorder'}
 											/>
 										</div>
@@ -211,6 +248,7 @@ const mapStateToProps = ({ auth }) => {
 	if (departmentDetail && departmentDetail != undefined) {
 		initialValues = {
 			DepartmentName: departmentDetail.DepartmentName,
+			CompanyCode: departmentDetail.DepartmentCode,
 			Description: departmentDetail.Description,
 		}
 	}
@@ -229,6 +267,8 @@ export default connect(mapStateToProps, {
 	getDepartmentAPI,
 	updateDepartmentAPI,
 	setEmptyDepartmentAPI,
+	addCompanyAPI,
+	updateCompanyAPI
 })(reduxForm({
 	form: 'Department',
 	enableReinitialize: true,

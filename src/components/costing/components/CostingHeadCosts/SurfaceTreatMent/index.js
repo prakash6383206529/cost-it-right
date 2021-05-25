@@ -58,7 +58,6 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
@@ -91,7 +90,6 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        // "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
@@ -160,9 +158,12 @@ function SurfaceTreatment(props) {
                         {
                           props.IsAssemblyCalculation ?
                             <>
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              {/* <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col> */}
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                             </>
                             :
                             <>

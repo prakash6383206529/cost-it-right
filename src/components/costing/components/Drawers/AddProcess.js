@@ -173,7 +173,7 @@ function AddProcess(props) {
             </Row>
 
             <Row className="mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={processDrawerList}
                   striped={false}

@@ -21,6 +21,7 @@ import {
   GET_RATE_CRITERIA_BY_CAPACITY,
   SET_RMCC_TAB_DATA,
   SET_COSTING_DATALIST_BY_COSTINGID,
+  SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID,
   SET_PO_PRICE,
   SET_RMCCBOP_DATA,
   SET_SURFACE_COST_DATA,
@@ -59,7 +60,9 @@ import {
   CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE,
   SET_COSTING_EFFECTIVE_DATE,
+  IS_COSTING_EFFECTIVE_DATE_DISABLED,
   CLOSE_OPEN_ACCORDION,
+  BOP_DRAWER_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -74,6 +77,8 @@ const initialState = {
   partNo: '',
   costingApprovalData: [],
   IsIncludedSurfaceInOverheadProfit: false,
+  IsCostingDateDisabled: false,
+  IsToolCostApplicable: false,
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -275,6 +280,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         CostingDataList: action.payload
+      };
+    case SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID:
+      return {
+        ...state,
+        loading: false,
+        ActualCostingDataList: action.payload
       };
     case SET_PO_PRICE:
       return {
@@ -496,6 +507,18 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         CloseOpenAccordion: action.payload
+      }
+    case BOP_DRAWER_LIST:
+      return {
+        ...state,
+        loading: false,
+        bopDrawerList: action.payload
+      }
+    case IS_COSTING_EFFECTIVE_DATE_DISABLED:
+      return {
+        ...state,
+        loading: false,
+        IsCostingDateDisabled: action.payload
       }
     default:
       return state

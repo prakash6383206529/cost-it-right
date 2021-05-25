@@ -50,6 +50,8 @@ class AddVendorDrawer extends Component {
         this.props.getVendorTypesSelectList()
         this.props.getVendorPlantSelectList(() => { })
         this.props.fetchCountryDataAPI(() => { })
+        this.props.fetchStateDataAPI(0, () => { })
+        this.props.fetchCityDataAPI(0, () => { })
     }
 
     /**
@@ -88,7 +90,7 @@ class AddVendorDrawer extends Component {
             //Selected Vendor Type IDs.
             let SelectedVendorTypeIds = [];
             e && e.map((item, index) => {
-                SelectedVendorTypeIds.push(item.Value)
+                SelectedVendorTypeIds.push(Number(item.Value))
                 return null;
             })
 
@@ -271,7 +273,7 @@ class AddVendorDrawer extends Component {
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
                     this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
-                        tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
+                        tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
                         return null;
                     })
 
@@ -386,7 +388,7 @@ class AddVendorDrawer extends Component {
                 DataToCheck.Extension == values.Extension && DataToCheck.MobileNumber == values.MobileNumber &&
                 DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
                 DataToCheck.AddressLine2 == values.AddressLine2) {
-                console.log('chaNGES')
+
                 this.toggleDrawer('')
                 return false
             }

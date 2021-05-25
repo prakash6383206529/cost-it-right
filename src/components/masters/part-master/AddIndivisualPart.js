@@ -215,8 +215,8 @@ class AddIndivisualPart extends Component {
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'datatocheck')
+
+
       if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
         DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
         DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
@@ -382,9 +382,9 @@ class AddIndivisualPart extends Component {
                               name={"Description"}
                               type="text"
                               placeholder={""}
-                              validate={[required, maxLength80, checkWhiteSpaces]}
+                              validate={[maxLength80, checkWhiteSpaces]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               className=""
                               customClassName={"withBorder"}
                             />

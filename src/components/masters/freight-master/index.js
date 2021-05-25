@@ -126,55 +126,56 @@ class FreightMaster extends Component {
 
         return (
             <>
-            <div className="container-fluid">
-                {/* {this.props.loading && <Loader/>} */}
-                <Row>
-                    <Col sm="4">
-                        <h1>{`Freight & Packaging Master`}</h1>
-                    </Col>
-                </Row>
+                <div className="container-fluid">
+                    {/* {this.props.loading && <Loader/>} */}
+                    <Row>
+                        <Col sm="4">
+                            {/* <h1>{`Freight & Packaging Master`}</h1> */}
+                            <h1>{`Freight Master`}</h1>
+                        </Col>
+                    </Row>
 
-                <Row>
-                    <Col>
-                        <Nav tabs className="subtabs mt-0">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Manage Freight
+                    <Row>
+                        <Col>
+                            <Nav tabs className="subtabs mt-0">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Manage Freight
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
+                                </NavItem>
+                                {/* <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                     Manage Packaging
                                 </NavLink>
-                            </NavItem>
-                        </Nav>
+                            </NavItem> */}
+                            </Nav>
 
-                        <TabContent activeTab={this.state.activeTab}>
+                            <TabContent activeTab={this.state.activeTab}>
 
-                            {this.state.activeTab == 1 &&
-                                <TabPane tabId="1">
-                                    <FreightListing
-                                        displayForm={this.displayFreightForm}
-                                        getDetails={this.getDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                    />
-                                </TabPane>}
+                                {this.state.activeTab == 1 &&
+                                    <TabPane tabId="1">
+                                        <FreightListing
+                                            displayForm={this.displayFreightForm}
+                                            getDetails={this.getDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                        />
+                                    </TabPane>}
 
-                            {this.state.activeTab == 2 &&
-                                <TabPane tabId="2">
-                                    <PackagListing
-                                        displayForm={this.displayPackagForm}
-                                        getDetails={this.getPackaingDetails}
-                                    />
-                                </TabPane>}
-                        </TabContent>
+                                {this.state.activeTab == 2 &&
+                                    <TabPane tabId="2">
+                                        <PackagListing
+                                            displayForm={this.displayPackagForm}
+                                            getDetails={this.getPackaingDetails}
+                                        />
+                                    </TabPane>}
+                            </TabContent>
 
-                    </Col>
-                </Row>
+                        </Col>
+                    </Row>
                 </div>
-                </ >
+            </ >
         );
     }
 }

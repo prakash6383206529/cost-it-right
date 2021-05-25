@@ -104,7 +104,7 @@ function AddPlantDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"ADD PLANT"}</h3>
+                  <h3>{"Add Plant"}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

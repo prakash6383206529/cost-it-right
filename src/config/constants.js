@@ -9,36 +9,32 @@ export const config = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
     'Authorization': `Bearer ${getAuthToken()}`,
-    //'Authorization': `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
 }
 
-//hosting url for api of cost-it-right
-//const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
-//const BASE_URL = 'http://10.10.1.100:8090/api/v1';
+// DEVELOPMENT MIL URL
+const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
-// SERVER ROYAL ENFIELD URL
-//const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+//MINDA QA
+// const BASE_URL = 'https://apiinsightqa.unominda.com/api/v1';
 
-// QA ROYAL ENFIELD URL
-//const BASE_URL = 'http://10.10.1.100:10122/api/v1';
+//MINDA PRODUCTION
+// const BASE_URL = 'https://apiinsight.unominda.com/api/v1';
 
-// DEVELOPMENT ROYAL ENFIELD URL
-//const BASE_URL = 'http://10.10.1.100:10123/api/v1';
 
-// DEVELOPMENT
-const BASE_URL = 'http://10.10.1.100:1002/api/v1';
-//const BASE_URL = 'http://10.10.10.43/CostingEngine.Application.CostItRight/api/v1';
+//DEVELOPMENT MIL URL
+export const FILE_URL = 'http://10.10.1.100:10132/';
 
-//STAGING
-// const BASE_URL = 'http://10.10.1.10:1002/api/v1';
-export const FILE_URL = 'http://10.10.1.100:1002/';
+//MINDA QA FILE URL
+// export const FILE_URL = 'https://apiinsightqa.unominda.com/';
+
+//MINDA PRODUCTION FILE URL
+// export const FILE_URL = 'https://apiinsight.unominda.com/';
 
 /** Export API */
 export const API = {
-  //configure api's
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
@@ -562,6 +558,7 @@ export const API = {
   getCostingBulkUploadList: `${BASE_URL}/bulk-costing/get-all-bulk-costings-files-info-by-filter`,
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
+  uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
 
 
@@ -578,6 +575,7 @@ export const API = {
   //LOGIN API
   login: `${BASE_URL}/user/login`,
   tokenAPI: `${BASE_URL}/token`,
+  AutoSignin: `${BASE_URL}/user/external-login`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,
@@ -610,6 +608,7 @@ export const API = {
   getDepartmentAPI: `${BASE_URL}/user-department/get`,
   updateDepartmentAPI: `${BASE_URL}/user-department/update`,
   deleteDepartmentAPI: `${BASE_URL}/user-department/delete`,
+  addCompanyAPI: `${BASE_URL}/company/create`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -650,6 +649,8 @@ export const API = {
   isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approver`,
   approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
   getSelectedCostingStatusList: `${BASE_URL}/app-approval-system/get-all-approval-status`,
+  createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
+  approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -803,6 +804,7 @@ export const API = {
 
   //COMPANY
   getComapanySelectList: `${BASE_URL}/company/get-company-select-list`,
+  updateCompany: `${BASE_URL}/company/update`,
 
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/`,
@@ -810,7 +812,11 @@ export const API = {
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
-  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`
+  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
+
+  //REPORT
+  getReportListing: `${BASE_URL}/report/get-report-listing`,
+
 }
 
 //Api constants
@@ -1123,6 +1129,7 @@ export const SAVE_BOP_COSTING_SUCCESS = 'SAVE_BOP_COSTING_SUCCESS';
 export const GET_COSTING_DATA_BY_COSTINGID = 'GET_COSTING_DATA_BY_COSTINGID';
 export const GET_RATE_CRITERIA_BY_CAPACITY = 'GET_RATE_CRITERIA_BY_CAPACITY';
 export const SET_COSTING_DATALIST_BY_COSTINGID = 'SET_COSTING_DATALIST_BY_COSTINGID';
+export const SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID = 'SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID';
 export const SET_PO_PRICE = 'SET_PO_PRICE';
 export const SET_RMCCBOP_DATA = 'SET_RMCCBOP_DATA';
 export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
@@ -1131,6 +1138,7 @@ export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
 export const SET_IS_TOOLCOST_USED = 'SET_IS_TOOLCOST_USED';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
+export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1192,6 +1200,7 @@ export const TOOL_CATEGORY_SELECTLIST = 'TOOL_CATEGORY_SELECTLIST';
 export const SET_RMCC_ERRORS = 'SET_RMCC_ERRORS';
 export const SET_COSTING_EFFECTIVE_DATE = 'SET_COSTING_EFFECTIVE_DATE';
 export const CLOSE_OPEN_ACCORDION = 'CLOSE_OPEN_ACCORDION';
+export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DISABLED';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1222,11 +1231,13 @@ export const GET_ROLES_SELECTLIST_SUCCESS = 'GET_ROLES_SELECTLIST_SUCCESS'
 //LEVEL USERS
 export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS'
 export const GET_UNIT_LEVEL_DATA_SUCCESS = 'GET_UNIT_LEVEL_DATA_SUCCESS'
+export const LEVEL_MAPPING_API = 'LEVEL_MAPPING_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
 export const GET_UNIT_DEPARTMENT_DATA_SUCCESS = 'GET_UNIT_DEPARTMENT_DATA_SUCCESS'
 export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCESS'
+
 
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER'
@@ -1318,6 +1329,11 @@ export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
+
+// REPORT
+export const GET_REPORT_LIST = 'GET_REPORT_LIST'
+
+
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
 export const DRAFT = 'Draft'
@@ -1379,9 +1395,28 @@ export const VOLUME = 'Volume'
 export const EXCHANGE_RATE = 'Exchange Rate'
 export const FREIGHT = 'Freight'
 export const INTEREST_RATE = 'Interest Rate'
+export const Approval_Summary = 'Approval Summary'
+export const Approval_Listing = 'Approval Listing'
+export const CostingSummary_BulkUpload = 'Costing Summary BulkUpload'
+export const Simulation_History = 'Simulation History'
+export const Simulation_Page = "Simulation"
+export const Simulation_Upload = 'Simulation Upload'
+
 export const TAX = 'Tax'
 
-export const SHEET_METAL = 'Sheet Metal'
+export const SHEET_METAL = 'Sheet Metal';
+export const PLASTIC = 'Plastic';
+export const WIRING_HARNESS = 'Wiring Harness';
+export const NON_FERROUS_GDC = 'Non Ferrous GDC';
+export const PLATING = 'Plating';
+export const SPRINGS = 'Springs';
+export const HARDWARE = 'Hardware';
+export const NON_FERROUS_LPDDC = 'Non Ferrous LPDC';
+export const MACHINING = 'Machining';
+export const ELECTRONICS = 'Electronics';
+export const RIVET = 'Rivet';
+export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
+export const RUBBER = 'Rubber';
 
 export const USER = 'User'
 export const ROLE = 'Role'
@@ -1494,3 +1529,5 @@ export const SURFACETREATMENT = 'SURFACE TREATMENT'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
 // export constse
+
+export const REASON_ID = 2

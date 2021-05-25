@@ -124,13 +124,13 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading } = field;
+    isClearable, control, errors, register, isLoading,customClassName } = field;
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
 
   return (
-    <div className="w-100 mb-15 form-group-searchable-select">
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
       <label>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}

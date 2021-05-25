@@ -6,7 +6,7 @@ import {
     GET_USER_UNIT_DATA_SUCCESS, GET_UNIT_ROLE_DATA_SUCCESS, GET_UNIT_DEPARTMENT_DATA_SUCCESS, GET_UNIT_LEVEL_DATA_SUCCESS, GET_ROLES_SELECTLIST_SUCCESS,
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
-    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER
+    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -50,14 +50,36 @@ export function loginUserAPI(requestData, callback) {
 export function TokenAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        const queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
+        let queryParams = '';
+        if (requestData.IsRefreshToken) {
+            queryParams = `refresh_token=${requestData.refresh_token}&ClientId=${requestData.ClientId}&grant_type=${requestData.grant_type}`;
+        } else {
+            queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
+        }
         axios.post(API.tokenAPI, queryParams, CustomHeader)
             .then((response) => {
-                console.log('response: ', response);
                 if (response && response.status === 200) {
                     callback(response);
                 }
             }).catch((error) => {
+                dispatch(getFailure(error));
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+export function AutoSignin(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        let queryParams = `Token=${requestData.Token}&UserName=${requestData.UserName}`;
+        axios.post(API.AutoSignin, requestData, CustomHeader)
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+
                 dispatch(getFailure(error));
                 apiErrors(error);
                 callback(error);
@@ -813,6 +835,10 @@ export function getAllLevelMappingAPI(callback) {
         const request = axios.get(`${API.getAllLevelMappingAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: LEVEL_MAPPING_API,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -1216,7 +1242,9 @@ export function getMenuByUser(UserId, callback) {
  */
 export function getLeftMenu(ModuleId, UserId, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        dispatch({
+            type: API_REQUEST
+        });
         const request = axios.get(`${API.getLeftMenu}/${ModuleId}/${UserId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -1353,5 +1381,45 @@ export function getMenu(ModuleId, UserId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
         });
+    };
+}
+
+/**
+ * @method addDepartmentAPI
+ * @description add Department API 
+ */
+export function addCompanyAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addCompanyAPI, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method addDepartmentAPI
+ * @description add Department API 
+ */
+export function updateCompanyAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateCompany, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
     };
 }

@@ -21,6 +21,7 @@ import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+import { getConfigurationKey } from '../../../helper';
 
 class BOPDomesticListing extends Component {
     constructor(props) {
@@ -169,7 +170,12 @@ class BOPDomesticListing extends Component {
         if (newValue && newValue !== '') {
             this.setState({ vendor: newValue }, () => {
                 const { vendor } = this.state;
-                this.props.getPlantSelectListByVendor(vendor.value, () => { })
+                if (getConfigurationKey().IsVendorPlantConfigurable) {
+
+                    this.props.getPlantSelectListByVendor(vendor.value, () => { })
+                } else {
+                    this.props.getPlantSelectList(() => { })
+                }
             });
         } else {
             this.setState({ vendor: [], });
@@ -536,7 +542,8 @@ class BOPDomesticListing extends Component {
                             {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            {getConfigurationKey().IsDestinationPlantConfigure === false && <TableHeaderColumn width={100} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>}
+                            {getConfigurationKey().IsDestinationPlantConfigure === true && <TableHeaderColumn width={100} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>}
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderBasicRate()}</TableHeaderColumn>

@@ -73,9 +73,11 @@ class Level extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
+
           setTimeout(() => {
 
-            let technologyObj = technologyList && technologyList.filter(item => item.Value === Data.TechnologyId)
+            let technologyObj = technologyList && technologyList.filter(item => Number(item.Value) === Data.TechnologyId)
+
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
 
             this.setState({
@@ -308,7 +310,7 @@ class Level extends Component {
     return (
       <div>
         {isLoader && <Loader />}
-        <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen} 
+        <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
@@ -491,9 +493,8 @@ const mapStateToProps = ({ auth }) => {
 
   if (levelDetail && levelDetail !== undefined) {
     initialValues = {
-      LevelName: levelDetail.LevelName,
-      Description: levelDetail.Description,
-      Sequence: levelDetail.Sequence,
+      TechnologyId: levelDetail.Technology,
+      LevelId: levelDetail.Level,
     }
   }
 

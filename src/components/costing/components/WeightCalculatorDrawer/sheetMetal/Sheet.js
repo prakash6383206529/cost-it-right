@@ -22,6 +22,30 @@ function Sheet(props) {
 
     const costData = useContext(costingInfoContext)
 
+
+
+    const convert = (FinishWeightOfSheet, dimmension) => {
+        switch (dimmension) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
+    }
+
     const defaultValues = {
         SheetWidth: WeightCalculatorRequest && WeightCalculatorRequest.Width !== null ? WeightCalculatorRequest.Width : '',
         SheetThickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
@@ -50,7 +74,7 @@ function Sheet(props) {
 
     const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
     const [UOMDimension, setUOMDimension] = useState(
-        WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+        WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
             ? {
                 label: WeightCalculatorRequest.UOMForDimension,
                 value: WeightCalculatorRequest.UOMForDimensionId,
@@ -58,12 +82,16 @@ function Sheet(props) {
             : [],
     )
     let extraObj = {}
-    const [dataToSend, setDataToSend] = useState({})
+    const [dataToSend, setDataToSend] = useState({
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
-    const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
+    const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
-    const [GrossWeight, setGrossWeights] = useState('')
-    const [FinishWeightOfSheet, setFinishWeights] = useState('')
+    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
+    const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
+    // const [FinishWeightOfSheet, setFinishWeights] = useState('')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
@@ -84,13 +112,13 @@ function Sheet(props) {
             const Data = res.data.Data
             const kgObj = Data.find(el => el.Text === G)
             setTimeout(() => {
-                setValue('UOMDimension', WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+                setValue('UOMDimension', WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
                     ? {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
                     }
                     : { label: kgObj.Text, value: kgObj.Value })
-                setUOMDimension(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+                setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
                     ? {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
@@ -138,10 +166,10 @@ function Sheet(props) {
         let data = {
             density: rmRowData.Density,
             thickness: getValues('SheetThickness'),
-            length: length,
-            width: SheetWidth
+            length: checkForNull(getValues('SheetLength')),
+            width: checkForNull(getValues('SheetWidth'))
         }
-        const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000000).toFixed(6)
+        const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000).toFixed(6)
         const updatedValue = dataToSend
         updatedValue.WeightOfSheet = getWeightSheet
         setTimeout(() => {
@@ -152,13 +180,13 @@ function Sheet(props) {
 
     const setNoOfStrips = () => {
         const stripWidth = getValues('StripWidth')
-        const stripNo = parseInt(length / stripWidth)
+        const stripNo = parseInt(checkForNull(getValues('SheetLength')) / checkForNull(getValues('StripWidth')))
         setValue('StripsNumber', checkForNull(stripNo))
     }
 
     const setComponentPerStrips = () => {
         const blankSize = getValues('BlankSize')
-        const componentPerStrip = parseInt(SheetWidth / blankSize)
+        const componentPerStrip = parseInt(checkForNull(getValues('SheetWidth')) / blankSize)
         setValue('ComponentPerStrip', checkForNull(componentPerStrip))
 
     }
@@ -183,7 +211,7 @@ function Sheet(props) {
         const cavity = getValues('Cavity')
 
         grossWeight = (sheetWeight / noOfComponent) / cavity
-        console.log('grossWeight: ', grossWeight);
+
         const updatedValue = dataToSend
         updatedValue.GrossWeight = grossWeight
         setTimeout(() => {
@@ -229,7 +257,7 @@ function Sheet(props) {
      * @description Used to Submit the form
      */
     const onSubmit = (values) => {
-        console.log('values: ', values);
+
 
 
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
@@ -275,7 +303,7 @@ function Sheet(props) {
             FinishWeight: getValues('FinishWeightOfSheet'),
             LoggedInUserId: loggedInUserId()
         }
-        console.log(data, "Sheet Data");
+
 
         let obj = {
         }

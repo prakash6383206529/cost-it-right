@@ -20,6 +20,7 @@ import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { INR } from '../../../config/constants';
+import { getConfigurationKey } from '../../../helper';
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -169,6 +170,7 @@ class BOPImportListing extends Component {
     handleVendorChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ vendor: newValue });
+
         } else {
             this.setState({ vendor: [], });
 
@@ -518,7 +520,8 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
 
                             <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
+                            {getConfigurationKey().IsDestinationPlantConfigure === false && <TableHeaderColumn width={100} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>}
+                            {getConfigurationKey().IsDestinationPlantConfigure === true && <TableHeaderColumn width={100} dataField="DestinationPlant" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>}
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderBasicRate()}</TableHeaderColumn>

@@ -16,7 +16,7 @@ import $ from 'jquery'
 import { costingHeadObjs, Months } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
-import { VOLUME } from '../../../config/constants'
+import { VOLUME, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { loggedInUserId } from '../../../helper/auth'
@@ -492,7 +492,7 @@ class VolumeListing extends Component {
     const monthTemp = month ? month.value : null
     const vendorNameTemp = vendorName ? vendorName.value : null
     const plantTemp = plant ? plant.value : null
-    const costingHead = costing_head ? costing_head.value : null
+    const costingHead = costing_head ? costing_head.value === ZBC ? 0 : 1 : null
 
     this.getTableListData(yearTemp, monthTemp, vendorNameTemp, plantTemp, costingHead)
   }
@@ -508,6 +508,7 @@ class VolumeListing extends Component {
         month: [],
         vendorName: [],
         plant: [],
+        costing_head: []
       },
       () => {
         this.getTableListData()

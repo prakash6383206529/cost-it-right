@@ -63,6 +63,7 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
+      isLoader: false
     };
   }
 
@@ -178,7 +179,7 @@ class UserRegistration extends Component {
 
     if (label === 'department') {
       departmentList && departmentList.map(item =>
-        temp.push({ label: item.DepartmentName, value: item.DepartmentId })
+        temp.push({ label: item.DepartmentName, value: item.DepartmentId, CompanyId: item.CompanyId })
       );
       return temp;
     }
@@ -655,7 +656,7 @@ class UserRegistration extends Component {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: userDetails.CompanyId,
+        CompanyId: department.CompanyId,
         EmailAddress: values.EmailAddress,
         Mobile: values.Mobile,
         FirstName: values.FirstName,
@@ -728,7 +729,7 @@ class UserRegistration extends Component {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: userDetails.CompanyId,
+        CompanyId: department.CompanyId,
         EmailAddress: values.EmailAddress,
         Mobile: values.Mobile,
         FirstName: values.FirstName,
@@ -767,10 +768,10 @@ class UserRegistration extends Component {
 
   render() {
     const { handleSubmit, initialConfiguration, loading } = this.props;
-    const { isSubmitted } = this.state;
+    const { isSubmitted, isLoader } = this.state;
     return (
       <div className="container-fluid">
-        {loading && <Loader />}
+        {isLoader && <Loader />}
         <div className="login-container signup-form">
           <div className="row">
 
@@ -893,7 +894,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, minLength7, checkWhiteSpaces]}
+                            validate={[required, minLength3, checkWhiteSpaces]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
@@ -998,7 +999,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={'Role & Department:'}
+                      title={'Role & Company:'}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1021,9 +1022,9 @@ class UserRegistration extends Component {
                         <Field
                           name="DepartmentId"
                           type="text"
-                          label="Department"
+                          label="Company"
                           component={searchableSelect}
-                          placeholder={'Select department'}
+                          placeholder={'Select company'}
                           options={this.searchableSelectType('department')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}

@@ -28,7 +28,8 @@ function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
-    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate } = useSelector(state => state.costing)
+    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
+    IsCostingDateDisabled, ActualCostingDataList } = useSelector(state => state.costing)
 
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
@@ -38,6 +39,8 @@ function CostingHeaderTabs(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+
+  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 
   useEffect(() => {
 
@@ -100,7 +103,14 @@ function CostingHeaderTabs(props) {
           checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.ICCCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
-        "CostingPartDetails": ComponentItemOverheadData.CostingPartDetails
+        "CostingPartDetails": {
+          ...ComponentItemOverheadData.CostingPartDetails,
+          NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData.CostingPartDetails.OverheadCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.ProfitCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.ICCCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
+        },
       }
       dispatch(saveComponentOverheadProfitTab(reqData, res => {
         dispatch(setComponentOverheadItemData({}, () => { }))
@@ -219,7 +229,7 @@ function CostingHeaderTabs(props) {
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode) ? true : false}
+                  disabled={(CostingViewMode || IsCostingDateDisabled || ActualTotalCost > 0) ? true : false}
                 />
               </div>
             </div>

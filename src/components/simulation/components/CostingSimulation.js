@@ -134,14 +134,14 @@ function CostingSimulation(props) {
     }
 
     const onSaveSiualtion = () => {
-        console.log("OnSubmit");
+
         setShowApprovalHistory(true)
     }
 
     // const onExportToCSV = (onClick) => {
     //     // Custom your onClick event here,
     //     // it's not necessary to implement this function if you have no any process before onClick
-    //     console.log('This is my custom function for ExportCSVButton click event');
+    //     
     // }
 
     const onExportToCSV = (row) => {
@@ -303,7 +303,7 @@ function CostingSimulation(props) {
                                 className="add-volume-table"
                                 pagination
                                 exportCSV
-                                csvFileName='table-export.csv'   
+                                csvFileName='table-export.csv'
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingId" width={100} export hidden columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>

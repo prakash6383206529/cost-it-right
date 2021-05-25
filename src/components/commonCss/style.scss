@@ -1404,9 +1404,62 @@ button.user-btn.pull-right {
       display: none
     }
 }
-.main-section .content-page .filter-block .css-yk16xz-control,
-.main-section .content-page .filter-block .css-1pahdxg-control
-{min-height: 32px !important;    height: 32px;}
+
+// filter row in drawer or filter row normal start
+.filter-row{
+  .filter-block {
+    .flex-fill,
+    .flex-fills {
+      padding-right: 10px;
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    h5 {
+      color: $headinlightgblack;
+      font-size: $font-16;
+      position: $positio-relative;
+      padding: 7px 15px 7px 10px;
+    }
+
+    .css-yk16xz-control,
+    .css-1pahdxg-control {
+      border: 1px solid #c2cbe8 !important;
+      color: #a4abc5;
+      min-height: 32px !important;
+      font-size: $font-14;
+      border-color: #c2cbe8;
+      height: 32px;
+    }
+
+    .css-tlfecz-indicatorContainer,.css-1gtu0rj-indicatorContainer{
+      padding: 5px;
+      padding-left: 0px;
+    }
+
+    .css-1hwfws3 {
+      padding: 0px 8px;
+    }
+  }
+}
+// filter row in drawer or filter row normal End
+
+.main-section {
+  .content-page {
+    .filter-block{
+      .css-yk16xz-control,.css-1pahdxg-control{
+        min-height: 32px !important;
+        height: 32px;
+      }
+    }
+  }
+}
+
+
+
+
 .drawer-edit{     margin-top: 31px;
   margin-left: 5px;
 }
@@ -1498,7 +1551,17 @@ button.user-btn.pull-right {
 .react-bs-table-container.client-table {
   position: relative;
 }
-
+.hidepage-size{
+  .react-bs-table-container{
+    .react-bs-table-pagination{
+      .row{
+        .col-md-6:nth-child(1){
+          display: none;
+        }
+      }
+    }
+  }
+}
 .client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-8 {
   display: none;
 }
@@ -1828,9 +1891,28 @@ body {
 	margin: 1px;
 	font-weight: 400;
 }
+.arrow-ico {
+  width: 12px;
+  height: 12px;
+  &.arrow-green{
+    filter: invert(38%) sepia(18%) saturate(1338%) hue-rotate(85deg) brightness(97%) contrast(83%);
+  }
+  &.arrow-red{
+    filter: invert(45%) sepia(44%) saturate(2855%) hue-rotate(320deg) brightness(106%) contrast(98%);
+  }
+}
 // =================Costing Approval=========================
 
 // =================approval-summary=========================
+.approval-listing-page{
+  .react-bs-table-container {
+    th,td{
+      >input[type=checkbox]{
+        min-width: 12px;
+      }
+    }
+  }
+}
 .card-border {
 	border: 1px solid #C2CBE8;
 	position: relative;
@@ -3637,8 +3719,12 @@ body{
       background-color: #256bd1;
     }
   }
-  input:disabled ~ span{
-    &:before,&:after{opacity: 0.5;}
+  input:disabled ~ span{opacity: 0.5;}
+  input[type="radio"]:disabled{
+    cursor: not-allowed;
+    & ~ span{
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -3945,7 +4031,15 @@ body{
     width: 110px;
   }
 }
-
+.weight-calculator-headings{
+  font-size: 15px;
+  div.d-inline-block{
+    margin-right: 18px;
+    &:last-child{
+      margin-right: 0px;
+    }
+  }
+}
 
 // responsive media query start
 @media(max-width:1600px){
@@ -4056,6 +4150,7 @@ body{
 }// 1600px media query end
 
 @media(max-width:1366px){
+  .notification-dropdown{left: -9rem;}
   .text-warning{font-size: calc(12px * 80 / 100);}
   .warning-row{
     img{
@@ -4074,7 +4169,6 @@ body{
   // spacing
   .mt9{margin-top: calc(9px * 80 / 100);}
   // spacing
-  
   .form-control,.input-form-control.bg-grey,
   .manageuser .css-yk16xz-control {
     font-size: calc(14px * 80 / 100) !important;
@@ -4495,7 +4589,7 @@ body{
         font-size: calc(14px * 80 /100);
         height: calc(40px * 80 /100);
       }
-      .content-page .filter-block .css-tlfecz-indicatorContainer{
+      .content-page .filter-block .css-tlfecz-indicatorContainer,.basic-multi-select .css-tlfecz-indicatorContainer{
         padding:calc(5px * 80 / 100) ;
         .css-6q0nyr-Svg{
           height: calc(20px * 80 / 100);
@@ -4549,6 +4643,15 @@ body{
           th,td{
             >input[type=checkbox]{
               min-width: 14px;
+            }
+          }
+        }
+      }
+      .approval-listing-page{
+        .react-bs-table-container {
+          th,td{
+            >input[type=checkbox]{
+              min-width: 21px;
             }
           }
         }
@@ -4667,7 +4770,7 @@ body{
       }
 
       .css-1fhf3k1-control,.css-f0arjc-control{
-        min-height: calc(38px * 80 / 100);
+        min-height: calc(40px * 80 / 100);
       }
 
       .select__value-container--has-value{
@@ -4718,6 +4821,15 @@ body{
      }
      .add-volume-table td .form-control,.login-form .inputbox.input-group .form-control,.form-control, .manageuser .css-yk16xz-control{
        height: calc(40px * 80 / 100);
+     }
+     .basic-multi-select.select--is-disabled{
+      border: none;
+      }
+     .content-page .basic-multi-select .select__control{
+       height: calc(40px * 80 / 100);
+     }
+     .select--is-disabled .css-12jo7m5{
+       font-size: calc(14px * 80 / 100);
      }
      textarea.form-control{
        height: auto;

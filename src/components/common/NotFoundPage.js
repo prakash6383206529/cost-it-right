@@ -47,7 +47,7 @@ class NotFoundPage extends Component {
                 <div className="">
                   <h1 className="fw-500 mt-20 ">Page not found</h1>
                   <h5 className="fw-500">
-                    Oopps. There was an error, please try again later.
+                    Oops. There was an error, please try again later.
                   </h5>
                   <p className=" mt-15">
                     The server encountered an internal server error and was

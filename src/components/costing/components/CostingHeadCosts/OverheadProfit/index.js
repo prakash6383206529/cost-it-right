@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, } from '../../../actions/Costing';
+import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
@@ -30,7 +30,6 @@ function OverheadProfit(props) {
     RejectionTotalCost: CostingRejectionDetail && CostingRejectionDetail.RejectionTotalCost !== null ? CostingRejectionDetail.RejectionTotalCost : '',
 
     // ICC FIELDS
-    ICCApplicability: ICCApplicabilityDetail !== null ? ICCApplicabilityDetail.ICCApplicability : '',
     InterestRatePercentage: ICCApplicabilityDetail !== null ? ICCApplicabilityDetail.InterestRate : '',
     InterestRateCost: ICCApplicabilityDetail !== null ? ICCApplicabilityDetail.CostApplicability : '',
     NetICCTotal: ICCApplicabilityDetail !== null ? ICCApplicabilityDetail.NetCost : '',
@@ -43,7 +42,7 @@ function OverheadProfit(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   });
@@ -66,6 +65,7 @@ function OverheadProfit(props) {
   const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails.ModelType !== null ? { label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
 
   const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
+  const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
 
   const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
   const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
@@ -77,10 +77,6 @@ function OverheadProfit(props) {
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
   const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
-
-  // setValue('ICCApplicability', ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
-  // setValue('PaymentTermsApplicability', PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
-
 
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
@@ -101,15 +97,14 @@ function OverheadProfit(props) {
     }
 
     if (Object.keys(ICCApplicabilityDetail).length > 0) {
-      setValue('ICCApplicability', ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
-      setValue('PaymentTermsApplicability', PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
-      setICCapplicability({ label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability })
-      setICCInterestRateId(ICCApplicabilityDetail.InterestRateId)
+      //setValue('ICCApplicability', ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
+      //setValue('PaymentTermsApplicability', PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
+      //setICCInterestRateId(ICCApplicabilityDetail.InterestRateId)
     }
 
     if (Object.keys(PaymentTermDetail).length > 0) {
-      setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
-      setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
+      // setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
+      // setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
     }
 
     setTimeout(() => {
@@ -121,6 +116,10 @@ function OverheadProfit(props) {
   useEffect(() => {
     IncludeSurfaceTreatmentCall()
   }, [IsIncludedSurfaceInOverheadProfit])
+
+  useEffect(() => {
+    IncludeSurfaceTreatmentCall()
+  }, [SurfaceTreatmentCost.NetSurfaceTreatmentCost])
 
   /**
   * @method UpdateForm
@@ -180,7 +179,7 @@ function OverheadProfit(props) {
 
   const rejectionFieldValues = useWatch({
     control,
-    name: ['RejectionPercentage'],
+    name: ['RejectionPercentage', 'Applicability'],
   });
 
   useEffect(() => {
@@ -251,14 +250,25 @@ function OverheadProfit(props) {
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
       }
 
-      props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 500)
 
   }, [overheadObj, profitObj]);
 
   useEffect(() => {
-    try {
-      checkRejectionApplicability(applicability.label)
+
+    // if (applicability.label === 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
+    checkRejectionApplicability(applicability.label)
+    // } else if (IsIncludedSurfaceInOverheadProfit === false) {
+    //   checkRejectionApplicability(applicability.label)
+    // } else if (applicability.label !== 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
+    //   setIsSurfaceTreatmentAdded(false)
+    //   IncludeSurfaceTreatmentCall()
+    // }
+
+    setTimeout(() => {
       let tempObj = {
         "RejectionApplicabilityId": applicability ? applicability.value : '',
         "RejectionApplicability": applicability ? applicability.label : '',
@@ -268,35 +278,43 @@ function OverheadProfit(props) {
         "IsSurfaceTreatmentApplicable": true,
       }
 
-      setTimeout(() => {
+      if (!CostingViewMode) {
         props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-      }, 200)
-
-    } catch (error) {
-    }
+      }
+    }, 200)
 
   }, [rejectionFieldValues]);
 
   const ICCFieldValues = useWatch({
     control,
-    name: ['ICCApplicability'],
+    name: ['ICCApplicability',],
   });
 
   useEffect(() => {
+
+    // if (IsIncludedSurfaceInOverheadProfit) {
+    //   setIsSurfaceTreatmentAdded(false)
+    //   IncludeSurfaceTreatmentCall()
+    // } else {
+    checkInventoryApplicability(ICCapplicability?.label)
+    // }
+
     setTimeout(() => {
       let tempObj = {
         "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
-        "IccDetailId": ICCApplicabilityDetail ? ICCApplicabilityDetail.IccDetailId : '',
-        "ICCApplicability": ICCapplicability.value,
+        "IccDetailId": InventoryObj ? InventoryObj.InterestRateId : '',
+        "ICCApplicability": InventoryObj ? InventoryObj.ICCApplicability : '',
         "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
         "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
         "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
         "EffectiveDate": "",
       }
 
-      props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 200)
-  }, [ICCFieldValues, interestRateValues]);
+  }, [ICCFieldValues, interestRateValues, IsIncludedSurfaceInOverheadProfit]);
 
   const PaymentTermsFieldValues = useWatch({
     control,
@@ -313,16 +331,18 @@ function OverheadProfit(props) {
       let tempObj = {
         "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
         "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
-        "PaymentTermApplicability": paymentTermsApplicability.label,
+        "PaymentTermApplicability": PaymentTermObj ? PaymentTermObj.PaymentTermApplicability : '',
         "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
         "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
         "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',
         "EffectiveDate": ""
       }
 
-      props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }, 200)
-  }, [PaymentTermsFieldValues]);
+  }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues]);
 
   // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
   useEffect(() => {
@@ -391,8 +411,8 @@ function OverheadProfit(props) {
     switch (OverheadCombinedText) {
       case 'RM + CC + BOP':
         setValue('OverheadPercentage', OverheadPercentage)
-        setValue('OverheadCombinedCost', headerCosts.NetTotalRMBOPCC)
-        setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+        //setValue('OverheadCombinedCost', headerCosts.NetTotalRMBOPCC)
+        //setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
 
       case 'RM + BOP':
@@ -405,15 +425,15 @@ function OverheadProfit(props) {
       case 'RM + CC':
         const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
         setValue('OverheadPercentage', OverheadPercentage)
-        setValue('OverheadCombinedCost', RMCC)
-        setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+        //setValue('OverheadCombinedCost', RMCC)
+        //setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
 
       case 'BOP + CC':
         const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetConversionCost;
         setValue('OverheadPercentage', OverheadPercentage)
-        setValue('OverheadCombinedCost', BOPCC)
-        setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+        //setValue('OverheadCombinedCost', BOPCC)
+        //setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
 
       default:
@@ -459,7 +479,7 @@ function OverheadProfit(props) {
       //setValue('OverheadCCCost', headerCosts.NetConversionCost)
 
       /**
-       *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
+       *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY), IS NOT IS USE THEN UNCOMMENT BELOW LINE
        *  AND COMMENT THIS FUNCTION IncludeSurfaceTreatmentCall()
        */
       // setValue('OverheadCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(OverheadCCPercentage), initialConfiguration.NoOfDecimalForPrice))
@@ -506,7 +526,7 @@ function OverheadProfit(props) {
 
     switch (ProfitCombinedText) {
       case 'RM + CC + BOP':
-        setValue('ProfitPercentage', 10)
+        setValue('ProfitPercentage', ProfitPercentage)
         //setValue('ProfitCombinedCost', headerCosts.NetTotalRMBOPCC)
         //setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
@@ -514,22 +534,22 @@ function OverheadProfit(props) {
       case 'RM + BOP':
         const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
         setValue('ProfitPercentage', ProfitPercentage)
-        setValue('ProfitCombinedCost', RMBOP)
+        setValue('ProfitCombinedCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
         setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(RMBOP * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
 
       case 'RM + CC':
         const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
         setValue('ProfitPercentage', ProfitPercentage)
-        setValue('ProfitCombinedCost', RMCC)
-        setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
+        //setValue('ProfitCombinedCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
+        //setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
 
       case 'BOP + CC':
         const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetConversionCost;
         setValue('ProfitPercentage', ProfitPercentage)
-        setValue('ProfitCombinedCost', BOPCC)
-        setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
+        //setValue('ProfitCombinedCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
+        //setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
         break;
 
       default:
@@ -574,7 +594,7 @@ function OverheadProfit(props) {
       //setValue('ProfitCCCost', headerCosts.NetConversionCost)
 
       /**
-       *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
+       *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY), IS NOT IS USE THEN UNCOMMENT BELOW LINE
        *  AND COMMENT THIS FUNCTION IncludeSurfaceTreatmentCall()
        */
       //setValue('ProfitCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(ProfitCCPercentage), initialConfiguration.NoOfDecimalForPrice))
@@ -634,7 +654,7 @@ function OverheadProfit(props) {
           break;
 
         case 'RM + CC + BOP':
-          setValue('RejectionCost', headerCosts.NetTotalRMBOPCC)
+          setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
           setRejectionObj({
             ...rejectionObj,
@@ -647,7 +667,7 @@ function OverheadProfit(props) {
           break;
 
         case 'RM + BOP':
-          setValue('RejectionCost', RMBOP)
+          setValue('RejectionCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
           setValue('RejectionTotalCost', checkForDecimalAndNull(RMBOP * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
           setRejectionObj({
             ...rejectionObj,
@@ -660,7 +680,7 @@ function OverheadProfit(props) {
           break;
 
         case 'RM + CC':
-          setValue('RejectionCost', RMCC)
+          setValue('RejectionCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('RejectionTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
           setRejectionObj({
             ...rejectionObj,
@@ -673,7 +693,7 @@ function OverheadProfit(props) {
           break;
 
         case 'BOP + CC':
-          setValue('RejectionCost', BOPCC)
+          setValue('RejectionCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('RejectionTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
           setRejectionObj({
             ...rejectionObj,
@@ -790,11 +810,9 @@ function OverheadProfit(props) {
             }, 200)
           }
 
-          setRejectionObj(Data.CostingRejectionDetail)
-          setIsSurfaceTreatmentAdded(false)
-          // setTimeout(() => {
-          //   IncludeSurfaceTreatmentCall()
-          // }, 3000)
+          //setRejectionObj(Data.CostingRejectionDetail)
+          // setIsSurfaceTreatmentAdded(false)
+          dispatch(gridDataAdded(true))
         }
       }))
     } else {
@@ -854,7 +872,7 @@ function OverheadProfit(props) {
 
     if (dataObj.IsProfitCombined && IsAPIResponse === false) {
       setValue('ProfitPercentage', dataObj.IsProfitCombined ? dataObj.ProfitPercentage : '')
-      setValue('ProfitCombinedCost', headerCosts && headerCosts.NetTotalRMBOPCC)
+      setValue('ProfitCombinedCost', checkForDecimalAndNull(headerCosts && headerCosts.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice))
       //setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(dataObj.ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
     }
 
@@ -885,6 +903,7 @@ function OverheadProfit(props) {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
       checkRejectionApplicability(newValue.label)
+      setIsChangedApplicability(!IsChangedApplicability)
     } else {
       setApplicability([])
       checkRejectionApplicability('')
@@ -897,6 +916,7 @@ function OverheadProfit(props) {
    */
   const onPressInventory = () => {
     setIsInventoryApplicable(!IsInventoryApplicable)
+    dispatch(gridDataAdded(true))
   }
 
   useEffect(() => {
@@ -906,25 +926,36 @@ function OverheadProfit(props) {
         IsVendor: costData.IsVendor
       }
       dispatch(getInventoryDataByHeads(reqParams, res => {
-        if (res && res.status === 204) {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setValue('InterestRatePercentage', Data.InterestRate)
+          setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
+          setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+          setInventoryObj(Data)
+          if (IsIncludedSurfaceInOverheadProfit) {
+            setIsSurfaceTreatmentAdded(false)
+            setTimeout(() => {
+              IncludeSurfaceTreatmentCall()
+            }, 200)
+          } else {
+            checkInventoryApplicability(Data.ICCApplicability)
+          }
+
+        } else if (res && res.status === 204) {
           setValue('InterestRatePercentage', '')
           setValue('InterestRateCost', '')
           setValue('NetICCTotal', '')
           checkInventoryApplicability('')
           setICCapplicability([])
-        } else {
-          if (res && res.data && res.data.Result) {
-            let Data = res.data.Data;
-            setValue('InterestRatePercentage', Data.InterestRate)
-            setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
-            checkInventoryApplicability(Data.ICCApplicability)
-            setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
-          }
+          setInventoryObj({})
         }
+
       }))
     } else {
       setICCapplicability([])
-      props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }
   }, [IsInventoryApplicable])
 
@@ -961,8 +992,8 @@ function OverheadProfit(props) {
   }
 
   /**
-    * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
-    */
+  * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
+  */
   useEffect(() => {
     if (ICCapplicability && ICCapplicability.label === 'Fixed') {
       setValue('NetICCTotal', getValues('InterestRatePercentage'))
@@ -1028,6 +1059,7 @@ function OverheadProfit(props) {
    */
   const onPressPaymentTerms = () => {
     setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
+    dispatch(gridDataAdded(true))
   }
 
   useEffect(() => {
@@ -1037,24 +1069,30 @@ function OverheadProfit(props) {
         IsVendor: costData.IsVendor
       }
       dispatch(getPaymentTermsDataByHeads(reqParams, res => {
-        if (res.status === 204) {
-          setValue('RepaymentPeriodDays', '')
-          setValue('RepaymentPeriodPercentage', '')
-          setValue('RepaymentPeriodCost', '')
-          checkPaymentTermApplicability('')
-          setPaymentTermsApplicability([])
-        } else if (res && res.data && res.data.Result) {
+
+        if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
           setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
           setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
           checkPaymentTermApplicability(Data.PaymentTermApplicability)
           setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+          setPaymentTermObj(Data)
+        } else if (res.status === 204) {
+          setValue('RepaymentPeriodDays', '')
+          setValue('RepaymentPeriodPercentage', '')
+          setValue('RepaymentPeriodCost', '')
+          checkPaymentTermApplicability('')
+          setPaymentTermsApplicability([])
+          setPaymentTermObj({})
         }
+
       }))
     } else {
       setPaymentTermsApplicability([])
-      props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      if (!CostingViewMode) {
+        props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }
     }
   }, [IsPaymentTermsApplicable])
 
@@ -1066,7 +1104,6 @@ function OverheadProfit(props) {
     if (newValue && newValue !== '') {
       setPaymentTermsApplicability(newValue)
       const reqParams = {
-        //Id: newValue.value,
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
         IsVendor: costData.IsVendor
       }
@@ -1198,7 +1235,6 @@ function OverheadProfit(props) {
       // END HERE ADD CC IN PROFIT
     }
 
-
     // START ADD CC IN OVERHEAD COMBINED
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCombined) {
       const { OverheadApplicability, OverheadPercentage } = overheadObj;
@@ -1250,6 +1286,12 @@ function OverheadProfit(props) {
           setValue('OverheadPercentage', OverheadPercentage)
           setValue('OverheadCombinedCost', headerCosts.NetTotalRMBOPCC)
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
+          setOverheadObj({
+            ...overheadObj,
+            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedTotalCost: checkForDecimalAndNull(getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice),
+          })
           break;
 
         case 'RM + CC':
@@ -1257,6 +1299,12 @@ function OverheadProfit(props) {
           setValue('OverheadPercentage', OverheadPercentage)
           setValue('OverheadCombinedCost', RMCC)
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
+          setOverheadObj({
+            ...overheadObj,
+            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedTotalCost: checkForDecimalAndNull(getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice),
+          })
           break;
 
         case 'BOP + CC':
@@ -1264,6 +1312,12 @@ function OverheadProfit(props) {
           setValue('OverheadPercentage', OverheadPercentage)
           setValue('OverheadCombinedCost', BOPCC)
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
+          setOverheadObj({
+            ...overheadObj,
+            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedTotalCost: checkForDecimalAndNull(getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice),
+          })
           break;
 
         default:
@@ -1279,7 +1333,7 @@ function OverheadProfit(props) {
       switch (ProfitApplicability) {
         case 'RM + CC + BOP':
           setValue('ProfitPercentage', ProfitPercentage)
-          setValue('ProfitCombinedCost', headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+          setValue('ProfitCombinedCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCombinedTotalCost', checkForDecimalAndNull((headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost) * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
           setIsSurfaceTreatmentAdded(true)
           setProfitObj({
@@ -1292,8 +1346,9 @@ function OverheadProfit(props) {
         case 'RM + CC':
           const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
           setValue('ProfitPercentage', ProfitPercentage)
-          setValue('ProfitCombinedCost', RMCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+          setValue('ProfitCombinedCost', checkForDecimalAndNull(RMCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCombinedTotalCost', checkForDecimalAndNull((RMCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost) * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(true)
           setProfitObj({
             ...profitObj,
             ProfitCombinedCost: getValues('ProfitCombinedCost'),
@@ -1304,8 +1359,9 @@ function OverheadProfit(props) {
         case 'BOP + CC':
           const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetConversionCost;
           setValue('ProfitPercentage', ProfitPercentage)
-          setValue('ProfitCombinedCost', BOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+          setValue('ProfitCombinedCost', checkForDecimalAndNull(BOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(getValues('ProfitCombinedCost') * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(true)
           setProfitObj({
             ...profitObj,
             ProfitCombinedCost: getValues('ProfitCombinedCost'),
@@ -1322,7 +1378,7 @@ function OverheadProfit(props) {
       switch (ProfitApplicability) {
         case 'RM + CC + BOP':
           setValue('ProfitPercentage', ProfitPercentage)
-          setValue('ProfitCombinedCost', headerCosts.NetTotalRMBOPCC)
+          setValue('ProfitCombinedCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(getValues('ProfitCombinedCost') * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
           setIsSurfaceTreatmentAdded(false)
           setProfitObj({
@@ -1337,6 +1393,7 @@ function OverheadProfit(props) {
           setValue('ProfitPercentage', ProfitPercentage)
           setValue('ProfitCombinedCost', RMCC)
           setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
           setProfitObj({
             ...profitObj,
             ProfitCombinedCost: getValues('ProfitCombinedCost'),
@@ -1347,8 +1404,9 @@ function OverheadProfit(props) {
         case 'BOP + CC':
           const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetConversionCost;
           setValue('ProfitPercentage', ProfitPercentage)
-          setValue('ProfitCombinedCost', BOPCC)
+          setValue('ProfitCombinedCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(ProfitPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
           setProfitObj({
             ...profitObj,
             ProfitCombinedCost: getValues('ProfitCombinedCost'),
@@ -1372,8 +1430,9 @@ function OverheadProfit(props) {
     props.saveCosting(values)
   }
 
-  //console.log('counter', counter)
+  //
   counter++;
+
   /**
   * @method render
   * @description Renders the component
@@ -2141,7 +2200,7 @@ function OverheadProfit(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Rejection ${applicability.label !== 'Fixed' ? '(%)' : ''}`}
                   name={'RejectionPercentage'}
                   Controller={Controller}
@@ -2150,14 +2209,8 @@ function OverheadProfit(props) {
                   mandatory={false}
                   rules={{
                     required: false,
-                    pattern: {
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.'
-                    },
-                    // max: {
-                    //   value: 100,
-                    //   message: 'Percentage cannot be greater than 100'
-                    // },
+                    pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                    max: { value: 100, message: 'Percentage cannot be greater than 100' },
                   }}
                   // handleChange={handleRejection}
                   handleChange={() => { }}
@@ -2234,23 +2287,9 @@ function OverheadProfit(props) {
                     <label className="col-label">
                       {ICCapplicability.label}
                     </label>
-                    {/* <SearchableSelectHookForm
-                      label={'ICC Applicability'}
-                      name={'ICCApplicability'}
-                      placeholder={'-Select-'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={ICCapplicability.length !== 0 ? ICCapplicability : ''}
-                      options={renderListing('ICCApplicability')}
-                      mandatory={true}
-                      handleChange={handleICCApplicabilityChange}
-                      errors={errors.ICCApplicability}
-                    /> */}
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Interest Rate ${ICCapplicability.label !== 'Fixed' ? '(%)' : ''}`}
                       name={'InterestRatePercentage'}
                       Controller={Controller}
@@ -2260,7 +2299,7 @@ function OverheadProfit(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         max: {
@@ -2378,7 +2417,7 @@ function OverheadProfit(props) {
                     />
                   </Col>}
                   <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Interest Rate${paymentTermsApplicability.label !== 'Fixed' ? '(%)' : ''}`}
                       name={'RepaymentPeriodPercentage'}
                       Controller={Controller}
@@ -2388,7 +2427,7 @@ function OverheadProfit(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         max: {

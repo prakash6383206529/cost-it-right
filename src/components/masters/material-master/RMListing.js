@@ -86,7 +86,7 @@ class RMListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(`${MESSAGES.MATERIAL_DELETE_ALERT}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.MATERIAL1_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -155,7 +155,7 @@ class RMListing extends Component {
         return (
             <>
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }

@@ -70,6 +70,11 @@ function PartCompoment(props) {
         "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
+          checkForNull(item.CostingPartDetails.ProfitCost) +
+          checkForNull(item.CostingPartDetails.RejectionCost) +
+          checkForNull(item.CostingPartDetails.ICCCost) +
+          checkForNull(item.CostingPartDetails.PaymentTermCost),
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -143,6 +148,7 @@ function PartCompoment(props) {
                 index={props.index}
                 data={rmData}
                 setRMCost={props.setRMCost}
+                setRMMasterBatchCost={props.setRMMasterBatchCost}
                 item={item}
               />
 

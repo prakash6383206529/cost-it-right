@@ -27,6 +27,7 @@ class DepartmentsListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      isLoader: false
     }
   }
 
@@ -56,12 +57,13 @@ class DepartmentsListing extends Component {
   }
 
   getDepartmentListData = () => {
+    this.setState({ isLoader: true })
     this.props.getAllDepartmentAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
         this.setState({
           tableData: Data,
-        })
+        }, () => this.setState({ isLoader: false }))
       }
     });
   }
@@ -172,7 +174,7 @@ class DepartmentsListing extends Component {
     };
     return (
       <>
-        {this.props.loading && <Loader />}
+        {this.state.isLoader && <Loader />}
         <Row className="pt-4 no-filter-row">
           {AddAccessibility && (
             <>
@@ -206,21 +208,9 @@ class DepartmentsListing extends Component {
               tableHeaderClass="my-custom-header"
               pagination
             >
-              <TableHeaderColumn
-                dataField="DepartmentName"
-                isKey={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                Department
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="DepartmentId"
-                dataAlign="right"
-                dataFormat={this.buttonFormatter}
-              >
-                Actions
-              </TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Company</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Company Code</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>
