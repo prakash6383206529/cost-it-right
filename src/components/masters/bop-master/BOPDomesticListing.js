@@ -170,7 +170,12 @@ class BOPDomesticListing extends Component {
         if (newValue && newValue !== '') {
             this.setState({ vendor: newValue }, () => {
                 const { vendor } = this.state;
-                this.props.getPlantSelectListByVendor(vendor.value, () => { })
+                if (getConfigurationKey().IsVendorPlantConfigurable) {
+
+                    this.props.getPlantSelectListByVendor(vendor.value, () => { })
+                } else {
+                    this.props.getPlantSelectList(() => { })
+                }
             });
         } else {
             this.setState({ vendor: [], });

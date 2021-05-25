@@ -31,6 +31,7 @@ import moment from 'moment';
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
+import WarningMessage from '../../common/WarningMessage'
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -67,7 +68,8 @@ class AddBOPImport extends Component {
       showCurrency: false,
       netLandedConverionCost: '',
       DataToChange: [],
-      DropdownChange: true
+      DropdownChange: true,
+      showWarning: false
     }
   }
 
@@ -394,7 +396,23 @@ class AddBOPImport extends Component {
 
       } else {
         this.setState({ showCurrency: true }, () => {
-          this.handleCalculation()
+          if (this.state.effectiveDate) {
+            this.props.getExchangeRateByCurrency(newValue.label, moment(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
+              //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+
+              if (Object.keys(res.data.Data).length === 0) {
+
+                this.setState({ showWarning: true })
+              }
+              else {
+                this.setState({ showWarning: false })
+              }
+              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+                this.handleCalculation()
+              })
+            })
+          }
+          // this.handleCalculation()
         })
       }
       this.setState({ currency: newValue, })
@@ -435,6 +453,14 @@ class AddBOPImport extends Component {
     } else {
       this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+
+        if (Object.keys(res.data.Data).length === 0) {
+
+          this.setState({ showWarning: true })
+        }
+        else {
+          this.setState({ showWarning: false })
+        }
         this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
           this.handleCalculation()
         })
@@ -974,6 +1000,7 @@ class AddBOPImport extends Component {
                                 disabled={isEditFlag ? true : false}
                               //minDate={moment()}
                               />
+                              {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </div>
 
                           </Col>

@@ -519,8 +519,8 @@ const CostingSummaryTable = (props) => {
           obj.partNo = viewCostingData[index].partId
           obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
           obj.destinationPlantName = viewCostingData[index].destinationPlantName
-          obj.destinationPlantId = viewCostingData[index].
-            temp.push(obj)
+          obj.destinationPlantId = viewCostingData[index].destinationPlantId
+          temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
       })
