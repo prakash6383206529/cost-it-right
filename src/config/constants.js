@@ -811,7 +811,11 @@ export const API = {
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
-  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`
+  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
+
+  //REPORT
+  getReportListing: `${BASE_URL}/report/get-report-listing`,
+
 }
 
 //Api constants
@@ -1324,6 +1328,11 @@ export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
+
+// REPORT
+export const GET_REPORT_LIST = 'GET_REPORT_LIST'
+
+
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
 export const DRAFT = 'Draft'

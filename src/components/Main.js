@@ -49,6 +49,7 @@ import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
 import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
+import ReportListing from './report/ReportListing'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -345,6 +346,8 @@ class Main extends Component {
                     <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
 
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
+
+                    <Route path="/report-listing" component={ReportListing} />
 
                     <Route
                       render={(props) => (

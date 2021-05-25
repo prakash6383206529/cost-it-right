@@ -80,10 +80,12 @@ function ApprovalSummary(props) {
       setApproveDrawer(false)
       setRejectDrawer(false)
       setShowListing(true)
+      setShowPushDrawer(false)
     } else {
       setApproveDrawer(false)
       setRejectDrawer(false)
       setShowListing(false)
+      setShowPushDrawer(false)
       approvalSummaryHandler()
     }
   }
@@ -97,8 +99,10 @@ function ApprovalSummary(props) {
     if (Object.keys(type).length > 0) {
       if (type === 'Push') {
         setShowListing(true)
+        setShowPushDrawer(false)
       } else {
         setShowListing(false)
+        setShowPushDrawer(false)
         approvalSummaryHandler()
       }
     }
