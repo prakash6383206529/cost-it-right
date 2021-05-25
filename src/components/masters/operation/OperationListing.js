@@ -637,7 +637,7 @@ class OperationListing extends Component {
                         <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" >{this.renderVendorName()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="UnitOfMeasurement" columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" >{'Rate'}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn>
+                        <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={120} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn>
                         {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
