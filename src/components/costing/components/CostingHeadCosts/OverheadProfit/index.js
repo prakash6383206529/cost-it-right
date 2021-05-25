@@ -1286,6 +1286,12 @@ function OverheadProfit(props) {
           setValue('OverheadPercentage', OverheadPercentage)
           setValue('OverheadCombinedCost', headerCosts.NetTotalRMBOPCC)
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
+          setOverheadObj({
+            ...overheadObj,
+            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedTotalCost: checkForDecimalAndNull(getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice),
+          })
           break;
 
         case 'RM + CC':
@@ -1293,6 +1299,12 @@ function OverheadProfit(props) {
           setValue('OverheadPercentage', OverheadPercentage)
           setValue('OverheadCombinedCost', RMCC)
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
+          setOverheadObj({
+            ...overheadObj,
+            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedTotalCost: checkForDecimalAndNull(getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice),
+          })
           break;
 
         case 'BOP + CC':
@@ -1300,6 +1312,12 @@ function OverheadProfit(props) {
           setValue('OverheadPercentage', OverheadPercentage)
           setValue('OverheadCombinedCost', BOPCC)
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
+          setIsSurfaceTreatmentAdded(false)
+          setOverheadObj({
+            ...overheadObj,
+            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedTotalCost: checkForDecimalAndNull(getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice),
+          })
           break;
 
         default:
