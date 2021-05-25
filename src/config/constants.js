@@ -23,6 +23,7 @@ const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 //MINDA PRODUCTION
 // const BASE_URL = 'https://apiinsight.unominda.com/api/v1';
 
+
 //DEVELOPMENT MIL URL
 export const FILE_URL = 'http://10.10.1.100:10132/';
 
