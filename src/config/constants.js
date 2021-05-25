@@ -18,20 +18,19 @@ export const config = {
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
 //MINDA QA
-//const BASE_URL = 'https://apicostmanagementqa.unominda.com/api/v1';
+// const BASE_URL = 'https://apiinsightqa.unominda.com/api/v1';
 
 //MINDA PRODUCTION
-// const BASE_URL = 'https://apicostmanagement.unominda.com/api/v1';
-
+// const BASE_URL = 'https://apiinsight.unominda.com/api/v1';
 
 //DEVELOPMENT MIL URL
 export const FILE_URL = 'http://10.10.1.100:10132/';
 
 //MINDA QA FILE URL
-//export const FILE_URL = 'https://apicostmanagementqa.unominda.com/';
+// export const FILE_URL = 'https://apiinsightqa.unominda.com/';
 
 //MINDA PRODUCTION FILE URL
-// export const FILE_URL = 'https://apicostmanagement.unominda.com/';
+// export const FILE_URL = 'https://apiinsight.unominda.com/';
 
 /** Export API */
 export const API = {

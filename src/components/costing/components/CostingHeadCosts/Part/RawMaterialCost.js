@@ -117,8 +117,8 @@ function RawMaterialCost(props) {
         selectedIds([...gridData, ...rowArray])
       } else {
         let tempObj = {
-          RMName: rowData.RawMaterial,
-          RMRate: rowData.NetLandedCost,
+          RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
+          RMRate: rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
           MaterialType: rowData.MaterialType,
           RMGrade: rowData.RMGrade,
           Density: rowData.Density,
