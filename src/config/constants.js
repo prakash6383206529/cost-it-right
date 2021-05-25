@@ -15,7 +15,7 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-const BASE_URL = 'http://10.10.1.100:10132/api/v1';
+const BASE_URL = 'http://10.10.1.100:1002/api/v1';
 
 //MINDA QA
 // const BASE_URL = 'https://apiinsightqa.unominda.com/api/v1';
@@ -25,7 +25,7 @@ const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
 
 //DEVELOPMENT MIL URL
-export const FILE_URL = 'http://10.10.1.100:10132/';
+export const FILE_URL = 'http://10.10.1.100:1002/';
 
 //MINDA QA FILE URL
 // export const FILE_URL = 'https://apiinsightqa.unominda.com/';
