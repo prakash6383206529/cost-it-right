@@ -923,6 +923,8 @@ function CostingDetails(props) {
           ...tempData,
           CostingOptions: selectedOptionObj,
           CostingId: Item.CostingId,
+          DisplayStatus: '',
+          Price: '',
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)
@@ -937,6 +939,9 @@ function CostingDetails(props) {
           ...tempData,
           CostingOptions: selectedOptionObj,
           CostingId: Item.CostingId,
+          DisplayStatus: '',
+          Price: '',
+          Status: '',
         }
         tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
         setVBCVendorGrid(tempArray)

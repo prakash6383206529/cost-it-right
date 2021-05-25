@@ -286,7 +286,7 @@ function BOPCost(props) {
                     <tr>
                       <th>{`BOP Part No.`}</th>
                       <th>{`BOP Part Name`}</th>
-                      <th style={{ width: "220px" }} >{`Landed Cost(INR)`}</th>
+                      <th style={{ width: "220px" }} >{`BOP Cost(INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
