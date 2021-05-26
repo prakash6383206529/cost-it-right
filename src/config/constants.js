@@ -14,24 +14,20 @@ export const config = {
   },
 }
 
-// DEVELOPMENT MIL URL
+// SERVER ROYAL ENFIELD URL
+//const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+
+// QA ROYAL ENFIELD URL
+//const BASE_URL = 'http://10.10.1.100:10122/api/v1';
+
+// DEVELOPMENT ROYAL ENFIELD URL
+//const BASE_URL = 'http://10.10.1.100:10123/api/v1';
+
+// DEVELOPMENT
 const BASE_URL = 'http://10.10.1.100:1002/api/v1';
 
-//MINDA QA
-// const BASE_URL = 'https://apiinsightqa.unominda.com/api/v1';
-
-//MINDA PRODUCTION
-// const BASE_URL = 'https://apiinsight.unominda.com/api/v1';
-
-
-//DEVELOPMENT MIL URL
+//FILE URL
 export const FILE_URL = 'http://10.10.1.100:1002/';
-
-//MINDA QA FILE URL
-// export const FILE_URL = 'https://apiinsightqa.unominda.com/';
-
-//MINDA PRODUCTION FILE URL
-// export const FILE_URL = 'https://apiinsight.unominda.com/';
 
 /** Export API */
 export const API = {
