@@ -831,7 +831,7 @@ class AddMachineRate extends Component {
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
-          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         }
         if (isEditFlag) {
           const toastrConfirmOptions = {
@@ -871,7 +871,7 @@ class AddMachineRate extends Component {
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       }
       this.props.reset()
       this.props.createMachine(formData, (res) => {

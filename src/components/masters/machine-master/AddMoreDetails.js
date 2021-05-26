@@ -1525,7 +1525,7 @@ class AddMoreDetails extends Component {
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1635,7 +1635,7 @@ class AddMoreDetails extends Component {
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files,
         VendorPlant: [],
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       }
 
 

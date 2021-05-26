@@ -294,7 +294,7 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: true }}
+                    rules={{ required: type === 'Approve' ? false : true }}
                     handleChange={() => { }}
                     //defaultValue={viewRM.RMRate}
                     className=""

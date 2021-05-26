@@ -584,7 +584,7 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
@@ -624,7 +624,7 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD')
       }
 
       this.props.reset()

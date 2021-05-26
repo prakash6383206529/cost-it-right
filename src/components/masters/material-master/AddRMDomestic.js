@@ -902,7 +902,7 @@ class AddRMDomestic extends Component {
       ScrapRate: values.ScrapRate,
       NetLandedCost: netLandedCost,
       LoggedInUserId: loggedInUserId(),
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       Attachements: updatedFiles,
       IsConvertIntoCopy: isDateChange ? true : false,
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
@@ -972,7 +972,7 @@ class AddRMDomestic extends Component {
         RMShearingCost: values.ShearingCost,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],

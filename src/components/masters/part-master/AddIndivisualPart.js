@@ -237,7 +237,7 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Remark: values.Remark,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true
@@ -273,7 +273,7 @@ class AddIndivisualPart extends Component {
         PartName: values.PartName,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,

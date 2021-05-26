@@ -259,7 +259,7 @@ class AddInterestRate extends Component {
         ICCPercent: values.ICCPercent,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -291,7 +291,7 @@ class AddInterestRate extends Component {
         PaymentTermApplicability: PaymentTermsApplicability.label,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId()
