@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, convertObjectToArray, getConfigurationKey } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -629,7 +629,6 @@ function RawMaterialCost(props) {
                                 rules={{
                                   required: true,
                                   pattern: {
-                                    // value: /[0-9]\d*(\.\d+)?$/i,
                                     value: /^\d*\.?\d*$/,
                                     message: 'Invalid Number.',
                                   },
@@ -656,7 +655,6 @@ function RawMaterialCost(props) {
                                 rules={{
                                   required: true,
                                   pattern: {
-                                    // value: /^[0-9]\d*(\.\d+)?$/i,
                                     value: /^\d*\.?\d*$/,
                                     message: 'Invalid Number.',
                                   },
