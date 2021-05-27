@@ -194,7 +194,7 @@ function LossStandardTable(props) {
             Controller={Controller}
             control={control}
             register={register}
-            mandatory={true}
+            mandatory={false}
             // rules={{
             //   required: true,
             //   pattern: {
@@ -220,9 +220,9 @@ function LossStandardTable(props) {
             Controller={Controller}
             control={control}
             register={register}
-            mandatory={true}
+            mandatory={false}
             rules={{
-              required: true,
+              required: false,
               pattern: {
                 //value: /^[0-9]*$/i,
                 value: /^[0-9]\d*(\.\d+)?$/i,
