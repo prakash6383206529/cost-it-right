@@ -451,7 +451,7 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
-      console.log('vendorData: ', vendorData);
+
 
 
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -1305,7 +1305,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  console.log('errors', errors)
+
 
   return (
     <>

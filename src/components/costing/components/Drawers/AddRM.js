@@ -18,6 +18,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 
 function AddRM(props) {
 
+  const { IsApplyMasterBatch, Ids } = props;
   const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -25,7 +26,7 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [selectedIds, setSelectedIds] = useState(!IsApplyMasterBatch ? Ids : []);
 
   const dispatch = useDispatch()
 
@@ -79,6 +80,7 @@ function AddRM(props) {
   // const onSelectAll = (isSelected, rows) => { }
 
   const onRowSelect = (row, isSelected, e) => {
+
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (costData.TechnologyId === 6) {
       if (isSelected) {
@@ -90,7 +92,11 @@ function AddRM(props) {
         setSelectedRowData(tempArr)
       }
     } else {
-      setSelectedRowData(row)
+      if (isSelected) {
+        setSelectedRowData(row)
+      } else {
+        setSelectedRowData({})
+      }
     }
   }
 
@@ -170,7 +176,7 @@ function AddRM(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (Object.keys(selectedRowData).length === 0) {
       toastr.warning('Please select row.')
       return false;
     }
