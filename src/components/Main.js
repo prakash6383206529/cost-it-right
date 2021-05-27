@@ -145,7 +145,6 @@ class Main extends Component {
       const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
       const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 
 
-      console.log('current_time: ', current_time, totalSeconds * 1000, callBeforeSeconds);
       if ((totalSeconds * 1000 - callBeforeSeconds) > 0) {
 
         setInterval(() => {
@@ -156,9 +155,7 @@ class Main extends Component {
             grant_type: 'refresh_token',
           }
 
-          console.log('current_time: Before', current_time, totalSeconds, callBeforeSeconds);
           this.props.TokenAPI(reqParams, (res) => {
-            console.log('current_time: After', current_time, totalSeconds, callBeforeSeconds);
             if (res && res.status === 200) {
               let userDetail = formatLoginResult(res.data);
               reactLocalStorage.setObject("userDetail", userDetail);

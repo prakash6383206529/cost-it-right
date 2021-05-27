@@ -118,7 +118,6 @@ function OverheadProfit(props) {
   }, [IsIncludedSurfaceInOverheadProfit])
 
   useEffect(() => {
-    console.log('HIIIIIIIIIIIIIIIIIIIIIII')
     setIsSurfaceTreatmentAdded(false)
     IncludeSurfaceTreatmentCall()
   }, [SurfaceTreatmentCost.NetSurfaceTreatmentCost])
@@ -832,7 +831,7 @@ function OverheadProfit(props) {
   const setOverheadValues = (dataObj, IsAPIResponse) => {
 
     if (dataObj.IsOverheadFixedApplicable && IsAPIResponse === false) {
-      console.log('dataObj: ', dataObj);
+
       setValue('OverheadFixedPercentage', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
       setValue('OverheadFixedCost', '-')
       setValue('OverheadFixedTotalCost', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
