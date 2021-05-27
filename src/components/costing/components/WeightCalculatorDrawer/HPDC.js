@@ -58,7 +58,7 @@ function HPDC(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery'],
+        name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery', 'castingWeight'],
     })
 
     // const fieldValues1 = useWatch({
