@@ -54,7 +54,7 @@ function CostingHeaderTabs(props) {
         "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": props.netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
