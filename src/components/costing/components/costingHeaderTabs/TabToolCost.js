@@ -186,7 +186,8 @@ function TabToolCost(props) {
       "EffectiveDate": CostingEffectiveDate,
       "CostingNumber": costData.CostingNumber,
       "ToolCost": ToolTabData.TotalToolCost,
-      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
+      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
+      "TotalCost": props.netPOPrice,
     }
 
     dispatch(saveToolTab(data, res => {

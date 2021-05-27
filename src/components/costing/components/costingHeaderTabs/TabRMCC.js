@@ -1031,7 +1031,7 @@ function TabRMCC(props) {
         "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolCost": ComponentItemData.CostingPartDetails.TotalToolCost,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": props.netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -1120,6 +1120,7 @@ function TabRMCC(props) {
                                     <PartCompoment
                                       index={index}
                                       item={item}
+                                      netPOPrice={props.netPOPrice}
                                       rmData={item.CostingPartDetails.CostingRawMaterialsCost}
                                       bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
                                       ccData={item.CostingPartDetails.CostingConversionCost}
@@ -1141,6 +1142,7 @@ function TabRMCC(props) {
                                     <AssemblyPart
                                       index={index}
                                       item={item}
+                                      netPOPrice={props.netPOPrice}
                                       children={item.CostingChildPartDetails}
                                       setPartDetails={setPartDetails}
                                       toggleAssembly={toggleAssembly}

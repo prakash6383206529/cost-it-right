@@ -78,6 +78,7 @@ function TabDiscountOther(props) {
         "PartId": costData.PartId,
         "PartNumber": costData.PartNumber,
         "NetPOPrice": props.netPOPrice,
+        "TotalCost": props.netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "CostingPartDetails": {
@@ -357,6 +358,7 @@ function TabDiscountOther(props) {
       "PartId": costData.PartId,
       "PartNumber": costData.PartNumber,
       "NetPOPrice": props.netPOPrice,
+      "TotalCost": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
       "CostingPartDetails": {
