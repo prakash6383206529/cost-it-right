@@ -12,6 +12,8 @@ function AssemblyOverheadProfit(props) {
 
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
+
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
@@ -82,7 +84,8 @@ function AssemblyOverheadProfit(props) {
         ...item.CostingPartDetails,
         NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
       },
-      "CostingPartDetails": item.CostingPartDetails,
+      "EffectiveDate": CostingEffectiveDate,
+      "TotalCost": props.netPOPrice,
     }
     dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
       if (res.data.Result) {

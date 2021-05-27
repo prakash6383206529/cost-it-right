@@ -41,7 +41,9 @@ function TabPackagingFreight(props) {
     let topHeaderData = {
       NetFreightPackagingCost: TopHeaderValues && checkForNull(TopHeaderValues.NetFreightPackagingCost),
     }
+    // if (props.activeTab === '4') {
     props.setHeaderCost(topHeaderData)
+    // }
   }, [PackageAndFreightTabData]);
 
   /**
@@ -148,8 +150,9 @@ function TabPackagingFreight(props) {
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
+      "TotalCost": props.netPOPrice,
       "CostingNumber": costData.CostingNumber,
-      "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+      //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
 
