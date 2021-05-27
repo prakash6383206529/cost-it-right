@@ -828,9 +828,16 @@ function OverheadProfit(props) {
   const setOverheadValues = (dataObj, IsAPIResponse) => {
 
     if (dataObj.IsOverheadFixedApplicable && IsAPIResponse === false) {
+      console.log('dataObj: ', dataObj);
       setValue('OverheadFixedPercentage', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
       setValue('OverheadFixedCost', '-')
       setValue('OverheadFixedTotalCost', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
+      setOverheadObj({
+        ...overheadObj,
+        OverheadFixedPercentage: getValues('OverheadFixedPercentage'),
+        // OverheadFixedCost: '-',
+        OverheadFixedTotalCost: checkForDecimalAndNull(getValues('OverheadFixedPercentage'), initialConfiguration.NoOfDecimalForPrice),
+      })
     }
 
     if (dataObj.IsOverheadCombined && IsAPIResponse === false) {
