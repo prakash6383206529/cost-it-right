@@ -137,8 +137,8 @@ function RawMaterialCost(props) {
 
     }
 
-    if (IsApplyMasterBatch) {
-      setValue('MBName', rowData && rowData[0].RawMaterial)
+    if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
+      setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
       setValue('MBPrice', rowData && rowData[0].Currency === '-' ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
     setDrawerOpen(false)
