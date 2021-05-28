@@ -39,7 +39,9 @@ function TabSurfaceTreatment(props) {
     let topHeaderData = {
       NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.NetSurfaceTreatmentCost !== null ? TopHeaderValues.NetSurfaceTreatmentCost : 0,
     }
-    props.setHeaderCost(topHeaderData)
+    if (props.activeTab === '2') {
+      props.setHeaderCost(topHeaderData)
+    }
   }, [SurfaceTabData]);
 
   /**

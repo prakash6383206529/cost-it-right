@@ -4,6 +4,7 @@ import Main from './components/Main.js';
 import { BrowserRouter, Route, } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getLoginPageInit, } from "./actions/auth/AuthActions";
+require('dotenv').config();
 
 class App extends Component {
   constructor(props) {

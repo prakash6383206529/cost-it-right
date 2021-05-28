@@ -1760,7 +1760,7 @@ function CostingDetails(props) {
                                           {item.DisplayStatus}
                                         </div>
                                       </td>
-                                      <td>{item.Price ? item.Price : ''}</td>
+                                      <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : ''}</td>
                                       <td>
                                         {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
