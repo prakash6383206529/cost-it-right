@@ -653,7 +653,7 @@ function TabDiscountOther(props) {
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={"textAreaWithBorder"}
                         errors={errors.Remarks}
                         disabled={CostingViewMode ? true : false}
                       />

@@ -816,7 +816,9 @@ input.form-control{
 .textAreaWithBorder .inputbox {
   border: none;
 }
-
+.textAreaWithBorder.inputbox {
+  border: none;
+}
 .textAreaWithBorder textarea.form-control {
   border: 1px solid #ccc;
   padding: 5px;
@@ -4203,9 +4205,9 @@ body{
 
   .height152-label{
     .dzu-dropzone{
-      height: auto;
+      height: 135px;
       min-height: 88px;
-      label{height: 88px;}
+      label{height: 120px;}
     }
   }
 
