@@ -67,11 +67,11 @@ function CostingDetails(props) {
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
   //ROLE AND PERMISSION
-  const [ViewAccessibility, setViewAccessibility] = useState(false)
-  const [AddAccessibility, setAddAccessibility] = useState(false)
-  const [EditAccessibility, setEditAccessibility] = useState(false)
-  const [DeleteAccessibility, setDeleteAccessibility] = useState(false)
-  const [CopyAccessibility, setCopyAccessibility] = useState(false)
+  const [ViewAccessibility, setViewAccessibility] = useState(true)
+  const [AddAccessibility, setAddAccessibility] = useState(true)
+  const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
+  const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
 
   //FOR VIEW MODE COSTING
@@ -116,11 +116,11 @@ function CostingDetails(props) {
         const accessData = Data && Data.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
         const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
         if (permmisionData !== undefined) {
-          setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
-          setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
-          setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
-          setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
-          setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+          // setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
+          // setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
+          // setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
+          // setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
+          // setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
           // setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
         }
       }
