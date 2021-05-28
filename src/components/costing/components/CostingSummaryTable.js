@@ -25,7 +25,7 @@ import { isFinalApprover } from '../actions/Approval'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -585,28 +585,30 @@ const CostingSummaryTable = (props) => {
               //   </button>
               // </Col>
             }
-
-            <Col md="8" className="text-right">
-              {(!viewMode && !isFinalApproverShow) && (
-                <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                  <img
-                    class="mr-1"
-                    src={require('../../../assests/images/send-for-approval.svg')}
-                  ></img>{' '}
-                  {'Send For Approval'}
-                </button>
-              )}
-              <button
-                type="button"
-                className={'user-btn mb-2 comparison-btn'}
-                onClick={addComparisonDrawerToggle}
-              >
-                <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
+            {
+              !simulationMode &&
+              <Col md="8" className="text-right">
+                {(!viewMode && !isFinalApproverShow) && (
+                  <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                    <img
+                      class="mr-1"
+                      src={require('../../../assests/images/send-for-approval.svg')}
+                    ></img>{' '}
+                    {'Send For Approval'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={'user-btn mb-2 comparison-btn'}
+                  onClick={addComparisonDrawerToggle}
+                >
+                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
               Add To Comparison{' '}
-              </button>
-              {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
-              {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-            </Col>
+                </button>
+                {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
+                {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
+              </Col>
+            }
 
           </Row>
           <Row>
