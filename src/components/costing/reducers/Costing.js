@@ -79,6 +79,7 @@ const initialState = {
   IsIncludedSurfaceInOverheadProfit: false,
   IsCostingDateDisabled: false,
   IsToolCostApplicable: false,
+  SurfaceCostData: {},
 }
 
 export default function costingReducer(state = initialState, action) {

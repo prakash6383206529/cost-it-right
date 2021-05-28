@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
 import { getOverheadProfitTabData, saveAssemblyOverheadProfitTab } from '../../../actions/Costing';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
@@ -11,6 +11,7 @@ function AssemblyOverheadProfit(props) {
   const { children, item, index } = props;
 
   const costData = useContext(costingInfoContext);
+  const netPOPrice = useContext(NetPOPriceContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -85,7 +86,7 @@ function AssemblyOverheadProfit(props) {
         NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
       },
       "EffectiveDate": CostingEffectiveDate,
-      "TotalCost": props.netPOPrice,
+      "TotalCost": netPOPrice,
     }
     dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
       if (res.data.Result) {

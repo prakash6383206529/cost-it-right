@@ -1408,6 +1408,7 @@ export const ELECTRONICS = 'Electronics';
 export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
+export const FORGING = 'Forging';
 
 export const USER = 'User'
 export const ROLE = 'Role'

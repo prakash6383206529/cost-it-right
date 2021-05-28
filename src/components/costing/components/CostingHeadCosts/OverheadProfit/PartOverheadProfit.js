@@ -5,7 +5,7 @@ import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData
 } from '../../../actions/Costing';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
@@ -22,6 +22,7 @@ function PartOverheadProfit(props) {
   const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const toggle = (BOMLevel, PartNumber) => {
     const Params = {
@@ -79,7 +80,7 @@ function PartOverheadProfit(props) {
         NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
       },
       "EffectiveDate": CostingEffectiveDate,
-      "TotalCost": props.netPOPrice,
+      "TotalCost": netPOPrice,
     }
     dispatch(saveComponentOverheadProfitTab(reqData, res => {
       if (res.data.Result) {
