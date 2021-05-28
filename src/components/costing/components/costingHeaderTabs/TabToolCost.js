@@ -57,13 +57,15 @@ function TabToolCost(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
-    setTimeout(() => {
-      let topHeaderData = {
-        ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
-        IsApplicableProcessWise: IsApplicableProcessWise,
-      }
+    //setTimeout(() => {
+    let topHeaderData = {
+      ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
+      IsApplicableProcessWise: IsApplicableProcessWise,
+    }
+    if (props.activeTab === '5') {
       props.setHeaderCost(topHeaderData)
-    }, 1500)
+    }
+    //}, 1500)
   }, [ToolTabData]);
 
   /**
@@ -186,7 +188,8 @@ function TabToolCost(props) {
       "EffectiveDate": CostingEffectiveDate,
       "CostingNumber": costData.CostingNumber,
       "ToolCost": ToolTabData.TotalToolCost,
-      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
+      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
+      "TotalCost": props.netPOPrice,
     }
 
     dispatch(saveToolTab(data, res => {

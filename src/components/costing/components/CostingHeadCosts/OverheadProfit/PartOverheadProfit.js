@@ -79,6 +79,7 @@ function PartOverheadProfit(props) {
         NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
       },
       "EffectiveDate": CostingEffectiveDate,
+      "TotalCost": props.netPOPrice,
     }
     dispatch(saveComponentOverheadProfitTab(reqData, res => {
       if (res.data.Result) {

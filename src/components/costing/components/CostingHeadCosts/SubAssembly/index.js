@@ -58,6 +58,7 @@ function AssemblyPart(props) {
       return <PartCompoment
         index={index}
         item={el}
+        netPOPrice={props.netPOPrice}
         rmData={el.CostingPartDetails.CostingRawMaterialsCost}
         bopData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingBoughtOutPartCost}
         ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
@@ -78,6 +79,7 @@ function AssemblyPart(props) {
     return <AssemblyPart
       index={index}
       item={el}
+      netPOPrice={props.netPOPrice}
       children={el.CostingChildPartDetails}
       setPartDetails={props.setPartDetails}
       toggleAssembly={props.toggleAssembly}

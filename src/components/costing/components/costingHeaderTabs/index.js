@@ -98,6 +98,8 @@ function CostingHeaderTabs(props) {
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
         "CostingNumber": costData.CostingNumber,
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": props.netPOPrice,
         "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData.CostingPartDetails.OverheadCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.ProfitCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
@@ -127,8 +129,10 @@ function CostingHeaderTabs(props) {
         "NetPOPrice": props.netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "CostingNumber": costData.CostingNumber,
-        "NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
-        "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails
+        //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
+        "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails,
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": props.netPOPrice,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         dispatch(setComponentPackageFreightItemData({}, () => { }))
@@ -145,7 +149,9 @@ function CostingHeaderTabs(props) {
         "LoggedInUserId": loggedInUserId(),
         "CostingNumber": costData.CostingNumber,
         "ToolCost": ComponentItemToolData.TotalToolCost,
-        "CostingPartDetails": ComponentItemToolData.CostingPartDetails
+        "CostingPartDetails": ComponentItemToolData.CostingPartDetails,
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": props.netPOPrice,
       }
       dispatch(saveToolTab(data, res => {
         dispatch(setComponentToolItemData({}, () => { }))

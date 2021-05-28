@@ -596,6 +596,7 @@ function TabOverheadProfit(props) {
                                 <PartOverheadProfit
                                   index={index}
                                   item={item}
+                                  netPOPrice={props.netPOPrice}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
@@ -613,6 +614,7 @@ function TabOverheadProfit(props) {
                                 <AssemblyOverheadProfit
                                   index={index}
                                   item={item}
+                                  netPOPrice={props.netPOPrice}
                                   children={item.CostingChildPartDetails}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   setPartDetails={setPartDetails}

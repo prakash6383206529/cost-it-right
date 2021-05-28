@@ -2,7 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth'
+import { getAuthToken } from '../helper/auth';
 
 export const config = {
   headers: {
@@ -14,21 +14,13 @@ export const config = {
   },
 }
 
-// SERVER ROYAL ENFIELD URL
-//const BASE_URL = 'http://10.148.80.4:10122/api/v1';
-
-// QA ROYAL ENFIELD URL
-//const BASE_URL = 'http://10.10.1.100:10122/api/v1';
-
-// DEVELOPMENT ROYAL ENFIELD URL
-//const BASE_URL = 'http://10.10.1.100:10123/api/v1';
-
 // DEVELOPMENT
-// const BASE_URL = 'http://10.10.10.43/mil/api/v1';
-const BASE_URL = 'http://10.10.1.100:1002/api/v1';
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 
 //FILE URL
-export const FILE_URL = 'http://10.10.1.100:1002/';
+// export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
+export const FILE_URL = `http://10.10.1.100:1002/`;
 
 /** Export API */
 export const API = {
