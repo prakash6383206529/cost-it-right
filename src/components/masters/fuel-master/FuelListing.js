@@ -37,7 +37,7 @@ class FuelListing extends Component {
     */
     componentDidMount() {
         this.props.getFuelComboData(() => { })
-        this.getDataList('', '')
+        this.getDataList(0, 0)
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -230,7 +230,7 @@ class FuelListing extends Component {
             StateName: [],
         }, () => {
             this.props.getFuelComboData(() => { })
-            this.getDataList('', '')
+            this.getDataList(0, 0)
         })
     }
 
