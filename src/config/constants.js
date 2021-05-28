@@ -14,35 +14,11 @@ export const config = {
   },
 }
 
-<<<<<<< HEAD
-// DEVELOPMENT MIL URL
-const BASE_URL = 'http://10.10.1.100:10132/api/v1';
-
-//MINDA QA
-// const BASE_URL = 'https://apiinsightqa.unominda.com/api/v1';
-
-//MINDA PRODUCTION
-// const BASE_URL = 'https://apiinsight.unominda.com/api/v1';
-
-
-//DEVELOPMENT MIL URL
-export const FILE_URL = 'http://10.10.1.100:10132/';
-
-//MINDA QA FILE URL
-// export const FILE_URL = 'https://apiinsightqa.unominda.com/';
-
-//MINDA PRODUCTION FILE URL
-// export const FILE_URL = 'https://apiinsight.unominda.com/';
-=======
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
-<<<<<<< HEAD
->>>>>>> 7eced00b (ENV file const change)
-=======
->>>>>>> b65fb5c0 (Discount Other tab, Percentage and fixed in progress)
 
 /** Export API */
 export const API = {
@@ -824,6 +800,7 @@ export const API = {
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
   getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
+  getSimulationApprovalList: `${BASE_URL}/simulation/`,
 
   //REPORT
   getReportListing: `${BASE_URL}/report/get-report-listing`,
@@ -1340,6 +1317,7 @@ export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
+export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
