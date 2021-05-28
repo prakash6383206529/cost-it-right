@@ -88,7 +88,7 @@ function Pipe(props) {
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({
     GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-    FinishWeight: WeightCalculatorRequest?.FinishWeight ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
   })
   const [manualFinish, setManualFinish] = useState(false)
   const [isChangeApplies, setIsChangeApplied] = useState(true)

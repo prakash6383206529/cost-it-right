@@ -25,10 +25,10 @@ export const config = {
 
 // DEVELOPMENT
 // const BASE_URL = 'http://10.10.10.43/mil/api/v1';
-const BASE_URL = 'http://10.10.1.100:10132/api/v1';
+const BASE_URL = 'http://10.10.1.100:1002/api/v1';
 
 //FILE URL
-export const FILE_URL = 'http://10.10.1.100:10132/';
+export const FILE_URL = 'http://10.10.1.100:1002/';
 
 /** Export API */
 export const API = {
@@ -810,6 +810,7 @@ export const API = {
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
   getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
+  getSimulationApprovalList: `${BASE_URL}/simulation/`,
 
   //REPORT
   getReportListing: `${BASE_URL}/report/get-report-listing`,
@@ -1326,6 +1327,7 @@ export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
+export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'

@@ -715,7 +715,7 @@ export function getOperationDrawerVBCDataList(data, callback) {
  */
 export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&costingId=${data.CostingId}`;
+    const queryParams = `plantId=${data.PlantId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&costingId=${data.CostingId}`;
     const request = axios.get(`${API.getProcessDrawerDataList}?${queryParams}`, headers,)
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -739,7 +739,7 @@ export function getProcessDrawerDataList(data, callback) {
  */
 export function getProcessDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
     const request = axios.get(`${API.getProcessDrawerVBCDataList}?${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
