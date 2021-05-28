@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -34,6 +34,7 @@ function TabToolCost(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -189,7 +190,7 @@ function TabToolCost(props) {
       "CostingNumber": costData.CostingNumber,
       "ToolCost": ToolTabData.TotalToolCost,
       "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
-      "TotalCost": props.netPOPrice,
+      "TotalCost": netPOPrice,
     }
 
     dispatch(saveToolTab(data, res => {
