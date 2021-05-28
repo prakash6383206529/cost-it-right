@@ -13,6 +13,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
 export const SurfaceCostContext = React.createContext()
+export const NetPOPriceContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
 
@@ -385,21 +386,23 @@ function CostingDetailStepTwo(props) {
                   <costingInfoContext.Provider value={costingData} >
                     <netHeadCostContext.Provider value={RMCCBOPCost} >
                       <SurfaceCostContext.Provider value={SurfaceCostData} >
-                        <CostingHeadTabs
-                          netPOPrice={NetPOPrice}
-                          setHeaderCost={setHeaderCostRMCCTab}
-                          setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
-                          setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
-                          setHeaderPackageFreightTab={setHeaderPackageFreightTab}
-                          setHeaderCostToolTab={setHeaderCostToolTab}
-                          setHeaderDiscountTab={setHeaderDiscountTab}
-                          DiscountTabData={DiscountCostData}
-                          headCostRMCCBOPData={RMCCBOPCost}
-                          headCostSurfaceData={SurfaceCostData}
-                          headCostOverheadProfitData={OverheadProfitCostData}
-                          backBtn={props.backBtn}
-                          toggle={props.toggle}
-                        />
+                        <NetPOPriceContext.Provider value={NetPOPrice} >
+                          <CostingHeadTabs
+                            netPOPrice={NetPOPrice}
+                            setHeaderCost={setHeaderCostRMCCTab}
+                            setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
+                            setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
+                            setHeaderPackageFreightTab={setHeaderPackageFreightTab}
+                            setHeaderCostToolTab={setHeaderCostToolTab}
+                            setHeaderDiscountTab={setHeaderDiscountTab}
+                            DiscountTabData={DiscountCostData}
+                            headCostRMCCBOPData={RMCCBOPCost}
+                            headCostSurfaceData={SurfaceCostData}
+                            headCostOverheadProfitData={OverheadProfitCostData}
+                            backBtn={props.backBtn}
+                            toggle={props.toggle}
+                          />
+                        </NetPOPriceContext.Provider>
                       </SurfaceCostContext.Provider>
                     </netHeadCostContext.Provider>
                   </costingInfoContext.Provider>

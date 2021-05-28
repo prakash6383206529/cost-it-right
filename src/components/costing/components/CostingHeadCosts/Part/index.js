@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
@@ -26,6 +26,7 @@ function PartCompoment(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const toggle = (BOMLevel, PartNumber) => {
     // let IsLocked = true;
@@ -69,7 +70,7 @@ function PartCompoment(props) {
         "NetProcessCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": props.netPOPrice,
+        "TotalCost": netPOPrice,
         "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
           checkForNull(item.CostingPartDetails.ProfitCost) +
           checkForNull(item.CostingPartDetails.RejectionCost) +

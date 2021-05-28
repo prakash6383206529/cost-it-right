@@ -5,7 +5,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING,
 } from '../config/constants'
 
 /**
@@ -729,6 +729,8 @@ export function getTechnologyPermission(technology) {
       return NON_FERROUS_HPDC;
     case RUBBER:
       return RUBBER;
+    case FORGING:
+      return FORGING;
     default:
       break;
   }
