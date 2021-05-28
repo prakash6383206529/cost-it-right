@@ -689,7 +689,6 @@ export function convertmmTocm(value) {
 
 /**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
-  console.log('value, UOM: ', value, UOM);
   switch (UOM) {
     case G:
       return checkForNull(value)
