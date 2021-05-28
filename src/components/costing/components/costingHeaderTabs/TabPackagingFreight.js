@@ -39,11 +39,11 @@ function TabPackagingFreight(props) {
   useEffect(() => {
     let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
     let topHeaderData = {
-      NetFreightPackagingCost: TopHeaderValues && checkForNull(TopHeaderValues.NetFreightPackagingCost),
+      NetFreightPackagingCost: TopHeaderValues && TopHeaderValues.NetFreightPackagingCost !== null ? checkForNull(TopHeaderValues.NetFreightPackagingCost) : 0,
     }
-    // if (props.activeTab === '4') {
-    props.setHeaderCost(topHeaderData)
-    // }
+    if (props.activeTab === '4') {
+      props.setHeaderCost(topHeaderData)
+    }
   }, [PackageAndFreightTabData]);
 
   /**

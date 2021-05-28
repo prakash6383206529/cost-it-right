@@ -2,7 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth'
+import { getAuthToken } from '../helper/auth';
 
 export const config = {
   headers: {

@@ -195,28 +195,28 @@ function CostingDetailStepTwo(props) {
 
     if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
-    let DataList = CostingDataList;
-    let tempData = CostingDataList && CostingDataList[headerIndex];
-
-    let OverAllCost = 0;
-    if (tempData && tempData !== undefined) {
-      const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
-      OverAllCost =
-        tempData.NetTotalRMBOPCC +
-        tempData.NetSurfaceTreatmentCost +
-        tempData.NetOverheadAndProfitCost +
-        tempData.NetPackagingAndFreight +
-        ApplyCost - checkForNull(tempData.NetDiscountsCost)
-
-      tempData = {
-        ...tempData,
-        // ToolCost: data.ToolCost,
-        ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
-        TotalCost: OverAllCost,
-        NetPackagingAndFreight: tempData.NetPackagingAndFreight,
-      }
-    }
     setTimeout(() => {
+      let DataList = CostingDataList;
+      let tempData = CostingDataList && CostingDataList[headerIndex];
+
+      let OverAllCost = 0;
+      if (tempData && tempData !== undefined) {
+        const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
+        OverAllCost =
+          tempData.NetTotalRMBOPCC +
+          tempData.NetSurfaceTreatmentCost +
+          tempData.NetOverheadAndProfitCost +
+          tempData.NetPackagingAndFreight +
+          ApplyCost - checkForNull(tempData.NetDiscountsCost)
+
+        tempData = {
+          ...tempData,
+          // ToolCost: data.ToolCost,
+          ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
+          TotalCost: OverAllCost,
+          NetPackagingAndFreight: tempData.NetPackagingAndFreight,
+        }
+      }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
