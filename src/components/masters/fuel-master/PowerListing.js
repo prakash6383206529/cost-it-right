@@ -468,29 +468,32 @@ class PowerListing extends Component {
                           className="fullinput-icon"
                         />
                       </div>
-                      <div className="flex-fill">
-                        <Field
-                          name="VendorPlant"
-                          type="text"
-                          label={""}
-                          component={searchableSelect}
-                          placeholder={"Vendor Plant"}
-                          isClearable={false}
-                          options={this.renderListing("VendorPlant")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.vendorPlant == null ||
-                              this.state.vendorPlant.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={this.handleVendorPlant}
-                          valueDescription={this.state.vendorPlant}
-                          disabled={isEditFlag ? true : false}
-                          className="fullinput-icon"
-                        />
-                      </div>
+                      {
+                        initialConfiguration && initialConfiguration.IsVendorPlantConfigurable &&
+                        <div className="flex-fill">
+                          <Field
+                            name="VendorPlant"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"Vendor Plant"}
+                            isClearable={false}
+                            options={this.renderListing("VendorPlant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.vendorPlant == null ||
+                                this.state.vendorPlant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleVendorPlant}
+                            valueDescription={this.state.vendorPlant}
+                            disabled={isEditFlag ? true : false}
+                            className="fullinput-icon"
+                          />
+                        </div>
+                      }
                     </>
                   )}
                   <div className="flex-fill">
