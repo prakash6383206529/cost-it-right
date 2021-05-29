@@ -175,7 +175,7 @@ class LevelTechnologyListing extends Component {
 function mapStateToProps({ auth }) {
 	const { loading, levelMappingList } = auth;
 
-	return { loading };
+	return { loading, levelMappingList };
 }
 
 
