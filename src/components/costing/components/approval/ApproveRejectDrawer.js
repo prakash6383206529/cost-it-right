@@ -9,7 +9,7 @@ import {
 import {
   TextAreaHookForm, SearchableSelectHookForm,
 } from '../../../layout/HookFormInputs'
-import { loggedInUserId, userDetails } from '../../../../helper'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { REASON_ID } from '../../../../config/constants'
@@ -214,7 +214,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={"Company"}
+                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}

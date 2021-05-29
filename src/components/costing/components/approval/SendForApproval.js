@@ -6,7 +6,7 @@ import { toastr } from 'react-redux-toastr'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, } from '../../actions/Approval'
-import { userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 
@@ -642,7 +642,7 @@ const SendForApproval = (props) => {
                       <Row className="px-3">
                         <Col md="6">
                           <SearchableSelectHookForm
-                            label={"Company"}
+                            label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                             name={"dept"}
                             placeholder={"-Select-"}
                             Controller={Controller}
