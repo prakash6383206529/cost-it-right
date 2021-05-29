@@ -9,7 +9,7 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -208,8 +208,8 @@ class DepartmentsListing extends Component {
               tableHeaderClass="my-custom-header"
               pagination
             >
-              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Company</TableHeaderColumn>
-              <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Company Code</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>{getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}</TableHeaderColumn>
+              {getConfigurationKey().IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Company Code</TableHeaderColumn>}
               <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
