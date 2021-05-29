@@ -16,7 +16,7 @@ import {
 import { getAllCities } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { loggedInUserId } from "../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
@@ -656,7 +656,7 @@ class UserRegistration extends Component {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: department.CompanyId,
+        CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress,
         Mobile: values.Mobile,
         FirstName: values.FirstName,
@@ -729,7 +729,7 @@ class UserRegistration extends Component {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: department.CompanyId,
+        CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress,
         Mobile: values.Mobile,
         FirstName: values.FirstName,
@@ -999,7 +999,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={'Role & Company:'}
+                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1022,7 +1022,7 @@ class UserRegistration extends Component {
                         <Field
                           name="DepartmentId"
                           type="text"
-                          label="Company"
+                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                           component={searchableSelect}
                           placeholder={'Select company'}
                           options={this.searchableSelectType('department')}
