@@ -44,7 +44,7 @@ export default function (ComposedComponent, PAGENAME) {
         render() {
 
             if (this.state.redirectToLogin === true) {
-                return <Link to={'/login'} />
+                return <Redirect to="/login" />
             }
 
             //Render the component with all props

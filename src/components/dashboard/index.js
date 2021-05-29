@@ -18,7 +18,7 @@ class Dashboard extends Component {
         this.props.getLeftMenu(
           menusData[0].ModuleId,
           loggedInUserId(),
-          (res) => {}
+          (res) => { }
         );
       }
     });

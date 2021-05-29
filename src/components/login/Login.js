@@ -25,6 +25,7 @@ class Login extends Component {
   }
 
   UNSAFE_componentWillMount() {
+    console.log('login')
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
       this.setState({
@@ -88,7 +89,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/logo/minda-logo1x.png")} alt="Minda" /></a>
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/logo/re-logo1x.jpg")} alt="Minda" /></a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
