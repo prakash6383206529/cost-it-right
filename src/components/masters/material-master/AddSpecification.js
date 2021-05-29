@@ -43,6 +43,7 @@ class AddSpecification extends Component {
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
     // this.props.getMaterialTypeSelectList(() => { })
+    this.props.getRMGradeSelectListByRawMaterial('', res => { })
   }
 
   /**
@@ -227,12 +228,14 @@ class AddSpecification extends Component {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       this.getDetails()
       this.props.getRawMaterialNameChild(() => {
+        this.props.getRMGradeSelectListByRawMaterial('', res => { })
         /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
         const { rawMaterialNameSelectList } = this.props;
         if (Object.keys(formData).length > 0) {
           let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
           this.setState({
             RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+            RMGrade: []
           })
 
         }
