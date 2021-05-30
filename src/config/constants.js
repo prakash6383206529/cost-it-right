@@ -15,14 +15,10 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-const BASE_URL = `${process.env.REACT_APP_BASE_URL_LOCAL_SERVER}`;
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL_QA}`;
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL_PRODUCTION}`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 //DEVELOPMENT MIL URL
-export const FILE_URL = `${process.env.REACT_APP_FILE_URL_LOCAL_SERVER}`;
-// export const FILE_URL = `${process.env.REACT_APP_FILE_URL_QA}`;
-// export const FILE_URL = `${process.env.REACT_APP_FILE_URL_PRODUCTION}`;
+export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
 export const API = {
