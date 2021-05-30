@@ -49,19 +49,7 @@ export default function (ComposedComponent, PAGENAME) {
         render() {
 
             if (this.state.redirectToLogin === true) {
-                return (<Redirect
-                    to={{
-                        pathname: `/login`,
-                    }} />
-                )
-            }
-
-            if (this.state.redirectToDashboard === true) {
-                return (<Redirect
-                    to={{
-                        pathname: `/`,
-                    }} />
-                )
+                return <Redirect to={'/login'} />
             }
 
             //Render the component with all props
