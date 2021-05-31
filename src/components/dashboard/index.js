@@ -32,7 +32,7 @@ class Dashboard extends Component {
     return (
       <div className="dashboard-top position-relative">
         <div className="dashboard-text">
-          <h2>Dashboard Will Come Here</h2>
+          <h2>Dashboard will come here</h2>
         </div>
         <img src={require('../../assests/images/dashboard-img.png')} alt='dashboard-background' />
         {/* {(this.props.loading || this.state.showLoader) && <Loader />} */}
