@@ -3,9 +3,8 @@ import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getOverheadProfitTabData, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
-import Switch from "react-switch";
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
 import { LEVEL0 } from '../../../../helper/AllConastant';
@@ -53,8 +52,7 @@ function TabOverheadProfit(props) {
   const filteredUsers = React.useMemo(() => {
     setIsIncludeSurfaceTreatment(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
     dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
-  }, [OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
-  );
+  }, [OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]);
 
   /**
   * @method setPartDetails
@@ -596,7 +594,6 @@ function TabOverheadProfit(props) {
                                 <PartOverheadProfit
                                   index={index}
                                   item={item}
-                                  netPOPrice={props.netPOPrice}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
@@ -614,7 +611,6 @@ function TabOverheadProfit(props) {
                                 <AssemblyOverheadProfit
                                   index={index}
                                   item={item}
-                                  netPOPrice={props.netPOPrice}
                                   children={item.CostingChildPartDetails}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   setPartDetails={setPartDetails}

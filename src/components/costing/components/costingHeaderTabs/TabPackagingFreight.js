@@ -6,7 +6,7 @@ import {
   getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData,
   setComponentPackageFreightItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData
 } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import { toastr } from 'react-redux-toastr';
@@ -21,6 +21,7 @@ function TabPackagingFreight(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -147,10 +148,10 @@ function TabPackagingFreight(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
+      "NetPOPrice": netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
-      "TotalCost": props.netPOPrice,
+      "TotalCost": netPOPrice,
       "CostingNumber": costData.CostingNumber,
       //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails

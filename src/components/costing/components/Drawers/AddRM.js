@@ -10,7 +10,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
@@ -82,7 +82,7 @@ function AddRM(props) {
   const onRowSelect = (row, isSelected, e) => {
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (costData.TechnologyId === 6) {
+    if (costData.TechnologyName === PLASTIC) {
       if (isSelected) {
         let tempArr = [...selectedRowData, row]
         setSelectedRowData(tempArr)
@@ -101,7 +101,7 @@ function AddRM(props) {
   }
 
   const onSelectAll = (isSelected, rows) => {
-    if (costData.TechnologyId === 6) {
+    if (costData.TechnologyName === PLASTIC) {
       if (isSelected) {
         setSelectedRowData(rows)
       } else {
@@ -113,7 +113,7 @@ function AddRM(props) {
   }
 
   const selectRowProp = {
-    mode: costData.TechnologyId === 6 ? 'checkbox' : 'radio',
+    mode: costData.TechnologyName === PLASTIC ? 'checkbox' : 'radio',
     //onSelect: onRowSelect,
     //mode: 'checkbox',
     clickToSelect: true,
