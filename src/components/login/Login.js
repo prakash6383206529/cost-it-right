@@ -162,7 +162,7 @@ class Login extends Component {
                 </div>
               </div>
               <div className="col-md-7 p-0 right-sideimg">
-                <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+                <img src={require('../../assests/images/box.png')} alt='error-icon' />
               </div>
             </div>
           </div>

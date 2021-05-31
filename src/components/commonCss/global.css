@@ -794,7 +794,7 @@ button.add-btn {
 .Delete {
   width: 32px;
   height: 32px;
-  background: transparent url("../../assests/images/Group 8857.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group-8857.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
@@ -802,7 +802,7 @@ button.add-btn {
 .View {
   width: 32px;
   height: 32px;
-  background: transparent url("../../assests/images/Group 8858.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group-8858.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
