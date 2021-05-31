@@ -2,7 +2,7 @@ import React from 'react';
 import './Loadercustom.scss';
 
 /* Loader Image  */
-export const gearLoader = '../../images/gear.gif';
+export const gearLoader = '../../images/loader.gif';
 
 const LoaderCustom = (props) => {
     return (
