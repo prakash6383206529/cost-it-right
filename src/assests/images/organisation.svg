@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="27.765" height="27.765" viewBox="0 0 27.765 27.765">
-  <g id="trello" transform="translate(0.5 0.5)">
-    <path id="Path_192" data-name="Path 192" d="M23.856,0H2.909A2.913,2.913,0,0,0,0,2.909V23.856a2.913,2.913,0,0,0,2.909,2.909H23.856a2.913,2.913,0,0,0,2.909-2.909V2.909A2.913,2.913,0,0,0,23.856,0ZM25.6,23.856A1.748,1.748,0,0,1,23.856,25.6H2.909a1.748,1.748,0,0,1-1.746-1.746V2.909A1.748,1.748,0,0,1,2.909,1.164H23.856A1.748,1.748,0,0,1,25.6,2.909Zm0,0" stroke="#000" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
-    <path id="Path_193" data-name="Path 193" d="M70.4,64H64.582a.582.582,0,0,0-.582.582V80.874a.582.582,0,0,0,.582.582H70.4a.582.582,0,0,0,.582-.582V64.582A.582.582,0,0,0,70.4,64Zm-.582,16.292H65.164V65.164h4.655Zm0,0" transform="translate(-59.345 -59.345)" stroke="#000" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
-    <path id="Path_194" data-name="Path 194" d="M214.4,64h-5.818a.582.582,0,0,0-.582.582V76.219a.582.582,0,0,0,.582.582H214.4a.582.582,0,0,0,.582-.582V64.582A.582.582,0,0,0,214.4,64Zm-.582,11.637h-4.655V65.164h4.655Zm0,0" transform="translate(-192.872 -59.345)" stroke="#000" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
-  </g>
-</svg>

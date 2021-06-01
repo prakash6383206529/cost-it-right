@@ -3,9 +3,7 @@ import './Loader.scss';
 import './Loadercustom.scss';
 
 /* Loader Image  */
-export const loaderImage = '../../images/loading.gif';
-
-export const gearLoader = '../../images/gear.gif';
+export const gearLoader = '../../images/loader.gif';
 
 /* loader component  */
 export class Loader extends Component {
