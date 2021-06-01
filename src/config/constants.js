@@ -39,7 +39,10 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
+<<<<<<< HEAD
 >>>>>>> 7eced00b (ENV file const change)
+=======
+>>>>>>> b65fb5c0 (Discount Other tab, Percentage and fixed in progress)
 
 /** Export API */
 export const API = {

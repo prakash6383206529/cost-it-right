@@ -9,13 +9,11 @@ import {
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
-import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
 import { ViewCostingContext } from '../CostingDetails';
@@ -23,7 +21,6 @@ import { useHistory } from "react-router-dom";
 
 function TabDiscountOther(props) {
 
-  const { DiscountTabData } = props;
   const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -37,6 +34,7 @@ function TabDiscountOther(props) {
   const [effectiveDate, setEffectiveDate] = useState('');
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
   const [GoToNext, setGoToNext] = useState(false);
+  const [otherCostType, setOtherCostType] = useState([]);
 
   const dispatch = useDispatch()
   let history = useHistory();
@@ -46,12 +44,13 @@ function TabDiscountOther(props) {
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ExchangeRateData, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (props.activeTab !== '6') {
-      setValue('NetPOPriceINR', DiscountTabData !== undefined && checkForDecimalAndNull((props.netPOPrice - props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
-      setValue('HundiOrDiscountValue', DiscountTabData !== undefined && (props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+      setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
+      setValue('HundiOrDiscountValue', DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)))
+      setValue('AnyOtherCost', DiscountCostData !== undefined && DiscountCostData.AnyOtherCost)
 
       let topHeaderData = {
         DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
@@ -120,7 +119,7 @@ function TabDiscountOther(props) {
       }
       dispatch(setComponentDiscountOtherItemData(data, () => { }))
     }, 1000)
-  }, [props.DiscountTabData])
+  }, [DiscountCostData])
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -183,12 +182,14 @@ function TabDiscountOther(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    const { DiscountTabData } = props;
-    setValue('NetPOPriceINR', DiscountTabData && checkForDecimalAndNull(props.netPOPrice, initialConfiguration.NoOfDecimalForPrice))
-    setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
+    setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice))
+    setValue('HundiOrDiscountValue', DiscountCostData && DiscountCostData.HundiOrDiscountValue)
+    if (otherCostType.value === 'Percentage') {
+      setValue('AnyOtherCost', DiscountCostData !== undefined ? DiscountCostData.AnyOtherCost : 0)
+    }
 
     if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && props.netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
     }
   }, [props]);
 
@@ -334,6 +335,13 @@ function TabDiscountOther(props) {
       return temp;
     }
 
+    if (label === 'OtherCostType') {
+      return [
+        { label: 'Fixed', value: 'Fixed' },
+        { label: 'Percentage', value: 'Percentage' },
+      ];
+    }
+
   }
 
   // specify upload params and url for your files
@@ -476,8 +484,8 @@ function TabDiscountOther(props) {
                         <tr>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%.33" }}>{``}</th>
-                          {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(props.netPOPrice, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
+                          {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountCostData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -576,9 +584,53 @@ function TabDiscountOther(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4" >
-                      <TextFieldHookForm
-                        label="Any Other Cost"
+                    <Col md="2">
+                      <SearchableSelectHookForm
+                        label={"Other Cost Type"}
+                        name={"OtherCostType"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={otherCostType.length !== 0 ? otherCostType : ""}
+                        options={renderListing("OtherCostType")}
+                        mandatory={true}
+                        handleChange={handleOtherCostTypeChange}
+                        errors={errors.OtherCostType}
+                        disabled={CostingViewMode ? true : false}
+                      />
+                    </Col>
+                    {otherCostType && otherCostType.value === 'Percentage' &&
+                      <Col md="1" >
+                        <NumberFieldHookForm
+                          label="Percentage(%)"
+                          name={"PercentageOtherCost"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{
+                            //required: true,
+                            pattern: {
+                              value: /^\d*\.?\d*$/,
+                              message: "Invalid Number.",
+                            },
+                          }}
+                          handleChange={(e) => {
+                            e.preventDefault();
+                            handleOtherCostPercentageChange(e);
+                          }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.AnyOtherCost}
+                          disabled={CostingViewMode ? true : false}
+                        />
+                      </Col>}
+                    <Col md="1" >
+                      <NumberFieldHookForm
+                        label="Other Cost"
                         name={"AnyOtherCost"}
                         Controller={Controller}
                         control={control}
@@ -587,10 +639,9 @@ function TabDiscountOther(props) {
                         rules={{
                           //required: true,
                           pattern: {
-                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            value: /^\d*\.?\d*$/,
                             message: "Invalid Number.",
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={(e) => {
                           e.preventDefault();
@@ -600,31 +651,12 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.AnyOtherCost}
-                        disabled={CostingViewMode ? true : false}
+                        disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
                       />
                     </Col>
+
                     <Col md="4">
-                      {/* <div className="form-group">
-                        <label>Effective Date</label>
-                        <div className="inputbox date-section">
-                          <DatePicker
-                            name="EffectiveDate"
-                            selected={effectiveDate}
-                            onChange={handleEffectiveDateChange}
-                            showMonthDropdown
-                            showYearDropdown
-                            dateFormat="dd/MM/yyyy"
-                            //maxDate={new Date()}
-                            dropdownMode="select"
-                            placeholderText="Select date"
-                            className="withBorder"
-                            autoComplete={"off"}
-                            disabledKeyboardNavigation
-                            onChangeRaw={(e) => e.preventDefault()}
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        </div>
-                      </div> */}
+
                     </Col>
                   </Row>
 
