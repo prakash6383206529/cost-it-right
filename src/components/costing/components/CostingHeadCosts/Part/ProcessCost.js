@@ -59,7 +59,6 @@ function ProcessCost(props) {
   // })
 
   useEffect(() => {
-    selectedIds(gridData)
   }, [gridData])
 
   useEffect(() => {
@@ -69,6 +68,7 @@ function ProcessCost(props) {
       PartNumber: props.item.PartNumber,
     }
     if (!CostingViewMode) {
+      selectedIds(gridData)
       props.setProcessCost(tabData, Params)
     }
   }, [tabData]);
@@ -230,9 +230,9 @@ function ProcessCost(props) {
    */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map((el) => {
-      if (Ids.includes(el.MachineRateId) === false) {
+      if (Ids.includes(el.ProcessId) === false) {
         let selectedIds = Ids
-        selectedIds.push(el.MachineRateId)
+        selectedIds.push(el.ProcessId)
         setIds(selectedIds)
       }
       return null
@@ -241,15 +241,14 @@ function ProcessCost(props) {
 
   const deleteItem = (index) => {
     let tempArr2 = [];
-    let tempArr = gridData && gridData.filter((el, i) => {
+    let tempArrAfterDelete = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true
     })
 
-
     setTimeout(() => {
       let ProcessCostTotal = 0
-      ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
+      ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
@@ -257,15 +256,17 @@ function ProcessCost(props) {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: tempArr,
+        CostingProcessCostResponse: tempArrAfterDelete,
       }
 
-      let id = []
-      tempArr.map(el => { id.push(el.MachineRateId) })
-      setIds(id)
+      let selectedIds = []
+      tempArrAfterDelete.map(el => {
+        selectedIds.push(el.ProcessId)
+      })
+      setGridData(tempArrAfterDelete)
+      setIds(selectedIds)
       setTabData(tempArr2)
-      setGridData(tempArr)
-      tempArr && tempArr.map((el, i) => {
+      tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}[${i}]ProcessCost`, el.ProcessCost)
       })
     }, 200)
