@@ -14,6 +14,7 @@ export const config = {
   },
 }
 
+<<<<<<< HEAD
 // DEVELOPMENT MIL URL
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
@@ -32,6 +33,13 @@ export const FILE_URL = 'http://10.10.1.100:10132/';
 
 //MINDA PRODUCTION FILE URL
 // export const FILE_URL = 'https://apiinsight.unominda.com/';
+=======
+// DEVELOPMENT
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+
+//FILE URL
+export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
+>>>>>>> 7eced00b (ENV file const change)
 
 /** Export API */
 export const API = {
