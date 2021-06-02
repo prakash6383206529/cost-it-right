@@ -232,16 +232,15 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       setOtherCostType(newValue)
       setValue('AnyOtherCost', 0)
-      if (newValue.value === 'Percentage') {
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-          HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost: 0,
-          OtherCostType: newValue.value,
-          PercentageOtherCost: 0,
-        }
-        props.setHeaderCost(topHeaderData)
+      setValue('PercentageOtherCost', 0)
+      let topHeaderData = {
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        AnyOtherCost: 0,
+        OtherCostType: newValue.value,
+        PercentageOtherCost: 0,
       }
+      props.setHeaderCost(topHeaderData)
     } else {
       setOtherCostType([])
     }
