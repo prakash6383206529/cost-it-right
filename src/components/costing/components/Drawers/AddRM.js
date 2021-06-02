@@ -10,7 +10,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
@@ -18,6 +18,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 
 function AddRM(props) {
 
+  const { IsApplyMasterBatch, Ids } = props;
   const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -25,7 +26,7 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [selectedIds, setSelectedIds] = useState(!IsApplyMasterBatch ? Ids : []);
 
   const dispatch = useDispatch()
 
@@ -79,8 +80,9 @@ function AddRM(props) {
   // const onSelectAll = (isSelected, rows) => { }
 
   const onRowSelect = (row, isSelected, e) => {
+
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (costData.TechnologyId === 6) {
+    if (costData.TechnologyName === PLASTIC) {
       if (isSelected) {
         let tempArr = [...selectedRowData, row]
         setSelectedRowData(tempArr)
@@ -90,12 +92,16 @@ function AddRM(props) {
         setSelectedRowData(tempArr)
       }
     } else {
-      setSelectedRowData(row)
+      if (isSelected) {
+        setSelectedRowData(row)
+      } else {
+        setSelectedRowData({})
+      }
     }
   }
 
   const onSelectAll = (isSelected, rows) => {
-    if (costData.TechnologyId === 6) {
+    if (costData.TechnologyName === PLASTIC) {
       if (isSelected) {
         setSelectedRowData(rows)
       } else {
@@ -107,7 +113,7 @@ function AddRM(props) {
   }
 
   const selectRowProp = {
-    mode: costData.TechnologyId === 6 ? 'checkbox' : 'radio',
+    mode: costData.TechnologyName === PLASTIC ? 'checkbox' : 'radio',
     //onSelect: onRowSelect,
     //mode: 'checkbox',
     clickToSelect: true,
@@ -170,7 +176,7 @@ function AddRM(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (Object.keys(selectedRowData).length === 0) {
       toastr.warning('Please select row.')
       return false;
     }

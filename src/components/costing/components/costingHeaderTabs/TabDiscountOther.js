@@ -7,7 +7,7 @@ import {
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
@@ -43,6 +43,7 @@ function TabDiscountOther(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -50,8 +51,8 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     if (props.activeTab !== '6') {
-      setValue('NetPOPriceINR', DiscountTabData !== undefined && checkForDecimalAndNull((props.netPOPrice - props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
-      setValue('HundiOrDiscountValue', DiscountTabData !== undefined && (props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+      setValue('NetPOPriceINR', DiscountTabData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
+      setValue('HundiOrDiscountValue', DiscountTabData !== undefined && (netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
 
       let topHeaderData = {
         DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
@@ -60,7 +61,7 @@ function TabDiscountOther(props) {
       }
       props.setHeaderCost(topHeaderData)
     }
-  }, [props.netPOPrice])
+  }, [netPOPrice])
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
@@ -77,7 +78,8 @@ function TabDiscountOther(props) {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "PartNumber": costData.PartNumber,
-        "NetPOPrice": props.netPOPrice,
+        "NetPOPrice": netPOPrice,
+        "TotalCost": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "CostingPartDetails": {
@@ -175,11 +177,11 @@ function TabDiscountOther(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     const { DiscountTabData } = props;
-    setValue('NetPOPriceINR', DiscountTabData && checkForDecimalAndNull(props.netPOPrice, initialConfiguration.NoOfDecimalForPrice))
+    setValue('NetPOPriceINR', DiscountTabData && checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice))
     setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
 
     if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && props.netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
     }
   }, [props]);
 
@@ -356,7 +358,8 @@ function TabDiscountOther(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
+      "NetPOPrice": netPOPrice,
+      "TotalCost": netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
       "CostingPartDetails": {
@@ -422,7 +425,7 @@ function TabDiscountOther(props) {
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%.33" }}>{``}</th>
                           {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(props.netPOPrice, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>

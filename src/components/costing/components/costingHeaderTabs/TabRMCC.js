@@ -7,7 +7,7 @@ import {
   getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion
 } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
@@ -26,6 +26,7 @@ function TabRMCC(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -1012,7 +1013,7 @@ function TabRMCC(props) {
   }
 
 
-  // console.log('ErrorObjRMCC: ', ErrorObjRMCC);
+  // 
 
   /**
   * @method saveCosting
@@ -1031,7 +1032,7 @@ function TabRMCC(props) {
         "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolCost": ComponentItemData.CostingPartDetails.TotalToolCost,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 

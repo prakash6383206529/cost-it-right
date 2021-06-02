@@ -11,7 +11,7 @@ import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import moment from "moment";
-import { userDetails } from "../../helper";
+import { getConfigurationKey, userDetails } from "../../helper";
 
 class Department extends Component {
 	constructor(props) {
@@ -21,6 +21,7 @@ class Department extends Component {
 			isLoader: false,
 			isSubmitted: false,
 			isEditFlag: false,
+			isCompanyConfigurable: getConfigurationKey().IsCompanyConfigureOnPlant
 		};
 	}
 
@@ -87,7 +88,7 @@ class Department extends Component {
 				CreatedDate: moment(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
-				CompanyId: departmentDetail.CompanyId
+				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : ''
 			}
 			let comObj = {
 				CompanyId: departmentDetail.CompanyId,
@@ -97,10 +98,16 @@ class Department extends Component {
 			}
 
 			this.props.updateDepartmentAPI(formReq, (res) => {
+				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
-					this.props.updateCompanyAPI(comObj, () => {
+					if (this.state.isCompanyConfigurable) {
+						this.props.updateCompanyAPI(comObj, () => {
+							toastr.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
+						})
+					} else {
+						// IF COMPANY CONFIGURABLE IS FALSE
 						toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
-					})
+					}
 				}
 				reset();
 				this.toggleDrawer('')
@@ -108,30 +115,48 @@ class Department extends Component {
 			})
 
 		} else {
-			const randomNo = Math.floor(Math.random() * (2000 - 1) + 1)
+
 			let obj = {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
 			}
+			// IF COMPANY CONFIGURABLE KEY IS TRUE
+			if (this.state.isCompanyConfigurable) {
 
-			// ADD NEW COMPANY VIA DEPARTMENT
-			this.props.addCompanyAPI(obj, (res) => {
-				if (res && res.data && res.data.Result) {
-					const id = res.data.Identity
-					let formReq = {
-						DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-						DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
-						CompanyId: id
-					}
-					this.props.addDepartmentAPI(formReq, (res) => {
-						if (res && res.data && res.data.Result) {
-							toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
-							reset();
-							this.toggleDrawer('')
+				// ADD NEW COMPANY VIA DEPARTMENT
+				this.props.addCompanyAPI(obj, (res) => {
+					if (res && res.data && res.data.Result) {
+						const id = res.data.Identity
+						let formReq = {
+							DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+							DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
+							CompanyId: id
 						}
-					})
+						this.props.addDepartmentAPI(formReq, (res) => {
+							if (res && res.data && res.data.Result) {
+								toastr.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
+								reset();
+								this.toggleDrawer('')
+							}
+						})
+					}
+				})
+			} else {
+				// IF COMPANY CONFIGURABLE KEY IS FALSE
+				let depObj = {
+					DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+					DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : ``,
+					CompanyId: ''
 				}
-			})
+				this.props.addDepartmentAPI(depObj, (res) => {
+					if (res && res.data && res.data.Result) {
+						toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+						reset();
+						this.toggleDrawer('')
+					}
+				})
+			}
+
 
 		}
 
@@ -154,7 +179,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? 'Update Company' : 'Add Company'}</h3>
+											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e)}
@@ -178,18 +203,21 @@ class Department extends Component {
 												customClassName={'withBorder'}
 											/>
 										</div>
-										<div className="input-group col-md-12 input-withouticon" >
-											<Field
-												label="Code"
-												name={"CompanyCode"}
-												type="text"
-												placeholder={''}
-												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-												component={renderText}
-												required={true}
-												customClassName={'withBorder'}
-											/>
-										</div>
+										{
+											this.state.isCompanyConfigurable &&
+											<div className="input-group col-md-12 input-withouticon" >
+												<Field
+													label="Code"
+													name={"CompanyCode"}
+													type="text"
+													placeholder={''}
+													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+													component={renderText}
+													required={true}
+													customClassName={'withBorder'}
+												/>
+											</div>
+										}
 
 										<div className="col-md-12">
 											<div className="text-right mt-0">

@@ -6,7 +6,7 @@ import Role from './RolePermissions/Role';
 import { getLeftMenu, } from '../../actions/auth/AuthActions';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { USER, ROLE, DEPARTMENT, LEVELS } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
@@ -132,7 +132,7 @@ class User extends Component {
             </NavItem>}
             {ViewDepartmentAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                Manage Company
+                {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Departemnt'}`}
               </NavLink>
             </NavItem>}
             {ViewLevelAccessibility && <NavItem>

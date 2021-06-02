@@ -2,7 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth'
+import { getAuthToken } from '../helper/auth';
 
 export const config = {
   headers: {
@@ -15,23 +15,10 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-const BASE_URL = 'http://10.10.1.100:10132/api/v1';
-
-//MINDA QA
-// const BASE_URL = 'https://apiinsightqa.unominda.com/api/v1';
-
-//MINDA PRODUCTION
-// const BASE_URL = 'https://apiinsight.unominda.com/api/v1';
-
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
 //DEVELOPMENT MIL URL
-export const FILE_URL = 'http://10.10.1.100:10132/';
-
-//MINDA QA FILE URL
-// export const FILE_URL = 'https://apiinsightqa.unominda.com/';
-
-//MINDA PRODUCTION FILE URL
-// export const FILE_URL = 'https://apiinsight.unominda.com/';
+export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
 export const API = {
@@ -1329,6 +1316,7 @@ export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
+export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1417,6 +1405,7 @@ export const ELECTRONICS = 'Electronics';
 export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
+export const FORGING = 'Forging';
 
 export const USER = 'User'
 export const ROLE = 'Role'

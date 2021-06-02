@@ -83,7 +83,7 @@ function OverheadProfit(props) {
     UpdateForm()
 
     if (data.CostingPartDetails && data.CostingPartDetails.ModelTypeId !== null) {
-      handleModelTypeChange({ label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId })
+      handleModelTypeChange({ label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId }, false)
     }
 
     //GET FIXED VALUE IN GET API
@@ -118,6 +118,7 @@ function OverheadProfit(props) {
   }, [IsIncludedSurfaceInOverheadProfit])
 
   useEffect(() => {
+    setIsSurfaceTreatmentAdded(false)
     IncludeSurfaceTreatmentCall()
   }, [SurfaceTreatmentCost.NetSurfaceTreatmentCost])
 
@@ -144,7 +145,7 @@ function OverheadProfit(props) {
   useEffect(() => {
 
     if (modelType && modelType.value !== undefined) {
-      handleModelTypeChange(modelType)
+      handleModelTypeChange(modelType, false)
     }
 
     if (applicability && applicability.value !== undefined) {
@@ -776,47 +777,49 @@ function OverheadProfit(props) {
     * @method handleModelTypeChange
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
-  const handleModelTypeChange = (newValue) => {
-    setOverheadObj({})
-    setProfitObj({})
-    setOverheadValues({}, true)
-    setProfitValues({}, true)
-    setRejectionObj({})
-    setIsSurfaceTreatmentAdded(false)
-    if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
-      setModelType(newValue)
-      const reqParams = {
-        ModelTypeId: newValue.value,
-        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-        IsVendor: costData.IsVendor,
-        EffectiveDate: CostingEffectiveDate,
-      }
-
-      dispatch(getOverheadProfitDataByModelType(reqParams, res => {
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
-          setOverheadObj(Data.CostingOverheadDetail)
-          setProfitObj(Data.CostingProfitDetail)
-
-          if (Data.CostingOverheadDetail) {
-            setTimeout(() => {
-              setOverheadValues(Data.CostingOverheadDetail, true)
-            }, 200)
-          }
-
-          if (Data.CostingProfitDetail) {
-            setTimeout(() => {
-              setProfitValues(Data.CostingProfitDetail, true)
-            }, 200)
-          }
-
-          //setRejectionObj(Data.CostingRejectionDetail)
-          // setIsSurfaceTreatmentAdded(false)
-          dispatch(gridDataAdded(true))
+  const handleModelTypeChange = (newValue, IsDropdownClicked) => {
+    if (IsDropdownClicked) {
+      setOverheadObj({})
+      setProfitObj({})
+      setOverheadValues({}, true)
+      setProfitValues({}, true)
+      setRejectionObj({})
+      setIsSurfaceTreatmentAdded(false)
+      if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
+        setModelType(newValue)
+        const reqParams = {
+          ModelTypeId: newValue.value,
+          VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+          IsVendor: costData.IsVendor,
+          EffectiveDate: CostingEffectiveDate,
         }
-      }))
-    } else {
-      setModelType([])
+
+        dispatch(getOverheadProfitDataByModelType(reqParams, res => {
+          if (res && res.data && res.data.Data) {
+            let Data = res.data.Data;
+            setOverheadObj(Data.CostingOverheadDetail)
+            setProfitObj(Data.CostingProfitDetail)
+
+            if (Data.CostingOverheadDetail) {
+              setTimeout(() => {
+                setOverheadValues(Data.CostingOverheadDetail, true)
+              }, 200)
+            }
+
+            if (Data.CostingProfitDetail) {
+              setTimeout(() => {
+                setProfitValues(Data.CostingProfitDetail, true)
+              }, 200)
+            }
+
+            //setRejectionObj(Data.CostingRejectionDetail)
+            // setIsSurfaceTreatmentAdded(false)
+            dispatch(gridDataAdded(true))
+          }
+        }))
+      } else {
+        setModelType([])
+      }
     }
   }
 
@@ -828,9 +831,16 @@ function OverheadProfit(props) {
   const setOverheadValues = (dataObj, IsAPIResponse) => {
 
     if (dataObj.IsOverheadFixedApplicable && IsAPIResponse === false) {
+
       setValue('OverheadFixedPercentage', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
       setValue('OverheadFixedCost', '-')
       setValue('OverheadFixedTotalCost', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
+      setOverheadObj({
+        ...overheadObj,
+        OverheadFixedPercentage: getValues('OverheadFixedPercentage'),
+        // OverheadFixedCost: '-',
+        OverheadFixedTotalCost: checkForDecimalAndNull(getValues('OverheadFixedPercentage'), initialConfiguration.NoOfDecimalForPrice),
+      })
     }
 
     if (dataObj.IsOverheadCombined && IsAPIResponse === false) {
@@ -1465,7 +1475,9 @@ function OverheadProfit(props) {
                   options={renderListing('ModelType')}
                   mandatory={false}
                   disabled={CostingViewMode ? true : false}
-                  handleChange={handleModelTypeChange}
+                  handleChange={(ModelTypeValues) => {
+                    handleModelTypeChange(ModelTypeValues, true)
+                  }}
                   errors={errors.ModelType}
                 />
               </Col>
