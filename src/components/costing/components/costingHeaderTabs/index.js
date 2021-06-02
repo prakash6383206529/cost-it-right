@@ -160,7 +160,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR SAVE OTHER DISCOUNT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    //InjectDiscountAPICall()
+    InjectDiscountAPICall()
 
   }, [activeTab])
 

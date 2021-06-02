@@ -23,6 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 package-lock.json
-
+/src/assests/images/logo/minda-logo1x.png
+/src/assests/images/logo/minda-logo.png
 /.storybook
 /src/stories/
