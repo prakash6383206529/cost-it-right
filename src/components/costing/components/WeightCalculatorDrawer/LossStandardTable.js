@@ -11,6 +11,11 @@ import { toastr } from 'react-redux-toastr'
 function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
+
+  const [lossWeight, setLossWeight] = useState('')
+
+
+
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -63,7 +68,9 @@ function LossStandardTable(props) {
     // }
     const LossWeight = (inputWeight * LossPercentage) / 100
 
-    setValue('LossWeight', checkForDecimalAndNull(LossWeight, trim))
+    setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+
+    setLossWeight(LossWeight)
   }
   /**
    * @method addRow
@@ -72,7 +79,7 @@ function LossStandardTable(props) {
   const addRow = () => {
     const LossPercentage = Number(getValues('LossPercentage'))
     const LossOfType = getValues('LossOfType').label
-    const LossWeight = Number(getValues('LossWeight'))
+    const LossWeight = Number(lossWeight)
 
     if (LossPercentage === 0 || LossOfType === '' || LossWeight === 0) {
       toastr.warning("Please add data first.")

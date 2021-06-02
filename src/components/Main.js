@@ -64,28 +64,28 @@ const CustomHeader = {
 const Detail = userDetails()
 
 if (Object.keys(Detail).length > 0) {
-  window.setInterval(() => {
+  // window.setInterval(() => {
 
-    const NewDetail = userDetails()
+  //   const NewDetail = userDetails()
 
-    let reqParams = {
-      IsRefreshToken: true,
-      refresh_token: NewDetail.RefreshToken,
-      ClientId: 'self',
-      grant_type: 'refresh_token',
-    }
+  //   let reqParams = {
+  //     IsRefreshToken: true,
+  //     refresh_token: NewDetail.RefreshToken,
+  //     ClientId: 'self',
+  //     grant_type: 'refresh_token',
+  //   }
 
-    let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
-    axios.post(API.tokenAPI, queryParams, CustomHeader)
-      .then((response) => {
-        if (response && response.status === 200) {
-          let userDetail = formatLoginResult(response.data);
-          reactLocalStorage.setObject("userDetail", userDetail);
-        }
-      }).catch((error) => {
+  //   let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
+  //   axios.post(API.tokenAPI, queryParams, CustomHeader)
+  //     .then((response) => {
+  //       if (response && response.status === 200) {
+  //         let userDetail = formatLoginResult(response.data);
+  //         reactLocalStorage.setObject("userDetail", userDetail);
+  //       }
+  //     }).catch((error) => {
 
-      });
-  }, (Detail.expires_in - 60) * 1000);
+  //     });
+  // }, (Detail.expires_in - 60) * 1000);
 }
 
 class Main extends Component {
@@ -146,7 +146,6 @@ class Main extends Component {
       const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
       const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 
 
-      console.log('current_time: ', current_time, totalSeconds * 1000, callBeforeSeconds);
       if ((totalSeconds * 1000 - callBeforeSeconds) > 0) {
 
         setInterval(() => {
@@ -157,9 +156,7 @@ class Main extends Component {
             grant_type: 'refresh_token',
           }
 
-          console.log('current_time: Before', current_time, totalSeconds, callBeforeSeconds);
           this.props.TokenAPI(reqParams, (res) => {
-            console.log('current_time: After', current_time, totalSeconds, callBeforeSeconds);
             if (res && res.status === 200) {
               let userDetail = formatLoginResult(res.data);
               reactLocalStorage.setObject("userDetail", userDetail);

@@ -2,7 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth'
+import { getAuthToken } from '../helper/auth';
 
 export const config = {
   headers: {
@@ -14,10 +14,10 @@ export const config = {
   },
 }
 
-// DEVELOPMENT
+// DEVELOPMENT MIL URL
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
-//FILE URL
+//DEVELOPMENT MIL URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -1406,6 +1406,7 @@ export const ELECTRONICS = 'Electronics';
 export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
+export const FORGING = 'Forging';
 
 export const USER = 'User'
 export const ROLE = 'Role'

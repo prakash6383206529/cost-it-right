@@ -305,7 +305,7 @@ function ReportListing(props) {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {(shown) ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
+                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
                                         <img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                 ) : (
                                     <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
@@ -332,7 +332,7 @@ function ReportListing(props) {
                 tableHeaderClass="my-custom-header"
                 pagination
             >
-                <TableHeaderColumn dataField="TokenNumber" isKey={true} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="TokenNumber" width={110} isKey={true} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
                 <TableHeaderColumn dataField="CostingHead" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Technology'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="VendorName" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderVendorName()}</TableHeaderColumn>

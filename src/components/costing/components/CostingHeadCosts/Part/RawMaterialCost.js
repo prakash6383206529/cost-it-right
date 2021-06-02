@@ -8,11 +8,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, convertObjectToArray, getConfigurationKey } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import { G, KG, MG } from '../../../../../config/constants'
+import { G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing'
 
 let counter = 0;
@@ -94,7 +94,7 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
 
-      if (costData.TechnologyId === 6) {
+      if (costData.TechnologyName === PLASTIC) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
@@ -137,8 +137,8 @@ function RawMaterialCost(props) {
 
     }
 
-    if (IsApplyMasterBatch) {
-      setValue('MBName', rowData && rowData[0].RawMaterial)
+    if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
+      setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
       setValue('MBPrice', rowData && rowData[0].Currency === '-' ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
     setDrawerOpen(false)
@@ -153,7 +153,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
+    if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
       toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
       return false
     }
@@ -543,7 +543,7 @@ function RawMaterialCost(props) {
       isShow = true;
     }
 
-    if (costData && costData.TechnologyId === 6) {
+    if (costData && costData.TechnologyName === PLASTIC) {
       isShow = true;
     }
 
@@ -629,7 +629,6 @@ function RawMaterialCost(props) {
                                 rules={{
                                   required: true,
                                   pattern: {
-                                    // value: /[0-9]\d*(\.\d+)?$/i,
                                     value: /^\d*\.?\d*$/,
                                     message: 'Invalid Number.',
                                   },
@@ -656,7 +655,6 @@ function RawMaterialCost(props) {
                                 rules={{
                                   required: true,
                                   pattern: {
-                                    // value: /^[0-9]\d*(\.\d+)?$/i,
                                     value: /^\d*\.?\d*$/,
                                     message: 'Invalid Number.',
                                   },
@@ -699,7 +697,7 @@ function RawMaterialCost(props) {
             </Row>
 
             <Row >
-              {costData.TechnologyId === 6 &&
+              {costData.TechnologyName === PLASTIC &&
                 <Col md="2" className="py-3 ">
                   <label
                     className={`custom-checkbox mb-0`}
@@ -720,7 +718,7 @@ function RawMaterialCost(props) {
                 </Col>
               }
 
-              {IsApplyMasterBatch && costData.TechnologyId === 6 &&
+              {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
                   <Col md="2">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>

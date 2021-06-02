@@ -70,10 +70,14 @@ function HPDC(props) {
             label: 'Machining Loss',
             value: 'MachiningLoss',
         },
-        // {
-        //   label: 'Burning Loss',
-        //   value: 'burningLoss',
-        // },
+        {
+            label: 'Processing Allowance',
+            value: 'ProcessingAllowance',
+        },
+        {
+            label: 'Rejection Allowance',
+            value: 'RejectionAllowance',
+        },
     ]
 
     useEffect(() => {
@@ -96,6 +100,7 @@ function HPDC(props) {
     }
 
     const calculateRemainingCalculation = (lostSum = 0) => {
+
 
 
         let scrapWeight = 0

@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
@@ -13,7 +13,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, SHEET_METAL, PLASTIC, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -31,7 +31,7 @@ export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
@@ -67,12 +67,12 @@ function CostingDetails(props) {
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
   //ROLE AND PERMISSION
-  const [ViewAccessibility, setViewAccessibility] = useState(false)
-  const [AddAccessibility, setAddAccessibility] = useState(false)
-  const [EditAccessibility, setEditAccessibility] = useState(false)
-  const [DeleteAccessibility, setDeleteAccessibility] = useState(false)
-  const [CopyAccessibility, setCopyAccessibility] = useState(false)
-  const [SOBAccessibility, setSOBAccessibility] = useState(false)
+  const [ViewAccessibility, setViewAccessibility] = useState(true)
+  const [AddAccessibility, setAddAccessibility] = useState(true)
+  const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
+  const [CopyAccessibility, setCopyAccessibility] = useState(true)
+  const [SOBAccessibility, setSOBAccessibility] = useState(true)
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
@@ -116,12 +116,12 @@ function CostingDetails(props) {
         const accessData = Data && Data.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
         const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
         if (permmisionData !== undefined) {
-          setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
-          setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
-          setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
-          setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
-          setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
-          setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
+          // setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
+          // setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
+          // setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
+          // setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
+          // setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+          // setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
         }
       }
     }))
@@ -453,9 +453,6 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
-      console.log('vendorData: ', vendorData);
-
-
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId))
       if (isExist !== -1) {
@@ -1263,11 +1260,6 @@ function CostingDetails(props) {
     setVBCVendorGrid(tempVBCArr)
   }
 
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  const onSubmit = (values) => { }
 
   const zbcPlantGridFields = 'zbcPlantGridFields'
   const vbcGridFields = 'vbcGridFields'
@@ -1279,6 +1271,42 @@ function CostingDetails(props) {
   const closeBulkUploadDrawer = () => {
     SetIsBulkOpen(false)
   }
+
+  /**
+   * @method updateZBCState
+   * @description UPDATE isZBCSOBEnabled STATE
+   */
+  const updateZBCState = () => {
+    let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+    if (findIndex !== -1) {
+      toastr.warning('SOB could not be empty.')
+      return false;
+    } else {
+      setZBCEnableSOBField(!isZBCSOBEnabled)
+    }
+  }
+
+  /**
+   * @method onSubmit
+   * @description UPDATE isVBCSOBEnabled STATE
+   */
+  const updateVBCState = () => {
+    let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+    if (findIndex !== -1) {
+      toastr.warning('SOB could not be empty.')
+      return false;
+    } else {
+      setVBCEnableSOBField(!isVBCSOBEnabled)
+    }
+  }
+
+  /**
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => { }
+
+
 
   return (
     <>
@@ -1517,7 +1545,7 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
@@ -1544,7 +1572,7 @@ function CostingDetails(props) {
                                       <tr key={index}>
                                         <td>{`${item.PlantName}(${item.PlantCode})`}</td>
                                         <td className="cr-select-height w-100px">
-                                          <TextFieldHookForm
+                                          <NumberFieldHookForm
                                             label={""}
                                             name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                             Controller={Controller}
@@ -1552,10 +1580,9 @@ function CostingDetails(props) {
                                             register={register}
                                             mandatory={false}
                                             rules={{
-                                              //required: true,
+                                              required: true,
                                               pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                value: /^\d*\.?\d*$/,
                                                 message: "Invalid Number.",
                                               },
                                               max: {
@@ -1597,7 +1624,7 @@ function CostingDetails(props) {
                                             {item.DisplayStatus}
                                           </div>
                                         </td>
-                                        <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : ''}</td>
+                                        <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td style={{ width: "250px" }}>
                                           {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
@@ -1656,7 +1683,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor`}</th>
                                   {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
@@ -1684,7 +1711,7 @@ function CostingDetails(props) {
                                       {/* {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>} */}
                                       {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
-                                        <TextFieldHookForm
+                                        <NumberFieldHookForm
                                           label=""
                                           name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
@@ -1692,10 +1719,9 @@ function CostingDetails(props) {
                                           register={register}
                                           mandatory={false}
                                           rules={{
-                                            //required: true,
+                                            required: true,
                                             pattern: {
-                                              //value: /^[0-9]*$/i,
-                                              value: /^[0-9]\d*(\.\d+)?$/i,
+                                              value: /^\d*\.?\d*$/,
                                               message: "Invalid Number.",
                                             },
                                             max: {
@@ -1735,7 +1761,7 @@ function CostingDetails(props) {
                                           {item.DisplayStatus}
                                         </div>
                                       </td>
-                                      <td>{item.Price ? item.Price : ''}</td>
+                                      <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
                                         {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}

@@ -7,7 +7,7 @@ import {
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
@@ -41,6 +41,7 @@ function TabDiscountOther(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -59,7 +60,7 @@ function TabDiscountOther(props) {
       }
       props.setHeaderCost(topHeaderData)
     }
-  }, [props.netPOPrice])
+  }, [netPOPrice])
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
@@ -76,7 +77,8 @@ function TabDiscountOther(props) {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "PartNumber": costData.PartNumber,
-        "NetPOPrice": props.netPOPrice,
+        "NetPOPrice": netPOPrice,
+        "TotalCost": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "CostingPartDetails": {
@@ -416,7 +418,8 @@ function TabDiscountOther(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
+      "NetPOPrice": netPOPrice,
+      "TotalCost": netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
       "CostingPartDetails": {
@@ -740,7 +743,7 @@ function TabDiscountOther(props) {
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={"textAreaWithBorder"}
                         errors={errors.Remarks}
                         disabled={CostingViewMode ? true : false}
                       />
