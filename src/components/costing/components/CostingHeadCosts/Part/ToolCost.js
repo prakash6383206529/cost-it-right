@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from 'react-hook-form';
+import { useDispatch, } from 'react-redux'
 import { Col, Row, Table } from 'reactstrap';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { checkForDecimalAndNull, } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { ViewCostingContext } from '../../CostingDetails';
+import { gridDataAdded } from '../../../actions/Costing';
 
 function ToolCost(props) {
 
@@ -17,6 +19,8 @@ function ToolCost(props) {
   let OperationCostArray = item?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
     return { label: el.OperationName, value: el.OperationName };
   });
+
+  const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(data)
   const [isEditFlag, setIsEditFlag] = useState(false)
@@ -74,6 +78,7 @@ function ToolCost(props) {
         let tempArr = [...gridData, rowArray]
         setGridData(tempArr)
       }
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }

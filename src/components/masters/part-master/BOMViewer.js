@@ -318,8 +318,7 @@ class BOMViewer extends Component {
                               className="pull-right mt10 btn-danger"
                               onClick={() =>
                                 this.setState({
-                                  displayDeleteIcon: !this.state
-                                    .displayDeleteIcon,
+                                  displayDeleteIcon: !this.state.displayDeleteIcon,
                                   displayEditIcon: false,
                                 })
                               }

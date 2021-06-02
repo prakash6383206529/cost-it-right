@@ -6,7 +6,8 @@ import {
     GET_SELECTLIST_MASTERS,
     GET_VERIFY_SIMULATION_LIST,
     GET_COSTING_SIMULATION_LIST,
-    config
+    config,
+    GET_SIMULATION_APPROVAL_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -120,7 +121,7 @@ export function getSelectListOfMasters(callback) {
         //   dispatch({ type: API_REQUEST });
         //   const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
         //   request.then((response) => {
-        //     console.log(response, "REQUEST");
+        //     
         //     if (response.data.Result) {
         //       dispatch({
         //         type: GET_BULKUPLOAD_COSTING_LIST,
@@ -151,7 +152,7 @@ export function runVerifySimulation(data, callback) {
 }
 
 export function getVerifySimulationList(token, callback) {
-    console.log('token in action: ', token);
+
     return (dispatch) => {
         const request = axios.get(`${API.getVerifySimulationList}/${token}`, headers);
         request.then((response) => {
@@ -199,4 +200,71 @@ export function runSimulationOnSelectedCosting(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getSimulationApprovalList(filterData, callback) {
+    let JSON = {
+        status: 200,
+        data: {
+            DataList: [
+                {
+                    TokenNumber: 1234,
+                    NoOfCosting: '2',
+                    SimulatedBy: 'Samartha',
+                    SimulatedOn: '25/05/2020 12:00PM',
+                    RequestedBy: 'Charlie',
+                    RequestedOn: '25/04/2020 12:00PM',
+                    DisplayStatus: 'Draft'
+                },
+                {
+                    TokenNumber: 1235,
+                    NoOfCosting: '4',
+                    SimulatedBy: 'Jay',
+                    SimulatedOn: '25/05/2020 12:00PM',
+                    RequestedBy: 'Robert',
+                    RequestedOn: '25/04/2020 12:00PM',
+                    DisplayStatus: 'Draft'
+                },
+                {
+                    TokenNumber: 1236,
+                    NoOfCosting: '1',
+                    SimulatedBy: 'SD',
+                    SimulatedOn: '25/05/2020 12:00PM',
+                    RequestedBy: 'MR',
+                    RequestedOn: '25/04/2020 12:00PM',
+                    DisplayStatus: 'Draft'
+                },
+            ],
+        },
+    }
+
+
+    return (dispatch) => {
+
+        dispatch({
+            type: GET_SIMULATION_APPROVAL_LIST,
+            payload: JSON.data.DataList,
+        });
+        callback(JSON);
+    }
+    // return (dispatch) => {
+    //     const queryParameter = `logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
+    //     const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
+    //     request
+    //       .then((response) => {
+    //         if (response.data.Result) {
+    //           dispatch({
+    //             type: GET_SIMULATION_APPROVAL_LIST,
+    //             payload: response.data.DataList,
+    //           })
+    //           callback(response)
+    //         } else {
+    //           toastr.error(MESSAGES.SOME_ERROR)
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         dispatch({ type: API_FAILURE })
+    //         apiErrors(error)
+    //       })
+    //   }
 }

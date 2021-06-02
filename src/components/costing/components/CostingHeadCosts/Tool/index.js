@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -29,7 +29,7 @@ function Tool(props) {
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
-    defaultValues: IsApplicableProcessWise === false ? defaultValues : {},
+    defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
   });
 
   const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
@@ -40,6 +40,7 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
@@ -105,7 +106,7 @@ function Tool(props) {
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -116,7 +117,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
@@ -146,7 +147,7 @@ function Tool(props) {
       const ToolCost = checkForNull(event.target.value);
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -157,7 +158,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
@@ -182,7 +183,7 @@ function Tool(props) {
       const ToolMaintenanceCost = checkForNull(getValues('ToolMaintenanceCost'))
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(event.target.value)
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -193,7 +194,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null

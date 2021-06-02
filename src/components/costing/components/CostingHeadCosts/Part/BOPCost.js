@@ -7,10 +7,12 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, setValueAccToUOM } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import { INR } from '../../../../../config/constants';
 
+let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
 
@@ -33,6 +35,7 @@ function BOPCost(props) {
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -43,8 +46,11 @@ function BOPCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      props.setBOPCost(gridData, Params)
+      if (!CostingViewMode) {
+        props.setBOPCost(gridData, Params)
+      }
     }, 100)
+    selectedIds(gridData)
   }, [gridData]);
 
   /**
@@ -52,6 +58,7 @@ function BOPCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -67,16 +74,17 @@ function BOPCost(props) {
           BoughtOutPartId: el.BoughtOutPartId,
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
-          Currency: el.Currency,
-          LandedCostINR: el.NetLandedCost,
+          Currency: el.Currency !== '-' ? el.Currency : INR,
+          LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
-          NetBoughtOutPartCost: el.NetLandedCost * 1,
+          NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
         }
       })
 
       let tempArr = [...gridData, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }
@@ -189,7 +197,9 @@ function BOPCost(props) {
           BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
           BOPHandlingCharges: getValues('BOPHandlingCharges'),
         }
-        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        if (!CostingViewMode) {
+          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        }
       }, 200)
 
     } else {
@@ -205,9 +215,24 @@ function BOPCost(props) {
     }
   }, [item.CostingPartDetails.TotalBoughtOutPartCost])
 
+  // USED TO RESET VALUE AS IT IS WITHOUT BOP HANDLING CHARGESD
   useEffect(() => {
+    if (IsApplyBOPHandlingCharges === false) {
 
-  }, [gridData]);
+      const Params = {
+        BOMLevel: item.BOMLevel,
+        PartNumber: item.PartNumber,
+      }
+      const BOPHandlingFields = {
+        IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
+        BOPHandlingPercentage: 0,
+        BOPHandlingCharges: 0,
+      }
+      if (!CostingViewMode) {
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      }
+    }
+  }, [IsApplyBOPHandlingCharges]);
 
   const bopGridFields = 'bopGridFields';
 
@@ -218,11 +243,15 @@ function BOPCost(props) {
   const onSubmit = (values) => { }
 
   /**
-  * @method setRMCCErrors
-  * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-  */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+   * @method setRMCCErrors
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   /**
@@ -257,8 +286,7 @@ function BOPCost(props) {
                     <tr>
                       <th>{`BOP Part No.`}</th>
                       <th>{`BOP Part Name`}</th>
-                      <th style={{ width: "220px" }}>{`Currency`}</th>
-                      <th style={{ width: "220px" }} >{`Landed Cost(INR)`}</th>
+                      <th style={{ width: "220px" }} >{`BOP Cost(INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
@@ -273,7 +301,6 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
-                              <td>{item.Currency}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
@@ -314,7 +341,6 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
-                              <td>{item.Currency}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -340,22 +366,24 @@ function BOPCost(props) {
             </Row>
             <Row >
               <Col md="12" className="py-3 ">
-                <label
-                  className={`custom-checkbox mb-0`}
-                  onChange={onPressApplyBOPCharges}
-                >
-                  Apply BOP Handling Charges
-                    <input
-                    type="checkbox"
-                    checked={IsApplyBOPHandlingCharges}
-                    disabled={CostingViewMode ? true : false}
-                  />
-                  <span
-                    className=" before-box"
-                    checked={IsApplyBOPHandlingCharges}
+                <span className="d-inline-block">
+                  <label
+                    className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
-                  />
-                </label>
+                  >
+                    Apply BOP Handling Charges
+                    <input
+                      type="checkbox"
+                      checked={IsApplyBOPHandlingCharges}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsApplyBOPHandlingCharges}
+                      onChange={onPressApplyBOPCharges}
+                    />
+                  </label>
+                </span>
               </Col>
 
               {IsApplyBOPHandlingCharges &&

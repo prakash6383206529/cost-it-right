@@ -310,7 +310,7 @@ class AddVolume extends Component {
         return false
       }
       return true
-    } else {
+    } else if (!/^\+?(0|[0-9]\d*)$/.test(cellValue)) {
       toastr.warning('Please enter a valid positive numbers.')
       return false
     }

@@ -111,13 +111,18 @@ input:focus {
       // content: url(../../assests/images/email.png);
       position: absolute;
       left: 11px;
-      top: 11px;
+      top: 10px;
       z-index: 10;
+    }
+    @-moz-document url-prefix() {
+      &::before{
+        top:9px;
+      }
     }
   }
   .input-group.mail  .inputbox.input-group {
     &::before{
-    content: url(../../assests/images/email.png);}
+    content: url(../../assests/images/user-login.png);}
 
   }
   .input-group.phone  .inputbox.input-group {
@@ -256,9 +261,43 @@ label{margin-bottom: 0;}
 
 
 .right-sideimg{
-img
-{width: 100%;
-  height: 100%;}}
+img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #eff4fb;
+  object-position: bottom;
+}
+}
+@media(max-width:1366px){
+  .form-section {
+    padding: 35px 70px;
+    .bottomlogo_con{
+      span{
+        font-size: calc(15px * 80 / 100);
+        margin-top: 25px;
+      }
+      .logo-second{
+        max-width: 190px;
+      }
+    }
+     img{
+       margin-bottom: calc(15px * 80 / 100);
+       max-height: 70px;
+     }
+   h3{
+    font-size: calc(20px * 80 / 100);
+    padding: calc(10px * 80 / 100) 0;
+   }
+   p{
+    font-size: calc(14px * 80 / 100);
+    color: #8A91AC;
+   }
+  }
+  .login-form {
+    height: auto;
+  }
+}
 @media screen and (max-width: 767px) {
   .login-container {
     margin: 15px;

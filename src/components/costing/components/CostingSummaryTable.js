@@ -21,16 +21,18 @@ import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
+import { isFinalApprover } from '../actions/Approval'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editObject, setEditObject] = useState({})
+  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
 
   /* Constant  for drawer toggle*/
   const [isViewBOP, setViewBOP] = useState(false)
@@ -69,10 +71,34 @@ const CostingSummaryTable = (props) => {
   const partNumber = useSelector(state => state.costing.partNo);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  // const [showWarningMsg, setShowWarningMsg] = useState(false)
+  const [warningMsg, setShowWarningMsg] = useState(false)
+
   useEffect(() => {
 
   }, [multipleCostings])
+
+  // useEffect(() => {
+  //   
+  // }, [showWarningMsg])
+  useEffect(() => {
+    if (!viewMode && viewCostingData && partInfo) {
+      let obj = {}
+      obj.TechnologyId = partInfo.TechnologyId
+      obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
+      obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
+      obj.LoggedInUserId = userDetails().LoggedInUserId
+
+      dispatch(isFinalApprover(obj, res => {
+        if (res.data.Result) {
+          setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+          // setIsFinalApproverShow(false)
+        }
+      }))
+    }
+
+  }, [])
+
+
   /**
    * @method ViewBOP
    * @description SET VIEW BOP DATA FOR DRAWER
@@ -173,7 +199,10 @@ const CostingSummaryTable = (props) => {
       VendorId: viewCostingData[index].vendorId,
       vendorName: viewCostingData[index].vendorName,
       vendorPlantName: viewCostingData[index].vendorPlantName,
-      vendorPlantId: viewCostingData[index].vendorPlantId
+      vendorPlantId: viewCostingData[index].vendorPlantId,
+      destinationPlantCode: viewCostingData[index].destinationPlantCode,
+      destinationPlantName: viewCostingData[index].destinationPlantName,
+      destinationPlantId: viewCostingData[index].destinationPlantId,
     }
 
     setIsEditFlag(true)
@@ -302,6 +331,7 @@ const CostingSummaryTable = (props) => {
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
     setMultipleCostings([])
+    setShowWarningMsg(true)
   }
 
   /**
@@ -363,15 +393,40 @@ const CostingSummaryTable = (props) => {
     let temp = multipleCostings
     if (temp.includes(id)) {
       const ind = multipleCostings.findIndex((data) => data === id)
+
       if (ind !== -1) {
+
         temp.splice(ind, 1)
-        setIsWarningFlag(viewCostingData[ind].IsApprovalLocked)
+      }
+      const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+      if (checkInd !== -1) {
+
+        if (viewCostingData[checkInd].IsApprovalLocked) {
+          setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
+        }
       }
     } else {
+
       temp.push(id)
       const ind = multipleCostings.findIndex((data) => data === id)
-      setIsWarningFlag(viewCostingData[ind].IsApprovalLocked)
+      const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+
+
+      if (temp.length > 1 && isWarningFlag) {
+        if (viewCostingData[checkInd].IsApprovalLocked === true) {
+          setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
+        }
+
+      } else {
+        setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
+      }
     }
+
+
+
+
+
+
     setMultipleCostings(temp)
     setFlag(!flag)
   }
@@ -447,6 +502,7 @@ const CostingSummaryTable = (props) => {
                 obj.remainingQty = checkForNull(totalBudgetedQty - actualQty)
                 obj.annualImpact = variance != '' ? totalBudgetedQty * variance : 0
                 obj.yearImpact = variance != '' ? (totalBudgetedQty - actualQty) * variance : 0
+
               }
             })
 
@@ -461,6 +517,9 @@ const CostingSummaryTable = (props) => {
           obj.effectiveDate = viewCostingData[index].effectiveDate
           obj.isDate = viewCostingData[index].effectiveDate ? true : false
           obj.partNo = viewCostingData[index].partId
+          obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
+          obj.destinationPlantName = viewCostingData[index].destinationPlantName
+          obj.destinationPlantId = viewCostingData[index].destinationPlantId
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -478,7 +537,7 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
-    console.log(viewCostingData && viewCostingData[0], "viewCostingData");
+
     if (viewCostingData.length === 1) {
       setIsWarningFlag(viewCostingData && viewCostingData.length > 0 && viewCostingData[0].IsApprovalLocked)
       // setIsWarningFlag(false)
@@ -526,28 +585,30 @@ const CostingSummaryTable = (props) => {
               //   </button>
               // </Col>
             }
-
-            <Col md="8" className="text-right">
-              {!viewMode && (
-                <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                  <img
-                    class="mr-1"
-                    src={require('../../../assests/images/send-for-approval.svg')}
-                  ></img>{' '}
-                  {'Send For Approval'}
-                </button>
-              )}
-              <button
-                type="button"
-                className={'user-btn mb-2 comparison-btn'}
-                onClick={addComparisonDrawerToggle}
-              >
-                <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
+            {
+              !simulationMode &&
+              <Col md="8" className="text-right">
+                {(!viewMode && !isFinalApproverShow) && (
+                  <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                    <img
+                      class="mr-1"
+                      src={require('../../../assests/images/send-for-approval.svg')}
+                    ></img>{' '}
+                    {'Send For Approval'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={'user-btn mb-2 comparison-btn'}
+                  onClick={addComparisonDrawerToggle}
+                >
+                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
               Add To Comparison{' '}
-              </button>
-              {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
-              {showWarningMsg && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-            </Col>
+                </button>
+                {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
+                {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
+              </Col>
+            }
 
           </Row>
           <Row>
@@ -556,7 +617,7 @@ const CostingSummaryTable = (props) => {
                 <table class="table table-bordered costing-summary-table">
                   <thead>
                     <tr className="main-row">
-                      <th scope="col">ZBC v/s VBC</th>
+                      <th scope="col">VBC</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
 

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -11,11 +11,11 @@ import {
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic,
+  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, checkVendorPlantConfigurable, getConfigurationKey } from "../../../helper/auth";
+import { loggedInUserId, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
@@ -24,15 +24,18 @@ import AddUOM from '../uom-master/AddUOM';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
-import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, INR, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import moment from 'moment';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+
+
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+import WarningMessage from '../../common/WarningMessage';
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -83,7 +86,11 @@ class AddRMImport extends Component {
       netCurrencyCost: '',
       singlePlantSelected: [],
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      isDateChange: false,
+      isSourceChange: false,
+      source: '',
+      showWarning: false
     }
   }
 
@@ -241,16 +248,29 @@ class AddRMImport extends Component {
   };
 
   /**
-  * @method handleSourceSupplierCity
-  * @description called
-  */
+   * @method handleSourceSupplierCity
+   * @description called
+   */
   handleSourceSupplierCity = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ sourceLocation: newValue, });
+
+      this.setState({ sourceLocation: newValue, isSourceChange: true })
+
     } else {
-      this.setState({ sourceLocation: [], })
+      this.setState({ sourceLocation: [] })
     }
-  };
+    // this.setState({ DropdownChanged: false })
+  }
+
+  handleSource = (newValue, actionMeta) => {
+
+    if (newValue && newValue !== '') {
+      //  if (newValue !== thissource) {
+      this.setState({ source: newValue, isSourceChange: true })
+
+    }
+  }
+
 
   /**
   * @method handleUOM
@@ -290,8 +310,13 @@ class AddRMImport extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    // this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
-    this.setState({ effectiveDate: date }, () => { this.handleNetCost() })
+    if (date !== this.state.effectiveDate) {
+
+      this.setState({ isDateChange: true, effectiveDate: date }, () => { this.handleNetCost() })
+    } else {
+      this.setState({ isDateChange: false, effectiveDate: date }, () => { this.handleNetCost() })
+    }
+    // this.setState({ effectiveDate: date }, () => { this.handleNetCost() })
   };
 
   handleNetCost = () => {
@@ -305,11 +330,20 @@ class AddRMImport extends Component {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
       })
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
-        this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
-      })
+      if (currency && effectiveDate) {
+
+        this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
+          if (Object.keys(res.data.Data).length === 0) {
+            this.setState({ showWarning: true })
+          }
+          else {
+            this.setState({ showWarning: false })
+          }
+          this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
+        })
+      }
     }
   }
 
@@ -347,72 +381,77 @@ class AddRMImport extends Component {
           }
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
-          this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
+          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
+            this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
+
+              setTimeout(() => {
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList,
+                  vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList } = this.props;
+
+                const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
+                const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
+                const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
+                const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
+                const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
+                const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+                const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
+                this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+                this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+                this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+                this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+                // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                // this.props.change('NetLandedCost')
+
+
+                let plantArray = [];
+                Data && Data.Plant.map((item) => {
+                  plantArray.push({ Text: item.PlantName, Value: item.PlantId })
+                  return plantArray;
+                })
+
+                const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.Vendor)
+
+                let vendorPlantArray = [];
+                Data && Data.VendorPlant.map((item) => {
+                  vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
+                  return vendorPlantArray;
+                })
+
+                //const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
+                const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
+                const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
+
+                this.setState({
+                  isEditFlag: true,
+                  // isLoader: false,
+                  isShowForm: true,
+                  IsVendor: Data.IsVendor,
+                  RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
+                  RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                  RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                  Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                  Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+                  selectedPlants: plantArray,
+                  vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                  selectedVendorPlants: vendorPlantArray,
+                  HasDifferentSource: Data.HasDifferentSource,
+                  sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
+                  UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                  effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                  currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
+                  remarks: Data.Remark,
+                  files: Data.FileList,
+                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+                  // FreightCharge:Data.FreightCharge
+                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : ''
+                }, () => this.setState({ isLoader: false }))
+              }, 200);
+            });
+
+          })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
           //this.props.getCityBySupplier(Data.Vendor, () => { })
 
-          setTimeout(() => {
-            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList,
-              vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList } = this.props;
-
-            const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
-            const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
-            const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
-            const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
-            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-            const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-            const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-            this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
-            this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-            this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
-            this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-            // this.props.change('NetLandedCost')
-
-
-            let plantArray = [];
-            Data && Data.Plant.map((item) => {
-              plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-              return plantArray;
-            })
-
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.Vendor)
-
-            let vendorPlantArray = [];
-            Data && Data.VendorPlant.map((item) => {
-              vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-              return vendorPlantArray;
-            })
-
-            //const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
-            const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-            const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
-
-            this.setState({
-              isEditFlag: true,
-              // isLoader: false,
-              isShowForm: true,
-              IsVendor: Data.IsVendor,
-              RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
-              RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-              RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-              Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-              selectedPlants: plantArray,
-              vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-              selectedVendorPlants: vendorPlantArray,
-              HasDifferentSource: Data.HasDifferentSource,
-              sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-              UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
-              currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-              remarks: Data.Remark,
-              files: Data.FileList,
-              singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
-              // FreightCharge:Data.FreightCharge
-              // netCost:Data
-            }, () => this.setState({ isLoader: false }))
-          }, 1000);
         }
       })
     } else {
@@ -807,7 +846,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -825,21 +864,15 @@ class AddRMImport extends Component {
 
     if (isEditFlag) {
 
-      if (DataToChange.IsVendor == false) {
-        if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge
-          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
-          this.cancel()
-          return false
-        }
-      }
 
-      if (DataToChange.IsVendor) {
-        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate
-          && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
-          this.cancel()
-          return false
-        }
-      }
+
+      // if (DataToChange.IsVendor) {
+      //   if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate
+      //     && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
+      //     this.cancel()
+      //     return false
+      //   }
+      // }
 
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
@@ -855,27 +888,55 @@ class AddRMImport extends Component {
         ScrapRate: values.ScrapRate,
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         Attachements: updatedFiles,
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        IsForcefulUpdated: true
+        IsConvertIntoCopy: isDateChange ? true : false,
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
       }
       if (isEditFlag) {
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateRMImportAPI(requestData, (res) => {
-              if (res.data.Result) {
-                toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                this.clearForm();
-              }
-            })
-          },
-          onCancel: () => { },
+        if (isSourceChange) {
+          this.props.reset()
+          this.props.updateRMImportAPI(requestData, (res) => {
+            if (res.data.Result) {
+              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm()
+              // this.cancel()
+            }
+          })
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        if (isDateChange) {
+
+          this.props.reset()
+          this.props.updateRMImportAPI(requestData, (res) => {
+            if (res.data.Result) {
+              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              this.clearForm()
+              // this.cancel()
+            }
+          })
+        } else {
+          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark) {
+            this.cancel()
+            return false
+          }
+          const toastrConfirmOptions = {
+            onOk: () => {
+              this.props.reset()
+              this.props.updateRMImportAPI(requestData, (res) => {
+                if (res.data.Result) {
+                  toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                  this.clearForm();
+                }
+              })
+            },
+            onCancel: () => { },
+            component: () => <ConfirmComponent />,
+          }
+          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        }
       }
 
 
@@ -903,7 +964,7 @@ class AddRMImport extends Component {
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
@@ -1243,11 +1304,12 @@ class AddRMImport extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={"Enter"}
-                                    validate={acceptAllExceptSingleSpecialCharacter}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
                                     //required={true}
                                     disabled={false}
-                                    maxLength="70"
+                                    onChange={this.handleSource}
+                                    valueDescription={this.state.source}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -1332,7 +1394,7 @@ class AddRMImport extends Component {
                                   validate={[required]}
                                   autoComplete={'off'}
                                   required={true}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={false}
                                   changeHandler={(e) => {
                                     //e.preventDefault()
                                   }}
@@ -1342,10 +1404,11 @@ class AddRMImport extends Component {
                                 />
                               </div>
                             </div>
+                            {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Basic Rate/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`Basic Rate(${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1360,7 +1423,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1374,7 +1437,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}
@@ -1388,7 +1451,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Shearing Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`Shearing Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}

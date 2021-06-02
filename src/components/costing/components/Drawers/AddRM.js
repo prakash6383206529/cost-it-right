@@ -10,7 +10,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
@@ -18,6 +18,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 
 function AddRM(props) {
 
+  const { IsApplyMasterBatch, Ids } = props;
   const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -25,13 +26,13 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(!IsApplyMasterBatch ? Ids : []);
 
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
 
   const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
-  console.log('rmDrawerList: ', rmDrawerList);
   const { initialConfiguration } = useSelector(state => state.auth)
   const { filterRMSelectList } = useSelector(state => state.material)
 
@@ -64,7 +65,7 @@ function AddRM(props) {
   const options = {
     clearSearch: true,
     noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal(),
+    paginationShowsTotal: renderPaginationShowsTotal,
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
     firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -72,15 +73,53 @@ function AddRM(props) {
 
   };
 
+  // const onRowSelect = (row, isSelected, e) => {
+  //   setSelectedRowData(row)
+  // }
+
+  // const onSelectAll = (isSelected, rows) => { }
+
   const onRowSelect = (row, isSelected, e) => {
-    setSelectedRowData(row)
+
+    //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
+    if (costData.TechnologyName === PLASTIC) {
+      if (isSelected) {
+        let tempArr = [...selectedRowData, row]
+        setSelectedRowData(tempArr)
+      } else {
+        const RawMaterialId = row.RawMaterialId;
+        let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
+        setSelectedRowData(tempArr)
+      }
+    } else {
+      if (isSelected) {
+        setSelectedRowData(row)
+      } else {
+        setSelectedRowData({})
+      }
+    }
   }
 
-  const onSelectAll = (isSelected, rows) => { }
+  const onSelectAll = (isSelected, rows) => {
+    if (costData.TechnologyName === PLASTIC) {
+      if (isSelected) {
+        setSelectedRowData(rows)
+      } else {
+        setSelectedRowData([])
+      }
+    } else {
+
+    }
+  }
 
   const selectRowProp = {
-    mode: 'radio',
+    mode: costData.TechnologyName === PLASTIC ? 'checkbox' : 'radio',
+    //onSelect: onRowSelect,
+    //mode: 'checkbox',
+    clickToSelect: true,
+    unselectable: selectedIds,
     onSelect: onRowSelect,
+    onSelectAll: onSelectAll
   };
 
   const renderBasicRate = () => {
@@ -137,7 +176,7 @@ function AddRM(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (Object.keys(selectedRowData).length === 0) {
       toastr.warning('Please select row.')
       return false;
     }
@@ -295,7 +334,7 @@ function AddRM(props) {
                         register={register}
                         options={renderListing("material")}
                         customClassName="mn-height-auto mb-0"
-                        handleChange={handleRMChange}/>
+                        handleChange={handleRMChange} />
                     </div>
 
                     <div className="flex-fills hide-label mb-0">
@@ -308,7 +347,7 @@ function AddRM(props) {
                         register={register}
                         options={renderListing("grade")}
                         customClassName="mn-height-auto mb-0"
-                        handleChange={() => { }}/>
+                        handleChange={() => { }} />
                     </div>
 
                     <div className="flex-fills mb-0">
@@ -323,7 +362,7 @@ function AddRM(props) {
             </form >
 
             <Row className="mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={rmDrawerList}
                   striped={false}
@@ -336,7 +375,8 @@ function AddRM(props) {
                   //exportCSV
                   //ignoreSinglePage
                   //ref={'table'}
-                  pagination>
+                  pagination
+                >
                   <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>

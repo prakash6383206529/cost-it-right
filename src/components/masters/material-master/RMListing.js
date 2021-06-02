@@ -155,7 +155,7 @@ class RMListing extends Component {
         return (
             <>
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} type={'button'} onClick={() => this.deleteItem(cell)} />}
             </>
         )
     }

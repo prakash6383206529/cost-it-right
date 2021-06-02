@@ -9,7 +9,7 @@ import TabOverheadProfit from './TabOverheadProfit';
 import TabPackagingFreight from './TabPackagingFreight';
 import TabDiscountOther from './TabDiscountOther';
 import TabToolCost from './TabToolCost';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
@@ -28,9 +28,9 @@ function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
-    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate } = useSelector(state => state.costing)
+    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
+    IsCostingDateDisabled, ActualCostingDataList } = useSelector(state => state.costing)
 
-  const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
@@ -38,6 +38,9 @@ function CostingHeaderTabs(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
+
+  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 
   useEffect(() => {
 
@@ -51,7 +54,7 @@ function CostingHeaderTabs(props) {
         "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -95,12 +98,21 @@ function CostingHeaderTabs(props) {
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
         "CostingNumber": costData.CostingNumber,
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
         "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData.CostingPartDetails.OverheadCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.ProfitCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.ICCCost) +
           checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
-        "CostingPartDetails": ComponentItemOverheadData.CostingPartDetails
+        "CostingPartDetails": {
+          ...ComponentItemOverheadData.CostingPartDetails,
+          NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData.CostingPartDetails.OverheadCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.RejectionCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.ProfitCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.ICCCost) +
+            checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
+        },
       }
       dispatch(saveComponentOverheadProfitTab(reqData, res => {
         dispatch(setComponentOverheadItemData({}, () => { }))
@@ -114,11 +126,13 @@ function CostingHeaderTabs(props) {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "PartNumber": costData.PartNumber,
-        "NetPOPrice": props.netPOPrice,
+        "NetPOPrice": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "CostingNumber": costData.CostingNumber,
-        "NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
-        "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails
+        //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
+        "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails,
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         dispatch(setComponentPackageFreightItemData({}, () => { }))
@@ -135,7 +149,9 @@ function CostingHeaderTabs(props) {
         "LoggedInUserId": loggedInUserId(),
         "CostingNumber": costData.CostingNumber,
         "ToolCost": ComponentItemToolData.TotalToolCost,
-        "CostingPartDetails": ComponentItemToolData.CostingPartDetails
+        "CostingPartDetails": ComponentItemToolData.CostingPartDetails,
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
       }
       dispatch(saveToolTab(data, res => {
         dispatch(setComponentToolItemData({}, () => { }))
@@ -219,7 +235,7 @@ function CostingHeaderTabs(props) {
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode) ? true : false}
+                  disabled={(CostingViewMode || IsCostingDateDisabled || ActualTotalCost > 0) ? true : false}
                 />
               </div>
             </div>
@@ -274,7 +290,6 @@ function CostingHeaderTabs(props) {
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
               <TabRMCC
-                netPOPrice={netPOPrice}
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}
@@ -282,14 +297,12 @@ function CostingHeaderTabs(props) {
             </TabPane>
             <TabPane tabId="2">
               <TabSurfaceTreatment
-                netPOPrice={netPOPrice}
                 setHeaderCost={props.setHeaderCostSurfaceTab}
                 activeTab={activeTab}
               />
             </TabPane>
             <TabPane tabId="3">
               <TabOverheadProfit
-                netPOPrice={netPOPrice}
                 activeTab={activeTab}
                 setHeaderCost={props.setHeaderOverheadProfitCostTab}
                 headCostRMCCBOPData={props.headCostRMCCBOPData}
@@ -297,21 +310,18 @@ function CostingHeaderTabs(props) {
             </TabPane>
             <TabPane tabId="4">
               <TabPackagingFreight
-                netPOPrice={netPOPrice}
                 activeTab={activeTab}
                 setHeaderCost={props.setHeaderPackageFreightTab}
               />
             </TabPane>
             <TabPane tabId="5">
               <TabToolCost
-                netPOPrice={netPOPrice}
                 activeTab={activeTab}
                 setHeaderCost={props.setHeaderCostToolTab}
               />
             </TabPane>
             <TabPane tabId="6">
               <TabDiscountOther
-                netPOPrice={netPOPrice}
                 activeTab={activeTab}
                 setHeaderCost={props.setHeaderDiscountTab}
                 DiscountTabData={props.DiscountTabData}

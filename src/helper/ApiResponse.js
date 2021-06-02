@@ -22,7 +22,10 @@ export function formatLoginResult(res) {
         // };
         const userObj = {
             Token: res.access_token,
+            RefreshToken: res.refresh_token,
             LoggedInUserId: res.LoggedInUserId,
+            LoggedInLevel: res.LoggedInLevel,
+            LoggedInLevelId: res.LoggedInLevelId,
             UserName: res.UserName,
             Name: res.Name,
             Email: res.Email,

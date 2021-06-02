@@ -28,7 +28,7 @@ function AddBOP(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { bopCategorySelectList } = useSelector(state => state.boughtOutparts)
   const { bopDrawerList } = useSelector(state => state.costing)
-  console.log('bopDrawerList: ', bopDrawerList);
+
 
   const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
     mode: 'onChange',
@@ -270,7 +270,7 @@ function AddBOP(props) {
 
 
                     <div className="flex-fills mb-0">
-                      <button type="button"onClick={resetFilter} className="reset mr10" > {"Reset"}</button>
+                      <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"}</button>
                       <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
                     </div>
                   </div>
@@ -279,7 +279,7 @@ function AddBOP(props) {
 
             </form >
             <Row className="mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={tableData}
                   striped={false}

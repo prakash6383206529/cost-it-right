@@ -147,7 +147,7 @@ class AddOperation extends Component {
         const accept = AcceptableOperationUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null;
       });
       return temp;
@@ -520,7 +520,7 @@ class AddOperation extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
       this.props.reset()
@@ -604,7 +604,7 @@ class AddOperation extends Component {
                           component={renderMultiSelectField}
                           mendatory={true}
                           className="multiselect-with-border"
-                        //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                          disabled={isEditFlag ? true : false}
                         />
                       </Col>
                       <Col md="3">

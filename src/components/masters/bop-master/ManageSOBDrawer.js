@@ -48,38 +48,37 @@ function ManageSOBDrawer(props) {
   useEffect(() => {
 
 
-    setTimeout(() => {
+    // setTimeout(() => {
 
-      dispatch(getManageBOPSOBById(ID, (res) => {
-        // setIsLoader(true)
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
+    dispatch(getManageBOPSOBById(ID, (res) => {
+      // setIsLoader(true)
+      if (res && res.data && res.data.Result) {
+        let Data = res.data.Data;
 
-          if (Data.BoughtOutPartVendorList.length === 1) {
-            setIsDisable(true)
-            setGridData(Data.BoughtOutPartVendorList)
-            setGridDataOldArray(Data.BoughtOutPartVendorList)
-          }
-          if (Data.BoughtOutPartVendorList.length > 1) {
-            let tempArray = [];
-            let tempData = Data.BoughtOutPartVendorList[0];
-            tempData = {
-              ...tempData,
-              ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
-
-            }
-            // else {
-
-            setData(Data)
-            setGridData(Data.BoughtOutPartVendorList)
-            setGridDataOldArray(Data.BoughtOutPartVendorList)
-            // }
+        if (Data.BoughtOutPartVendorList.length === 1) {
+          setIsDisable(true)
+          setGridData(Data.BoughtOutPartVendorList)
+          setGridDataOldArray(Data.BoughtOutPartVendorList)
+        }
+        if (Data.BoughtOutPartVendorList.length > 1) {
+          let tempArray = [];
+          let tempData = Data.BoughtOutPartVendorList[0];
+          tempData = {
+            ...tempData,
+            ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage !== 0 ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
 
           }
+          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
+          setGridData(tempArray)
+          setGridDataOldArray(tempArray)
+
 
         }
-      }))
-    }, 500);
+        setData(Data)
+
+      }
+    }))
+    // }, 500);
     // setIsLoader(false)
 
   }, []);

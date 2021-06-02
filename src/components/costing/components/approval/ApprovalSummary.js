@@ -37,14 +37,19 @@ function ApprovalSummary(props) {
 
 
   useEffect(() => {
+    approvalSummaryHandler()
+  }, [])
+
+  const approvalSummaryHandler = () => {
     dispatch(
       getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
         const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
-          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, CostingId } = res.data.Data.Costings[0]
+          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, CostingId, PartId } = res.data.Data.Costings[0]
         const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
         const partNumber = PartDetails.PartNumber
-        dispatch(storePartNumber({ partNumber: PartDetails.PartNumber }))
+
+        dispatch(storePartNumber({ partId: PartId }))
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails[0])
         setApprovalLevelStep(ApprovalLevelStep)
@@ -63,7 +68,7 @@ function ApprovalSummary(props) {
         })
       }),
     )
-  }, [])
+  }
 
   const handleApproveAndPushButton = () => {
     setShowPushDrawer(true)
@@ -75,10 +80,13 @@ function ApprovalSummary(props) {
       setApproveDrawer(false)
       setRejectDrawer(false)
       setShowListing(true)
+      setShowPushDrawer(false)
     } else {
       setApproveDrawer(false)
       setRejectDrawer(false)
       setShowListing(false)
+      setShowPushDrawer(false)
+      approvalSummaryHandler()
     }
   }
 
@@ -91,8 +99,11 @@ function ApprovalSummary(props) {
     if (Object.keys(type).length > 0) {
       if (type === 'Push') {
         setShowListing(true)
+        setShowPushDrawer(false)
       } else {
         setShowListing(false)
+        setShowPushDrawer(false)
+        approvalSummaryHandler()
       }
     }
   }
@@ -125,7 +136,7 @@ function ApprovalSummary(props) {
                 </Col>
               </Row>
               {/* Code for approval workflow */}
-              <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
+              <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} />
 
               <Row>
                 <Col md="12">
@@ -421,8 +432,10 @@ function ApprovalSummary(props) {
           // tokenNo={approvalNumber}
           approvalData={[approvalData]}
           anchor={'right'}
+          reasonId={approvalDetails.ReasonId}
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
+          dataSend={[approvalDetails, partDetail]}
         />
       )}
       {rejectDrawer && (
@@ -434,13 +447,16 @@ function ApprovalSummary(props) {
           //  tokenNo={approvalNumber}
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
+          reasonId={approvalDetails.ReasonId}
           IsPushDrawer={showPushDrawer}
+          dataSend={[approvalDetails, partDetail]}
         />
       )}
       {pushButton && (
         <PushButtonDrawer
           isOpen={pushButton}
           closeDrawer={closePushButton}
+          dataSend={[approvalDetails, partDetail]}
           anchor={'right'}
           approvalData={[approvalData]}
         />
@@ -452,6 +468,7 @@ function ApprovalSummary(props) {
           isOpen={viewButton}
           closeDrawer={closeViewDrawer}
           anchor={'top'}
+          approvalNo={approvalData.ApprovalNumber}
         />
       )}
     </>

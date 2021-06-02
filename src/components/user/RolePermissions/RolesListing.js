@@ -13,6 +13,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { ROLE } from '../../../config/constants';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class RolesListing extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ class RolesListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      isLoader: false
     }
   }
 
@@ -54,12 +56,13 @@ class RolesListing extends Component {
   }
 
   getRolesListData = () => {
+    this.setState({ isLoader: true })
     this.props.getAllRoleAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
         this.setState({
           tableData: Data,
-        })
+        }, () => this.setState({ isLoader: false }))
       }
     });
   }
@@ -139,7 +142,7 @@ class RolesListing extends Component {
     const { AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: (<NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -149,7 +152,7 @@ class RolesListing extends Component {
     };
     return (
       <>
-        {this.props.loading && <Loader />}
+        {this.state.isLoader && <LoaderCustom />}
         <Row className="pt-4 ">
           <Col md="8" className="mb-2">
 

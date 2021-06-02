@@ -42,6 +42,7 @@ function AddProcess(props) {
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -62,6 +63,7 @@ function AddProcess(props) {
         VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -76,6 +78,7 @@ function AddProcess(props) {
 
     }
   }, []);
+
 
 
   /**
@@ -173,7 +176,7 @@ function AddProcess(props) {
             </Row>
 
             <Row className="mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={processDrawerList}
                   striped={false}
@@ -187,7 +190,7 @@ function AddProcess(props) {
                   //ignoreSinglePage
                   //ref={'table'}
                   pagination>
-                  <TableHeaderColumn dataField="MachineRateId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                  <TableHeaderColumn dataField="ProcessId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ProcessName"  >{'Process Name'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineNumber" >{'Machine No.'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineName" >{'Machine Name'}</TableHeaderColumn>

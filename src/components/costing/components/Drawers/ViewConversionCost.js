@@ -137,8 +137,9 @@ function ViewConversionCost(props) {
                           <th>{`UOM`}</th>
                           <th>{`Rate`}</th>
                           <th>{`Quantity`}</th>
-                          <th>{`Labour Rate`}</th>
-                          <th>{`Labour Quantity`}</th>
+                          {/* make it configurable after deployment */}
+                          {/* <th>{`Labour Rate`}</th>
+                          <th>{`Labour Quantity`}</th> */}
                           <th className="costing-border-right">{`Net Cost`}</th>
                         </tr>
                       </thead>
@@ -156,7 +157,7 @@ function ViewConversionCost(props) {
                                 <td>{item.UOM ? item.UOM : '-'}</td>
                                 <td>{item.Rate ? item.Rate : '-'}</td>
                                 <td>{item.Quantity ? item.Quantity : '-'}</td>
-                                <td>
+                                {/* <td>
                                   {item.IsLabourRateExist
                                     ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
                                     : '-'}
@@ -165,7 +166,7 @@ function ViewConversionCost(props) {
                                   {item.LabourQuantity
                                     ? item.LabourQuantity
                                     : '-'}
-                                </td>
+                                </td> */}
                                 {/* <td>{netCost(item.OperationCost)}</td> */}
                                 <td>
                                   {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -285,7 +286,7 @@ function ViewConversionCost(props) {
               <hr />
               <Row>
                 <Col md="12">
-                  <div className="left-border">{'Transportation Cost::'}</div>
+                  <div className="left-border">{'Transportation Cost:'}</div>
                 </Col>
               </Row>
               <Row>

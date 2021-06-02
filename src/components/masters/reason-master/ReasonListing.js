@@ -175,15 +175,15 @@ class ReasonListing extends Component {
   handleChange = (cell, row, enumObject, rowIndex) => {
     let data = {
       Id: row.ReasonId,
-      ModifiedBy: loggedInUserId(),
+      LoggedInUserId: loggedInUserId(),
       IsActive: !cell, //Status of the Reason.
     }
     this.props.activeInactiveReasonStatus(data, (res) => {
       if (res && res.data && res.data.Result) {
         if (cell == true) {
-            toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+          toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
         } else {
-            toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+          toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
         }
         this.getTableListData()
       }

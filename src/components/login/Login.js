@@ -25,7 +25,6 @@ class Login extends Component {
   }
 
   UNSAFE_componentWillMount() {
-
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
       this.setState({
@@ -34,14 +33,12 @@ class Login extends Component {
     } else {
       reactLocalStorage.setObject('isUserLoggedIn', false);
     }
-
-
-
   }
 
-  forgotConfirm = () => {
-    this.setState({ flag: true })
-  }
+  /**
+   * @method FORGOT CONFIRM
+   */
+  forgotConfirm = () => this.setState({ flag: true })
 
   /**
    * Submit the login form
@@ -54,7 +51,7 @@ class Login extends Component {
       password: values.Password,
       grant_type: 'password',
     }
-    //this.props.loginUserAPI(values, (res) => {
+    // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
@@ -67,7 +64,7 @@ class Login extends Component {
         }, 1000)
       }
     })
-    //});
+    // });
   }
 
   render() {
@@ -114,18 +111,19 @@ class Login extends Component {
                       // maxLength={71}
                       />
                       :
-                      <Field
-                        label=""
-                        name={"UserName"}
-                        type="text"
-                        placeholder={'User Name'}
-                        validate={[required, maxLength70]}
-                        component={renderText}
-                        required={true}
-                        onClickCapture={(e) => this.setState({ flag: false })}
-                        // maxLength={26}
-                        customClassName={'withBorder'}
-                      />
+                      <span className="inputbox input-group ">
+                        <Field
+                          label=""
+                          name={"UserName"}
+                          type="text"
+                          placeholder={'User Name'}
+                          validate={[required, maxLength70]}
+                          component={renderText}
+                          required={true}
+                          onClickCapture={(e) => this.setState({ flag: false })}
+                          // maxLength={26}
+                          className={'withBorder'}
+                        /></span>
                     }
                   </div>
                   <div className="input-group phone" onClickCapture={(e) => this.setState({ flag: false })}>
@@ -153,7 +151,7 @@ class Login extends Component {
                     <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
-                    <div className="text-help mb-2">Please contact your IT Administrator</div>
+                    <div className="text-help mb-2 text-center">Please contact your IT Administrator</div>
                   )
                   }
                 </form>
@@ -161,7 +159,9 @@ class Login extends Component {
                   <span>Powered By</span>
                   <img className="logo-second" src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" />
                 </div>
-
+              </div>
+              <div className="col-md-7 p-0 right-sideimg">
+                <img src={require('../../assests/images/box.png')} alt='error-icon' />
               </div>
             </div>
           </div>

@@ -7,10 +7,11 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
 
+let counter = 0;
 function OperationCost(props) {
 
   const { register, control, errors, setValue } = useForm({
@@ -28,7 +29,9 @@ function OperationCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const CostingViewMode = useContext(ViewCostingContext);
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     const Params = {
@@ -36,11 +39,15 @@ function OperationCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (props.IsAssemblyCalculation) {
-      props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-    } else {
-      props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    if (!CostingViewMode) {
+      if (props.IsAssemblyCalculation) {
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      } else {
+        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      }
     }
+
+    selectedIds(gridData)
   }, [gridData]);
 
   /**
@@ -48,6 +55,7 @@ function OperationCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -81,6 +89,7 @@ function OperationCost(props) {
       let tempArr = [...GridArray, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }
@@ -189,11 +198,15 @@ function OperationCost(props) {
   }
 
   /**
-  * @method setRMCCErrors
-  * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-  */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+   * @method setRMCCErrors
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   const OperationGridFields = 'OperationGridFields';
@@ -349,7 +362,7 @@ function OperationCost(props) {
                   }
                   {gridData && gridData.length === 0 &&
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={7}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />
                       </td>
                     </tr>

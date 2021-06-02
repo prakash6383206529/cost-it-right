@@ -199,7 +199,7 @@ class AddClientDrawer extends Component {
             if (DropdownChanged && DataToCheck.ClientName == values.ClientName && DataToCheck.ClientEmailId == values.ClientEmailId &&
                 DataToCheck.PhoneNumber == values.PhoneNumber && DataToCheck.Extension == values.Extension &&
                 DataToCheck.MobileNumber == values.MobileNumber && DataToCheck.ZipCode == values.ZipCode) {
-                console.log('chaNGES')
+
                 this.toggleDrawer('')
                 return false
             }

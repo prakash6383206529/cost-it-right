@@ -36,7 +36,7 @@ function AddVendorDrawer(props) {
       tempArr.push(el.VendorId)
       return null;
     })
-    setSelectedVendors(tempArr)
+    { initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr) }
 
   }, []);
 
@@ -68,7 +68,7 @@ function AddVendorDrawer(props) {
 
     if (label === 'Vendor') {
       vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0' || selectedVendors.includes(item.Value)) return false;
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

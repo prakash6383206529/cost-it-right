@@ -16,9 +16,9 @@ import { toastr } from 'react-redux-toastr';
 
 function VerifySimulation(props) {
     const { cancelVerifyPage } = props
-    console.log(props.token, "TOKEN");
+
     const [selectedRowData, setSelectedRowData] = useState([]);
-    console.log('selectedRowData: ', selectedRowData);
+
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')

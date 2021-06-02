@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
@@ -10,15 +10,15 @@ import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
-import { checkForNull, checkPermission, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, SHEET_METAL, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -31,7 +31,7 @@ export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
@@ -72,6 +72,7 @@ function CostingDetails(props) {
   const [EditAccessibility, setEditAccessibility] = useState(true)
   const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
+  const [SOBAccessibility, setSOBAccessibility] = useState(true)
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
@@ -93,6 +94,7 @@ function CostingDetails(props) {
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
+    dispatch(gridDataAdded(false))
   }, [])
 
   const technologySelectList = useSelector((state) => state.costing.technologySelectList)
@@ -106,19 +108,20 @@ function CostingDetails(props) {
    * @method InjectRolePermission
    * @description SET ROLE AND PERMISSION
   */
-  const InjectRolePermission = () => {
+  const InjectRolePermission = (selectedTechnology) => {
     let ModuleId = reactLocalStorage.get('ModuleId');
     dispatch(getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       if (leftMenuData !== undefined) {
         let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === SHEET_METAL)
+        const accessData = Data && Data.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
         const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
         if (permmisionData !== undefined) {
-          setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
-          setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
-          setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
-          setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
-          setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+          // setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
+          // setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
+          // setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
+          // setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
+          // setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+          // setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
         }
       }
     }))
@@ -138,6 +141,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
+      InjectRolePermission(partNumber.technologyName)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
       setTimeout(() => {
@@ -169,6 +173,7 @@ function CostingDetails(props) {
   useEffect(() => {
 
     if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
+      // InjectRolePermission()
       nextToggle()
     }
   }, [technology])
@@ -234,6 +239,7 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
       setShowNextBtn(false)
+      InjectRolePermission(newValue.label)
       reset({
         Part: '',
       })
@@ -342,7 +348,9 @@ function CostingDetails(props) {
   const closePlantDrawer = (e = '', plantData = {}) => {
     if (Object.keys(plantData).length > 0) {
       let tempArr = [...zbcPlantGrid, plantData]
-      setZBCPlantGrid(tempArr)
+      setTimeout(() => {
+        setZBCPlantGrid(tempArr)
+      }, 200)
     }
     setIsPlantDrawerOpen(false)
   }
@@ -445,8 +453,16 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId))
+      if (isExist !== -1) {
+        toastr.warning('Already added, Please select another plant.')
+        return false;
+      }
       let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
-      setVBCVendorGrid(tempArr)
+      setTimeout(() => {
+        setVBCVendorGrid(tempArr)
+      }, 200)
     }
     setIsVendorDrawerOpen(false)
   }
@@ -584,6 +600,8 @@ function CostingDetails(props) {
       return false;
     }
 
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
+
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
 
@@ -615,10 +633,11 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-          setIsCostingViewMode(false)
-          setStepTwo(true)
-          setStepOne(false)
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
         }
       }),
       )
@@ -655,12 +674,13 @@ function CostingDetails(props) {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-          setIsCostingViewMode(false)
-          setStepTwo(true)
-          setStepOne(false)
         }
       }),
       )
@@ -742,6 +762,7 @@ function CostingDetails(props) {
         confirmUpdateCosting(index, type)
       },
       onCancel: () => { },
+      component: () => <ConfirmComponent />
     }
     return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
@@ -781,7 +802,8 @@ function CostingDetails(props) {
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         LoggedInUserId: loggedInUserId(),
         VendorId: tempData.VendorId,
-        VendorPlantId: tempData.VendorPlantId
+        VendorPlantId: tempData.VendorPlantId,
+        DestinationPlantId: tempData.DestinationPlantId
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
@@ -902,6 +924,8 @@ function CostingDetails(props) {
           ...tempData,
           CostingOptions: selectedOptionObj,
           CostingId: Item.CostingId,
+          DisplayStatus: '',
+          Price: '',
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)
@@ -916,6 +940,9 @@ function CostingDetails(props) {
           ...tempData,
           CostingOptions: selectedOptionObj,
           CostingId: Item.CostingId,
+          DisplayStatus: '',
+          Price: '',
+          Status: '',
         }
         tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
         setVBCVendorGrid(tempArray)
@@ -984,6 +1011,7 @@ function CostingDetails(props) {
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
 
+    dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
     setStepTwo(false);
     setZBCPlantGrid([])
@@ -1053,13 +1081,15 @@ function CostingDetails(props) {
    * @description CONFIRMATION FOR ZBC SOB UPDATE
    */
   const SOBUpdateAlert = (type) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmSOBUpdate(type)
-      },
-      onCancel: () => { setPreviousSOBValue() },
-    }
-    return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+    confirmSOBUpdate(type)
+    // const toastrConfirmOptions = {
+    //   onOk: () => {
+    //     confirmSOBUpdate(type)
+    //   },
+    //   onCancel: () => { setPreviousSOBValue() },
+    //   component: () => <ConfirmComponent />
+    // }
+    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -1138,7 +1168,8 @@ function CostingDetails(props) {
             ShareOfBusinessPercent: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
-            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID
+            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+            DestinationPlantId: el.DestinationPlantId
           }
           tempArr.push(data)
         }
@@ -1172,7 +1203,8 @@ function CostingDetails(props) {
               ShareOfBusinessPercent: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
-              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID
+              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+              DestinationPlantId: el.DestinationPlantId
             }
             tempArr.push(data)
           }
@@ -1228,11 +1260,6 @@ function CostingDetails(props) {
     setVBCVendorGrid(tempVBCArr)
   }
 
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  const onSubmit = (values) => { }
 
   const zbcPlantGridFields = 'zbcPlantGridFields'
   const vbcGridFields = 'vbcGridFields'
@@ -1244,6 +1271,42 @@ function CostingDetails(props) {
   const closeBulkUploadDrawer = () => {
     SetIsBulkOpen(false)
   }
+
+  /**
+   * @method updateZBCState
+   * @description UPDATE isZBCSOBEnabled STATE
+   */
+  const updateZBCState = () => {
+    let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+    if (findIndex !== -1) {
+      toastr.warning('SOB could not be empty.')
+      return false;
+    } else {
+      setZBCEnableSOBField(!isZBCSOBEnabled)
+    }
+  }
+
+  /**
+   * @method onSubmit
+   * @description UPDATE isVBCSOBEnabled STATE
+   */
+  const updateVBCState = () => {
+    let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
+    if (findIndex !== -1) {
+      toastr.warning('SOB could not be empty.')
+      return false;
+    } else {
+      setVBCEnableSOBField(!isVBCSOBEnabled)
+    }
+  }
+
+  /**
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => { }
+
+
 
   return (
     <>
@@ -1482,7 +1545,7 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB(%)`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
@@ -1509,7 +1572,7 @@ function CostingDetails(props) {
                                       <tr key={index}>
                                         <td>{`${item.PlantName}(${item.PlantCode})`}</td>
                                         <td className="cr-select-height w-100px">
-                                          <TextFieldHookForm
+                                          <NumberFieldHookForm
                                             label={""}
                                             name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                             Controller={Controller}
@@ -1517,10 +1580,9 @@ function CostingDetails(props) {
                                             register={register}
                                             mandatory={false}
                                             rules={{
-                                              //required: true,
+                                              required: true,
                                               pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                value: /^\d*\.?\d*$/,
                                                 message: "Invalid Number.",
                                               },
                                               max: {
@@ -1562,13 +1624,13 @@ function CostingDetails(props) {
                                             {item.DisplayStatus}
                                           </div>
                                         </td>
-                                        <td>{item.Price ? item.Price : ''}</td>
+                                        <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td style={{ width: "250px" }}>
                                           {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
                                           {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
-                                          {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
+                                          {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
                                           {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBC)} />}
                                         </td>
                                       </tr>
@@ -1621,7 +1683,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor`}</th>
                                   {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB(%)`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
@@ -1649,7 +1711,7 @@ function CostingDetails(props) {
                                       {/* {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>} */}
                                       {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
-                                        <TextFieldHookForm
+                                        <NumberFieldHookForm
                                           label=""
                                           name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
@@ -1657,10 +1719,9 @@ function CostingDetails(props) {
                                           register={register}
                                           mandatory={false}
                                           rules={{
-                                            //required: true,
+                                            required: true,
                                             pattern: {
-                                              //value: /^[0-9]*$/i,
-                                              value: /^[0-9]\d*(\.\d+)?$/i,
+                                              value: /^\d*\.?\d*$/,
                                               message: "Invalid Number.",
                                             },
                                             max: {
@@ -1700,13 +1761,13 @@ function CostingDetails(props) {
                                           {item.DisplayStatus}
                                         </div>
                                       </td>
-                                      <td>{item.Price ? item.Price : ''}</td>
+                                      <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
-                                        {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
+                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
+                                        {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
+                                        {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
+                                        {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                         {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                       </td>
                                     </tr>

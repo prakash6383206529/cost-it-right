@@ -21,6 +21,7 @@ import AddChildDrawer from './AddChildDrawer';
 import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddAssemblyPart')
@@ -230,8 +231,7 @@ class AddAssemblyPart extends Component {
     const { fieldsObj } = this.props;
     if (fieldsObj.BOMNumber === undefined ||
       fieldsObj.AssemblyPartNumber === undefined ||
-      fieldsObj.AssemblyPartName === undefined ||
-      fieldsObj.Description === undefined) {
+      fieldsObj.AssemblyPartName === undefined) {
       return false;
     } else {
       return true;
@@ -403,7 +403,8 @@ class AddAssemblyPart extends Component {
       onOk: () => {
         this.confirmDraftItem(updateData)
       },
-      onCancel: () => { }
+      onCancel: () => { },
+      component: () => <ConfirmComponent />,
     };
     return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
   }
@@ -462,14 +463,14 @@ class AddAssemblyPart extends Component {
     })
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'datatocheck')
-      if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
-        DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
-        DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode) {
-        this.cancel()
-        return false;
-      }
+
+
+      // if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
+      //   DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
+      //   DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode) {
+      //   this.cancel()
+      //   return false;
+      // }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -483,7 +484,7 @@ class AddAssemblyPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -513,6 +514,7 @@ class AddAssemblyPart extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -530,7 +532,7 @@ class AddAssemblyPart extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -642,9 +644,9 @@ class AddAssemblyPart extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={""}
-                            validate={[required, maxLength80, checkWhiteSpaces]}
+                            validate={[maxLength80, checkWhiteSpaces]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             className=""
                             customClassName={"withBorder"}
                           />

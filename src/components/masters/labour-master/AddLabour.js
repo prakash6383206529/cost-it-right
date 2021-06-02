@@ -551,15 +551,7 @@ class AddLabour extends Component {
    */
   onSubmit = (values) => {
     const {
-      IsEmployeContractual,
-      IsVendor,
-      StateName,
-      selectedPlants,
-      vendorName,
-      LabourId,
-      gridTable,
-      DropdownChanged
-    } = this.state
+      IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
     const userDetail = userDetails()
 
     if (gridTable && gridTable.length === 0) {
