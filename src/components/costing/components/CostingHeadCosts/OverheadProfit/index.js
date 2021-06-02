@@ -11,7 +11,6 @@ import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../.
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 
-let counter = 0;
 function OverheadProfit(props) {
   const { data } = props;
 
@@ -259,16 +258,7 @@ function OverheadProfit(props) {
   }, [overheadObj, profitObj]);
 
   useEffect(() => {
-
-    // if (applicability.label === 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
     checkRejectionApplicability(applicability.label)
-    // } else if (IsIncludedSurfaceInOverheadProfit === false) {
-    //   checkRejectionApplicability(applicability.label)
-    // } else if (applicability.label !== 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
-    //   setIsSurfaceTreatmentAdded(false)
-    //   IncludeSurfaceTreatmentCall()
-    // }
-
     setTimeout(() => {
       let tempObj = {
         "RejectionApplicabilityId": applicability ? applicability.value : '',
@@ -292,13 +282,7 @@ function OverheadProfit(props) {
   });
 
   useEffect(() => {
-
-    // if (IsIncludedSurfaceInOverheadProfit) {
-    //   setIsSurfaceTreatmentAdded(false)
-    //   IncludeSurfaceTreatmentCall()
-    // } else {
     checkInventoryApplicability(ICCapplicability?.label)
-    // }
 
     setTimeout(() => {
       let tempObj = {
@@ -971,38 +955,6 @@ function OverheadProfit(props) {
   }, [IsInventoryApplicable])
 
   /**
-   * @method handleICCApplicabilityChange
-   * @description  USED TO HANDLE ICC APPLICABILITY CHANGE
-   */
-  const handleICCApplicabilityChange = (newValue) => {
-    if (newValue && newValue !== '') {
-      setICCapplicability(newValue)
-      const reqParams = {
-        Id: newValue.value,
-        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-        IsVendor: costData.IsVendor
-      }
-      dispatch(getInventoryDataByHeads(reqParams, res => {
-        if (res && res.status === 204) {
-          setValue('InterestRatePercentage', '')
-          setValue('InterestRateCost', '')
-          setValue('NetICCTotal', '')
-          checkInventoryApplicability('')
-        } else {
-          if (res && res.data && res.data.Result) {
-            let Data = res.data.Data;
-            setValue('InterestRatePercentage', Data.InterestRate)
-            setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
-            checkInventoryApplicability(newValue.label)
-          }
-        }
-      }))
-    } else {
-      setICCapplicability([])
-    }
-  }
-
-  /**
   * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
   */
   useEffect(() => {
@@ -1106,36 +1058,6 @@ function OverheadProfit(props) {
       }
     }
   }, [IsPaymentTermsApplicable])
-
-  /**
-   * @method handlePaymentTermsApplicabilityChange
-   * @description  USED TO HANDLE PAYMENT TERM APPLICABILITY CHANGE
-   */
-  const handlePaymentTermsApplicabilityChange = (newValue) => {
-    if (newValue && newValue !== '') {
-      setPaymentTermsApplicability(newValue)
-      const reqParams = {
-        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-        IsVendor: costData.IsVendor
-      }
-      dispatch(getPaymentTermsDataByHeads(reqParams, res => {
-        if (res.status === 204) {
-          setValue('RepaymentPeriodDays', '')
-          setValue('RepaymentPeriodPercentage', '')
-          setValue('RepaymentPeriodCost', '')
-          checkPaymentTermApplicability('')
-        } else if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-          setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-          setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-          checkPaymentTermApplicability(newValue.label)
-        }
-      }))
-    } else {
-      setPaymentTermsApplicability([])
-    }
-  }
 
   /**
     * @method checkPaymentTermApplicability
@@ -1440,9 +1362,6 @@ function OverheadProfit(props) {
   const onSubmit = (values) => {
     props.saveCosting(values)
   }
-
-  //
-  counter++;
 
   /**
   * @method render
@@ -2440,20 +2359,6 @@ function OverheadProfit(props) {
                     <label className="col-label">
                       {paymentTermsApplicability.label}
                     </label>
-                    {/* <SearchableSelectHookForm
-                      label={'Payment Terms Applicability'}
-                      name={'PaymentTermsApplicability'}
-                      placeholder={'-Select-'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={paymentTermsApplicability.length !== 0 ? paymentTermsApplicability : ''}
-                      options={renderListing('PaymentTermsApplicability')}
-                      mandatory={true}
-                      handleChange={handlePaymentTermsApplicabilityChange}
-                      errors={errors.PaymentTermsApplicability}
-                    /> */}
                   </Col>
                   {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                     <TextFieldHookForm

@@ -111,6 +111,9 @@ function TabDiscountOther(props) {
             "OtherCostDescription": getValues('OtherCostDescription'),
             "CurrencyExchangeRate": CurrencyExchangeRate,
             "EffectiveDate": effectiveDate,
+            "OtherCostPercentage": '',
+            "PercentageOtherCost": getValues('PercentageOtherCost'),
+            "OtherCostType": otherCostType.value,
           }
         },
         "Attachements": updatedFiles,
@@ -132,22 +135,26 @@ function TabDiscountOther(props) {
           if (Data && Data.CostingPartDetails && Data.CostingPartDetails.GrandTotalCost !== null) {
             let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
 
+            console.log('OtherCostDetails.OtherCostType: ', OtherCostDetails.OtherCostType);
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
             setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
             setCurrency(OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
+            setOtherCostType(OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : [])
 
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
             setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : '')
             setValue('HundiOrDiscountValue', OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '')
             setValue('AnyOtherCost', OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '')
+            setValue('PercentageOtherCost', OtherCostDetails.PercentageOtherCost !== null ? OtherCostDetails.PercentageOtherCost : '')
+            setValue('OtherCostType', OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : '')
+
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
-
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -162,7 +169,9 @@ function TabDiscountOther(props) {
               let topHeaderData = {
                 DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
                 HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
-                AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+                AnyOtherCost: checkForNull(OtherCostDetails.AnyOtherCost),
+                OtherCostType: OtherCostDetails.OtherCostType,
+                PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
               }
               props.setHeaderCost(topHeaderData)
 
@@ -443,12 +452,15 @@ function TabDiscountOther(props) {
           "OtherCostDescription": values.OtherCostDescription,
           "CurrencyExchangeRate": CurrencyExchangeRate,
           "EffectiveDate": effectiveDate,
+          "OtherCostPercentage": '',
+          "PercentageOtherCost": values.PercentageOtherCost,
+          "OtherCostType": otherCostType.value,
         }
       },
       "Attachements": updatedFiles
     }
 
-    dispatch(saveDiscountOtherCostTab({ ...data, CallingFrom: 4 }, res => {
+    dispatch(saveDiscountOtherCostTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
