@@ -2208,32 +2208,54 @@ function OverheadProfit(props) {
                     </label>
                   </Col>
                   <Col md="3">
-                    <NumberFieldHookForm
-                      label={`Interest Rate ${ICCapplicability.label !== 'Fixed' ? '(%)' : ''}`}
-                      name={'InterestRatePercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
-                        },
-                        max: {
-                          value: 100,
-                          message: 'Percentage cannot be greater than 100'
-                        },
-                      }}
-                      // handleChange={handleICCDetail}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.InterestRatePercentage}
-                      disabled={ICCapplicability.label !== 'Fixed' ? true : false}
-                    />
+                    {ICCapplicability.label !== 'Fixed' ?
+                      <NumberFieldHookForm
+                        label={`Interest Rate (%)`}
+                        name={'InterestRatePercentage'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^\d*\.?\d*$/,
+                            message: 'Invalid Number.'
+                          },
+                          max: {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                          },
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.InterestRatePercentage}
+                        disabled={(CostingViewMode || ICCapplicability.label !== 'Fixed') ? true : false}
+                      />
+                      :
+                      <NumberFieldHookForm
+                        label={`Interest Rate`}
+                        name={'InterestRatePercentage'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^\d*\.?\d*$/,
+                            message: 'Invalid Number.'
+                          },
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.InterestRatePercentage}
+                        disabled={CostingViewMode ? true : false}
+                      />}
                   </Col>
                   {ICCapplicability.label !== 'Fixed' &&
                     <Col md="3">
@@ -2322,31 +2344,54 @@ function OverheadProfit(props) {
                     />
                   </Col>}
                   <Col md="3">
-                    <NumberFieldHookForm
-                      label={`Interest Rate${paymentTermsApplicability.label !== 'Fixed' ? '(%)' : ''}`}
-                      name={'RepaymentPeriodPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
-                        },
-                        max: {
-                          value: 100,
-                          message: 'Percentage cannot be greater than 100'
-                        },
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.RepaymentPeriodPercentage}
-                      disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                    />
+                    {paymentTermsApplicability.label !== 'Fixed' ?
+                      <NumberFieldHookForm
+                        label={`Interest Rate(%)`}
+                        name={'RepaymentPeriodPercentage'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^\d*\.?\d*$/,
+                            message: 'Invalid Number.'
+                          },
+                          max: {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                          },
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.RepaymentPeriodPercentage}
+                        disabled={CostingViewMode ? true : false}
+                      />
+                      :
+                      <NumberFieldHookForm
+                        label={`Interest Rate}`}
+                        name={'RepaymentPeriodPercentage'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^\d*\.?\d*$/,
+                            message: 'Invalid Number.'
+                          },
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.RepaymentPeriodPercentage}
+                        disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                      />}
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
