@@ -885,6 +885,7 @@ function OverheadProfit(props) {
     */
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
+      setValue('RejectionPercentage', '')
       setApplicability(newValue)
       checkRejectionApplicability(newValue.label)
       setIsChangedApplicability(!IsChangedApplicability)
@@ -2119,26 +2120,46 @@ function OverheadProfit(props) {
                 />
               </Col>
               <Col md="3">
-                <NumberFieldHookForm
-                  label={`Rejection ${applicability.label !== 'Fixed' ? '(%)' : ''}`}
-                  name={'RejectionPercentage'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                    max: { value: 100, message: 'Percentage cannot be greater than 100' },
-                  }}
-                  // handleChange={handleRejection}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.RejectionPercentage}
-                  disabled={CostingViewMode ? true : false}
-                />
+                {applicability.label !== 'Fixed' ?
+                  <NumberFieldHookForm
+                    label={`Rejection (%)`}
+                    name={'RejectionPercentage'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                      max: { value: 100, message: 'Percentage cannot be greater than 100' },
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.RejectionPercentage}
+                    disabled={CostingViewMode ? true : false}
+                  />
+                  :
+                  //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
+                  <NumberFieldHookForm
+                    label={`Rejection`}
+                    name={'RejectionPercentage'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.RejectionPercentage}
+                    disabled={CostingViewMode ? true : false}
+                  />}
               </Col>
               {applicability.label !== 'Fixed' &&
                 <Col md="3">

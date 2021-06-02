@@ -231,6 +231,49 @@ function TabDiscountOther(props) {
   }
 
   /**
+    * @method handleOtherCostTypeChange
+    * @description  HANDLE OTHER COST TYPE CHANGE
+    */
+  const handleOtherCostTypeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setOtherCostType(newValue)
+      setValue('AnyOtherCost', 0)
+      setValue('PercentageOtherCost', 0)
+      let topHeaderData = {
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        AnyOtherCost: 0,
+        OtherCostType: newValue.value,
+        PercentageOtherCost: 0,
+      }
+      props.setHeaderCost(topHeaderData)
+    } else {
+      setOtherCostType([])
+    }
+  }
+
+  /**
+  * @method handleOtherCostPercentageChange
+  * @description HANDLE ANY OTHER COST CHANGE
+  */
+  const handleOtherCostPercentageChange = (event) => {
+    if (!isNaN(event.target.value)) {
+
+      let topHeaderData = {
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        AnyOtherCost: checkForNull(event.target.value),
+        OtherCostType: Object.keys(otherCostType).length > 0 ? otherCostType.value : '',
+        PercentageOtherCost: checkForNull(event.target.value),
+      }
+      props.setHeaderCost(topHeaderData)
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  /**
   * @method onPressChangeCurrency
   * @description TOGGLE CURRENCY CHANGE
   */
