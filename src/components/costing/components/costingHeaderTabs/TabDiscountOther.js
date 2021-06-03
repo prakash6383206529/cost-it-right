@@ -135,7 +135,6 @@ function TabDiscountOther(props) {
           if (Data && Data.CostingPartDetails && Data.CostingPartDetails.GrandTotalCost !== null) {
             let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
 
-            console.log('OtherCostDetails.OtherCostType: ', OtherCostDetails.OtherCostType);
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
