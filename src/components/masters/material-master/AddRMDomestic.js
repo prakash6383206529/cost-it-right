@@ -343,10 +343,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-          this.setState({ DataToChange: Data }, () => {
-
-
-          })
+          this.setState({ DataToChange: Data }, () => { })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -356,6 +353,7 @@ class AddRMDomestic extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+          this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
@@ -411,7 +409,8 @@ class AddRMDomestic extends Component {
                   effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
-                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
+                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+                  netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
                 }, () => this.setState({ isLoader: false }))
               }, 200)
             })
@@ -905,7 +904,9 @@ class AddRMDomestic extends Component {
       EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       Attachements: updatedFiles,
       IsConvertIntoCopy: isDateChange ? true : false,
-      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
+      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
+      CutOffPrice: values.cutOffPrice,
+      IsCutOffPriceFlexible: values.cutOffPrice < values.NetLandedCost ? true : false
     }
     if (isEditFlag) {
 
@@ -930,7 +931,7 @@ class AddRMDomestic extends Component {
           }
         })
       } else {
-        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark) {
+        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && Number(DataToChange.cutOffPrice) === values.cutOffPrice) {
           this.cancel()
           return false
         }
@@ -979,7 +980,9 @@ class AddRMDomestic extends Component {
         VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffPriceFlexible: values.cutOffPrice < values.NetLandedCost ? true : false
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -1389,6 +1392,20 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
+                              label={`Cut Off Price (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              name={"cutOffPrice"}
+                              type="text"
+                              placeholder={""}
+                              validate={[]}
+                              component={renderText}
+                              required={false}
+                              disabled={false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
                               label={`Basic Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"BasicRate"}
                               type="text"
@@ -1756,6 +1773,7 @@ function mapStateToProps(state) {
   if (rawMaterialDetails && rawMaterialDetails !== undefined) {
     initialValues = {
       Source: rawMaterialDetails.Source,
+      cutOffPrice: rawMaterialDetails.cutOffPrice,
       BasicRate: rawMaterialDetails.BasicRatePerUOM,
       ScrapRate: rawMaterialDetails.ScrapRate,
       NetLandedCost: rawMaterialDetails.NetLandedCost,
