@@ -158,7 +158,7 @@ class AddCategory extends Component {
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn">
 
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='error-icon.jpg' /></div>CANCEL</button>
+                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='error-icon' /></div>CANCEL</button>
                                             <button
                                                 type="submit"
                                                 // disabled={isSubmitted ? true : false}

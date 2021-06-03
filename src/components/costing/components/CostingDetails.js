@@ -348,7 +348,9 @@ function CostingDetails(props) {
   const closePlantDrawer = (e = '', plantData = {}) => {
     if (Object.keys(plantData).length > 0) {
       let tempArr = [...zbcPlantGrid, plantData]
-      setZBCPlantGrid(tempArr)
+      setTimeout(() => {
+        setZBCPlantGrid(tempArr)
+      }, 200)
     }
     setIsPlantDrawerOpen(false)
   }
@@ -458,7 +460,9 @@ function CostingDetails(props) {
         return false;
       }
       let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
-      setVBCVendorGrid(tempArr)
+      setTimeout(() => {
+        setVBCVendorGrid(tempArr)
+      }, 200)
     }
     setIsVendorDrawerOpen(false)
   }
