@@ -11,6 +11,7 @@ import {
   GET_PART_COSTING_PLANT_SELECTLIST, GET_PART_COSTING_VENDOR_SELECT_LIST, GET_PART_SELECTLIST_BY_TECHNOLOGY, SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA, SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE, CLOSE_OPEN_ACCORDION, IS_COSTING_EFFECTIVE_DATE_DISABLED, config, BOP_DRAWER_LIST,
+  SET_CUTOFF_RMC,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2112,6 +2113,19 @@ export function gridDataAdded(IsCostingDateDisabled) {
     dispatch({
       type: IS_COSTING_EFFECTIVE_DATE_DISABLED,
       payload: IsCostingDateDisabled,
+    });
+  }
+};
+
+/**
+ * @method setRMCutOff
+ * @description SET OVERHEAD PROFIT TAB DATA  
+ */
+export function setRMCutOff(cutOffObj) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CUTOFF_RMC,
+      payload: cutOffObj,
     });
   }
 };
