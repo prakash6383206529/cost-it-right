@@ -402,7 +402,7 @@ class AddRMImport extends Component {
                 // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 // this.props.change('NetLandedCost')
 
-
+                this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
                 let plantArray = [];
                 Data && Data.Plant.map((item) => {
                   plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -443,7 +443,8 @@ class AddRMImport extends Component {
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
                   // FreightCharge:Data.FreightCharge
-                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : ''
+                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
+
                 }, () => this.setState({ isLoader: false }))
               }, 200);
             });
@@ -894,7 +895,9 @@ class AddRMImport extends Component {
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
         IsConvertIntoCopy: isDateChange ? true : false,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffPriceFlexible: values.cutOffPrice < netCost ? true : false
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -918,7 +921,7 @@ class AddRMImport extends Component {
             }
           })
         } else {
-          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark) {
+          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark && Number(DataToChange.cutOffPrice) === values.cutOffPrice) {
             this.cancel()
             return false
           }
@@ -968,7 +971,9 @@ class AddRMImport extends Component {
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffPriceFlexible: values.cutOffPrice < netCost ? true : false
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -1405,6 +1410,20 @@ class AddRMImport extends Component {
                               </div>
                             </div>
                             {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              name={"cutOffPrice"}
+                              type="text"
+                              placeholder={""}
+                              validate={[]}
+                              component={renderText}
+                              required={false}
+                              disabled={false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
                           </Col>
                           <Col md="4">
                             <Field

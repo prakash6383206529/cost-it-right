@@ -50,6 +50,7 @@ import SimulationUpload from './simulation/components/SimulationUpload'
 import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
 import ReportListing from './report/ReportListing'
+import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -338,13 +339,17 @@ class Main extends Component {
 
                     <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
 
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} />
+                    {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
-                    <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
+                    <Route path="/simulation-history" component={SimulationHistory} />
 
-                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
+                    <Route path="/simulation" component={Simulation} />
+
+                    <Route path="/simulation-upload" component={SimulationUpload} />
 
                     <Route path="/report-listing" component={ReportListing} />
+
+                    <Route path='/simulation-approval-listing' component={SimulationApprovalListing} />
 
                     <Route
                       render={(props) => (

@@ -800,6 +800,7 @@ export const API = {
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
   getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
+  getSimulationApprovalList: `${BASE_URL}/simulation/`,
 
   //REPORT
   getReportListing: `${BASE_URL}/report/get-report-listing`,
@@ -1188,6 +1189,7 @@ export const SET_RMCC_ERRORS = 'SET_RMCC_ERRORS';
 export const SET_COSTING_EFFECTIVE_DATE = 'SET_COSTING_EFFECTIVE_DATE';
 export const CLOSE_OPEN_ACCORDION = 'CLOSE_OPEN_ACCORDION';
 export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DISABLED';
+export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'

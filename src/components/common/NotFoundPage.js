@@ -41,7 +41,7 @@ class NotFoundPage extends Component {
         {location.pathname !== "/" ? (
               <>
               <div className="col-md-6 ">
-                <img src={require("../../assests/images/error_image.svg")} alt="error-icon.jpg" />
+                <img src={require("../../assests/images/error_image.svg")} alt="error-icon" />
               </div>
               <div className="col-md-6 d-inline-flex align-items-center">
                 <div className="">
