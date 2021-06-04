@@ -81,6 +81,7 @@ const initialState = {
   IsCostingDateDisabled: false,
   IsToolCostApplicable: false,
   SurfaceCostData: {},
+  RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' }
 }
 
 export default function costingReducer(state = initialState, action) {
