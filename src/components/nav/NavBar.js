@@ -652,7 +652,7 @@ class SideBar extends Component {
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
-                <img src={require("../../assests/images/logo/minda-logo.png")} alt="Minda" height="40" />
+                <img src={require("../../assests/images/logo/company-logo.png")} alt="Minda" height="40" />
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
                 <img src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" height="40" />

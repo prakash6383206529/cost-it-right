@@ -116,7 +116,7 @@ function RawMaterialCost(props) {
             RawMaterialId: el.RawMaterialId,
             RawMaterialCategory: el.Category,
             CutOffPrice: rowData.CutOffPrice,
-            IsCutOffApplicable: rowData.IsCutOffPriceFlexible,
+            IsCutOffApplicable: rowData.IsCutOffApplicable,
           }
         })
 
@@ -138,7 +138,7 @@ function RawMaterialCost(props) {
           RawMaterialId: rowData.RawMaterialId,
           RawMaterialCategory: rowData.Category,
           CutOffPrice: rowData.CutOffPrice,
-          IsCutOffApplicable: rowData.IsCutOffPriceFlexible,
+          IsCutOffApplicable: rowData.IsCutOffApplicable,
         }
         setGridData([...gridData, tempObj])
       }
