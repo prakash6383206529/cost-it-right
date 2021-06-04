@@ -209,7 +209,7 @@ function RawMaterialCost(props) {
         // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
-        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * tempData.CutOffPrice) - ScrapCost : 0;
+        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
         tempData = {
           ...tempData,
           GrossWeight: GrossWeight,
@@ -250,7 +250,7 @@ function RawMaterialCost(props) {
 
         const scrapWeight = checkForNull(GrossWeight - FinishWeight);
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * tempData.CutOffPrice) - ScrapCost : 0;
+        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
 
         const ApplicableFinishWeight = 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
@@ -309,7 +309,7 @@ function RawMaterialCost(props) {
 
       const scrapWeight = checkForNull(GrossWeight - FinishWeight);
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
-      const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * tempData.CutOffPrice) - ScrapCost : 0;
+      const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
 
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       tempData = {
@@ -354,7 +354,7 @@ function RawMaterialCost(props) {
 
         const scrapWeight = checkForNull(GrossWeight - FinishWeight);
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
-        const CutOffRMC = tempData.IsCutOffApplicable ? ((GrossWeight * tempData.CutOffPrice) - ScrapCost) : 0;
+        const CutOffRMC = tempData.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost) : 0;
 
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
 
@@ -395,7 +395,7 @@ function RawMaterialCost(props) {
 
         const scrapWeight = checkForNull(GrossWeight - FinishWeight);
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData.ScrapRate : 0;
-        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * tempData.CutOffPrice) - ScrapCost : 0;
+        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - 0;
 
         tempData = {
