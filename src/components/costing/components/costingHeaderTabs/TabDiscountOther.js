@@ -618,6 +618,10 @@ function TabDiscountOther(props) {
                               value: /^\d*\.?\d*$/,
                               message: "Invalid Number.",
                             },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
                           }}
                           handleChange={(e) => {
                             e.preventDefault();
@@ -626,7 +630,7 @@ function TabDiscountOther(props) {
                           defaultValue={""}
                           className=""
                           customClassName={"withBorder"}
-                          errors={errors.AnyOtherCost}
+                          errors={errors.PercentageOtherCost}
                           disabled={CostingViewMode ? true : false}
                         />
                       </Col>}
