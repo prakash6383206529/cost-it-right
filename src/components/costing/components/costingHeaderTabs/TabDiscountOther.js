@@ -593,11 +593,11 @@ function TabDiscountOther(props) {
                         placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         defaultValue={otherCostType.length !== 0 ? otherCostType : ""}
                         options={renderListing("OtherCostType")}
-                        mandatory={true}
+                        mandatory={false}
                         handleChange={handleOtherCostTypeChange}
                         errors={errors.OtherCostType}
                         disabled={CostingViewMode ? true : false}
