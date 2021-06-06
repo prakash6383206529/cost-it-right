@@ -897,7 +897,7 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
-        IsCutOffPriceFlexible: values.cutOffPrice < netCost ? true : false
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -973,7 +973,7 @@ class AddRMImport extends Component {
         RMShearingCost: values.ShearingCost,
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
-        IsCutOffPriceFlexible: values.cutOffPrice < netCost ? true : false
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
