@@ -906,7 +906,7 @@ class AddRMDomestic extends Component {
       IsConvertIntoCopy: isDateChange ? true : false,
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
       CutOffPrice: values.cutOffPrice,
-      IsCutOffPriceFlexible: values.cutOffPrice < values.NetLandedCost ? true : false
+      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false
     }
     if (isEditFlag) {
 
@@ -982,7 +982,7 @@ class AddRMDomestic extends Component {
         Attachements: files,
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
-        IsCutOffPriceFlexible: values.cutOffPrice < values.NetLandedCost ? true : false
+        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
