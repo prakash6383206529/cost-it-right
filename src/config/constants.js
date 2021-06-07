@@ -183,6 +183,8 @@ export const API = {
 
   //RAW MATERIAL DOMESTIC AND IMPORT FILTER API'S
   getRawMaterialFilterSelectList: `${BASE_URL}/masters-raw-material/get-raw-material-filter-select-list`,
+  checkAndGetRawMaterialCode: `${BASE_URL}/masters-raw-material/check-raw-material-code-is-unique`,
+
   //BY RM
   getGradeFilterByRawMaterialSelectList: `${BASE_URL}/masters-raw-material/get-grades-select-list-by-raw-material`,
   getVendorFilterByRawMaterialSelectList: `${BASE_URL}/masters-raw-material/get-vendors-select-list-by-raw-material`,
