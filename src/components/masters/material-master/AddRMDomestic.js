@@ -8,7 +8,7 @@ import { AcceptableRMUOM } from '../../../config/masterData'
 import {
   getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
-  fetchPlantDataAPI, getPlantSelectListByType
+  fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common'
 import {
   createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
@@ -110,7 +110,7 @@ class AddRMDomestic extends Component {
     this.getDetails(data)
     //this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory((res) => { })
-    this.props.fetchSupplierCityDataAPI((res) => { })
+    // this.props.fetchSupplierCityDataAPI((res) => { })
     this.props.getVendorListByVendorType(false, () => { })
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
@@ -121,6 +121,9 @@ class AddRMDomestic extends Component {
         this.props.change('Code', Data.RawMaterialCode)
       })
     }
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
 
   }
 
@@ -1797,6 +1800,7 @@ function mapStateToProps(state) {
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
     plantSelectList } = comman
+  // const { countryList, stateList, cityList } = comman;
 
   const { initialConfiguration } = auth;
 
@@ -1856,7 +1860,9 @@ export default connect(mapStateToProps, {
   fileDeleteRMDomestic,
   getPlantSelectListByType,
   getVendorWithVendorCodeSelectList,
-  checkAndGetRawMaterialCode
+  checkAndGetRawMaterialCode,
+  getCityByCountry,
+  getAllCity
 })(
   reduxForm({
     form: 'AddRMDomestic',
