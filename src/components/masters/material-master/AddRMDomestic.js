@@ -665,6 +665,7 @@ class AddRMDomestic extends Component {
       return temp
     }
 
+
     if (label === 'VendorNameList') {
       vendorListByVendorType && vendorListByVendorType.map((item) => {
         if (item.Value === '0') return false
