@@ -735,3 +735,4 @@ export function getTechnologyPermission(technology) {
       break;
   }
 }
+

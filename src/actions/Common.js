@@ -1500,3 +1500,26 @@ export function getPaymentTermsAppliSelectListKeyValue(callback) {
   };
 }
 
+export function getAllCity(callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getCountry}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        let city
+        const data = response.data.SelectList
+        data && data.map(item => {
+          if (item.Text === 'India') {
+            city = item.Value
+          } else {
+            return false
+          }
+        })
+        callback(city)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE, });
+      callback(error);
+      apiErrors(error);
+    })
+  }
+}
