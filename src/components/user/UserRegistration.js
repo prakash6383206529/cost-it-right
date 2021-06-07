@@ -13,7 +13,7 @@ import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
 } from "../../actions/auth/AuthActions";
-import { getAllCities } from "../../actions/Common";
+import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
@@ -76,10 +76,13 @@ class UserRegistration extends Component {
     this.props.setEmptyUserDataAPI('', () => { })
     this.props.getAllRoleAPI(() => { })
     this.props.getAllDepartmentAPI(() => { })
-    this.props.getAllCities(() => { })
+    // this.props.getAllCities(() => { })
     this.props.getAllTechnologyAPI(() => { })
     this.props.getLevelByTechnology('', () => { })
     this.getUserDetail(data);
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
   }
 
   /**
@@ -1312,7 +1315,9 @@ export default connect(mapStateToProps, {
   setUserAdditionalPermission,
   setUserTechnologyLevelForCosting,
   updateUserTechnologyLevelForCosting,
-  getLevelByTechnology
+  getLevelByTechnology,
+  getCityByCountry,
+  getAllCity
 })(reduxForm({
   validate,
   form: 'Signup',
