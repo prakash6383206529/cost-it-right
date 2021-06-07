@@ -12,7 +12,7 @@ import {
 } from '../../../actions/Common'
 import {
   createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
@@ -106,6 +106,7 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data } = this.props
+
     this.getDetails(data)
     //this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory((res) => { })
@@ -114,6 +115,12 @@ class AddRMDomestic extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
+      this.props.checkAndGetRawMaterialCode('', (res) => {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
+      })
+    }
 
   }
 
@@ -354,6 +361,7 @@ class AddRMDomestic extends Component {
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+          this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
@@ -906,7 +914,8 @@ class AddRMDomestic extends Component {
       IsConvertIntoCopy: isDateChange ? true : false,
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
       CutOffPrice: values.cutOffPrice,
-      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false
+      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
+      RawMaterialCode: values.Code
     }
     if (isEditFlag) {
 
@@ -982,7 +991,8 @@ class AddRMDomestic extends Component {
         Attachements: files,
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false
+        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
+        RawMaterialCode: values.Code
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -1004,6 +1014,15 @@ class AddRMDomestic extends Component {
 
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
+  }
+
+  checkUniqCode = (e) => {
+    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+        toastr.warning(res.data.Message);
+        $('input[name="Code"]').focus()
+      }
+    })
   }
 
   /**
@@ -1178,6 +1197,21 @@ class AddRMDomestic extends Component {
                               required={true}
                               handleChangeDescription={this.handleCategoryChange}
                               valueDescription={this.state.Category}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Code`}
+                              name={'Code'}
+                              type="text"
+                              placeholder={'Enter'}
+                              validate={[required]}
+                              component={renderText}
+                              required={true}
+                              className=" "
+                              customClassName=" withBorder"
+                              onBlur={this.checkUniqCode}
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
@@ -1821,7 +1855,8 @@ export default connect(mapStateToProps, {
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
   getPlantSelectListByType,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  checkAndGetRawMaterialCode
 })(
   reduxForm({
     form: 'AddRMDomestic',
