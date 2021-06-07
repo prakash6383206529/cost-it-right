@@ -11,7 +11,7 @@ import {
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList
+  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -120,6 +120,12 @@ class AddRMImport extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
+      this.props.checkAndGetRawMaterialCode('', (res) => {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -403,6 +409,8 @@ class AddRMImport extends Component {
                 // this.props.change('NetLandedCost')
 
                 this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+                this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+
                 let plantArray = [];
                 Data && Data.Plant.map((item) => {
                   plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -897,7 +905,8 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -973,7 +982,8 @@ class AddRMImport extends Component {
         RMShearingCost: values.ShearingCost,
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -983,6 +993,16 @@ class AddRMImport extends Component {
         }
       });
     }
+  }
+
+
+  checkUniqCode = (e) => {
+    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+        toastr.warning(res.data.Message);
+        $('input[name="Code"]').focus()
+      }
+    })
   }
 
   handleKeyDown = function (e) {
@@ -1164,6 +1184,21 @@ class AddRMImport extends Component {
                                 />
                               </div>
                             </div>
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Code`}
+                              name={'Code'}
+                              type="text"
+                              placeholder={'Enter'}
+                              validate={[required]}
+                              component={renderText}
+                              required={true}
+                              className=" "
+                              customClassName=" withBorder"
+                              onBlur={this.checkUniqCode}
+                              disabled={isEditFlag ? true : false}
+                            />
                           </Col>
                           <Col md="4">
                             <Field
@@ -1806,7 +1841,8 @@ export default connect(mapStateToProps, {
   getTechnologySelectList,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  checkAndGetRawMaterialCode
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
