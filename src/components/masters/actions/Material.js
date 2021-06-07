@@ -1535,3 +1535,21 @@ export function getMaterialTypeSelectList(callback) {
         });
     };
 }
+
+/**
+ * @method checkAndGetOperationCode
+ * @description CHECK AND GET OPERATION CODE
+ */
+export function checkAndGetRawMaterialCode(code, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.checkAndGetRawMaterialCode}?materialCode=${code}`, '', headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
