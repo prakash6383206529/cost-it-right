@@ -105,8 +105,8 @@ function AddProcess(props) {
       let tempArr = [...selectedRowData, row]
       setSelectedRowData(tempArr)
     } else {
-      const ProcessId = row.ProcessId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.ProcessId !== ProcessId)
+      const MachineRateId = row.MachineRateId;
+      let tempArr = selectedRowData && selectedRowData.filter(el => el.MachineRateId !== MachineRateId)
       setSelectedRowData(tempArr)
     }
   }
@@ -190,7 +190,7 @@ function AddProcess(props) {
                   //ignoreSinglePage
                   //ref={'table'}
                   pagination>
-                  <TableHeaderColumn dataField="ProcessId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                  <TableHeaderColumn dataField="MachineRateId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ProcessName"  >{'Process Name'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineNumber" >{'Machine No.'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineName" >{'Machine Name'}</TableHeaderColumn>
