@@ -143,8 +143,8 @@ function BOPCost(props) {
     let tempData = gridData[index];
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
-      const NetBoughtOutPartCost = tempData.LandedCostINR * parseInt(event.target.value);
-      tempData = { ...tempData, Quantity: parseInt(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
+      const NetBoughtOutPartCost = tempData.LandedCostINR * checkForNull(event.target.value);
+      tempData = { ...tempData, Quantity: checkForNull(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
@@ -314,8 +314,7 @@ function BOPCost(props) {
                                     rules={{
                                       //required: true,
                                       pattern: {
-                                        value: /^[0-9]*$/i,
-                                        //value: /^[1-9]\d*(\.\d+)?$/i,
+                                        value: /^\d*\.?\d*$/,
                                         message: 'Invalid Number.'
                                       },
                                     }}
