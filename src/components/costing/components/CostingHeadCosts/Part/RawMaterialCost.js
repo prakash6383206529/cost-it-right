@@ -115,8 +115,8 @@ function RawMaterialCost(props) {
             NetLandedCost: '',
             RawMaterialId: el.RawMaterialId,
             RawMaterialCategory: el.Category,
-            CutOffPrice: rowData.CutOffPrice,
-            IsCutOffApplicable: rowData.IsCutOffApplicable,
+            CutOffPrice: el.CutOffPrice,
+            IsCutOffApplicable: el.IsCutOffApplicable,
           }
         })
 
