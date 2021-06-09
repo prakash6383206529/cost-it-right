@@ -10,6 +10,7 @@ import Switch from "react-switch";
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
+import TooltipCustom from '../../../../common/Tooltip';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -1129,8 +1130,8 @@ function OverheadProfit(props) {
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
       const { OverheadCCPercentage } = overheadObj;
-      setValue('OverheadCCCost', getValues('OverheadCCCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-      setValue('OverheadCCTotalCost', checkForDecimalAndNull((getValues('OverheadCCCost') * calculatePercentage(OverheadCCPercentage)), initialConfiguration.NoOfDecimalForPrice))
+      setValue('OverheadCCCost', checkForNull(headerCosts !== undefined ? headerCosts.NetConversionCost : 0) + checkForNull(NetSurfaceTreatmentCost))
+      setValue('OverheadCCTotalCost', checkForDecimalAndNull((checkForNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0)) * calculatePercentage(OverheadCCPercentage)), initialConfiguration.NoOfDecimalForPrice))
       setIsSurfaceTreatmentAdded(true)
       setOverheadObj({
         ...overheadObj,
@@ -1562,6 +1563,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
+                        {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
                         <TextFieldHookForm
                           label=""
                           name={'OverheadCombinedCost'}
@@ -1622,6 +1624,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
+                        {RMCCutOffObj?.IsCutOffApplicable && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
                         <TextFieldHookForm
                           label=""
                           name={'OverheadRMCost'}
@@ -1903,6 +1906,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
+                        {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
                         <TextFieldHookForm
                           label=""
                           name={'ProfitCombinedCost'}
@@ -1963,6 +1967,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
+                        {RMCCutOffObj?.IsCutOffApplicable && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
                         <TextFieldHookForm
                           label=""
                           name={'ProfitRMCost'}
