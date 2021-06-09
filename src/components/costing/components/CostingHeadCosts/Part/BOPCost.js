@@ -155,7 +155,7 @@ function BOPCost(props) {
       setTimeout(() => {
         setValue(`${bopGridFields}[${index}]Quantity`, 0)
       }, 200)
-      toastr.warning('Please enter valid number.')
+      //toastr.warning('Please enter valid number.')
     }
   }
 
