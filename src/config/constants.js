@@ -798,12 +798,13 @@ export const API = {
 
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/`,
-  getSelectListOfSimulationMaster: `${BASE_URL}/`,
+  getSelectListOfSimulationMaster: `${BASE_URL}/simulation/select-list-get-simulation-master`,
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
   getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
   getSimulationApprovalList: `${BASE_URL}/simulation/`,
+  getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
 
   //REPORT
   getReportListing: `${BASE_URL}/report/get-report-listing`,
@@ -1322,6 +1323,8 @@ export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
 export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
+export const SET_SELECTED_MASTER_SIMULATION = 'SET_SELECTED_MASTER_SIMULATION'
+export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_HEAD'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
