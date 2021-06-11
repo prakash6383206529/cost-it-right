@@ -181,12 +181,17 @@ function CostingSimulation(props) {
         lastPage: <span className="last-page-pg"></span>,
     };
 
+    const VerifyImpact = () => {
+        setIsVerifyImpactDrawer(true)
+    }
+
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
     }
 
     const closeDrawer = () => {
-        setIsApprovalDrawer(false)
+        setIsApprovalDrawer(false);
+        setIsVerifyImpactDrawer(false);
     }
 
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
@@ -227,7 +232,7 @@ function CostingSimulation(props) {
                                     <h5>{`Filter By:`}</h5>
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -243,7 +248,7 @@ function CostingSimulation(props) {
                                         errors={errors.partNo}
                                     />
                                 </div>
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'plantCode'}
@@ -259,7 +264,7 @@ function CostingSimulation(props) {
                                         errors={errors.plantCode}
                                     />
                                 </div>
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'rawMaterial'}
@@ -276,7 +281,7 @@ function CostingSimulation(props) {
                                     />
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -353,8 +358,12 @@ function CostingSimulation(props) {
                                         src={require("../../../assests/images/check.png")}
                                         alt="check-icon.jpg"
                                     />
-                                </div>{" "}
+                                </div>
                                 {"Save Simulation"}
+                            </button>
+                            <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                {"Verify Impact "}
                             </button>
                         </div>
                     </Row>
@@ -371,6 +380,17 @@ function CostingSimulation(props) {
                         isApprovalDrawer &&
                         <ApproveRejectDrawer
                             isOpen={isApprovalDrawer}
+                            anchor={'right'}
+                            approvalData={[]}
+                            type={'Approve'}
+                            closeDrawer={closeDrawer}
+                            isSimulation={true}
+                        />
+                    }
+                    {
+                        isVerifyImpactDrawer &&
+                        <VerifyImpactDrawer
+                            isOpen={isVerifyImpactDrawer}
                             anchor={'right'}
                             approvalData={[]}
                             type={'Approve'}
