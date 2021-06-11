@@ -571,6 +571,34 @@ function RawMaterialCost(props) {
     }
   }, [IsApplyMasterBatch])
 
+  // THIS WILL CALLED WHEN RM REMOVED FROM GRID TO RESET MASTERBATCH DATA
+  useEffect(() => {
+    let tempArr = []
+    if (gridData && gridData.length === 0) {
+      const Params = {
+        BOMLevel: props.item.BOMLevel,
+        PartNumber: props.item.PartNumber,
+      }
+      reset({
+        MBName: '',
+        MBPrice: '',
+        MBPercentage: '',
+        RMTotal: '',
+      })
+      const MasterBatchObj = {
+        "MasterBatchRMId": '',
+        "IsApplyMasterBatch": IsApplyMasterBatch,
+        "MasterBatchRMName": '',
+        "MasterBatchRMPrice": 0,
+        "MasterBatchPercentage": 0,
+        "MasterBatchTotal": 0,
+      }
+      if (!CostingViewMode) {
+        props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+      }
+    }
+  }, [gridData])
+
   /**
   * @method MasterBatchToggle
   * @description TOGGLE MASTER BATCH DRAWER
