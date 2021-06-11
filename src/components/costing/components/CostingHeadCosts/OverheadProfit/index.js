@@ -122,9 +122,11 @@ function OverheadProfit(props) {
     IncludeSurfaceTreatmentCall()
   }, [SurfaceTreatmentCost.NetSurfaceTreatmentCost])
 
-  // THIS EFFECT INVOKED WHEN RMC CUTOFF VALUE CHANGED
+  // THIS EFFECT INVOKED WHEN RMC CUTOFF VALUE CHANGED ON RMCC TAB
   useEffect(() => {
     UpdateForm()
+    setIsSurfaceTreatmentAdded(false)
+    IncludeSurfaceTreatmentCall()
   }, [RMCCutOffObj])
 
   /**
