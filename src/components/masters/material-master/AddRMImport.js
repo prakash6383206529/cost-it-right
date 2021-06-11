@@ -11,7 +11,7 @@ import {
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList
+  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -120,6 +120,12 @@ class AddRMImport extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
+      this.props.checkAndGetRawMaterialCode('', (res) => {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -402,6 +408,8 @@ class AddRMImport extends Component {
                 // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 // this.props.change('NetLandedCost')
 
+                this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+                this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
 
                 let plantArray = [];
                 Data && Data.Plant.map((item) => {
@@ -443,7 +451,8 @@ class AddRMImport extends Component {
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
                   // FreightCharge:Data.FreightCharge
-                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : ''
+                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
+
                 }, () => this.setState({ isLoader: false }))
               }, 200);
             });
@@ -894,7 +903,10 @@ class AddRMImport extends Component {
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
         IsConvertIntoCopy: isDateChange ? true : false,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -918,7 +930,7 @@ class AddRMImport extends Component {
             }
           })
         } else {
-          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark) {
+          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark && Number(DataToChange.cutOffPrice) === values.cutOffPrice) {
             this.cancel()
             return false
           }
@@ -968,7 +980,10 @@ class AddRMImport extends Component {
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -978,6 +993,16 @@ class AddRMImport extends Component {
         }
       });
     }
+  }
+
+
+  checkUniqCode = (e) => {
+    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+        toastr.warning(res.data.Message);
+        $('input[name="Code"]').focus()
+      }
+    })
   }
 
   handleKeyDown = function (e) {
@@ -1159,6 +1184,21 @@ class AddRMImport extends Component {
                                 />
                               </div>
                             </div>
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Code`}
+                              name={'Code'}
+                              type="text"
+                              placeholder={'Enter'}
+                              validate={[required]}
+                              component={renderText}
+                              required={true}
+                              className=" "
+                              customClassName=" withBorder"
+                              onBlur={this.checkUniqCode}
+                              disabled={isEditFlag ? true : false}
+                            />
                           </Col>
                           <Col md="4">
                             <Field
@@ -1405,6 +1445,20 @@ class AddRMImport extends Component {
                               </div>
                             </div>
                             {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              name={"cutOffPrice"}
+                              type="text"
+                              placeholder={""}
+                              validate={[]}
+                              component={renderText}
+                              required={false}
+                              disabled={false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
                           </Col>
                           <Col md="4">
                             <Field
@@ -1787,7 +1841,8 @@ export default connect(mapStateToProps, {
   getTechnologySelectList,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  checkAndGetRawMaterialCode
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

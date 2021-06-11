@@ -8,11 +8,11 @@ import { AcceptableRMUOM } from '../../../config/masterData'
 import {
   getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
-  fetchPlantDataAPI, getPlantSelectListByType
+  fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common'
 import {
   createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
@@ -106,14 +106,24 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data } = this.props
+
     this.getDetails(data)
     //this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory((res) => { })
-    this.props.fetchSupplierCityDataAPI((res) => { })
+    // this.props.fetchSupplierCityDataAPI((res) => { })
     this.props.getVendorListByVendorType(false, () => { })
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
+      this.props.checkAndGetRawMaterialCode('', (res) => {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
+      })
+    }
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
 
   }
 
@@ -343,10 +353,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-          this.setState({ DataToChange: Data }, () => {
-
-
-          })
+          this.setState({ DataToChange: Data }, () => { })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -356,6 +363,8 @@ class AddRMDomestic extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+          this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+          this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
@@ -411,7 +420,8 @@ class AddRMDomestic extends Component {
                   effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
-                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
+                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+                  netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
                 }, () => this.setState({ isLoader: false }))
               }, 200)
             })
@@ -654,6 +664,7 @@ class AddRMDomestic extends Component {
       })
       return temp
     }
+
 
     if (label === 'VendorNameList') {
       vendorListByVendorType && vendorListByVendorType.map((item) => {
@@ -905,7 +916,10 @@ class AddRMDomestic extends Component {
       EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       Attachements: updatedFiles,
       IsConvertIntoCopy: isDateChange ? true : false,
-      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
+      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
+      CutOffPrice: values.cutOffPrice,
+      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
+      RawMaterialCode: values.Code
     }
     if (isEditFlag) {
 
@@ -930,7 +944,7 @@ class AddRMDomestic extends Component {
           }
         })
       } else {
-        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark) {
+        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && Number(DataToChange.cutOffPrice) === values.cutOffPrice) {
           this.cancel()
           return false
         }
@@ -971,7 +985,7 @@ class AddRMDomestic extends Component {
         RMFreightCost: values.FrieghtCharge,
         RMShearingCost: values.ShearingCost,
         ScrapRate: values.ScrapRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: netLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -979,7 +993,10 @@ class AddRMDomestic extends Component {
         VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
+        RawMaterialCode: values.Code
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -1001,6 +1018,15 @@ class AddRMDomestic extends Component {
 
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
+  }
+
+  checkUniqCode = (e) => {
+    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+        toastr.warning(res.data.Message);
+        $('input[name="Code"]').focus()
+      }
+    })
   }
 
   /**
@@ -1175,6 +1201,21 @@ class AddRMDomestic extends Component {
                               required={true}
                               handleChangeDescription={this.handleCategoryChange}
                               valueDescription={this.state.Category}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Code`}
+                              name={'Code'}
+                              type="text"
+                              placeholder={'Enter'}
+                              validate={[required]}
+                              component={renderText}
+                              required={true}
+                              className=" "
+                              customClassName=" withBorder"
+                              onBlur={this.checkUniqCode}
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
@@ -1386,6 +1427,20 @@ class AddRMDomestic extends Component {
                                                         className={'plus-icon-square  right'}>
                                                     </div>} */}
                             </div>
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Cut Off Price (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              name={"cutOffPrice"}
+                              type="text"
+                              placeholder={""}
+                              validate={[]}
+                              component={renderText}
+                              required={false}
+                              disabled={false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
                           </Col>
                           <Col md="4">
                             <Field
@@ -1746,6 +1801,7 @@ function mapStateToProps(state) {
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
     plantSelectList } = comman
+  // const { countryList, stateList, cityList } = comman;
 
   const { initialConfiguration } = auth;
 
@@ -1756,6 +1812,7 @@ function mapStateToProps(state) {
   if (rawMaterialDetails && rawMaterialDetails !== undefined) {
     initialValues = {
       Source: rawMaterialDetails.Source,
+      cutOffPrice: rawMaterialDetails.cutOffPrice,
       BasicRate: rawMaterialDetails.BasicRatePerUOM,
       ScrapRate: rawMaterialDetails.ScrapRate,
       NetLandedCost: rawMaterialDetails.NetLandedCost,
@@ -1803,7 +1860,10 @@ export default connect(mapStateToProps, {
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
   getPlantSelectListByType,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  checkAndGetRawMaterialCode,
+  getCityByCountry,
+  getAllCity
 })(
   reduxForm({
     form: 'AddRMDomestic',

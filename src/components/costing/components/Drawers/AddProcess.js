@@ -105,8 +105,8 @@ function AddProcess(props) {
       let tempArr = [...selectedRowData, row]
       setSelectedRowData(tempArr)
     } else {
-      const ProcessId = row.ProcessId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.ProcessId !== ProcessId)
+      const MachineRateId = row.MachineRateId;
+      let tempArr = selectedRowData && selectedRowData.filter(el => el.MachineRateId !== MachineRateId)
       setSelectedRowData(tempArr)
     }
   }

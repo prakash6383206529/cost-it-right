@@ -44,7 +44,7 @@ function AddToComparisonDrawer(props) {
   // const [clientDropdown, setclientDropdown] = useState([])
   const [costingDropdown, setCostingDropdown] = useState([])
 
-  const [vendorId, setVendorId] = useState([])
+  const [vendorId, setVendorId] = useState(editObject.VendorId ? editObject.VendorId : [])
 
   /* constant for form value */
   const [plantValue, setPlantValue] = useState('')
@@ -211,6 +211,7 @@ function AddToComparisonDrawer(props) {
   const handleVendorChange = ({ value }) => {
     const temp = []
     setVendorId(value)
+    setValue('destinationPlant', '')
     if (loggedIn) {
       dispatch(getPlantBySupplier(value, (res) => { }),
         // dispatch(

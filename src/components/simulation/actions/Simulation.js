@@ -6,8 +6,10 @@ import {
     GET_SELECTLIST_MASTERS,
     GET_VERIFY_SIMULATION_LIST,
     GET_COSTING_SIMULATION_LIST,
+    GET_SIMULATION_APPROVAL_LIST,
+    SET_SELECTED_MASTER_SIMULATION,
+    GET_SELECTLIST_APPLICABILITY_HEAD,
     config,
-    GET_SIMULATION_APPROVAL_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -111,29 +113,29 @@ export function getSelectListOfMasters(callback) {
 
 
     return (dispatch) => {
-
         dispatch({
             type: GET_SELECTLIST_MASTERS,
             payload: JSON.data.SelectList,
         });
-        // callback(JSON);
-        // callback(JSON)
-        //   dispatch({ type: API_REQUEST });
-        //   const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
-        //   request.then((response) => {
-        //     
+        // dispatch({ type: API_REQUEST });
+        // const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
+        // request.then((response) => {
         //     if (response.data.Result) {
-        //       dispatch({
-        //         type: GET_BULKUPLOAD_COSTING_LIST,
-        //         payload: response.data.DataList,
-        //       });
-        //       callback(response);
+        //         dispatch({
+        //             type: GET_SELECTLIST_MASTERS,
+        //             payload: JSON.data.SelectList,
+        //         });
+        //         //     dispatch({
+        //         //     type: GET_BULKUPLOAD_COSTING_LIST,
+        //         //     payload: response.data.DataList,
+        //         // });
+        //         callback(response);
         //     }
-        //   }).catch((error) => {
+        // }).catch((error) => {
         //     dispatch({ type: API_FAILURE });
         //     callback(error);
         //     apiErrors(error);
-        //   });
+        // });
     };
 }
 
@@ -267,4 +269,33 @@ export function getSimulationApprovalList(filterData, callback) {
     //         apiErrors(error)
     //       })
     //   }
+}
+
+export function setMasterForSimulation(selectedMaster) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_MASTER_SIMULATION,
+            payload: selectedMaster,
+        });
+    }
+}
+
+export function getSelectListOfSimulationApplicability(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSelectListOfSimulationApplicability}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTLIST_APPLICABILITY_HEAD,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
 }

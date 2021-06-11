@@ -408,7 +408,7 @@ export function getVendorPowerDetailDataList(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getVendorPowerDetailDataList}?vendorId=${vendorID}&plantId=${plantID}`, headers);
         request.then((response) => {
-            if (response && response.status === 200) {
+            if (response.data.Result) {
                 dispatch({
                     type: GET_POWER_VENDOR_DATA_LIST,
                     payload: response.data.DataList

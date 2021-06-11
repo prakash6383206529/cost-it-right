@@ -5,7 +5,7 @@ import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
 } from '../actions/Costing';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -157,7 +157,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM PACKAGE AND FREIGHT
    */
   const setHeaderPackageFreightTab = (data) => {
-    console.log('flag: data: ', data);
     const headerIndex = 0;
 
     if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
@@ -247,6 +246,10 @@ function CostingDetailStepTwo(props) {
         checkForNull(tempData.NetOverheadAndProfitCost) +
         checkForNull(tempData.NetPackagingAndFreight) +
         checkForNull(tempData.ToolCost)
+
+      if (data.OtherCostType === 'Percentage') {
+        data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
+      }
 
       const discountedCost = checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice);
       const discountValues = {

@@ -133,7 +133,7 @@ function CostingSimulation(props) {
 
     }
 
-    const onSaveSiualtion = () => {
+    const onSaveSimulation = () => {
 
         setShowApprovalHistory(true)
     }
@@ -325,11 +325,18 @@ function CostingSimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
 
-                            <button class="user-btn approval-btn mr-3" onClick={sendForApproval}>
+                            <button
+                                class="user-btn approval-btn mr-3"
+                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                onClick={sendForApproval}>
                                 <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
                                 {'Send For Approval'}
                             </button>
-                            <button type="submit" className="user-btn mr5 save-btn" onClick={onSaveSiualtion}>
+                            <button
+                                type="button"
+                                className="user-btn mr5 save-btn"
+                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                onClick={onSaveSimulation}>
                                 <div className={"check-icon"}>
                                     <img
                                         src={require("../../../assests/images/check.png")}

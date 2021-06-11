@@ -62,7 +62,8 @@ import {
   SET_COSTING_EFFECTIVE_DATE,
   IS_COSTING_EFFECTIVE_DATE_DISABLED,
   CLOSE_OPEN_ACCORDION,
-  BOP_DRAWER_LIST
+  BOP_DRAWER_LIST,
+  SET_CUTOFF_RMC,
 } from '../../../config/constants';
 
 const initialState = {
@@ -80,6 +81,7 @@ const initialState = {
   IsCostingDateDisabled: false,
   IsToolCostApplicable: false,
   SurfaceCostData: {},
+  RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' }
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -520,6 +522,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         IsCostingDateDisabled: action.payload
+      }
+    case SET_CUTOFF_RMC:
+      return {
+        ...state,
+        loading: false,
+        RMCCutOffObj: action.payload
       }
     default:
       return state

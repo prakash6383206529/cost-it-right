@@ -109,19 +109,9 @@ class AddLabour extends Component {
               // isLoader: false,
               IsVendor: Data.IsVendor,
               IsEmployeContractual: Data.IsContractBase,
-              vendorName: Data.IsContractBase
-                ? vendorObj && vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : []
-                : [],
-              StateName:
-                stateObj && stateObj !== undefined
-                  ? { label: stateObj.Text, value: stateObj.Value }
-                  : [],
-              selectedPlants:
-                plantObj && plantObj !== undefined
-                  ? { label: plantObj.Text, value: plantObj.Value }
-                  : [],
+              vendorName: Data.IsContractBase ? vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [] : [],
+              StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
+              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               gridTable: GridArray,
             }, () => this.setState({ isLoader: false }))
           }, 500)
@@ -324,10 +314,10 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
     const { fieldsObj, error } = this.props
 
-    if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
+    if ((IsEmployeContractual ? vendorName.length == 0 : false) || selectedPlants.length == 0 || StateName == 0) {
       toastr.warning('First fill upper detail')
       return false
     }
@@ -401,13 +391,7 @@ class AddLabour extends Component {
    * @description Used to handle update grid
    */
   updateGrid = () => {
-    const {
-      machineType,
-      labourType,
-      gridTable,
-      effectiveDate,
-      gridEditIndex,
-    } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, gridEditIndex, } = this.state
     const { fieldsObj } = this.props
     const LabourRate =
       fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
@@ -550,16 +534,7 @@ class AddLabour extends Component {
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
-    const {
-      IsEmployeContractual,
-      IsVendor,
-      StateName,
-      selectedPlants,
-      vendorName,
-      LabourId,
-      gridTable,
-      DropdownChanged
-    } = this.state
+    const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
     const userDetail = userDetails()
 
     if (gridTable && gridTable.length === 0) {
