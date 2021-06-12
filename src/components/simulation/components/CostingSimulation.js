@@ -14,6 +14,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
+import VerifyImpactDrawer from './VerifyImpactDrawer';
 
 function CostingSimulation(props) {
     const { simulationId } = props
@@ -22,6 +23,7 @@ function CostingSimulation(props) {
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
+    const [isVerifyImpactDrawer,setIsVerifyImpactDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [id, setId] = useState('')
@@ -172,12 +174,17 @@ function CostingSimulation(props) {
         lastPage: <span className="last-page-pg"></span>,
     };
 
+    const VerifyImpact = () => {
+        setIsVerifyImpactDrawer(true)
+    }
+
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
     }
 
     const closeDrawer = () => {
-        setIsApprovalDrawer(false)
+        setIsApprovalDrawer(false);
+        setIsVerifyImpactDrawer(false);
     }
 
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
@@ -217,7 +224,7 @@ function CostingSimulation(props) {
                                     <h5>{`Filter By:`}</h5>
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -233,7 +240,7 @@ function CostingSimulation(props) {
                                         errors={errors.partNo}
                                     />
                                 </div>
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'plantCode'}
@@ -249,7 +256,7 @@ function CostingSimulation(props) {
                                         errors={errors.plantCode}
                                     />
                                 </div>
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'rawMaterial'}
@@ -266,7 +273,7 @@ function CostingSimulation(props) {
                                     />
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -325,11 +332,8 @@ function CostingSimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
 
-                            <button
-                                class="user-btn approval-btn mr-3"
-                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
-                                onClick={sendForApproval}>
-                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
+                            <button class="user-btn approval-btn mr-3" onClick={sendForApproval}>
+                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>
                                 {'Send For Approval'}
                             </button>
                             <button
@@ -342,8 +346,12 @@ function CostingSimulation(props) {
                                         src={require("../../../assests/images/check.png")}
                                         alt="check-icon.jpg"
                                     />
-                                </div>{" "}
+                                </div>
                                 {"Save Simulation"}
+                            </button>
+                            <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                {"Verify Impact "}
                             </button>
                         </div>
                     </Row>
@@ -360,6 +368,17 @@ function CostingSimulation(props) {
                         isApprovalDrawer &&
                         <ApproveRejectDrawer
                             isOpen={isApprovalDrawer}
+                            anchor={'right'}
+                            approvalData={[]}
+                            type={'Approve'}
+                            closeDrawer={closeDrawer}
+                            isSimulation={true}
+                        />
+                    }
+                    {
+                        isVerifyImpactDrawer &&
+                        <VerifyImpactDrawer
+                            isOpen={isVerifyImpactDrawer}
                             anchor={'right'}
                             approvalData={[]}
                             type={'Approve'}
