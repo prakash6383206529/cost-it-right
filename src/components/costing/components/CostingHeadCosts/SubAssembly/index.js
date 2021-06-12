@@ -117,24 +117,27 @@ function AssemblyPart(props) {
           </td>
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
-          <td>{item?.CostingPartDetails?.TotalRawMaterialsCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
-            {item?.CostingPartDetails?.TotalConversionCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+            {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCostWithQuantity + item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}
             {
               item?.CostingPartDetails?.TotalOperationCostPerAssembly ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
-                    {`Assembly's Conversion Cost:- ${item.CostingPartDetails.TotalOperationCostPerAssembly}`}
+                    {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Child Parts Conversion Cost:- ${item.CostingPartDetails.TotalConversionCost - item.CostingPartDetails.TotalOperationCostPerAssembly}`}
+                    {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost - item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
+                    {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
             }
           </td>
           <td>{item?.CostingPartDetails?.Quantity ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
-          <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+          {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
+          <td>{'-'}</td>
+          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
+          {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity + item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity + item.CostingPartDetails.TotalConversionCostWithQuantity + item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         </div>
         <td>
           {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
