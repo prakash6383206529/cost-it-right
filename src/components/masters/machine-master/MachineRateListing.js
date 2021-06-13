@@ -19,6 +19,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import moment from 'moment';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -363,6 +364,18 @@ class MachineRateListing extends Component {
         return row.IsVendor ? row.DestinationPlant : row.Plants
     }
 
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date</>
+    }
+
+    /**
+  * @method effectiveDateFormatter
+  * @description Renders buttons
+  */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -627,6 +640,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
