@@ -68,7 +68,6 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
-
     if (technology === MACHINING) {
 
       switch (process) {
@@ -145,7 +144,14 @@ function VariableMhrDrawer(props) {
             />
           )
         default:
-          break;
+          return (
+            <SheetMetalBaicDrawer
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          )
       }
     } else if (technology === SHEETMETAL) {
       switch (process) {
@@ -193,8 +199,16 @@ function VariableMhrDrawer(props) {
           calculatorData={calculatorData}
         />
       )
+    } else {
+      return (
+        <SheetMetalBaicDrawer
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
     }
-
   }
 
   return (
