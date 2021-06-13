@@ -296,14 +296,15 @@ class AddRMImport extends Component {
   */
   handleCurrency = (newValue) => {
     if (newValue && newValue !== '') {
-      this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
       if (newValue.label === INR) {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
         this.setState({ showCurrency: true })
       }
-      this.handleNetCost()
+      this.setState({ currency: newValue, }, () => {
+        this.handleNetCost()
+      })
     } else {
       this.setState({ currency: [] })
     }
