@@ -1197,7 +1197,8 @@ class AddRMImport extends Component {
                               className=" "
                               customClassName=" withBorder"
                               onBlur={this.checkUniqCode}
-                              disabled={isEditFlag ? true : false}
+                              // disabled={isEditFlag ? true : false}
+                              disabled={false}
                             />
                           </Col>
                           <Col md="4">
