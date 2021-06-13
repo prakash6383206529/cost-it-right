@@ -2220,3 +2220,5 @@ export const SIDEFACEMILING = 'Side Face Miling'
 export const SLOTCUTTING = 'Slot Cutting'
 export const CHAMFERINGMILLER = 'Chamfering Miller'
 export const ENDMILL = 'End Mill'
+
+export const getTechnology = [1, 8, 7, 2, 4]
