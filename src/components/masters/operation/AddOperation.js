@@ -317,7 +317,7 @@ class AddOperation extends Component {
               selectedPlants: plantArray,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,

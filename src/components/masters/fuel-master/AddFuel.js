@@ -102,7 +102,7 @@ class AddFuel extends Component {
               isEditFlag: true,
               // isLoader: false,
               fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               rateGrid: rateGridArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
