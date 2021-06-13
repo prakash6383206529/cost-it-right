@@ -445,7 +445,7 @@ class AddRMImport extends Component {
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
