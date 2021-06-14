@@ -416,7 +416,7 @@ class AddRMDomestic extends Component {
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
@@ -1216,7 +1216,8 @@ class AddRMDomestic extends Component {
                               className=" "
                               customClassName=" withBorder"
                               onBlur={this.checkUniqCode}
-                              disabled={isEditFlag ? true : false}
+                              // disabled={isEditFlag ? true : false} // NEED TO UNCOMMENT IT LATER
+                              disabled={false}
                             />
                           </Col>
                           <Col md="4">

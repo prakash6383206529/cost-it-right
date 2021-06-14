@@ -14,6 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
+import { getTechnology } from '../../../../../config/masterData'
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -731,7 +732,7 @@ function RawMaterialCost(props) {
                       <th>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
-                      <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>
+                      {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "220px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "220px" }}>{`Finish Weight`}</th>
                       <th style={{ width: "220px" }}>{`Net RM Cost`}</th>
@@ -741,19 +742,23 @@ function RawMaterialCost(props) {
                   <tbody>
                     {gridData &&
                       gridData.map((item, index) => {
+
                         return (
                           <tr key={index}>
                             <td>{item.RMName}</td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
-                            <td className="text-center">
-                              <button
-                                className="CalculatorIcon cr-cl-icon "
-                                type={'button'}
-                                // disabled={(item.Density === undefined || item.Density === "" || item.Density === null) ? true : false}
-                                onClick={() => toggleWeightCalculator(index)}
-                              />
-                            </td>
+                            {
+                              getTechnology.includes(costData.ETechnologyType) &&
+                              <td className="text-center">
+                                <button
+                                  className="CalculatorIcon cr-cl-icon "
+                                  type={'button'}
+                                  // disabled={(item.Density === undefined || item.Density === "" || item.Density === null) ? true : false}
+                                  onClick={() => toggleWeightCalculator(index)}
+                                />
+                              </td>
+                            }
                             <td>
                               <NumberFieldHookForm
                                 label=""

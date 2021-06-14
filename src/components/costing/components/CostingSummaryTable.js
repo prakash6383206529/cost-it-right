@@ -707,6 +707,7 @@ const CostingSummaryTable = (props) => {
                         <span class="d-block small-grey-text">RM Name-Grade</span>
                         <span class="d-block small-grey-text">Gross Weight</span>
                         <span class="d-block small-grey-text">Finish Weight</span>
+                        <span class="d-block small-grey-text">Scrap Weight</span>
                       </td>
                       {viewCostingData &&
                         viewCostingData.map((data) => {
@@ -718,6 +719,9 @@ const CostingSummaryTable = (props) => {
                               </span>
                               <span class="d-block small-grey-text">
                                 {checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput)}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput)}
                               </span>
                             </td>
                           )
