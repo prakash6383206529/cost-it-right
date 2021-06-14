@@ -920,6 +920,7 @@ input.form-control{
 .Create,
 .Copy,
 .Approve,
+.SOB,
 .Run,
 .Save,
 .Add-file,
@@ -955,9 +956,6 @@ input.form-control{
   font-size: 14px;
   cursor: pointer;
 }
-
-
-
 .my-custom-class {
   margin: 0;
 }
@@ -1514,6 +1512,13 @@ button.user-btn.pull-right {
   width: 32px;
   height: 32px;
   background: transparent url("../../assests/images/Approve.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.SOB {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/sob-icon.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
@@ -4395,6 +4400,7 @@ body{
       .Copy,
       .Approve,
       .Run,
+      .SOB,
       .Save,
       .Add-file,
       .SaveIcon,
