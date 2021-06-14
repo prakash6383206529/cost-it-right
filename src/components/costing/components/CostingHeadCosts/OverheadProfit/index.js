@@ -1571,7 +1571,12 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
+                        <div className="d-inline-block">
+                        {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && 
+                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                          <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
+                        </span>
+                        }
                         <TextFieldHookForm
                           label=""
                           name={'OverheadCombinedCost'}
@@ -1585,7 +1590,7 @@ function OverheadProfit(props) {
                           customClassName={'withBorder'}
                           errors={errors.OverheadCombinedCost}
                           disabled={true}
-                        />
+                        /></div>
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
@@ -1632,7 +1637,11 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
+                        <div className="d-inline-block">
+                        {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && 
+                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                          <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
+                        </span> }
                         <TextFieldHookForm
                           label=""
                           name={'OverheadRMCost'}
@@ -1646,7 +1655,7 @@ function OverheadProfit(props) {
                           customClassName={'withBorder'}
                           errors={errors.OverheadRMCost}
                           disabled={true}
-                        />
+                        /></div>
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
@@ -1914,7 +1923,12 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
+                        <div className="d-inline-block">
+                        {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && 
+                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                          <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
+                        </span>
+                        }
                         <TextFieldHookForm
                           label=""
                           name={'ProfitCombinedCost'}
@@ -1928,7 +1942,7 @@ function OverheadProfit(props) {
                           customClassName={'withBorder'}
                           errors={errors.ProfitCombinedCost}
                           disabled={true}
-                        />
+                        /></div>
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
@@ -1975,7 +1989,12 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && <TooltipCustom tooltipText={`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`} />}
+                        <div className="d-inline-block">
+                        {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC && 
+                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                          <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
+                        </span>
+                        }
                         <TextFieldHookForm
                           label=""
                           name={'ProfitRMCost'}
@@ -1989,7 +2008,7 @@ function OverheadProfit(props) {
                           customClassName={'withBorder'}
                           errors={errors.ProfitRMCost}
                           disabled={true}
-                        />
+                        /></div>
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
