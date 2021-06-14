@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from "reactstrap";
 import { required, checkForNull, number, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { fetchSupplierCityDataAPI } from "../../../actions/Common";
+import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
 import { getVendorListByVendorType } from "../actions/Material";
 import {
@@ -55,11 +55,15 @@ class AddFreight extends Component {
    */
   componentDidMount() {
     this.props.getVendorListByVendorType(true, () => { });
-    this.props.fetchSupplierCityDataAPI((res) => { });
+    // this.props.fetchSupplierCityDataAPI((res) => { });  
+
     this.props.getFreightModeSelectList((res) => { });
     this.props.getFreigtFullTruckCapacitySelectList((res) => { });
     this.props.getFreigtRateCriteriaSelectList((res) => { });
     this.getDetails();
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
   }
   /**
    * @method onPressVendor
@@ -1018,6 +1022,8 @@ export default connect(mapStateToProps, {
   getFreightModeSelectList,
   getFreigtFullTruckCapacitySelectList,
   getFreigtRateCriteriaSelectList,
+  getCityByCountry,
+  getAllCity
 })(
   reduxForm({
     form: "AddFreight",

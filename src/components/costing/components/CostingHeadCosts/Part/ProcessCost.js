@@ -230,9 +230,9 @@ function ProcessCost(props) {
    */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map((el) => {
-      if (Ids.includes(el.ProcessId) === false) {
+      if (Ids.includes(el.MachineRateId) === false) {
         let selectedIds = Ids
-        selectedIds.push(el.ProcessId)
+        selectedIds.push(el.MachineRateId)
         setIds(selectedIds)
       }
       return null
@@ -261,7 +261,7 @@ function ProcessCost(props) {
 
       let selectedIds = []
       tempArrAfterDelete.map(el => {
-        selectedIds.push(el.ProcessId)
+        selectedIds.push(el.MachineRateId)
       })
       setGridData(tempArrAfterDelete)
       setIds(selectedIds)
@@ -434,7 +434,7 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}[${index}]Quantity`, 0)
         setValue(`${ProcessGridFields}[${index}]ProcessCost`, 0)
       }, 200)
-      toastr.warning('Please enter valid number.')
+      //toastr.warning('Please enter valid number.')
     }
   }
 
