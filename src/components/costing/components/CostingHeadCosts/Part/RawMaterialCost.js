@@ -199,7 +199,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (Number(event.target.value)) {
+    if (checkForNull(event.target.value) >= 0) {
 
       if (IsFinishWeightValid(event.target.value, tempData.FinishWeight)) {
         const GrossWeight = checkForNull(event.target.value)
@@ -303,7 +303,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (Number(event.target.value) <= 0) {
+    if (checkForNull(event.target.value) <= 0) {
 
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? checkForNull(tempData.GrossWeight) : 0;
