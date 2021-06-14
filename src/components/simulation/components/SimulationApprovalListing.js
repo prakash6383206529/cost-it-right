@@ -75,9 +75,7 @@ function SimulationApprovalListing(props) {
             // createdBy: createdBy,
         }
 
-        dispatch(
-            getSimulationApprovalList(filterData, (res) => { }),
-        )
+        dispatch(getSimulationApprovalList(filterData, (res) => { }))
     }
 
     const renderDropdownListing = (label) => {

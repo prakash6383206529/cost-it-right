@@ -39,7 +39,8 @@ class LevelsListing extends Component {
 			DeleteAccessibility: false,
 
 			showImpact: false,
-			idForImpact: ''
+			idForImpact: '',
+			levelType: '',
 		}
 	}
 
@@ -126,13 +127,14 @@ class LevelsListing extends Component {
 	 * @method getLevelMappingDetail
 	 * @description confirm edit item
 	 */
-	getLevelMappingDetail = (Id) => {
+	getLevelMappingDetail = (Id, levelType) => {
 		this.setState({
 			isEditFlag: true,
 			LevelId: Id,
 			isOpen: true,
 			isShowForm: false,
 			isShowMappingForm: true,
+			levelType: levelType,
 		})
 	}
 
@@ -259,9 +261,9 @@ class LevelsListing extends Component {
 	}
 
 	/**
-   * @method statusButtonFormatter
-   * @description Renders buttons
-   */
+	 * @method statusButtonFormatter
+	 * @description Renders buttons
+	 */
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
 		const { ActivateAccessibility } = this.props;
 		// if (ActivateAccessibility) {
@@ -297,9 +299,9 @@ class LevelsListing extends Component {
 	}
 
 	/**
-   * @method TextFormatter
-   * @description Renders buttons
-   */
+	 * @method TextFormatter
+	 * @description Renders buttons
+	 */
 	TextFormatter = (cell, row, enumObject, rowIndex) => {
 		// 
 		// this.setState({
@@ -407,6 +409,7 @@ class LevelsListing extends Component {
 							isEditFlag={isEditFlag}
 							LevelId={LevelId}
 							anchor={'right'}
+							isEditedlevelType={this.state.levelType}
 						/>
 					)}
 					{showImpact && (

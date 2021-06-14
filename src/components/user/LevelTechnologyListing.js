@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import {
+	Container, Row, Col, Button, Table
+} from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
@@ -21,6 +23,7 @@ class LevelTechnologyListing extends Component {
 
 	componentDidMount() {
 		this.getLevelsListData();
+		this.getSimulationDataList();
 		this.props.onRef(this);
 	}
 
@@ -39,6 +42,10 @@ class LevelTechnologyListing extends Component {
 		});
 	}
 
+	getSimulationDataList = () => {
+		this.props.getSimulationLevelDataList(res => { })
+	}
+
 	/**
 	* @method getUpdatedData
 	* @description get updated data after updatesuccess
@@ -52,8 +59,8 @@ class LevelTechnologyListing extends Component {
 	 * @method editItemDetails
 	 * @description confirm edit item
 	 */
-	editItemDetails = (Id) => {
-		this.props.getLevelMappingDetail(Id)
+	editItemDetails = (Id, levelType) => {
+		this.props.getLevelMappingDetail(Id, levelType)
 	}
 
 	/**
@@ -92,7 +99,21 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility, DeleteAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cell)} />}
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cell, 'Costing')} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
+			</>
+		)
+	}
+
+	/**
+	* @method simulationButtonFormatter
+	* @description Renders buttons
+	*/
+	simulationButtonFormatter = (cell, row, enumObject, rowIndex) => {
+		const { EditAccessibility, DeleteAccessibility } = this.props;
+		return (
+			<>
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cell, 'Simulation')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -127,7 +148,6 @@ class LevelTechnologyListing extends Component {
 		};
 		return (
 			<>
-				{/* {this.props.loading && <Loader />} */}
 				<Row className="levellisting-page">
 					<Col md="6">
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
@@ -160,6 +180,39 @@ class LevelTechnologyListing extends Component {
 						</BootstrapTable>
 					</Col>
 				</Row>
+
+				<Row className="levellisting-page mt20">
+					<Col md="6">
+						<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
+					</Col>
+					<Col md="6" className="text-right">
+						{/* {AddAccessibility && <button
+							type="button"
+							className={'user-btn'}
+							onClick={this.props.mappingToggler}>
+							<div className={'plus'}></div>
+							{'Add'}</button>} */}
+					</Col>
+
+					<Col className="level-table">
+						<BootstrapTable
+							data={this.props.simulationLevelDataList}
+							striped={false}
+							bordered={false}
+							hover={false}
+							options={options}
+							//search
+							ignoreSinglePage
+							ref={'table'}
+							trClassName={'userlisting-row'}
+							tableHeaderClass='my-custom-header'
+							pagination>
+							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
+							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
+							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.simulationButtonFormatter}>Actions</TableHeaderColumn>
+						</BootstrapTable>
+					</Col>
+				</Row>
 			</>
 		);
 	}
@@ -171,9 +224,9 @@ class LevelTechnologyListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { loading, levelMappingList } = auth;
+	const { loading, levelMappingList, simulationLevelDataList } = auth;
 
-	return { loading, levelMappingList };
+	return { loading, levelMappingList, simulationLevelDataList };
 }
 
 
@@ -181,5 +234,6 @@ export default connect(mapStateToProps,
 	{
 		getAllLevelMappingAPI,
 		deleteUserLevelAPI,
+		getSimulationLevelDataList,
 	})(LevelTechnologyListing);
 

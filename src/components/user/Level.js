@@ -10,7 +10,6 @@ import {
   addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI,
   setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
   getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList,
-  addSimulationLevel, updateSimulationLevel, getSimulationLevel,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { loggedInUserId } from "../../helper/auth";
@@ -124,7 +123,6 @@ class Level extends Component {
   */
   searchableSelectType = (label) => {
     const { technologyList, levelList, simulationTechnologyList } = this.props;
-    console.log(this.state.levelType, "this.state.levelType");
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -480,25 +478,23 @@ class Level extends Component {
                   {/* *********************************THIS IS LEVEL MAPPING FORM*************************************************** */}
                   {this.props.isShowMappingForm &&
                     <>
-                      <Row>
+                      <Row className="pl-3">
                         <Col md="12">
-                          <Label className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                             <input
                               type="radio"
                               name="levelType"
                               checked={this.state.levelType === 'Costing' ? true : false}
                               onClick={() => this.onPressRadioLevel('Costing')}
-                              disabled={this.props.isEditFlag}
                             />{' '}
                             <span>Costing Level</span>
                           </Label>
-                          <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                             <input
                               type="radio"
                               name="levelType"
                               checked={this.state.levelType === 'Simulation' ? true : false}
                               onClick={() => this.onPressRadioLevel('Simulation')}
-                              disabled={this.props.isEditFlag}
                             />{' '}
                             <span>Simulation Level</span>
                           </Label>
@@ -509,7 +505,7 @@ class Level extends Component {
                           <Field
                             name="TechnologyId"
                             type="text"
-                            label="Technology/Heads"
+                            label="Technology"
                             className="w-100"
                             component={searchableSelect}
                             options={this.searchableSelectType('technology')}
@@ -612,9 +608,6 @@ export default connect(mapStateToProps, {
   getLevelMappingAPI,
   updateLevelMappingAPI,
   getSimulationTechnologySelectList,
-  addSimulationLevel,
-  updateSimulationLevel,
-  getSimulationLevel,
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,
