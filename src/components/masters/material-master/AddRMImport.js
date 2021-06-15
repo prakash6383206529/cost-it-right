@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -26,7 +26,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC } from '../../../config/constants';
+import { FILE_URL, INR, SHEET_METAL, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
@@ -90,7 +90,8 @@ class AddRMImport extends Component {
       isDateChange: false,
       isSourceChange: false,
       source: '',
-      showWarning: false
+      showWarning: false,
+      showExtraCost: false
     }
   }
 
@@ -196,7 +197,12 @@ class AddRMImport extends Component {
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
-    this.setState({ Technology: newValue })
+    if (newValue.label === SHEET_METAL) {
+      this.setState({ Technology: newValue, showExtraCost: true })
+    } else {
+      this.setState({ Technology: newValue, showExtraCost: false })
+
+    }
   }
 
   /**
@@ -406,8 +412,8 @@ class AddRMImport extends Component {
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
                 this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
                 this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-                // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-                // this.props.change('NetLandedCost')
+                this.props.change('JaliScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')
+                this.props.change('CircleScrapCost', Data.ScrapRate)
 
                 this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
                 this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
@@ -453,7 +459,7 @@ class AddRMImport extends Component {
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
                   // FreightCharge:Data.FreightCharge
                   netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
-
+                  showExtraCost: technologyObj.Text === SHEET_METAL ? true : false,
                 }, () => this.setState({ isLoader: false }))
               }, 200);
             });
@@ -895,7 +901,7 @@ class AddRMImport extends Component {
         SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
@@ -907,7 +913,8 @@ class AddRMImport extends Component {
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
-        RawMaterialCode: values.Code
+        RawMaterialCode: values.Code,
+        JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -968,7 +975,7 @@ class AddRMImport extends Component {
         SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -984,7 +991,8 @@ class AddRMImport extends Component {
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
-        RawMaterialCode: values.Code
+        RawMaterialCode: values.Code,
+        JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -1477,27 +1485,31 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
-                              name={"ScrapRate"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
-                              required={true}
-                              className=""
-                              maxLength="15"
-                              customClassName=" withBorder"
-                            />
-                          </Col>
+                          {
+                            !this.state.showExtraCost &&
+                            <Col md="4">
+                              <Field
+                                label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                name={"ScrapRate"}
+                                type="text"
+                                placeholder={"Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName=" withBorder"
+                                maxLength="15"
+                              />
+                            </Col>
+                          }
+
                           <Col md="4">
                             <Field
                               label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1511,7 +1523,7 @@ class AddRMImport extends Component {
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1519,6 +1531,39 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+                          {
+                            this.state.showExtraCost &&
+                            <>
+                              <Col md="4">
+                                <Field
+                                  label={`Jali Scrap Cost  (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label}) `}
+                                  name={"JaliScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={false}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              <Col md="4">
+                                <Field
+                                  label={`Circle Scrap Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                  name={"CircleScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[required, maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                            </>
+                          }
                           <Col md="4">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
