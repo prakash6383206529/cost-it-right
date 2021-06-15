@@ -749,6 +749,62 @@ export function deleteUserLevelAPI(Id, callback) {
 }
 
 /**
+ * @method addSimulationLevel
+ * @description ADD SIMULATION LEVEL
+ */
+export function addSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updateSimulationLevel
+ * @description UPDATE SIMULATION LEVEL
+ */
+export function updateSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        axios.put(API.updateSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getSimulationLevel
+ * @description GET SIMULATION LEVEL
+ */
+export function getSimulationLevel(LevelId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method assignUserLevelAPI
  * @description assign level of users
  */
@@ -852,6 +908,29 @@ export function getAllLevelMappingAPI(callback) {
 }
 
 /**
+ * @method getSimulationLevelDataList
+ * @description GET SIMULATION LEVEL DATALIST
+ */
+export function getSimulationLevelDataList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevelDataList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: SIMULATION_LEVEL_DATALIST_API,
+                    payload: response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method fetchPlantDataAPI
  * @description Used to fetch plant list
  */
@@ -877,7 +956,31 @@ export function getAllTechnologyAPI(callback) {
     };
 }
 
-
+/**
+ * @method getSimulationTechnologySelectList
+ * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
+ */
+export function getSimulationTechnologySelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSimulationTechnologySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
 
 /**
  * @method createPrivilegePage
