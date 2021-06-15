@@ -54,7 +54,9 @@ class AddOperation extends Component {
       isOpenUOM: false,
       OperationId: '',
       effectiveDate: '',
-      destinationPlant: []
+      destinationPlant: [],
+      changeValue: true,
+      dataToChange: ''
     }
   }
 
@@ -222,6 +224,7 @@ class AddOperation extends Component {
   */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+
       this.setState({ UOM: newValue, })
     } else {
       this.setState({ UOM: [] })
@@ -322,7 +325,8 @@ class AddOperation extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
-              destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
+              destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+              dataToChange: Data
             })
           }, 500)
 
@@ -446,7 +450,7 @@ class AddOperation extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
@@ -484,6 +488,10 @@ class AddOperation extends Component {
         IsForcefulUpdated: true
       }
       if (this.state.isEditFlag) {
+        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate)) {
+          this.cancel()
+          return false
+        }
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()

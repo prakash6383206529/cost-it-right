@@ -938,7 +938,7 @@ class AddRMImport extends Component {
             }
           })
         } else {
-          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark && Number(DataToChange.cutOffPrice) === values.cutOffPrice) {
+          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
             this.cancel()
             return false
           }

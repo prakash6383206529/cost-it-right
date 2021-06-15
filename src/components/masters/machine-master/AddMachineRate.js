@@ -580,6 +580,9 @@ class AddMachineRate extends Component {
     }
 
     let tempData = processGrid[processGridEditIndex];
+    if (MachineRate !== tempData.MachineRate || UOM.value !== tempData.UnitOfMeasurementId || processName.value !== tempData.ProcessId) {
+      this.setState({ DropdownChange: false })
+    }
     tempData = {
       processName: processName.label,
       ProcessId: processName.value,
@@ -596,6 +599,7 @@ class AddMachineRate extends Component {
       UOM: [],
       processGridEditIndex: '',
       isEditIndex: false,
+
     }, () => this.props.change('MachineRate', 0));
   };
 
@@ -626,7 +630,7 @@ class AddMachineRate extends Component {
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
     }, () => this.props.change('MachineRate', tempData.MachineRate))
-    this.setState({ DropdownChange: false })
+    // this.setState({ DropdownChange: false })
   }
 
   /**
@@ -776,7 +780,8 @@ class AddMachineRate extends Component {
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-    const a = this.state.Data
+    console.log('DropdownChange: ', DropdownChange);
+
 
     if (isViewFlag) {
       this.cancel();
@@ -834,6 +839,10 @@ class AddMachineRate extends Component {
           EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         }
         if (isEditFlag) {
+          if (DropdownChange) {
+            this.cancel();
+            return false
+          }
           const toastrConfirmOptions = {
             onOk: () => {
               this.props.reset()
