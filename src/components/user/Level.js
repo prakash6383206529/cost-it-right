@@ -325,12 +325,11 @@ class Level extends Component {
         if (this.state.levelType === 'Simulation') {
           // UPDATE SIMULATION LEVEL
           let formReq = {
-            LevelId: LevelId,
-            IsActive: true,
-            CreatedDate: '',
-            LevelName: values.LevelName,
-            Description: values.Description,
-            Sequence: values.Sequence,
+            TechnologyId: technology.value,
+            LevelId: level.value,
+            Technology: technology.value,
+            Level: level.label,
+            ModifiedBy: loggedInUserId()
           }
 
           this.props.updateSimulationLevel(formReq, (res) => {
