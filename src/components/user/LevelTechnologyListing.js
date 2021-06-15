@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-	Container, Row, Col, Button, Table
-} from 'reactstrap';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
@@ -52,6 +50,7 @@ class LevelTechnologyListing extends Component {
 	*/
 	getUpdatedData = () => {
 		this.getLevelsListData()
+		this.getSimulationDataList()
 	}
 
 	/**
@@ -139,11 +138,10 @@ class LevelTechnologyListing extends Component {
 			firstPage: <span className="first-page-pg"></span>, // First page button text
 			lastPage: <span className="last-page-pg"></span>,
 			pagination: true,
-			sizePerPageList: [{
-				text: '5', value: 5
-			}, {
-				text: '10', value: 10
-			}],
+			sizePerPageList: [
+				{ text: '5', value: 5 },
+				{ text: '10', value: 10 }
+			],
 			sizePerPage: 5,
 		};
 		return (
@@ -176,7 +174,7 @@ class LevelTechnologyListing extends Component {
 							pagination>
 							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
 							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 						</BootstrapTable>
 					</Col>
 				</Row>

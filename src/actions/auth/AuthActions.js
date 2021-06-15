@@ -748,6 +748,62 @@ export function deleteUserLevelAPI(Id, callback) {
 }
 
 /**
+ * @method addSimulationLevel
+ * @description ADD SIMULATION LEVEL
+ */
+export function addSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updateSimulationLevel
+ * @description UPDATE SIMULATION LEVEL
+ */
+export function updateSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        axios.put(API.updateSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getSimulationLevel
+ * @description GET SIMULATION LEVEL
+ */
+export function getSimulationLevel(LevelId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method assignUserLevelAPI
  * @description assign level of users
  */
@@ -856,7 +912,6 @@ export function getAllLevelMappingAPI(callback) {
  */
 export function getSimulationLevelDataList(callback) {
     return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getSimulationLevelDataList}`, headers);
         request.then((response) => {
             if (response.data.Result) {

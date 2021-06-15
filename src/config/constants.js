@@ -609,12 +609,16 @@ export const API = {
   updateUserLevelAPI: `${BASE_URL}/user-level/update`,
   deleteUserLevelAPI: `${BASE_URL}/user-level/delete`,
 
+  addSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/create`,
+  updateSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/update`,
+  getSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get`,
+
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
   getLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get`,
   getAllLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get-all`,
   updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
-  getSimulationLevelDataList: `${BASE_URL}/`,
+  getSimulationLevelDataList: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get-all`,
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-vendor`,

@@ -10,6 +10,7 @@ import {
   addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI,
   setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
   getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList,
+  addSimulationLevel, updateSimulationLevel, getSimulationLevel,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { loggedInUserId } from "../../helper/auth";
@@ -66,28 +67,50 @@ class Level extends Component {
   * @description used to get level detail
   */
   getLevelMappingDetail = () => {
-    const { isShowMappingForm, isEditFlag, LevelId } = this.props;
-    if (isEditFlag && isShowMappingForm) {
-      //$('html, body').animate({ scrollTop: 200 }, 'slow');
+    const { isShowMappingForm, isEditFlag, LevelId, isEditedlevelType } = this.props;
+
+    // WHEN COSTING LEVEL DETAILS GET
+    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Costing') {
       this.props.getLevelMappingAPI(LevelId, (res) => {
         const { technologyList, levelList } = this.props;
 
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
-
           setTimeout(() => {
-
             let technologyObj = technologyList && technologyList.filter(item => Number(item.Value) === Data.TechnologyId)
-
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
-
             this.setState({
               isEditMappingFlag: true,
               LevelId: LevelId,
               isShowTechnologyForm: true,
               technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              levelType: isEditedlevelType,
+            })
+          }, 500)
+        }
+      })
+    }
+
+    // WHEN SIMULATION LEVEL DETAILS GET
+    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Simulation') {
+      this.props.getSimulationLevel(LevelId, (res) => {
+        const { simulationTechnologyList, levelList } = this.props;
+
+        if (res && res.data && res.data.Data) {
+          let Data = res.data.Data;
+
+          setTimeout(() => {
+            let technologyObj = simulationTechnologyList && simulationTechnologyList.filter(item => Number(item.Value) === Data.TechnologyId)
+            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
+            this.setState({
+              isEditMappingFlag: true,
+              LevelId: LevelId,
+              isShowTechnologyForm: true,
+              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
+              level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              levelType: isEditedlevelType,
             })
           }, 500)
         }
@@ -239,7 +262,6 @@ class Level extends Component {
 
     if (isShowForm) {
       if (isEditFlag) {
-        // Update existing level
 
         let formReq = {
           LevelId: LevelId,
@@ -257,66 +279,108 @@ class Level extends Component {
           this.toggleDrawer('')
           reset();
           this.setState({ isLoader: false, })
-          //this.child.getUpdatedData();
         })
+
       } else {
-        // Add new level
+
         this.props.addUserLevelAPI(values, (res) => {
           if (res && res.data && res.data.Result) {
             toastr.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
           }
           this.toggleDrawer('')
-          //this.child.getUpdatedData();
           reset();
           this.setState({ isLoader: false })
         })
       }
+
     }
 
     if (isShowMappingForm) {
       if (isEditFlag) {
-        // Update existing level
 
-        let formReq = {
-          TechnologyId: technology.value,
-          LevelId: level.value,
-          Technology: technology.value,
-          Level: level.label,
-          ModifiedBy: loggedInUserId()
+        if (this.state.levelType === 'Costing') {
+          // UPDATE COSTING LEVEL
+          let formReq = {
+            TechnologyId: technology.value,
+            LevelId: level.value,
+            Technology: technology.value,
+            Level: level.label,
+            ModifiedBy: loggedInUserId()
+          }
+
+          this.props.updateLevelMappingAPI(formReq, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              reset();
+              this.setState({
+                isLoader: false,
+                technology: [],
+                level: [],
+              })
+              this.toggleDrawer('')
+            }
+          })
         }
 
-        this.props.updateLevelMappingAPI(formReq, (res) => {
-          if (res && res.data && res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
-            reset();
-            this.setState({
-              isLoader: false,
-              technology: [],
-              level: [],
-            })
-            this.toggleDrawer('')
-            //this.childMapping.getUpdatedData();
+        if (this.state.levelType === 'Simulation') {
+          // UPDATE SIMULATION LEVEL
+          let formReq = {
+            LevelId: LevelId,
+            IsActive: true,
+            CreatedDate: '',
+            LevelName: values.LevelName,
+            Description: values.Description,
+            Sequence: values.Sequence,
           }
-        })
+
+          this.props.updateSimulationLevel(formReq, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+            }
+            this.toggleDrawer('')
+            reset();
+            this.setState({ isLoader: false, })
+          })
+        }
+
       } else {
 
         let formData = {
           LevelId: level.value,
           TechnologyId: technology.value,
         }
-        this.props.setApprovalLevelForTechnology(formData, (res) => {
-          if (res && res.data && res.data.Result) {
-            toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
-          }
-          this.props.reset();
-          this.setState({
-            isLoader: false,
-            technology: [],
-            level: [],
+
+        if (this.state.levelType === 'Costing') {
+          this.props.setApprovalLevelForTechnology(formData, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+            }
+            this.props.reset();
+            this.setState({
+              isLoader: false,
+              technology: [],
+              level: [],
+            })
+            this.toggleDrawer('')
           })
-          this.toggleDrawer('')
-          //this.childMapping.getUpdatedData();
-        })
+        }
+
+        if (this.state.levelType === 'Simulation') {
+          // ADD SIMULATION NEW LEVEL
+          this.props.addSimulationLevel(formData, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+            }
+            this.props.reset();
+            this.setState({
+              isLoader: false,
+              technology: [],
+              level: [],
+            })
+            this.toggleDrawer('')
+          })
+        }
+
       }
     }
 
@@ -424,6 +488,7 @@ class Level extends Component {
                               name="levelType"
                               checked={this.state.levelType === 'Costing' ? true : false}
                               onClick={() => this.onPressRadioLevel('Costing')}
+                              disabled={this.props.isEditFlag}
                             />{' '}
                             <span>Costing Level</span>
                           </Label>
@@ -433,6 +498,7 @@ class Level extends Component {
                               name="levelType"
                               checked={this.state.levelType === 'Simulation' ? true : false}
                               onClick={() => this.onPressRadioLevel('Simulation')}
+                              disabled={this.props.isEditFlag}
                             />{' '}
                             <span>Simulation Level</span>
                           </Label>
@@ -546,6 +612,9 @@ export default connect(mapStateToProps, {
   getLevelMappingAPI,
   updateLevelMappingAPI,
   getSimulationTechnologySelectList,
+  addSimulationLevel,
+  updateSimulationLevel,
+  getSimulationLevel,
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,
