@@ -6,7 +6,7 @@ import {
     GET_USER_UNIT_DATA_SUCCESS, GET_UNIT_ROLE_DATA_SUCCESS, GET_UNIT_DEPARTMENT_DATA_SUCCESS, GET_UNIT_LEVEL_DATA_SUCCESS, GET_ROLES_SELECTLIST_SUCCESS,
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
-    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API
+    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, SIMULATION_LEVEL_DATALIST_API
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -747,6 +747,62 @@ export function deleteUserLevelAPI(Id, callback) {
 }
 
 /**
+ * @method addSimulationLevel
+ * @description ADD SIMULATION LEVEL
+ */
+export function addSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updateSimulationLevel
+ * @description UPDATE SIMULATION LEVEL
+ */
+export function updateSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        axios.put(API.updateSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getSimulationLevel
+ * @description GET SIMULATION LEVEL
+ */
+export function getSimulationLevel(LevelId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method assignUserLevelAPI
  * @description assign level of users
  */
@@ -837,6 +893,29 @@ export function getAllLevelMappingAPI(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: LEVEL_MAPPING_API,
+                    payload: response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSimulationLevelDataList
+ * @description GET SIMULATION LEVEL DATALIST
+ */
+export function getSimulationLevelDataList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevelDataList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: SIMULATION_LEVEL_DATALIST_API,
                     payload: response.data.DataList
                 })
                 callback(response);
