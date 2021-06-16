@@ -944,14 +944,7 @@ function OverheadProfit(props) {
           setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
           setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
           setInventoryObj(Data)
-          if (IsIncludedSurfaceInOverheadProfit) {
-            setIsSurfaceTreatmentAdded(false)
-            setTimeout(() => {
-              IncludeSurfaceTreatmentCall()
-            }, 200)
-          } else {
-            checkInventoryApplicability(Data.ICCApplicability)
-          }
+          checkInventoryApplicability(Data.ICCApplicability)
 
         } else if (res && res.status === 204) {
           setValue('InterestRatePercentage', '')
