@@ -351,7 +351,7 @@ function CostingSimulation(props) {
                             <button
                                 type="button"
                                 className="user-btn mr5 save-btn"
-                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                //disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
                                 onClick={onSaveSimulation}>
                                 <div className={"check-icon"}>
                                     <img
