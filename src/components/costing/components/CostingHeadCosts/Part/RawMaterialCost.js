@@ -735,6 +735,7 @@ function RawMaterialCost(props) {
                       {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "220px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "220px" }}>{`Finish Weight`}</th>
+                      <th style={{ width: "220px" }}>{`Scrap Weight`}</th>
                       <th style={{ width: "220px" }}>{`Net RM Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
@@ -811,6 +812,7 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
+                            <td>{checkForDecimalAndNull(item.GrossWeight - item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
