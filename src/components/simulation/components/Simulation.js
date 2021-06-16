@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
@@ -56,6 +56,7 @@ function Simulation(props) {
 
     const handleTechnologyChange = (value) => {
         setTechnology(value)
+        dispatch(setTechnologyForSimulation(value))
         if (value !== '' && Object.keys(master).length > 0) {
             setShowMasterList(true)
         }
@@ -222,7 +223,7 @@ function Simulation(props) {
 
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
-                            
+
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">
@@ -261,7 +262,7 @@ function Simulation(props) {
                                         errors={errors.Masters}
                                     />
                                 </div>
-                        </div>
+                            </div>
                         </Col>
                     </Row>
                     {/* <RMDomesticListing isSimulation={true} /> */}
