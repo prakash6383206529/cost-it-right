@@ -88,7 +88,6 @@ function VerifySimulation(props) {
         return <>New <br />Scrap Rate</>
     }
 
-
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -125,9 +124,8 @@ function VerifySimulation(props) {
         }
     }
 
-    const renderDropdownListing = (label) => {
+    const renderDropdownListing = (label) => { }
 
-    }
     const selectRowProp = {
         mode: 'checkbox',
         clickToSelect: true,
@@ -151,20 +149,26 @@ function VerifySimulation(props) {
             toastr.warning('Please select atleast one costing.')
             return false
         }
+
         let obj = {};
         obj.SimulationId = simulationId
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
+
         selectedRowData && selectedRowData.map(item => {
             let tempObj = {}
             tempObj.RawMaterialId = item.RawMaterialId
-            tempObj.CostingId = item.BaseCostingId
+            tempObj.CostingId = item.CostingId
             tempArr.push(tempObj)
+            return null;
         })
+
         obj.RunSimualtionCostingInfo = tempArr
         setObj(obj)
         setSimulationDrawer(true)
+
     }
+
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {
             setSimulationDrawer(false)
@@ -172,8 +176,8 @@ function VerifySimulation(props) {
         } else {
             setSimulationDrawer(false)
         }
-
     }
+
     return (
         <>
             {
@@ -276,8 +280,8 @@ function VerifySimulation(props) {
                                 selectRow={selectRowProp}
                                 className="add-volume-table"
                                 pagination>
-                                <TableHeaderColumn dataField="BaseCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Number'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>

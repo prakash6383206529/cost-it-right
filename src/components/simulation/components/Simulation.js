@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
@@ -37,7 +37,6 @@ function Simulation(props) {
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
-    const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -58,6 +57,7 @@ function Simulation(props) {
 
     const handleTechnologyChange = (value) => {
         setTechnology(value)
+        dispatch(setTechnologyForSimulation(value))
         if (value !== '' && Object.keys(master).length > 0) {
             setShowMasterList(true)
         }

@@ -13,7 +13,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function RMSimulation(props) {
     const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -28,15 +28,19 @@ function RMSimulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const dispatch = useDispatch()
+
+    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
+
     useEffect(() => {
         setValue('NoOfCorrectRow', rowCount.correctRow)
         setValue('NoOfInCorrectRow', rowCount.incorrectRow)
     }, [])
-    const dispatch = useDispatch()
 
     const verifySimulation = () => {
         let basicRateCount = 0
         let basicScrapCount = 0
+
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
@@ -45,15 +49,19 @@ function RMSimulation(props) {
             if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
                 basicScrapCount = basicScrapCount + 1
             }
+            return null;
         })
+
         if (basicRateCount === list.length && basicScrapCount === list.length) {
             toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
+
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.Technology = technology
+        obj.SimulationTechnologyId = selectedTechnologyForSimulation.value
         obj.Vendor = list[0].VendorName
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()

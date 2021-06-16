@@ -9,6 +9,7 @@ import {
     GET_SIMULATION_APPROVAL_LIST,
     SET_SELECTED_MASTER_SIMULATION,
     GET_SELECTLIST_APPLICABILITY_HEAD,
+    SET_SELECTED_TECHNOLOGY_SIMULATION,
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -18,124 +19,114 @@ import { toastr } from 'react-redux-toastr'
 const headers = config
 
 export function getSelectListOfMasters(callback) {
-    let JSON = {
-        status: 200,
-        data: {
-            SelectList: [
+    // let JSON = {
+    //     status: 200,
+    //     data: {
+    //         SelectList: [
 
-                {
-                    Disabled: false,
-                    Group: null,
-                    Selected: false,
-                    Text: "Raw Material(Domestic)",
-                    Value: "f9e158eb-f506-4f63-bc56-42cae12ec6bd"
-                },
-                {
-                    Disabled: false,
-                    Group: null,
-                    Selected: false,
-                    Text: "Raw Material(Import)",
-                    Value: "0d635de3-8c83-493d-b446-8b3e1f6ed4d0"
-                },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "BOP (Domestic)",
-                //     Value: "abddb973-b5ea-42ad-b99a-e60674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "BOP (Import)",
-                //     Value: "abddb973-b5ea-42ad-b99a-e60673c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "Process",
-                //     Value: "abddb972-b5ea-42ad-b99a-e60674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "Operation",
-                //     Value: "abbdb973-b5ea-42ad-b99a-e60674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: " Surface Treatment",
-                //     Value: "abddb973-b5ea-42ad-b99a-e61674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "Overhead",
-                //     Value: "bbddb973-b5ea-42ad-b99a-e60674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "Profits",
-                //     Value: "abdda873-b5ea-42ad-b99a-e60674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "ICC",
-                //     Value: "abdda873-b5ea-42ad-b1000a-e60674c40e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "Payment Terms",
-                //     Value: "abdda873-b5ea-42ad-b99a-e60674c500e28"
-                // },
-                // {
-                //     Disabled: false,
-                //     Group: null,
-                //     Selected: false,
-                //     Text: "Freight",
-                //     Value: "abdda873-b5ea-42dd-b99a-e60674c40e28"
-                // },
-            ],
-        },
-    }
-
-
+    //             {
+    //                 Disabled: false,
+    //                 Group: null,
+    //                 Selected: false,
+    //                 Text: "Raw Material(Domestic)",
+    //                 Value: "f9e158eb-f506-4f63-bc56-42cae12ec6bd"
+    //             },
+    //             {
+    //                 Disabled: false,
+    //                 Group: null,
+    //                 Selected: false,
+    //                 Text: "Raw Material(Import)",
+    //                 Value: "0d635de3-8c83-493d-b446-8b3e1f6ed4d0"
+    //             },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "BOP (Domestic)",
+    //             //     Value: "abddb973-b5ea-42ad-b99a-e60674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "BOP (Import)",
+    //             //     Value: "abddb973-b5ea-42ad-b99a-e60673c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "Process",
+    //             //     Value: "abddb972-b5ea-42ad-b99a-e60674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "Operation",
+    //             //     Value: "abbdb973-b5ea-42ad-b99a-e60674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: " Surface Treatment",
+    //             //     Value: "abddb973-b5ea-42ad-b99a-e61674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "Overhead",
+    //             //     Value: "bbddb973-b5ea-42ad-b99a-e60674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "Profits",
+    //             //     Value: "abdda873-b5ea-42ad-b99a-e60674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "ICC",
+    //             //     Value: "abdda873-b5ea-42ad-b1000a-e60674c40e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "Payment Terms",
+    //             //     Value: "abdda873-b5ea-42ad-b99a-e60674c500e28"
+    //             // },
+    //             // {
+    //             //     Disabled: false,
+    //             //     Group: null,
+    //             //     Selected: false,
+    //             //     Text: "Freight",
+    //             //     Value: "abdda873-b5ea-42dd-b99a-e60674c40e28"
+    //             // },
+    //         ],
+    //     },
+    // }
     return (dispatch) => {
-        dispatch({
-            type: GET_SELECTLIST_MASTERS,
-            payload: JSON.data.SelectList,
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTLIST_MASTERS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
         });
-        // dispatch({ type: API_REQUEST });
-        // const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
-        // request.then((response) => {
-        //     if (response.data.Result) {
-        //         dispatch({
-        //             type: GET_SELECTLIST_MASTERS,
-        //             payload: JSON.data.SelectList,
-        //         });
-        //         //     dispatch({
-        //         //     type: GET_BULKUPLOAD_COSTING_LIST,
-        //         //     payload: response.data.DataList,
-        //         // });
-        //         callback(response);
-        //     }
-        // }).catch((error) => {
-        //     dispatch({ type: API_FAILURE });
-        //     callback(error);
-        //     apiErrors(error);
-        // });
     };
 }
 
@@ -205,70 +196,22 @@ export function runSimulationOnSelectedCosting(data, callback) {
 }
 
 export function getSimulationApprovalList(filterData, callback) {
-    let JSON = {
-        status: 200,
-        data: {
-            DataList: [
-                {
-                    TokenNumber: 1234,
-                    NoOfCosting: '2',
-                    SimulatedBy: 'Samartha',
-                    SimulatedOn: '25/05/2020 12:00PM',
-                    RequestedBy: 'Charlie',
-                    RequestedOn: '25/04/2020 12:00PM',
-                    DisplayStatus: 'Draft'
-                },
-                {
-                    TokenNumber: 1235,
-                    NoOfCosting: '4',
-                    SimulatedBy: 'Jay',
-                    SimulatedOn: '25/05/2020 12:00PM',
-                    RequestedBy: 'Robert',
-                    RequestedOn: '25/04/2020 12:00PM',
-                    DisplayStatus: 'Draft'
-                },
-                {
-                    TokenNumber: 1236,
-                    NoOfCosting: '1',
-                    SimulatedBy: 'SD',
-                    SimulatedOn: '25/05/2020 12:00PM',
-                    RequestedBy: 'MR',
-                    RequestedOn: '25/04/2020 12:00PM',
-                    DisplayStatus: 'Draft'
-                },
-            ],
-        },
-    }
-
-
     return (dispatch) => {
-
-        dispatch({
-            type: GET_SIMULATION_APPROVAL_LIST,
-            payload: JSON.data.DataList,
-        });
-        callback(JSON);
+        const queryParameter = `logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
+        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_APPROVAL_LIST,
+                    payload: response.data.DataList,
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
     }
-    // return (dispatch) => {
-    //     const queryParameter = `logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
-    //     const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
-    //     request
-    //       .then((response) => {
-    //         if (response.data.Result) {
-    //           dispatch({
-    //             type: GET_SIMULATION_APPROVAL_LIST,
-    //             payload: response.data.DataList,
-    //           })
-    //           callback(response)
-    //         } else {
-    //           toastr.error(MESSAGES.SOME_ERROR)
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         dispatch({ type: API_FAILURE })
-    //         apiErrors(error)
-    //       })
-    //   }
 }
 
 export function setMasterForSimulation(selectedMaster) {
@@ -276,6 +219,15 @@ export function setMasterForSimulation(selectedMaster) {
         dispatch({
             type: SET_SELECTED_MASTER_SIMULATION,
             payload: selectedMaster,
+        });
+    }
+}
+
+export function setTechnologyForSimulation(selectedTechnology) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_TECHNOLOGY_SIMULATION,
+            payload: selectedTechnology,
         });
     }
 }
@@ -295,6 +247,20 @@ export function getSelectListOfSimulationApplicability(callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function saveSimulationForRawMaterial(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveSimulationForRawMaterial, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
