@@ -480,9 +480,9 @@ class Level extends Component {
                   {/* *********************************THIS IS LEVEL MAPPING FORM*************************************************** */}
                   {this.props.isShowMappingForm &&
                     <>
-                      <Row className="pl-3">
+                      <Row>
                         <Col md="12">
-                          <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                          <Label  className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -492,7 +492,7 @@ class Level extends Component {
                             />{' '}
                             <span>Costing Level</span>
                           </Label>
-                          <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                          <Label  className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
