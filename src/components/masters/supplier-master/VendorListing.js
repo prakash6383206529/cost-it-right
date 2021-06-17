@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
     getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
@@ -399,8 +399,22 @@ class VendorListing extends Component {
     * @desc Submit the signup form values.
     * @returns {{}}
     */
+   
     onSubmit(values) {
     }
+
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.supplierDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
     /**
     * @method render
     * @description Renders the component
@@ -408,11 +422,12 @@ class VendorListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
+            exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -423,7 +438,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className="container-fluid">
+            <div className="container-fluid show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -546,7 +561,8 @@ class VendorListing extends Component {
                     options={options}
                     className={"mr15 pr15"}
                     search
-                    // exportCSV
+                    exportCSV
+                            csvFileName='table-export.csv'
                     //ignoreSinglePage
                     ref={"table"}
                     trClassName={"userlisting-row"}

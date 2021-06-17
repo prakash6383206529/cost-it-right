@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
@@ -343,15 +343,31 @@ class VBCPlantListing extends Component {
     * @method render
     * @description Renders the component
     */
+
+     handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.plantDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      } 
     render() {
         const { handleSubmit, AddAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
+
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
+            exportCSVBtn: this.createCustomExportCSVButton,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -361,7 +377,7 @@ class VBCPlantListing extends Component {
         };
 
         return (
-            <>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -469,7 +485,8 @@ class VBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    // exportCSV
+                    exportCSV
+                    csvFileName='table-export.csv'
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
@@ -492,7 +509,7 @@ class VBCPlantListing extends Component {
                     ID={this.state.ID}
                     anchor={'right'}
                 />}
-            </ >
+            </div>
         );
     }
 }

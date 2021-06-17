@@ -14,7 +14,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import moment from 'moment';
@@ -502,6 +502,19 @@ class RMImportListing extends Component {
 
   }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.rmImportDataList
+    return products; // must return the data which you want to be exported
+  }
+
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -510,18 +523,11 @@ class RMImportListing extends Component {
     const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
     const { isBulkUpload, } = this.state;
 
-    const onExportToCSV = (row) => {
-      // ...
-      let products = []
-      products = this.props.rmImportDataList
-      return products; // must return the data which you want to be exported
-  }
-
     const options = {
       clearSearch: true,
       noDataText: (this.props.rmImportDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
-      onExportToCSV: onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
