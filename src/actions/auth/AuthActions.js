@@ -8,6 +8,7 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
     SIMULATION_LEVEL_DATALIST_API,
+    GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -1526,5 +1527,56 @@ export function updateCompanyAPI(requestData, callback) {
                 apiErrors(error);
                 callback(error);
             });
+    };
+}
+
+export function getSimualationLevelByTechnology(technologyId, callback) {
+    return (dispatch) => {
+        if (technologyId !== '') {
+            //dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+                payload: [],
+            });
+            callback();
+
+        }
+    };
+}
+/**
+* @method getUsersSimulationTechnologyLevelAPI
+* @description get User's technology level
+*/
+export function getUsersSimulationTechnologyLevelAPI(UserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}`, headers);
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            if (response && response.data && response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
