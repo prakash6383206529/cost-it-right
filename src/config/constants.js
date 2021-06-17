@@ -813,7 +813,7 @@ export const API = {
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
 
   //REPORT
-  getReportListing: `${BASE_URL}/report/get-report-listing`,
+  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
 }
 

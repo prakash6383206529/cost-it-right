@@ -3,92 +3,58 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    GET_REPORT_LIST
+    GET_REPORT_LIST,config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr'
 
-const headers = {
-    'Content-Type': 'application/json',
-    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+const headers = config
 
-export function getReportListing(data, callback) {
-    let JSON = {
-        status: 200,
-        data: {
-            DataList: [
-                {
-                    TokenNumber: 1234,
-                    CostingStatus: 'PendingForApproval',
-                    DisplayCostingStatus: 'Pending For Approval',
-                    CostingHead: 'ZBC',
-                    Technology: 'Sheet Metal',
-                    VendorName: '-',
-                    ImpactCosting: 5,
-                    ImpactParts: 2,
-                    SimulatedBy: 'Ram Sharma',
-                    SimulatedOn: '25/05/2020 12:00PM',
-                    ApprovedBy: 'Kamal Saxena',
-                    ApprovedOn: '20/05/2020 12:00PM'
-                },
-                {
-                    TokenNumber: 1567,
-                    CostingStatus: 'Approved',
-                    DisplayCostingStatus: 'Approved',
-                    CostingHead: 'VBC',
-                    Technology: 'Plastic',
-                    VendorName: 'Vivo-V1',
-                    ImpactCosting: 6,
-                    ImpactParts: 2,
-                    SimulatedBy: 'Mahak Rawat',
-                    SimulatedOn: '25/05/2020 12:00PM',
-                    ApprovedBy: 'Kamal Saxena',
-                    ApprovedOn: '20/05/2020 12:00PM'
-                },
-                {
-                    TokenNumber: 1234,
-                    CostingStatus: 'History',
-                    DisplayCostingStatus: 'History',
-                    CostingHead: 'VBC',
-                    Technology: 'Forging',
-                    VendorName: 'AP-Automobile',
-                    ImpactCosting: 5,
-                    ImpactParts: 1,
-                    SimulatedBy: 'Shayam Sharms',
-                    SimulatedOn: '25/05/2020 12:00PM',
-                    ApprovedBy: 'Harish Patell',
-                    ApprovedOn: '20/05/2020 12:00PM'
-                },
-            ],
-        },
-    }
+// export function getReportListing(data, callback) {
+//     return (dispatch) => {
+//         dispatch({ type: API_REQUEST });
+//         const queryParameter = `logged_in_user_id=${data.loggedUser}&logged_in_user_level_id=${data.logged_in_user_level_id}&part_number=${data.partNo}&created_by=${data.createdBy}&requested_by=${data.requestedBy}&status=${data.status}&type_of_costing=''`
+//         const request = axios.get(`${API.getReportListing}/${queryParameter}`, headers)
+//         console.log(request);
+//         request.then((response) => {
+//             alert(response.data);
+//             console.log(response.data);
+//             if (response.data.Result || response.status === 204) {
+//                 //
+//                 dispatch({
+//                     type: GET_REPORT_LIST,
+//                     payload: response.status === 204 ? [] : response.data.DataList
+//                 })
+//                 callback(response);
+//             }
+//         }).catch((error) => {
+//             dispatch({ type: API_FAILURE, });
+//             apiErrors(error);
+//         });
+//       }
+// }
 
-
+/**
+ * @method getRMImportDataList
+ * @description Used to get RM Import Datalist
+ */
+ export function getReportListing(data, callback) {
     return (dispatch) => {
-
-        dispatch({
-            type: GET_REPORT_LIST,
-            payload: JSON.data.DataList,
+        const queryParams = `costingNumber=${data.costingNumber}&toDate=${data.toDate}&fromDate=${data.fromDate}&statusId=${data.statusId}&technologyId=${data.technologyId}&plantCode=${data.plantCode}&vendorCode=${data.vendorCode}&userId=${data.userId}&isSortByOrderAsc=${data.isSortByOrderAsc}`
+        const request = axios.get(`${API.getReportListing}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_REPORT_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
         });
-        // callback(JSON);
-        // callback(JSON)
-        //   dispatch({ type: API_REQUEST });
-        //   const request = axios.get(`${API.getReportListing}`, headers);
-        //   request.then((response) => {
-        //     
-        //     if (response.data.Result) {
-        //       dispatch({
-        //         type: GET_REPORT_LIST,
-        //         payload: response.data.DataList,
-        //       });
-        //       callback(response);
-        //     }
-        //   }).catch((error) => {
-        //     dispatch({ type: API_FAILURE });
-        //     callback(error);
-        //     apiErrors(error);
-        //   });
     };
 }
