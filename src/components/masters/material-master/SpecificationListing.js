@@ -297,10 +297,18 @@ class SpecificationListing extends Component {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
 
+        const onExportToCSV = (row) => {
+            // ...
+            let products = []
+            products = this.props.rmSpecificationList
+            return products; // must return the data which you want to be exported
+        }
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            onExportToCSV: onExportToCSV,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -309,7 +317,7 @@ class SpecificationListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -400,7 +408,8 @@ class SpecificationListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName='table-export.csv'
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
