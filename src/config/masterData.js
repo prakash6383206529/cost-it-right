@@ -1748,6 +1748,7 @@ export const RMImportSimulation = [
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
+
 // Purchasing Group
 export const purchasingGroup = [
     { label: 'A01', value: '1001-Domestic PGrp' },
@@ -2208,3 +2209,16 @@ export const materialGroup = [
     { label: 'M109', value: 'Chemical ,Paints-Imp' },
     { label: 'M110', value: 'Proto Finish Product' },
 ]
+
+
+export const FACING = 'Facing'
+export const DRILLING = 'Drilling'
+export const TURNING = 'Turning'
+export const CHAMFERING = 'Chamfering'
+export const FACEMILING = 'Face Milling'
+export const SIDEFACEMILING = 'Side Face Miling'
+export const SLOTCUTTING = 'Slot Cutting'
+export const CHAMFERINGMILLER = 'Chamfering Miller'
+export const ENDMILL = 'End Mill'
+
+export const getTechnology = [1, 8, 7, 2, 4]

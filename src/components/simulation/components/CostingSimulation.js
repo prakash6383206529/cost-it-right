@@ -8,12 +8,14 @@ import { getRMDomesticDataList } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { getCostingSimulationList, getVerifySimulationList } from '../actions/Simulation';
+import { getCostingSimulationList, getVerifySimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
+import VerifyImpactDrawer from './VerifyImpactDrawer';
+import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 
 function CostingSimulation(props) {
     const { simulationId } = props
@@ -22,6 +24,7 @@ function CostingSimulation(props) {
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
+    const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [id, setId] = useState('')
@@ -42,8 +45,8 @@ function CostingSimulation(props) {
         }))
     }, [])
 
-
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
     const renderVendorName = () => {
         return <>Vendor <br />Name </>
@@ -94,7 +97,6 @@ function CostingSimulation(props) {
         } else {
             setCostingDetailDrawer(false)
         }
-
     }
 
     const viewCosting = (id) => {
@@ -129,13 +131,21 @@ function CostingSimulation(props) {
         }
     }
 
-    const renderDropdownListing = (label) => {
+    const renderDropdownListing = (label) => { }
 
-    }
+    const onSaveSimulation = () => {
+        switch (selectedMasterForSimulation.label) {
+            case RMDOMESTIC:
+                dispatch(saveSimulationForRawMaterial(selectedRowData, () => { }))
+                break;
+            case RMIMPORT:
+                console.log('Called RMDOMESRIC')
+                break;
 
-    const onSaveSiualtion = () => {
-
-        setShowApprovalHistory(true)
+            default:
+                break;
+        }
+        // setShowApprovalHistory(true)
     }
 
     // const onExportToCSV = (onClick) => {
@@ -148,7 +158,6 @@ function CostingSimulation(props) {
         // ...
         let products = []
         products = costingList
-
         return products; // must return the data which you want to be exported
     }
 
@@ -172,12 +181,17 @@ function CostingSimulation(props) {
         lastPage: <span className="last-page-pg"></span>,
     };
 
+    const VerifyImpact = () => {
+        setIsVerifyImpactDrawer(true)
+    }
+
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
     }
 
     const closeDrawer = () => {
-        setIsApprovalDrawer(false)
+        setIsApprovalDrawer(false);
+        setIsVerifyImpactDrawer(false);
     }
 
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
@@ -189,6 +203,7 @@ function CostingSimulation(props) {
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
     const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
@@ -217,7 +232,7 @@ function CostingSimulation(props) {
                                     <h5>{`Filter By:`}</h5>
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -233,7 +248,7 @@ function CostingSimulation(props) {
                                         errors={errors.partNo}
                                     />
                                 </div>
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'plantCode'}
@@ -249,7 +264,7 @@ function CostingSimulation(props) {
                                         errors={errors.plantCode}
                                     />
                                 </div>
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'rawMaterial'}
@@ -266,7 +281,7 @@ function CostingSimulation(props) {
                                     />
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                <div className="flex-fill hide-label">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -325,18 +340,30 @@ function CostingSimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
 
-                            <button class="user-btn approval-btn mr-3" onClick={sendForApproval}>
-                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
+                            <button
+                                class="user-btn approval-btn mr-3"
+                                onClick={sendForApproval}
+                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                            >
+                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')} />
                                 {'Send For Approval'}
                             </button>
-                            <button type="submit" className="user-btn mr5 save-btn" onClick={onSaveSiualtion}>
+                            <button
+                                type="button"
+                                className="user-btn mr5 save-btn"
+                                //disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                onClick={onSaveSimulation}>
                                 <div className={"check-icon"}>
                                     <img
                                         src={require("../../../assests/images/check.png")}
                                         alt="check-icon.jpg"
                                     />
-                                </div>{" "}
+                                </div>
                                 {"Save Simulation"}
+                            </button>
+                            <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                {"Verify Impact "}
                             </button>
                         </div>
                     </Row>
@@ -360,12 +387,21 @@ function CostingSimulation(props) {
                             isSimulation={true}
                         />
                     }
+                    {
+                        isVerifyImpactDrawer &&
+                        <VerifyImpactDrawer
+                            isOpen={isVerifyImpactDrawer}
+                            anchor={'right'}
+                            approvalData={[]}
+                            type={'Approve'}
+                            closeDrawer={closeDrawer}
+                            isSimulation={true}
+                        />
+                    }
                 </div>
             }
-            {
-                showApprovalHistory &&
-                <SimulationHistory />
-            }
+
+            {showApprovalHistory && <SimulationHistory />}
 
             {
                 CostingDetailDrawer &&

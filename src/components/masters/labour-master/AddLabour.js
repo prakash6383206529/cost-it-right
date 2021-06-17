@@ -379,7 +379,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: effectiveDate,
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     })
 
@@ -437,7 +437,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: effectiveDate,
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     }
 

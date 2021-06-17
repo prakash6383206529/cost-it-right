@@ -58,7 +58,7 @@ function AddOperation(props) {
       const data = {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
-        VendorPlantId: costData.VendorPlantId,
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,

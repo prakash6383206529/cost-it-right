@@ -13,7 +13,7 @@ import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { PENDING } from '../../../config/constants'
+import { EMPTY_GUID, PENDING } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList } from '../actions/Simulation'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
@@ -63,19 +63,16 @@ function SimulationApprovalListing(props) {
      * @description getting approval list table
      */
 
-    const getTableData = (
-        partNo = '00000000-0000-0000-0000-000000000000',
-        createdBy = '00000000-0000-0000-0000-000000000000',
-        requestedBy = '00000000-0000-0000-0000-000000000000',
-        status = '00000000-0000-0000-0000-000000000000',
-    ) => {
+    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = EMPTY_GUID,) => {
         let filterData = {
-            loggedUser: loggedUser,
+            logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInLevelId,
-            partNo: partNo,
-            createdBy: createdBy,
+            token_number: '',
+            simulated_by: '',
             requestedBy: requestedBy,
             status: status,
+            // partNo: partNo,
+            // createdBy: createdBy,
         }
 
         dispatch(

@@ -27,7 +27,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import $, { data } from 'jquery'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC } from '../../../config/constants'
+import { FILE_URL, SHEET_METAL, ZBC } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -85,7 +85,8 @@ class AddRMDomestic extends Component {
       DataToChange: [],
       isDateChange: false,
       isSourceChange: false,
-      source: ''
+      source: '',
+      showExtraCost: false
     }
   }
   /**
@@ -197,7 +198,12 @@ class AddRMDomestic extends Component {
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
-    this.setState({ Technology: newValue })
+    if (newValue.label === SHEET_METAL) {
+      this.setState({ Technology: newValue, showExtraCost: true })
+    } else {
+      this.setState({ Technology: newValue, showExtraCost: false })
+
+    }
   }
 
   /**
@@ -365,6 +371,8 @@ class AddRMDomestic extends Component {
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
           this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+          this.props.change('JaliScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')
+          this.props.change('CircleScrapCost', Data.ScrapRate)
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
@@ -416,12 +424,13 @@ class AddRMDomestic extends Component {
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
-                  netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
+                  netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : '',
+                  showExtraCost: technologyObj.Text === SHEET_METAL ? true : false,
                 }, () => this.setState({ isLoader: false }))
               }, 200)
             })
@@ -909,7 +918,7 @@ class AddRMDomestic extends Component {
       BasicRatePerUOM: values.BasicRate,
       RMFreightCost: values.FrieghtCharge,
       RMShearingCost: values.ShearingCost,
-      ScrapRate: values.ScrapRate,
+      ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
       NetLandedCost: netLandedCost,
       LoggedInUserId: loggedInUserId(),
       EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
@@ -918,7 +927,8 @@ class AddRMDomestic extends Component {
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
       CutOffPrice: values.cutOffPrice,
       IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-      RawMaterialCode: values.Code
+      RawMaterialCode: values.Code,
+      JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
     }
     if (isEditFlag) {
 
@@ -943,7 +953,9 @@ class AddRMDomestic extends Component {
           }
         })
       } else {
-        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && Number(DataToChange.cutOffPrice) === values.cutOffPrice) {
+
+        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
+
           this.cancel()
           return false
         }
@@ -983,7 +995,7 @@ class AddRMDomestic extends Component {
         BasicRatePerUOM: values.BasicRate,
         RMFreightCost: values.FrieghtCharge,
         RMShearingCost: values.ShearingCost,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         Remark: remarks,
@@ -995,7 +1007,8 @@ class AddRMDomestic extends Component {
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-        RawMaterialCode: values.Code
+        RawMaterialCode: values.Code,
+        JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -1215,7 +1228,8 @@ class AddRMDomestic extends Component {
                               className=" "
                               customClassName=" withBorder"
                               onBlur={this.checkUniqCode}
-                              disabled={isEditFlag ? true : false}
+                              // disabled={isEditFlag ? true : false} // NEED TO UNCOMMENT IT LATER
+                              disabled={false}
                             />
                           </Col>
                           <Col md="4">
@@ -1457,20 +1471,23 @@ class AddRMDomestic extends Component {
                               maxLength={'15'}
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label={`Scrap Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
-                              name={"ScrapRate"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
-                              required={true}
-                              className=""
-                              customClassName=" withBorder"
-                              maxLength="15"
-                            />
-                          </Col>
+                          {
+                            !this.state.showExtraCost &&
+                            <Col md="4">
+                              <Field
+                                label={`Scrap Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                                name={"ScrapRate"}
+                                type="text"
+                                placeholder={"Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName=" withBorder"
+                                maxLength="15"
+                              />
+                            </Col>
+                          }
                           <Col md="4">
                             <Field
                               label={`RM Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
@@ -1501,6 +1518,39 @@ class AddRMDomestic extends Component {
                               maxLength="15"
                             />
                           </Col>
+                          {
+                            this.state.showExtraCost &&
+                            <>
+                              <Col md="4">
+                                <Field
+                                  label={`Jali Scrap Cost  (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
+                                  name={"JaliScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={false}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              <Col md="4">
+                                <Field
+                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                                  name={"CircleScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[required, maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                            </>
+                          }
                           <Col md="4">
                             <Field
                               label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
@@ -1557,6 +1607,7 @@ class AddRMDomestic extends Component {
                             </div>
 
                           </Col>
+
                         </Row>
 
                         <Row>

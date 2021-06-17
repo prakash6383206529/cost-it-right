@@ -6,7 +6,7 @@ import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10
 import {
   searchableSelect, focusOnError, renderText,
 } from "../../layout/FormInputs";
-import { getUOMSelectList } from '../../../actions/Common';
+import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -57,6 +57,9 @@ class AddFuel extends Component {
     this.getDetails(data);
     this.props.getUOMSelectList(() => { })
     this.props.getFuelComboData(() => { })
+    this.props.getAllCity(countryId => {
+      this.props.fetchStateDataAPI(countryId, () => { })
+    })
 
   }
 
@@ -99,7 +102,7 @@ class AddFuel extends Component {
               isEditFlag: true,
               // isLoader: false,
               fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               rateGrid: rateGridArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -306,7 +309,7 @@ class AddFuel extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { fuelComboSelectList, UOMSelectList } = this.props;
+    const { fuelComboSelectList, UOMSelectList, stateList } = this.props;
     const temp = [];
     if (label === 'fuel') {
       fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
@@ -316,7 +319,7 @@ class AddFuel extends Component {
       return temp;
     }
     if (label === 'state') {
-      fuelComboSelectList && fuelComboSelectList.States.map(item => {
+      stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
@@ -745,11 +748,11 @@ function mapStateToProps(state) {
   const fieldsObj = selector(state, 'Rate');
   let initialValues = {};
 
-  const { UOMSelectList, } = comman;
+  const { UOMSelectList, stateList } = comman;
   const { fuelComboSelectList } = fuel;
   const { initialConfiguration } = auth;
 
-  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration, UOMSelectList }
+  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration, UOMSelectList, stateList }
 
 }
 
@@ -764,7 +767,9 @@ export default connect(mapStateToProps, {
   createFuelDetail,
   updateFuelDetail,
   getFuelDetailData,
-  getUOMSelectList
+  getUOMSelectList,
+  fetchStateDataAPI,
+  getAllCity
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,
