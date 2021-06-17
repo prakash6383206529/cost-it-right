@@ -10,6 +10,7 @@ import {
     SET_SELECTED_MASTER_SIMULATION,
     GET_SELECTLIST_APPLICABILITY_HEAD,
     config,
+    GET_SIMULATION_DEPARTMENT_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -298,4 +299,36 @@ export function getSelectListOfSimulationApplicability(callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getAllSimulationApprovalList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSimulationApprovalListByDepartment}`, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    }
+}
+
+export function getSimulationApprovalByDepartment(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllSimulationApprovalDepartment}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
+    }
 }

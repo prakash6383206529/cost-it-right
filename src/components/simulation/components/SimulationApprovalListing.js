@@ -430,9 +430,10 @@ function SimulationApprovalListing(props) {
                             {/* <TableHeaderColumn dataField="TokenNumber" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="TokenNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NoOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No. of Costing'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Technology" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated On'}</TableHeaderColumn>
-
                             <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
                             <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} > {'Requested On '}</TableHeaderColumn>
                             <TableHeaderColumn dataField="DisplayStatus" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
