@@ -693,6 +693,7 @@ export function setValueAccToUOM(value, UOM) {
     case G:
       return checkForNull(value)
     case KG:
+      console.log(checkForNull(value / 1000).toFixed(6), "CHECK FOR NULL");
       return checkForNull(value / 1000)
     case MG:
       return checkForNull(value * 1000)
