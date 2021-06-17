@@ -11,6 +11,7 @@ import {
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     config,
+    GET_SIMULATION_DEPARTMENT_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -252,9 +253,10 @@ export function getSelectListOfSimulationApplicability(callback) {
     };
 }
 
-export function saveSimulationForRawMaterial(data, callback) {
+export function getAllSimulationApprovalList(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.saveSimulationForRawMaterial, data, headers);
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSimulationApprovalListByDepartment}`, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
