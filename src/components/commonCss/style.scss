@@ -2912,6 +2912,9 @@ button:disabled{pointer-events: none;}
           background-color: #1d59af;
         }
       }
+      .btn-success.focus, .btn-success:focus,.btn-success:not(:disabled):not(.disabled).active:focus, .btn-success:not(:disabled):not(.disabled):active:focus, .show>.btn-success.dropdown-toggle:focus {
+        box-shadow: none;
+      }
     }
     .col-lg-4{
       order: 1;

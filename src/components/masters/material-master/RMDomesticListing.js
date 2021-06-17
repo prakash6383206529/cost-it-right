@@ -510,6 +510,8 @@ class RMDomesticListing extends Component {
 
     }
 
+    
+
     /**
     * @method render
     * @description Renders the component
@@ -518,9 +520,17 @@ class RMDomesticListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading } = this.props;
         const { isBulkUpload, } = this.state;
 
+        const onExportToCSV = (row) => {
+            // ...
+            let products = []
+            products = this.props.rmDataList
+            return products; // must return the data which you want to be exported
+        }
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            onExportToCSV: onExportToCSV,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -530,7 +540,7 @@ class RMDomesticListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -720,6 +730,8 @@ class RMDomesticListing extends Component {
                             multiColumnSearch={true}
                             // exportCSV={true}
                             //ignoreSinglePage
+                            exportCSV
+                            csvFileName='table-export.csv'
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
