@@ -921,6 +921,7 @@ input.form-control{
 .Activate,
 .Create,
 .Copy,
+.SOB,
 .Approve,
 .Run,
 .Save,
@@ -1516,6 +1517,13 @@ button.user-btn.pull-right {
   width: 32px;
   height: 32px;
   background: transparent url("../../assests/images/Approve.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.SOB {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/sob-icon.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
@@ -4372,6 +4380,7 @@ body{
 
       .Add,
       .Edit,
+      .SOB,
       .Delete,
       .View,
       .Download,
