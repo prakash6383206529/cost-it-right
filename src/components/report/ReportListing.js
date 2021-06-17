@@ -101,10 +101,10 @@ function ReportListing(props) {
     const getTableData = () => {
         const filterData = {
             costingNumber: "",
-            toDate: "",
-            fromDate: "",
-            statusId: EMPTY_GUID,
-            technologyId: EMPTY_GUID,
+            toDate: null,
+            fromDate: null,
+            statusId: 1,
+            technologyId: 1,
             plantCode:"",
             vendorCode:"",
             userId:EMPTY_GUID,
