@@ -28,7 +28,10 @@ import {
     GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY,
     GET_MENU_BY_MODULE_ID_AND_USER,
-    LEVEL_MAPPING_API
+    LEVEL_MAPPING_API,
+    GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
+    SIMULATION_LEVEL_DATALIST_API,
+    GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -262,6 +265,27 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 levelMappingList: action.payload
+            }
+        case GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                simulationTechnologyList: action.payload
+            };
+        case SIMULATION_LEVEL_DATALIST_API:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                simulationLevelDataList: action.payload
+            };
+        case GET_SIMULATION_LEVEL_BY_TECHNOLOGY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                simulationLevelSelectList: action.payload
             }
         default:
             return state;
