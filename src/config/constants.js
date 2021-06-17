@@ -1515,7 +1515,6 @@ export const DIMENSIONLESS = 'Dimensionless'
 //UOM CATEGORY
 export const STD = 'STD'
 
-
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = 'RM Domestic'
 export const RMIMPORT = 'RM Import'
