@@ -38,7 +38,6 @@ export const API = {
   getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
-  getSimulationTechnologySelectList: `${BASE_URL}/configuration/select-list-get-simulation-technology`,
 
   //Combo apis
 
@@ -584,6 +583,9 @@ export const API = {
   getSelectListOfLevel: `${BASE_URL}/configuration/select-list-get-level`,
   getUserByTechnologyAndLevel: `${BASE_URL}/user/get-users-technology-wise-level`,
   getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
+  getSimulationLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-simulation-technology`,
+  getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
+
 
   //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
@@ -612,6 +614,8 @@ export const API = {
   addSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/create`,
   updateSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/update`,
   getSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get`,
+  getSimulationTechnologySelectList: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
+
 
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
@@ -811,6 +815,10 @@ export const API = {
   getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
   getSimulationApprovalList: `${BASE_URL}/simulation/`,
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
+
+  //SIMULATION APPROVAL
+  getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
+  getSimulationApprovalListByDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-users-level-filter-by-department`,
 
   //REPORT
   getReportListing: `${BASE_URL}/report/get-report-listing`,
@@ -1221,6 +1229,7 @@ export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
 export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
 export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
+export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1332,6 +1341,9 @@ export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
 export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
 export const SET_SELECTED_MASTER_SIMULATION = 'SET_SELECTED_MASTER_SIMULATION'
 export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_HEAD'
+
+//SIMULATION APPROVAL
+export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
