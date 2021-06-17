@@ -229,10 +229,19 @@ class SOBListing extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isOpen, isEditFlag } = this.state;
+  
+    const onExportToCSV = (row) => {
+      // ...
+      let products = []
+      products = this.props.bopSobList
+      return products; // must return the data which you want to be exported
+    }
+
     const options = {
       clearSearch: true,
       noDataText: (this.props.bopSobList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      onExportToCSV: onExportToCSV,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -241,7 +250,7 @@ class SOBListing extends Component {
     };
 
     return (
-      <div>
+      <div className="show-table-btn">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
@@ -309,6 +318,8 @@ class SOBListing extends Component {
               hover={false}
               bordered={false}
               options={options}
+              exportCSV
+              csvFileName='table-export.csv'
               search
               ref={'table'}
               pagination>

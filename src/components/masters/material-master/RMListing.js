@@ -178,10 +178,19 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, } = this.props;
+
+        const onExportToCSV = (row) => {
+            // ...
+            let products = []
+            products = this.props.rawMaterialTypeDataList
+            return products; // must return the data which you want to be exported
+        }
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            onExportToCSV: onExportToCSV,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -190,7 +199,7 @@ class RMListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {this.props.loading && <Loader />}
                 <Row className="pt-4 mb-3 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
@@ -227,7 +236,8 @@ class RMListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName='table-export.csv'
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}
