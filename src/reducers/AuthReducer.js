@@ -31,6 +31,7 @@ import {
     LEVEL_MAPPING_API,
     GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
     SIMULATION_LEVEL_DATALIST_API,
+    GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -279,6 +280,13 @@ export default function authReducer(state = initialState, action) {
                 error: true,
                 simulationLevelDataList: action.payload
             };
+        case GET_SIMULATION_LEVEL_BY_TECHNOLOGY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                simulationLevelSelectList: action.payload
+            }
         default:
             return state;
     }

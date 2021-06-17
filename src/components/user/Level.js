@@ -124,6 +124,7 @@ class Level extends Component {
   */
   searchableSelectType = (label) => {
     const { technologyList, levelList, simulationTechnologyList } = this.props;
+    console.log(this.state.levelType, "this.state.levelType");
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -508,7 +509,7 @@ class Level extends Component {
                           <Field
                             name="TechnologyId"
                             type="text"
-                            label="Technology"
+                            label="Technology/Heads"
                             className="w-100"
                             component={searchableSelect}
                             options={this.searchableSelectType('technology')}
