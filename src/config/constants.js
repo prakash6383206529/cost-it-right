@@ -807,7 +807,7 @@ export const API = {
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
 
   //REPORT
-  getReportListing: `${BASE_URL}/report/get-report-listing`,
+  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
 }
 
