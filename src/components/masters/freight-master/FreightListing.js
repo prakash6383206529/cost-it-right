@@ -11,7 +11,7 @@ import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
@@ -307,6 +307,19 @@ class FreightListing extends Component {
 
   }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.freightDetail
+    return products; // must return the data which you want to be exported
+  }
+
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -318,6 +331,7 @@ class FreightListing extends Component {
       clearSearch: true,
       noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -326,7 +340,7 @@ class FreightListing extends Component {
     };
 
     return (
-      <div>
+      <div className="show-table-btn">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -474,7 +488,8 @@ class FreightListing extends Component {
               bordered={false}
               options={options}
               search
-              // exportCSV
+              exportCSV
+                csvFileName='table-export.csv'
               //ignoreSinglePage
               ref={'table'}
               pagination>

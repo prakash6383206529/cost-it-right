@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { UOM } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -207,6 +207,19 @@ class UOMMaster extends Component {
     })
   }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.dataList
+    return products; // must return the data which you want to be exported
+  }
+
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -218,6 +231,7 @@ class UOMMaster extends Component {
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -230,7 +244,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <div className="container-fluid">
+        <div className="container-fluid show-table-btn">
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>
@@ -264,7 +278,8 @@ class UOMMaster extends Component {
                 bordered={false}
                 options={options}
                 search
-                // exportCSV
+                exportCSV
+                csvFileName='table-export.csv'
                 //ignoreSinglePage
                 ref={"table"}
                 trClassName={"userlisting-row"}

@@ -8,7 +8,7 @@ import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant'
 import NoContentFound from '../../common/NoContentFound'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
@@ -542,7 +542,18 @@ class VolumeListing extends Component {
    */
   onSubmit(values) { }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.volumeDataList
+    return products; // must return the data which you want to be exported
+  }
 
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
 
   /**
    * @method render
@@ -563,7 +574,7 @@ class VolumeListing extends Component {
       clearSearch: true,
       noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -586,7 +597,7 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid">
+        <div className="container-fluid show-table-btn">
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -775,7 +786,8 @@ class VolumeListing extends Component {
             bordered={false}
             options={options}
             search
-            // exportCSV
+            exportCSV
+                            csvFileName='table-export.csv'
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
