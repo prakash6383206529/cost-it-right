@@ -1548,3 +1548,37 @@ export const PROFIT = 'Profits'
 // export constse
 
 export const REASON_ID = 2
+
+// MASTER PAGES NAME
+export const RmDomestic = "Raw-material-domestic"
+export const RmImport = "Raw-material-import"
+export const RmSpecification = "Raw-material-Specification"
+export const RmMaterial = "Raw-material"
+export const BopDomestic = "BOP-domestic"
+export const BopImport = "BOP-import"
+export const Sob = "SOB"
+
+export const AssemblyPart = "Assembly-part"
+export const ComponentPart = "Component-part"
+
+export const MachineRate = "Machine-rate"
+export const ProcessMaster = "Process "
+
+export const VendorMaster = "Vendor"
+export const Clientmaster = "Client"
+export const PlantZbc = "Plant-zbc"
+export const PlantVbc = "Plant-vbc"
+
+export const OverheadMaster = "Overhead"
+export const ProfitMaster = "Profit"
+export const LabourMaster = "Labour"
+export const Reasonmaster = "Reason"
+export const OperationMaster = "Operation"
+export const FuelMaster = "Fuel"
+export const PowerMaster = "Power"
+export const UomMaster = "UOM"
+export const VolumeMaster = "Volume"
+export const ExchangeMaster = "Exchange-rate"
+export const FreightMaster = "Freight"
+export const InterestMaster = "Interest-rate"
+// MASTER PAGES NAME END

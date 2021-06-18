@@ -16,6 +16,7 @@ import AddVBCPlant from './AddVBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PlantVbc } from '../../../config/constants';
 
 class VBCPlantListing extends Component {
     constructor(props) {
@@ -486,7 +487,7 @@ class VBCPlantListing extends Component {
                     options={options}
                     search
                     exportCSV
-                    csvFileName='table-export.csv'
+                    csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}

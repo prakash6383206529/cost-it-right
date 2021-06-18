@@ -23,7 +23,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC } from '../../../config/constants'
+import { INR, ZBC,RmImport } from '../../../config/constants'
 import { costingHeadObjs } from '../../../config/masterData';
 
 class RMImportListing extends Component {
@@ -725,7 +725,7 @@ createCustomExportCSVButton = (onClick) => {
               //ignoreSinglePage
               ref={'table'}
               exportCSV
-              csvFileName='table-export.csv'
+              csvFileName={`${RmImport}.csv`}
               pagination>
               {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
               <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>

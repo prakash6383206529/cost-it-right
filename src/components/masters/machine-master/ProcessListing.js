@@ -20,6 +20,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
+import { ProcessMaster } from '../../../config/constants'
 
 class ProcessListing extends Component {
   constructor(props) {
@@ -536,7 +537,7 @@ createCustomExportCSVButton = (onClick) => {
               options={options}
               search
               exportCSV
-              csvFileName='table-export.csv'
+              csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination

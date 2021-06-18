@@ -16,7 +16,7 @@ import $ from 'jquery'
 import { costingHeadObjs, Months } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
-import { VOLUME, ZBC } from '../../../config/constants'
+import { VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { loggedInUserId } from '../../../helper/auth'
@@ -597,7 +597,7 @@ createCustomExportCSVButton = (onClick) => {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid show-table-btn">
+        <div className="container-fluid show-table-btn blue-before-inside">
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -787,7 +787,7 @@ createCustomExportCSVButton = (onClick) => {
             options={options}
             search
             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${VolumeMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

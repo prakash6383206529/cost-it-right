@@ -12,7 +12,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { REASON } from '../../../config/constants';
+import { OperationMaster, REASON } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -300,7 +300,7 @@ createCustomExportCSVButton = (onClick) => {
             options={options}
             search
             exportCSV
-            csvFileName='table-export.csv'
+            csvFileName={`${OperationMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

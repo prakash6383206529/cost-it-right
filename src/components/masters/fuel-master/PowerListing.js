@@ -20,6 +20,7 @@ import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PowerMaster } from '../../../config/constants';
 
 class PowerListing extends Component {
   constructor(props) {
@@ -568,7 +569,7 @@ createCustomExportCSVButton = (onClick) => {
                 options={options}
                 search
                 exportCSV
-                csvFileName='table-export.csv'
+                csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
                 pagination>
@@ -589,7 +590,7 @@ createCustomExportCSVButton = (onClick) => {
                 options={options}
                 search
                 exportCSV
-                    csvFileName='table-export.csv'
+                    csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
                 pagination>

@@ -22,7 +22,7 @@ import AddVendorDrawer from './AddVendorDrawer';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { VENDOR } from '../../../config/constants';
+import { VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -438,12 +438,11 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className="container-fluid show-table-btn">
+            <div className="container-fluid show-table-btn blue-before-inside">
                 {/* {this.props.loading && <Loader />} */}
                 <form
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     noValidate
-                    className="mr15"
                 >
                     <Row>
                         <Col md="12">
@@ -559,10 +558,9 @@ class VendorListing extends Component {
                     hover={false}
                     bordered={false}
                     options={options}
-                    className={"mr15 pr15"}
                     search
                     exportCSV
-                            csvFileName='table-export.csv'
+                    csvFileName={`${VendorMaster}.csv`}
                     //ignoreSinglePage
                     ref={"table"}
                     trClassName={"userlisting-row"}

@@ -17,6 +17,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
 
 class FreightListing extends Component {
@@ -489,7 +490,7 @@ createCustomExportCSVButton = (onClick) => {
               options={options}
               search
               exportCSV
-                csvFileName='table-export.csv'
+                csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination>

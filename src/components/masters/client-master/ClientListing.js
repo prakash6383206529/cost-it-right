@@ -12,7 +12,7 @@ import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { CLIENT } from '../../../config/constants';
+import { CLIENT, Clientmaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -291,12 +291,12 @@ class ClientListing extends Component {
                         options={options}
                         search
                         exportCSV
-                        csvFileName='table-export.csv'
+                        csvFileName={`${Clientmaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}
                         tableHeaderClass='my-custom-header client-table'
-                        className={'client-table mr15 pr15'}
+                        className={'client-table'}
                         pagination>
                         <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>

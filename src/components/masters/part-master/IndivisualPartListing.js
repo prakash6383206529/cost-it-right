@@ -16,6 +16,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
+import { ComponentPart } from '../../../config/constants';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -301,7 +302,7 @@ class IndivisualPartListing extends Component {
                     options={options}
                     search
                     exportCSV
-                    csvFileName='table-export.csv'
+                    csvFileName={`${ComponentPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
