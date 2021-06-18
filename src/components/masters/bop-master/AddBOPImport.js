@@ -979,7 +979,8 @@ class AddBOPImport extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            />
+                            >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>
                           <Col md="3">
                             <div className="inputbox date-section mb-3 form-group">
@@ -1000,7 +1001,6 @@ class AddBOPImport extends Component {
                                 disabled={isEditFlag ? true : false}
                               //minDate={moment()}
                               />
-                              {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </div>
 
                           </Col>
