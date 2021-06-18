@@ -19,7 +19,7 @@ import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { INR } from '../../../config/constants';
+import { BopImport, BOPIMPORT, INR } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
 
 class BOPImportListing extends Component {
@@ -531,7 +531,7 @@ class BOPImportListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${BopImport}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

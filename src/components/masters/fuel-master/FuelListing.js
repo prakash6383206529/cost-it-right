@@ -17,6 +17,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
+import { FuelMaster } from '../../../config/constants';
 
 class FuelListing extends Component {
     constructor(props) {
@@ -384,7 +385,7 @@ class FuelListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${FuelMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

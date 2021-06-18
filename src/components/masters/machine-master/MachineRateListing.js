@@ -20,6 +20,7 @@ import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import { MachineRate } from '../../../config/constants';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -643,7 +644,7 @@ class MachineRateListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${MachineRate}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

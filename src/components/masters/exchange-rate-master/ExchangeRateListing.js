@@ -11,7 +11,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
-import { EXCHANGE_RATE } from '../../../config/constants';
+import { ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -330,7 +330,7 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                <div className="container-fluid show-table-btn">
+                <div className="container-fluid show-table-btn blue-before-inside">
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <Row>
@@ -407,7 +407,7 @@ class ExchangeRateListing extends Component {
                         options={options}
                         search
                         exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${ExchangeMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}

@@ -16,6 +16,7 @@ import AddZBCPlant from './AddZBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PlantZbc } from '../../../config/constants';
 
 class ZBCPlantListing extends Component {
     constructor(props) {
@@ -489,7 +490,7 @@ class ZBCPlantListing extends Component {
                     options={options}
                     search
                     exportCSV
-                    csvFileName='table-export.csv'
+                    csvFileName={`${PlantZbc}.csv`}
                     //ignoreSinglePage
                     ref={"table"}
                     trClassName={"userlisting-row"}

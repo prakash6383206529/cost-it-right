@@ -17,6 +17,7 @@ import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
+import { AssemblyPart } from '../../../config/constants';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -321,7 +322,7 @@ class AssemblyPartListing extends Component {
                     options={options}
                     search
                     exportCSV
-                    csvFileName='table-export.csv'
+                    csvFileName={`${AssemblyPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}

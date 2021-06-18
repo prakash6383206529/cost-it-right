@@ -15,7 +15,7 @@ import Switch from "react-switch";
 import moment from 'moment';
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { INTEREST_RATE } from '../../../config/constants';
+import { InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -462,7 +462,7 @@ createCustomExportCSVButton = (onClick) => {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid show-table-btn">
+        <div className="container-fluid show-table-btn blue-before-inside">
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -594,7 +594,7 @@ createCustomExportCSVButton = (onClick) => {
             options={options}
             search
             exportCSV
-                csvFileName='table-export.csv'
+                csvFileName={`${InterestMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

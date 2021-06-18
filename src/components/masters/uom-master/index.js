@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
-import { UOM } from '../../../config/constants';
+import { UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -279,7 +279,7 @@ createCustomExportCSVButton = (onClick) => {
                 options={options}
                 search
                 exportCSV
-                csvFileName='table-export.csv'
+                csvFileName={`${UomMaster}.csv`}
                 //ignoreSinglePage
                 ref={"table"}
                 trClassName={"userlisting-row"}

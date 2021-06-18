@@ -15,7 +15,7 @@ import { getMachineTypeSelectList, } from '../actions/MachineMaster';
 import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { LABOUR } from '../../../config/constants';
+import { LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -732,7 +732,7 @@ createCustomExportCSVButton = (onClick) => {
             options={options}
             search
             exportCSV
-            csvFileName='table-export.csv'
+            csvFileName={`${LabourMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
