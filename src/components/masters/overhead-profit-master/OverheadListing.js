@@ -19,6 +19,7 @@ import { costingHeadObj } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import { OverheadMaster } from '../../../config/constants';
 
 class OverheadListing extends Component {
     constructor(props) {
@@ -577,7 +578,7 @@ class OverheadListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${OverheadMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

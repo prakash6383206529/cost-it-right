@@ -22,6 +22,7 @@ import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { getConfigurationKey } from '../../../helper';
+import { BopDomestic, } from '../../../config/constants';
 
 class BOPDomesticListing extends Component {
     constructor(props) {
@@ -545,7 +546,7 @@ class BOPDomesticListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${BopDomestic}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             // selectRow={selectRow}

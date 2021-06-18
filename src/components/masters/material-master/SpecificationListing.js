@@ -19,6 +19,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { RmSpecification } from '../../../config/constants';
 
 class SpecificationListing extends Component {
     constructor(props) {
@@ -415,7 +416,7 @@ class SpecificationListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${RmSpecification}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

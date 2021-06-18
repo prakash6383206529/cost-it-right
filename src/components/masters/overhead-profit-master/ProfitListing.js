@@ -22,6 +22,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import { ProfitMaster } from '../../../config/constants';
 
 class ProfitListing extends Component {
     constructor(props) {
@@ -607,7 +608,7 @@ class ProfitListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${ProfitMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

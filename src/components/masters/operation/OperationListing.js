@@ -18,7 +18,7 @@ import {
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { OPERATION } from '../../../config/constants';
+import { OPERATION, OperationMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -638,7 +638,7 @@ class OperationListing extends Component {
                         options={options}
                         search
                         exportCSV
-                        csvFileName='table-export.csv'
+                        csvFileName={`${OperationMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}

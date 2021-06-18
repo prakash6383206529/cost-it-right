@@ -23,7 +23,7 @@ import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { ZBC } from '../../../config/constants'
+import { ZBC,RmDomestic } from '../../../config/constants'
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -737,7 +737,7 @@ class RMDomesticListing extends Component {
                             // exportCSV={true}
                             //ignoreSinglePage
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

@@ -13,6 +13,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
 import Association from './Association';
+import { RmMaterial } from '../../../config/constants';
 
 class RMListing extends Component {
     constructor(props) {
@@ -207,7 +208,7 @@ class RMListing extends Component {
         return (
             <div className="show-table-btn">
                 {this.props.loading && <Loader />}
-                <Row className="pt-4 mb-3 no-filter-row">
+                <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
                         {AddAccessibility && (
                             <button
@@ -243,7 +244,7 @@ class RMListing extends Component {
                             options={options}
                             search
                             exportCSV
-                            csvFileName='table-export.csv'
+                            csvFileName={`${RmMaterial}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}

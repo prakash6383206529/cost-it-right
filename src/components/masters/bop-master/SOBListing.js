@@ -18,6 +18,7 @@ import { costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey } from '../../../helper';
+import { Sob } from '../../../config/constants';
 
 class SOBListing extends Component {
   constructor(props) {
@@ -332,7 +333,7 @@ createCustomExportCSVButton = (onClick) => {
               bordered={false}
               options={options}
               exportCSV
-              csvFileName='table-export.csv'
+              csvFileName={`${Sob}.csv`}
               search
               ref={'table'}
               pagination>
