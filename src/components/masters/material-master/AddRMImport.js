@@ -1430,7 +1430,9 @@ class AddRMImport extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            />
+                            >
+                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>
                           <Col md="4">
                             <div className="form-group">
@@ -1454,7 +1456,6 @@ class AddRMImport extends Component {
                                 />
                               </div>
                             </div>
-                            {this.state.showWarning && <WarningMessage message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                           </Col>
                           <Col md="4">
                             <Field
