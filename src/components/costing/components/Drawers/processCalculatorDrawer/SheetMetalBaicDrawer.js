@@ -22,11 +22,11 @@ function SheetMetalBaicDrawer(props) {
 
   const defaultValues = {
     MachineTonnage: props.calculatorData ? props.calculatorData.Tonnage : '',
-    CycleTime: WeightCalculatorRequest && WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : 1,
-    Efficiency: WeightCalculatorRequest && WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100,
-    Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,
-    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? checkForNull(WeightCalculatorRequest.Quantity) : 1,
-    ProcessCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " "
+    CycleTime: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : 1 : 1,
+    Efficiency: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100 : 100,
+    Cavity: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1 : 1,
+    Quantity: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Quantity !== null ? checkForNull(WeightCalculatorRequest.Quantity) : 1 : 1,
+    ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : ''
   }
 
   const {
@@ -39,11 +39,11 @@ function SheetMetalBaicDrawer(props) {
   const dispatch = useDispatch()
   const { technology, process, MachineTonnage, calculateMachineTime } = props
   const isEditFlag = WeightCalculatorRequest ? true : false
-  const [processCost, setProcessCost] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '')
+  const [processCost, setProcessCost] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '' : '')
   const [disable, setDisabled] = useState(false)
   const [hide, setHide] = useState(false)
-  const [cavity, setCavity] = useState(WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
-  const tempProcessObj = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : ''
+  const [cavity, setCavity] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1 : 1)
+  const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
 
   const fieldValues = useWatch({
     control,

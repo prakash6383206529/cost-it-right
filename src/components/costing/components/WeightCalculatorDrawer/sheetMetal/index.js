@@ -1,22 +1,17 @@
 import React, { Fragment, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Container, } from 'reactstrap'
-import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import classnames from 'classnames'
-import Drawer from '@material-ui/core/Drawer'
 import Pipe from './Pipe'
-import Plate from './Plate'
-import Bracket from './Bracket'
 import SectionL from './SectionL'
 import SectionC from './SectionC'
 import SectionZ from './SectionZ'
 import Coil from './Coil'
-import { toastr } from 'react-redux-toastr'
 import Sheet from './Sheet'
 
 function WeightCalculator(props) {
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const { rmRowData } = props
 
 
