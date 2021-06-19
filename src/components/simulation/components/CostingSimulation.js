@@ -12,10 +12,11 @@ import { getCostingSimulationList, getVerifySimulationList, saveSimulationForRaw
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { toastr } from 'react-redux-toastr';
 
 function CostingSimulation(props) {
     const { simulationId } = props
@@ -27,6 +28,9 @@ function CostingSimulation(props) {
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
+    const [simulationDetail, setSimulationDetail] = useState('')
+    const [costingArr, setCostingArr] = useState([])
+    console.log('costingArr: ', costingArr);
     const [id, setId] = useState('')
 
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
@@ -39,13 +43,17 @@ function CostingSimulation(props) {
     useEffect(() => {
         dispatch(getCostingSimulationList(simulationId, (res) => {
             if (res.data.Result) {
-                const tokenNo = res.data.Data.TokenId
+                const tokenNo = res.data.Data.SimulationTokenNumber
+                const Data = res.data.Data
                 setTokenNo(tokenNo)
+                setCostingArr(Data.SimulatedCostingList)
+                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn })
             }
         }))
     }, [])
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
     const renderVendorName = () => {
@@ -112,12 +120,20 @@ function CostingSimulation(props) {
         )
     }
 
-    const onRowSelect = (row, isSelected, e) => {
+    const onRowSelect = (row, isSelected, e, rowIndex) => {
         if (isSelected) {
+            let temp = costingArr[rowIndex]
+            temp = { ...temp, IsChecked: true }
+            let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+            setCostingArr(Arr)
             let tempArr = [...selectedRowData, row]
             setSelectedRowData(tempArr)
         } else {
             const CostingId = row.CostingId;
+            let temp = costingArr[rowIndex]
+            temp = { ...temp, IsChecked: false }
+            let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+            setCostingArr(Arr)
             let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
             setSelectedRowData(tempArr)
         }
@@ -125,8 +141,18 @@ function CostingSimulation(props) {
 
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
+            let temp = []
+            costingArr && costingArr.map((item => {
+                temp.push({ ...item, IsChecked: true })
+            }))
+            setCostingArr(temp)
             setSelectedRowData(rows)
         } else {
+            let temp = []
+            costingArr && costingArr.map((item => {
+                temp.push({ ...item, IsChecked: false })
+            }))
+            setCostingArr(temp)
             setSelectedRowData([])
         }
     }
@@ -134,9 +160,28 @@ function CostingSimulation(props) {
     const renderDropdownListing = (label) => { }
 
     const onSaveSimulation = () => {
+        let temp = []
+        let obj = {}
+        obj.SimulationId = simulationDetail.SimulationId
+        obj.Token = simulationDetail.TokenNo
+        obj.Currency = ""
+        obj.EffectiveDate = ""
+        obj.Remark = ""
+        obj.LoggedInUserId = userDetails().LoggedInUserId
+        obj.IsPartialSaved = selectedRowData.length === costingArr.length ? false : true
+        costingArr && costingArr.map(item => {
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
+        })
+        obj.SelectedCostings = temp
+
         switch (selectedMasterForSimulation.label) {
             case RMDOMESTIC:
-                dispatch(saveSimulationForRawMaterial(selectedRowData, () => { }))
+                dispatch(saveSimulationForRawMaterial(obj, res => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation saved successfully.')
+                        setShowApprovalHistory(true)
+                    }
+                }))
                 break;
             case RMIMPORT:
                 console.log('Called RMDOMESRIC')
@@ -192,6 +237,7 @@ function CostingSimulation(props) {
     const closeDrawer = () => {
         setIsApprovalDrawer(false);
         setIsVerifyImpactDrawer(false);
+        setShowApprovalHistory(true)
     }
 
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
@@ -321,17 +367,19 @@ function CostingSimulation(props) {
                                 csvFileName='table-export.csv'
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="CostingId" width={100} export hidden columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorName" width={100} export hidden columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldRMCost" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewRMCost" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
@@ -351,7 +399,7 @@ function CostingSimulation(props) {
                             <button
                                 type="button"
                                 className="user-btn mr5 save-btn"
-                                //disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
                                 onClick={onSaveSimulation}>
                                 <div className={"check-icon"}>
                                     <img
@@ -382,7 +430,11 @@ function CostingSimulation(props) {
                             isOpen={isApprovalDrawer}
                             anchor={'right'}
                             approvalData={[]}
-                            type={'Approve'}
+                            type={'Sender'}
+                            simulationDetail={simulationDetail}
+                            selectedRowData={selectedRowData}
+                            costingArr={costingArr}
+                            master={selectedMasterForSimulation.label}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
                         />
