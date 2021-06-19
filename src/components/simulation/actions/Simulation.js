@@ -356,19 +356,21 @@ export function simulationApprovalRequestByApprove(data, callback) {
 export function simulationRejectRequestByApprove(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.simulationReject, data, headers)
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    toastr.error(response.data.Message)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
                 }
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
     }
 }
 
@@ -379,18 +381,20 @@ export function simulationRejectRequestByApprove(data, callback) {
 export function simulationApprovalRequestBySender(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.simulationSendToApprover, data, headers)
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    toastr.error(response.data.Message)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
                 }
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
     }
 }
