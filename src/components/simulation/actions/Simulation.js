@@ -12,6 +12,7 @@ import {
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     config,
     GET_SIMULATION_DEPARTMENT_LIST,
+    GET_ALL_APPROVAL_DEPARTMENT,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -171,7 +172,7 @@ export function getCostingSimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response.data.Data.SimulatedCosting
+                    payload: response.data.Data.SimulatedCostingList
                 })
                 callback(response)
             }
@@ -263,7 +264,104 @@ export function getAllSimulationApprovalList(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            callback(error);
             apiErrors(error);
         });
-    };
+    }
+}
+
+export function getSimulationApprovalByDepartment(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllSimulationApprovalDepartment}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ALL_APPROVAL_DEPARTMENT,
+                    payload: response.data.SelectList,
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
+    }
+}
+
+
+/**
+ * @method approvalRequestByApprove
+ * @description approving the request by approve
+ */
+export function simulationApprovalRequestByApprove(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.simulationApprove, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+* @method rejectRequestByApprove
+* @description rejecting approval Request
+*/
+export function simulationRejectRequestByApprove(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.simulationReject, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+ * @method simulationApprovalRequestBySender
+ * @description sending the request to Approver for first time
+ */
+export function simulationApprovalRequestBySender(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.simulationSendToApprover, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
 }
