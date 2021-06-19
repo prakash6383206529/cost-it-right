@@ -571,7 +571,7 @@ createCustomExportCSVButton = (onClick) => {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid show-table-btn">
+        <div className="container-fluid show-table-btn blue-before-inside">
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
