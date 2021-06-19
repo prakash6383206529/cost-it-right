@@ -1,15 +1,14 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch } from 'react-redux'
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Container, } from 'reactstrap'
-import classnames from 'classnames'
+import { Row, Col, Container, } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import Rubber from './Rubber'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, Non_Ferrous_HPDC } from '../../../../config/masterData'
 import HPDC from './HPDC'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
+import RubberCalciTab from './rubber'
 
 
 function OpenWeightCalculator(props) {
@@ -81,12 +80,12 @@ function OpenWeightCalculator(props) {
           />
         )
       case RUBBER:
-        return <Rubber
+        return (<RubberCalciTab
           rmRowData={props.rmRowData}
           inputDiameter={props.inputDiameter}
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
-        />
+        />)
       case Non_Ferrous_HPDC:
         return <HPDC
           rmRowData={props.rmRowData}
