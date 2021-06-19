@@ -819,6 +819,9 @@ export const API = {
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
   getSimulationApprovalListByDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-users-level-filter-by-department`,
+  simulationApprove: `${BASE_URL}/app-simulation-approval-system/approved-simulated-costing-by-approver`,
+  simulationReject: `${BASE_URL}/app-simulation-approval-system/rejected-simulated-costing-by-approver`,
+  simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
