@@ -14,7 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -163,9 +163,11 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
-      toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
-      return false
+    if (technologyForDensity.includes(costData.ETechnologyType)) {
+      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
+        toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
+        return false
+      }
     }
     dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
       // if (res && res.data && res.data.Data) {
@@ -784,7 +786,7 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
-                            <td>{checkForDecimalAndNull(item.GrossWeight - item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.FinishWeight ? (item.GrossWeight - item.FinishWeight) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
