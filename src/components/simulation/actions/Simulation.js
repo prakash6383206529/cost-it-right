@@ -10,6 +10,7 @@ import {
     SET_SELECTED_MASTER_SIMULATION,
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
+    GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -264,4 +265,23 @@ export function saveSimulationForRawMaterial(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getApprovalSimulatedCostingSummary(params, callback) {
+    return (dispatch) => {
+        const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
+        const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
+                    payload: response.data.DataList,
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }

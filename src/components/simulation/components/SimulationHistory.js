@@ -13,8 +13,6 @@ import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getSimulationHistory } from '../actions/History'
 
-
-
 function SimulationHistory(props) {
 
     const simulationHistory = useSelector(state => state.history.simulationHistory)
@@ -40,8 +38,6 @@ function SimulationHistory(props) {
             </Fragment>
         )
     }
-
-
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (

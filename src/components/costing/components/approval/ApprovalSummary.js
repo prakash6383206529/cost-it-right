@@ -41,32 +41,33 @@ function ApprovalSummary(props) {
   }, [])
 
   const approvalSummaryHandler = () => {
-    dispatch(
-      getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
+    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
-        const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
-          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, CostingId, PartId } = res.data.Data.Costings[0]
-        const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
-        const partNumber = PartDetails.PartNumber
+      const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
+        ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
+        CostingId, PartId } = res?.data?.Data?.Costings[0];
 
-        dispatch(storePartNumber({ partId: PartId }))
-        setPartDetail(PartDetails)
-        setApprovalDetails(ApprovalDetails[0])
-        setApprovalLevelStep(ApprovalLevelStep)
-        setIsApprovalDone(IsSent)
-        setShowFinalLevelButton(IsFinalLevelButtonShow)
-        setShowPushButton(IsPushedButtonShow)
-        setApprovalData({
-          DepartmentId: DepartmentId,
-          Technology: Technology,
-          TechnologyId: technologyId,
-          ApprovalProcessId: ApprovalProcessId,
-          ApprovalProcessSummaryId: ApprovalProcessSummaryId,
-          ApprovalNumber: ApprovalNumber,
-          CostingId: CostingId,
-          ReasonId: ApprovalDetails[0].ReasonId
-        })
-      }),
+      const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
+      const partNumber = PartDetails.PartNumber
+
+      dispatch(storePartNumber({ partId: PartId }))
+      setPartDetail(PartDetails)
+      setApprovalDetails(ApprovalDetails[0])
+      setApprovalLevelStep(ApprovalLevelStep)
+      setIsApprovalDone(IsSent)
+      setShowFinalLevelButton(IsFinalLevelButtonShow)
+      setShowPushButton(IsPushedButtonShow)
+      setApprovalData({
+        DepartmentId: DepartmentId,
+        Technology: Technology,
+        TechnologyId: technologyId,
+        ApprovalProcessId: ApprovalProcessId,
+        ApprovalProcessSummaryId: ApprovalProcessSummaryId,
+        ApprovalNumber: ApprovalNumber,
+        CostingId: CostingId,
+        ReasonId: ApprovalDetails[0].ReasonId
+      })
+    }),
     )
   }
 
@@ -131,7 +132,7 @@ function ApprovalSummary(props) {
                     </button>
                     <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
                       View All
-                      </button>
+                    </button>
                   </div>
                 </Col>
               </Row>

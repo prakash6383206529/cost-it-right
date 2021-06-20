@@ -803,7 +803,7 @@ export const API = {
   updateCompany: `${BASE_URL}/company/update`,
 
   //SIMULATION
-  getSimulationHistory: `${BASE_URL}/`,
+  getSimulationHistory: `${BASE_URL}/simulation/get-simulation-history`,
   getSelectListOfSimulationMaster: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
@@ -812,6 +812,7 @@ export const API = {
   getSimulationApprovalList: `${BASE_URL}/SimulationApproval/SimulationApproval_Get`,
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
+  getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
 
   //REPORT
   getReportListing: `${BASE_URL}/report/get-report-listing`,
@@ -1334,6 +1335,7 @@ export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
 export const SET_SELECTED_MASTER_SIMULATION = 'SET_SELECTED_MASTER_SIMULATION'
 export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_HEAD'
 export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMULATION'
+export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1446,6 +1448,7 @@ export const COSTING_SUMMARY = '/costing-summary'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
+export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-listing'
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"

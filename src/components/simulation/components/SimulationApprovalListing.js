@@ -32,7 +32,7 @@ function SimulationApprovalListing(props) {
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [selectedIds, setSelectedIds] = useState('')
     const [reasonId, setReasonId] = useState('')
-    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
+    const [showApprovalSumary, setShowApprovalSummary] = useState(true)
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const dispatch = useDispatch()
 
@@ -248,12 +248,14 @@ function SimulationApprovalListing(props) {
     }
 
     const sendForApproval = () => {
+        let count = 0
+        let technologyCount = 0
+
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        let count = 0
-        let technologyCount = 0
+
         selectedRowData.forEach((element, index, arr) => {
             if (index > 0) {
                 if (element.ReasonId !== arr[index - 1].ReasonId) {
@@ -265,6 +267,7 @@ function SimulationApprovalListing(props) {
                 return false
             }
         })
+
         selectedRowData.forEach((element, index, arr) => {
             if (index > 0) {
                 if (element.TechnologyId !== arr[index - 1].TechnologyId) {
@@ -276,14 +279,17 @@ function SimulationApprovalListing(props) {
                 return false
             }
         })
+
         if (technologyCount > 0) {
             return toastr.warning("Technology should be same for sending multiple costing for approval")
         }
+
         if (count > 0) {
             return toastr.warning("Reason should be same for sending multiple costing for approval")
         } else {
             setReasonId(selectedRowData[0].ReasonId)
         }
+
         setApproveDrawer(true)
     }
 
@@ -292,6 +298,7 @@ function SimulationApprovalListing(props) {
         getTableData()
         //setRejectDrawer(false)
     }
+
     return (
         <Fragment>
             {
@@ -424,12 +431,10 @@ function SimulationApprovalListing(props) {
                             tableHeaderClass="my-custom-header"
                             pagination
                         >
-                            {/* <TableHeaderColumn dataField="TokenNumber" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="TokenNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NoOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No. of Costing'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated On'}</TableHeaderColumn>
-
                             <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
                             <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} > {'Requested On '}</TableHeaderColumn>
                             <TableHeaderColumn dataField="DisplayStatus" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
@@ -441,7 +446,6 @@ function SimulationApprovalListing(props) {
                         approvalProcessId={approvalData.approvalProcessId}
                     /> //TODO list
             }
-
         </Fragment>
     )
 }
