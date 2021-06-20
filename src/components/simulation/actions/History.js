@@ -66,30 +66,25 @@ export function getSimulationHistory(callback) {
         },
     }
 
-
     return (dispatch) => {
-
-        dispatch({
-            type: GET_SIMULATION_HISTORY,
-            payload: JSON.data.DataList,
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSimulationHistory}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_HISTORY,
+                    payload: response.data.DataList,
+                });
+                // dispatch({
+                // type: GET_BULKUPLOAD_COSTING_LIST,
+                // payload: response.data.DataList,
+                //});
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
         });
-        // callback(JSON);
-        // callback(JSON)
-        //   dispatch({ type: API_REQUEST });
-        //   const request = axios.get(`${API.getSimulationHistory}`, headers);
-        //   request.then((response) => {
-        //     
-        //     if (response.data.Result) {
-        //       dispatch({
-        //         type: GET_BULKUPLOAD_COSTING_LIST,
-        //         payload: response.data.DataList,
-        //       });
-        //       callback(response);
-        //     }
-        //   }).catch((error) => {
-        //     dispatch({ type: API_FAILURE });
-        //     callback(error);
-        //     apiErrors(error);
-        //   });
     };
 }

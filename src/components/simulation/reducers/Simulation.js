@@ -8,6 +8,7 @@ import {
     SET_SELECTED_MASTER_SIMULATION,
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
+    GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -62,6 +63,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectedTechnologyForSimulation: action.payload
+            }
+        case GET_APPROVAL_SIMULATION_COSTING_SUMMARY:
+            return {
+                ...state,
+                loading: false,
+                approvalSimulatedCostingSummary: action.payload
             }
         default:
             return state;
