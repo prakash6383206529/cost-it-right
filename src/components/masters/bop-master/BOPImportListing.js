@@ -11,7 +11,7 @@ import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -19,7 +19,7 @@ import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { INR } from '../../../config/constants';
+import { BopImport, BOPIMPORT, INR } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
 
 class BOPImportListing extends Component {
@@ -358,6 +358,20 @@ class BOPImportListing extends Component {
 
     }
 
+
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.bopImportList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
     /**
     * @method render
     * @description Renders the component
@@ -365,10 +379,19 @@ class BOPImportListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
+
+        const onExportToCSV = (row) => {
+            // ...
+            let products = []
+            products = this.props.bopImportList
+            return products; // must return the data which you want to be exported
+        }
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.bopImportList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -377,7 +400,7 @@ class BOPImportListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -507,7 +530,8 @@ class BOPImportListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName={`${BopImport}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

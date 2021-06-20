@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
@@ -15,7 +15,7 @@ import Switch from "react-switch";
 import moment from 'moment';
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { INTEREST_RATE } from '../../../config/constants';
+import { InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -415,6 +415,19 @@ class InterestRateListing extends Component {
   onSubmit(values) {
   }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.interestRateDataList
+    return products; // must return the data which you want to be exported
+  }
+
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -436,6 +449,7 @@ class InterestRateListing extends Component {
       noDataText: (this.props.interestRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -448,7 +462,7 @@ class InterestRateListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid">
+        <div className="container-fluid show-table-btn blue-before-inside">
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -579,7 +593,8 @@ class InterestRateListing extends Component {
             bordered={false}
             options={options}
             search
-            // exportCSV
+            exportCSV
+                csvFileName={`${InterestMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

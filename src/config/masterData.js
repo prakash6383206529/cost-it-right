@@ -2222,3 +2222,4 @@ export const CHAMFERINGMILLER = 'Chamfering Miller'
 export const ENDMILL = 'End Mill'
 
 export const getTechnology = [1, 8, 7, 2, 4]
+export const technologyForDensity = [1, 7]

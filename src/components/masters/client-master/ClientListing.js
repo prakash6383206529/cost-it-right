@@ -7,12 +7,12 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { CLIENT } from '../../../config/constants';
+import { CLIENT, Clientmaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -221,6 +221,19 @@ class ClientListing extends Component {
     */
     onSubmit(values) {
     }
+
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.clientDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      } 
     /**
     * @method render
     * @description Renders the component
@@ -228,11 +241,14 @@ class ClientListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
+
+        
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
+            exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -243,7 +259,7 @@ class ClientListing extends Component {
         };
 
         return (
-            <>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <div className="container-fluid">
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -274,12 +290,13 @@ class ClientListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        // exportCSV
+                        exportCSV
+                        csvFileName={`${Clientmaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}
                         tableHeaderClass='my-custom-header client-table'
-                        className={'client-table mr15 pr15'}
+                        className={'client-table'}
                         pagination>
                         <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>
@@ -297,7 +314,7 @@ class ClientListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </ >
+            </div>
         );
     }
 }

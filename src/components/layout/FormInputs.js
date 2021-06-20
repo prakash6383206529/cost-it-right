@@ -3,6 +3,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import "./formInputs.css";
+import { Children } from "react";
 
 /*
 @method: renderLoginTextInputField
@@ -672,6 +673,7 @@ export const searchableSelect = ({
   meta: { touched, error, dirty, visited },
   multi,
   className,
+  children,
 }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = disabled && disabled === true ? true : false;
@@ -699,6 +701,7 @@ export const searchableSelect = ({
         menuPlacement={menuPlacement}
         className={"searchable"}
       />
+      {children}
       <div className="text-help mb-2 mb-2">{touched ? error : ""}</div>
     </div>
   );

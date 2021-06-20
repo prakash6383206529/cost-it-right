@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import moment from 'moment';
@@ -17,6 +17,7 @@ import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
+import { AssemblyPart } from '../../../config/constants';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -252,6 +253,19 @@ class AssemblyPartListing extends Component {
         })
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.partsListing
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
     /**
     * @method render
     * @description Renders the component
@@ -266,6 +280,7 @@ class AssemblyPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -274,7 +289,7 @@ class AssemblyPartListing extends Component {
         };
 
         return (
-            <>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
 
                 <Row className="pt-4 no-filter-row">
@@ -306,7 +321,8 @@ class AssemblyPartListing extends Component {
                     hover={false}
                     options={options}
                     search
-                    // exportCSV
+                    exportCSV
+                    csvFileName={`${AssemblyPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
@@ -344,7 +360,7 @@ class AssemblyPartListing extends Component {
                     messageLabel={'BOM'}
                     anchor={'right'}
                 />}
-            </ >
+            </div >
         );
     }
 }

@@ -489,6 +489,7 @@ function Pipe(props) {
     //
     grossWeight = setValueAccToUOM(grossWeight, value.label)
     let finishWeight = setValueAccToUOM(dataToSend?.FinishWeight ? dataToSend.FinishWeight : FinishWeight, value.label)
+    console.log('finishWeight: ', (finishWeight).toFixed(6));
 
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 

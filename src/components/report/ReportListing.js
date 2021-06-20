@@ -1,5 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import moment from 'moment'
+import { connect } from 'react-redux';
+import { Field, reduxForm, } from "redux-form";
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
@@ -12,12 +14,13 @@ import { CONSTANT } from '../../helper/AllConastant'
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { checkForDecimalAndNull } from '../../helper'
 import { getReportListing } from '../report/actions/ReportListing'
+import { EMPTY_GUID } from '../../config/constants';
 
 function ReportListing(props) {
 
     const loggedUser = loggedInUserId()
 
-    const reportListing = useSelector(state => state.report.reportListing)
+    const [tableData, setTableData] = useState([])
 
     const [shown, setshown] = useState(false)
 
@@ -95,29 +98,24 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = (
-        partNo = '00000000-0000-0000-0000-000000000000',
-        createdBy = '00000000-0000-0000-0000-000000000000',
-        requestedBy = '00000000-0000-0000-0000-000000000000',
-        status = '00000000-0000-0000-0000-000000000000',
-    ) => {
-        let filterData = {
-            loggedUser: loggedUser,
-            logged_in_user_level_id: userDetails().LoggedInLevelId,
-            partNo: partNo,
-            createdBy: createdBy,
-            requestedBy: requestedBy,
-            status: status,
+    const getTableData = () => {
+        const filterData = {
+            costingNumber: "",
+            toDate: null,
+            fromDate: null,
+            statusId: 1,
+            technologyId: 1,
+            plantCode:"",
+            vendorCode:"",
+            userId:EMPTY_GUID,
+            isSortByOrderAsc:true,
         }
-
-        dispatch(
-            getReportListing(filterData, (res) => { }),
-        )
+        props.getReportListing(filterData, (res) => {})
     }
 
 
     useEffect(() => {
-        dispatch(getReportListing(() => { }))
+        getTableData(); 
     }, [])
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -305,7 +303,7 @@ function ReportListing(props) {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {(shown) ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
+                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
                                         <img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                 ) : (
                                     <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
@@ -319,7 +317,7 @@ function ReportListing(props) {
             </form>
 
             <BootstrapTable
-                data={reportListing}
+                data={props.reportDataList}
                 striped={false}
                 hover={false}
                 bordered={false}
@@ -349,4 +347,15 @@ function ReportListing(props) {
     );
 }
 
-export default ReportListing;
+function mapStateToProps({ report, auth }) {
+    const { reportDataList, loading } = report;
+    const { initialConfiguration } = auth;
+    return { reportDataList, loading, initialConfiguration,}
+}
+
+export default connect(mapStateToProps, {
+    getReportListing,
+})(reduxForm({
+    form: 'ReportListing',
+    enableReinitialize: true,
+})(ReportListing));
