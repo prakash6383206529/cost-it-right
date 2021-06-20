@@ -813,7 +813,7 @@ export const API = {
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
   runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
   getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`,
-  getSimulationApprovalList: `${BASE_URL}/SimulationApproval/SimulationApproval_Get`,
+  getSimulationApprovalList: `${BASE_URL}/app-simulation-approval-system/get-simulation-approvals-by-filter`,
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,

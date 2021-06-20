@@ -32,7 +32,7 @@ function SimulationApprovalListing(props) {
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [selectedIds, setSelectedIds] = useState('')
     const [reasonId, setReasonId] = useState('')
-    const [showApprovalSumary, setShowApprovalSummary] = useState(true)
+    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const dispatch = useDispatch()
 
@@ -67,10 +67,10 @@ function SimulationApprovalListing(props) {
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInLevelId,
-            token_number: '',
-            simulated_by: '',
+            token_number: null,
+            simulated_by: EMPTY_GUID,
             requestedBy: requestedBy,
-            status: status,
+            status: 0,
             // partNo: partNo,
             // createdBy: createdBy,
         }
@@ -181,7 +181,6 @@ function SimulationApprovalListing(props) {
     }
 
     const viewDetails = (approvalNumber, approvalProcessId) => {
-
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
         setShowApprovalSummary(true)
         return (
