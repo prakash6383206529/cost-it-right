@@ -11,30 +11,14 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
+import { getApprovalSimulatedCostingSummary } from '../actions/Simulation'
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-
-const approvalDetailsDummy = [
-    {
-        CostingId: '123',
-        CostingHead: 'VBC',
-        VendorName: 'Kapoor',
-        Technology: 'Sheet Metal',
-        PartNo: 'Bolt',
-        PartDescription: 'Bolt desc',
-        ECNNumber: '1',
-        DrawingNo: '2',
-        RevisionNo: '1',
-        OldPOPrice: '555',
-        NewPOPrice: '666',
-        RMOldCost: '111',
-        RMNewCost: '222',
-    }
-]
+import { loggedInUserId } from '../../../helper';
 
 function SimulationApprovalSummary(props) {
-    let { approvalDetails, approvalData } = props;
-    approvalDetails = approvalDetailsDummy;
+    const { approvalDetails, approvalData, approvalNumber, approvalProcessId } = props;
+
     const [showListing, setShowListing] = useState(false)
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
@@ -51,7 +35,7 @@ function SimulationApprovalSummary(props) {
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    // const 
+    const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
 
@@ -63,6 +47,13 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
+
+        const reqParams = {
+            approvalTokenNumber: approvalNumber,
+            approvalId: approvalProcessId,
+            loggedInUserId: loggedInUserId(),
+        }
+        dispatch(getApprovalSimulatedCostingSummary(reqParams, () => { }))
     }, [])
 
     const closeViewDrawer = (e = '') => {

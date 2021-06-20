@@ -142,7 +142,6 @@ function SimulationApprovalListing(props) {
     }
 
     const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
@@ -183,12 +182,12 @@ function SimulationApprovalListing(props) {
     const viewDetails = (approvalNumber, approvalProcessId) => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
         setShowApprovalSummary(true)
-        return (
-            <ApprovalSummary
-                approvalNumber={approvalNumber ? approvalNumber : '2345438'}
-                approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
-            />
-        )
+        // return (
+        //     <ApprovalSummary
+        //         approvalNumber={approvalNumber ? approvalNumber : '2345438'}
+        //         approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
+        //     />
+        // )
     }
 
     /**
@@ -430,15 +429,16 @@ function SimulationApprovalListing(props) {
                             tableHeaderClass="my-custom-header"
                             pagination
                         >
-                            <TableHeaderColumn dataField="TokenNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NoOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No. of Costing'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="CostingHead" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="TechnologyName" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Technology" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated On'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} > {'Requested On '}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="DisplayStatus" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                            <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Requested By'} </TableHeaderColumn>
+                            <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
                         </BootstrapTable>
                     </div>
                     :
