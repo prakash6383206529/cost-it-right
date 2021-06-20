@@ -135,7 +135,6 @@ function SimulationApprovalSummary(props) {
     }
 
     const DisplayCompareCosting = (el) => {
-        console.log('el', el)
         setCompareCosting(true)
         setCompareCostingObj(el)
     }
