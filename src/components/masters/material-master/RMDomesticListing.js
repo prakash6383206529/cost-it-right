@@ -13,7 +13,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton  } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import moment from 'moment';
@@ -23,7 +23,7 @@ import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { ZBC } from '../../../config/constants'
+import { ZBC,RmDomestic } from '../../../config/constants'
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -510,6 +510,21 @@ class RMDomesticListing extends Component {
 
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.rmDataList
+        return products; // must return the data which you want to be exported
+      }
+
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
+    
+
     /**
     * @method render
     * @description Renders the component
@@ -521,6 +536,7 @@ class RMDomesticListing extends Component {
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            exportCSVBtn: this.createCustomExportCSVButton,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -530,7 +546,7 @@ class RMDomesticListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -720,6 +736,8 @@ class RMDomesticListing extends Component {
                             multiColumnSearch={true}
                             // exportCSV={true}
                             //ignoreSinglePage
+                            exportCSV
+                            csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

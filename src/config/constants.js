@@ -38,7 +38,6 @@ export const API = {
   getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
-  getSimulationTechnologySelectList: `${BASE_URL}/configuration/select-list-get-simulation-technology`,
 
   //Combo apis
 
@@ -584,6 +583,9 @@ export const API = {
   getSelectListOfLevel: `${BASE_URL}/configuration/select-list-get-level`,
   getUserByTechnologyAndLevel: `${BASE_URL}/user/get-users-technology-wise-level`,
   getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
+  getSimulationLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-simulation-technology`,
+  getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
+
 
   //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
@@ -612,6 +614,8 @@ export const API = {
   addSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/create`,
   updateSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/update`,
   getSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get`,
+  getSimulationTechnologySelectList: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
+
 
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
@@ -814,8 +818,15 @@ export const API = {
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
 
+  //SIMULATION APPROVAL
+  getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
+  getSimulationApprovalListByDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-users-level-filter-by-department`,
+  simulationApprove: `${BASE_URL}/app-simulation-approval-system/approved-simulated-costing-by-approver`,
+  simulationReject: `${BASE_URL}/app-simulation-approval-system/rejected-simulated-costing-by-approver`,
+  simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
+
   //REPORT
-  getReportListing: `${BASE_URL}/report/get-report-listing`,
+  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
 }
 
@@ -1223,6 +1234,7 @@ export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
 export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
 export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
+export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1336,6 +1348,9 @@ export const SET_SELECTED_MASTER_SIMULATION = 'SET_SELECTED_MASTER_SIMULATION'
 export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_HEAD'
 export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMULATION'
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
+
+//SIMULATION APPROVAL
+export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1540,3 +1555,37 @@ export const PROFIT = 'Profits'
 // export constse
 
 export const REASON_ID = 2
+
+// MASTER PAGES NAME
+export const RmDomestic = "Raw-material-domestic"
+export const RmImport = "Raw-material-import"
+export const RmSpecification = "Raw-material-Specification"
+export const RmMaterial = "Raw-material"
+export const BopDomestic = "BOP-domestic"
+export const BopImport = "BOP-import"
+export const Sob = "SOB"
+
+export const AssemblyPart = "Assembly-part"
+export const ComponentPart = "Component-part"
+
+export const MachineRate = "Machine-rate"
+export const ProcessMaster = "Process "
+
+export const VendorMaster = "Vendor"
+export const Clientmaster = "Client"
+export const PlantZbc = "Plant-zbc"
+export const PlantVbc = "Plant-vbc"
+
+export const OverheadMaster = "Overhead"
+export const ProfitMaster = "Profit"
+export const LabourMaster = "Labour"
+export const Reasonmaster = "Reason"
+export const OperationMaster = "Operation"
+export const FuelMaster = "Fuel"
+export const PowerMaster = "Power"
+export const UomMaster = "UOM"
+export const VolumeMaster = "Volume"
+export const ExchangeMaster = "Exchange-rate"
+export const FreightMaster = "Freight"
+export const InterestMaster = "Interest-rate"
+// MASTER PAGES NAME END

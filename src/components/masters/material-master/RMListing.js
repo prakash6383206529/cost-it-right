@@ -8,11 +8,12 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
 import Association from './Association';
+import { RmMaterial } from '../../../config/constants';
 
 class RMListing extends Component {
     constructor(props) {
@@ -171,6 +172,19 @@ class RMListing extends Component {
 
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.rawMaterialTypeDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
     /**
     * @method render
     * @description Renders the component
@@ -178,10 +192,12 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, } = this.props;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -190,9 +206,9 @@ class RMListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {this.props.loading && <Loader />}
-                <Row className="pt-4 mb-3 no-filter-row">
+                <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
                         {AddAccessibility && (
                             <button
@@ -227,7 +243,8 @@ class RMListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName={`${RmMaterial}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}

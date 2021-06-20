@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
     getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
@@ -18,7 +18,7 @@ import {
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { OPERATION } from '../../../config/constants';
+import { OPERATION, OperationMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -452,6 +452,20 @@ class OperationListing extends Component {
     onSubmit(values) {
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.operationList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -473,6 +487,7 @@ class OperationListing extends Component {
             noDataText: (this.props.operationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
+            exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -485,7 +500,7 @@ class OperationListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <div className="container-fluid">
+                <div className="container-fluid show-table-btn">
                     <form>
                         <Row>
                             <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
@@ -622,7 +637,8 @@ class OperationListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        // exportCSV
+                        exportCSV
+                        csvFileName={`${OperationMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}

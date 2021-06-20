@@ -8,14 +8,14 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
 import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
 import { getMachineTypeSelectList, } from '../actions/MachineMaster';
 import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { LABOUR } from '../../../config/constants';
+import { LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -523,6 +523,19 @@ class LabourListing extends Component {
    */
   onSubmit(values) { }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.labourDataList
+    return products; // must return the data which you want to be exported
+  }
+
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -545,6 +558,7 @@ class LabourListing extends Component {
       noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -557,7 +571,7 @@ class LabourListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid">
+        <div className="container-fluid show-table-btn">
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -717,7 +731,8 @@ class LabourListing extends Component {
             bordered={false}
             options={options}
             search
-            // exportCSV
+            exportCSV
+            csvFileName={`${LabourMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
