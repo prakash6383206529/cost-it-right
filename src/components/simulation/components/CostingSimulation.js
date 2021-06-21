@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRMDomesticDataList } from '../../masters/actions/Material';
@@ -15,8 +15,9 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { RMDOMESTIC, RMIMPORT,simulationMaster } from '../../../config/constants';
+import { RMDOMESTIC, RMIMPORT, simulationMaster } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
+import SimulationApprovalListing from './SimulationApprovalListing';
 
 function CostingSimulation(props) {
     const { simulationId } = props
@@ -184,7 +185,12 @@ function CostingSimulation(props) {
                 }))
                 break;
             case RMIMPORT:
-                console.log('Called RMDOMESRIC')
+                dispatch(saveSimulationForRawMaterial(obj, res => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation saved successfully.')
+                        setShowApprovalHistory(true)
+                    }
+                }))
                 break;
 
             default:
@@ -204,13 +210,13 @@ function CostingSimulation(props) {
         let products = []
         products = props.costingList
         return products; // must return the data which you want to be exported
-      }
+    }
 
     const createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     const onExportToCSV = (row) => {
         // ...
@@ -272,7 +278,7 @@ function CostingSimulation(props) {
         const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
-    
+
 
     return (
         <>
@@ -467,7 +473,7 @@ function CostingSimulation(props) {
                 </div>
             }
 
-            {showApprovalHistory && <SimulationHistory />}
+            {showApprovalHistory && <SimulationApprovalListing />}
 
             {
                 CostingDetailDrawer &&
