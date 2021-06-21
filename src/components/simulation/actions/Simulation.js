@@ -291,7 +291,7 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
 export function getAllSimulationApprovalList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationApprovalListByDepartment}`, data, headers);
+        const request = axios.post(`${API.getSimulationApprovalListByDepartment}`, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
