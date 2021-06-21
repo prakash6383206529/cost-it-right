@@ -47,16 +47,14 @@ function RunSimulationDrawer(props) {
         setIsOverheadChecked(!isOverheadChecked)
     }
 
-    const handleICCChange = () => {
-        setIsICCChecked(!isICCChecked)
-    }
-
-    const handleRejectionChange = () => {
-        setIsRejectionChecked(!isRejectionChecked)
-    }
-
-    const handlePaymentChange = () => {
-        setIsPaymentChecked(!isPaymentChecked)
+    const SimulationRun = () => {
+        //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+        dispatch(runSimulationOnSelectedCosting({ ...objs, SimulationApplicability: [] }, (res) => {
+            if (res.data.Result) {
+                toastr.success('Simulation process has been run successfully.')
+                runSimulationCosting()
+            }
+        }))
     }
 
     const onSubmit = () => {

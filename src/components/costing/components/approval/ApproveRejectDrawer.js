@@ -9,14 +9,14 @@ import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../he
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 
 
 function ApproveRejectDrawer(props) {
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr } = props
-  console.log('isSimulation: ', isSimulation);
+  console.log('isSimulation: ', simulationDetail);
 
 
   const userLoggedIn = loggedInUserId()
@@ -72,27 +72,31 @@ function ApproveRejectDrawer(props) {
       dispatch(getSimulationApprovalByDepartment(res => {
         const Data = res.data.SelectList
         const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+        console.log('departObj: ', departObj);
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj[0].Value,
-          //NEED TO MAKE THIS 2 DYNAMIC
-          TechnologyId: selectedTechnologyForSimulation.value,
+          //NEED TO MAKE THIS 2   
+          TechnologyId: simulationDetail.SimulationTechnologyId,
           ReasonId: 0
         }
+        console.log(obj, "OBJ");
 
-        dispatch(
-          getAllApprovalUserFilterByDepartment(obj, (res) => {
-            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-            setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-            // setApprover(Data.Text)
-            // setSelectedApprover(Data.Value)
-            // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-            // setValue('approver', { label: Data.Text, value: Data.Value })
-          },
-          ),
-        )
+        if (type === 'Approve') {
+          dispatch(
+            getAllSimulationApprovalList(obj, (res) => {
+              const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+              setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+              // setApprover(Data.Text)
+              // setSelectedApprover(Data.Value)
+              // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+              // setValue('approver', { label: Data.Text, value: Data.Value })
+            },
+            ),
+          )
+        }
       }))
     }
 
@@ -103,37 +107,39 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
-    let saveObj = {}
-    let temp = []
-    saveObj.SimulationId = simulationDetail.SimulationId
-    saveObj.Token = simulationDetail.TokenNo
-    saveObj.Currency = ""
-    saveObj.EffectiveDate = ""
-    saveObj.Remark = ""
-    saveObj.LoggedInUserId = userDetails().LoggedInUserId
-    saveObj.RawMaterialId = "00000000-0000-0000-0000-000000000000"
-    saveObj.RawMaterialCode = ""
-    saveObj.IsPartialSaved = selectedRowData.length === costingArr.length ? false : true
-    costingArr && costingArr.map(item => {
-      temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
-    })
-    saveObj.SelectedCostings = temp
+    if (type === 'Sender') {
+      let saveObj = {}
+      let temp = []
+      saveObj.SimulationId = simulationDetail.SimulationId
+      saveObj.Token = simulationDetail.TokenNo
+      saveObj.Currency = ""
+      saveObj.EffectiveDate = ""
+      saveObj.Remark = ""
+      saveObj.LoggedInUserId = userDetails().LoggedInUserId
+      saveObj.RawMaterialId = "00000000-0000-0000-0000-000000000000"
+      saveObj.RawMaterialCode = ""
+      saveObj.IsPartialSaved = selectedRowData.length === costingArr.length ? false : true
+      costingArr && costingArr.map(item => {
+        temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
+      })
+      saveObj.SelectedCostings = temp
 
-    //THIS CONDITION IS FOR SAVE SIMULATION
-    switch (master) {
-      case RMDOMESTIC:
-        dispatch(saveSimulationForRawMaterial(saveObj, res => {
-          if (res.data.Result) {
-            toastr.success('Simulation has been saved successfully.')
-          }
-        }))
-        break;
-      case RMIMPORT:
-        console.log('Called RMDOMESRIC')
-        break;
+      //THIS CONDITION IS FOR SAVE SIMULATION
+      switch (master) {
+        case RMDOMESTIC:
+          dispatch(saveSimulationForRawMaterial(saveObj, res => {
+            if (res.data.Result) {
+              toastr.success('Simulation has been saved successfully.')
+            }
+          }))
+          break;
+        case RMIMPORT:
+          console.log('Called RMDOMESRIC')
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   }, [simulationDetail])
 
@@ -206,11 +212,11 @@ function ApproveRejectDrawer(props) {
       /****************************THIS IS FOR SIMUALTION (SAVE,SEND FOR APPROVAL,APPROVE AND REJECT CONDITION)******************************** */
       // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
       let objs = {}
-      objs.ApprovalId = "00000000-0000-0000-0000-000000000000"
-      objs.ApprovalToken = simulationDetail.SimulationTokenNumber
+      objs.ApprovalId = simulationDetail.SimulationApprovalProcessId
+      objs.ApprovalToken = simulationDetail.Token
       objs.LoggedInUserId = userLoggedIn
-      objs.SenderLevelId = userData.LoggedInLevelId
-      objs.SenderLevel = userData.LoggedInLevel
+      objs.SenderLevelId = userData.LoggedInSimulationLevelId
+      objs.SenderLevel = userData.LoggedInSimulationLevel
       objs.Approver = data.approver && data.approver.value ? data.approver.value : ''
       objs.ApproverLevelId = data.approver && data.approver.levelId ? data.approver.levelId : ''
       objs.ApproverLevel = data.approver && data.approver.levelName ? data.approver.levelName : ''
@@ -220,9 +226,6 @@ function ApproveRejectDrawer(props) {
       objs.ApproverDepartmentName = data.dept && data.dept.label ? data.dept.label : ''
       objs.IsFinalApprovalProcess = false
       if (type === 'Sender') {
-
-
-
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
@@ -236,16 +239,13 @@ function ApproveRejectDrawer(props) {
         senderObj.ApproverLevel = data.approver && data.approver.levelName ? data.approver.levelName : ''
         senderObj.ApproverDepartmentName = data.dept && data.dept.label ? data.dept.label : ''
         senderObj.ApproverId = data.approver && data.approver.value ? data.approver.value : ''
-        senderObj.SenderLevelId = userData.LoggedInLevelId
+        senderObj.SenderLevelId = userData.LoggedInSimulationLevelId
         senderObj.SenderId = userLoggedIn
-        senderObj.SenderLevel = userData.LoggedInLevel
+        senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = data.remark
         senderObj.EffectiveDate = moment(data.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
-        console.log('senderObj: ', senderObj);
-
-
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -345,7 +345,7 @@ function ApproveRejectDrawer(props) {
               </Row>
 
               <Row className="ml-0">
-                {type === 'Approve' && IsFinalLevel && (
+                {type === 'Approve' && IsFinalLevel && !isSimulation && (
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -385,7 +385,7 @@ function ApproveRejectDrawer(props) {
                 )}
                 {
                   // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
-                  isSimulation &&
+                  isSimulation && type === 'Approve' &&
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -419,37 +419,41 @@ function ApproveRejectDrawer(props) {
                         errors={errors.approver}
                       />
                     </div>
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <div className="inputbox date-section">
-                        <DatePickerHookForm
-                          name={`EffectiveDate`}
-                          label={'Effective Date'}
-                          selected={selectedDate}
-                          handleChange={(date) => {
-                            handleEffectiveDateChange(date);
-                          }}
-                          //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                          rules={{ required: true }}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          showMonthDropdown
-                          showYearDropdown
-                          dateFormat="aa/MM/yyyy"
-                          //maxDate={new Date()}
-                          dropdownMode="select"
-                          placeholderText="Select date"
-                          customClassName="withBorder"
-                          className="withBorder"
-                          autoComplete={"off"}
-                          disabledKeyboardNavigation
-                          onChangeRaw={(e) => e.preventDefault()}
-                          disabled={false}
-                          mandatory={true}
-                          errors={errors.EffectiveDate}
-                        />
+                    {
+                      type === 'Sender' &&
+
+                      <div className="input-group form-group col-md-12 input-withouticon">
+                        <div className="inputbox date-section">
+                          <DatePickerHookForm
+                            name={`EffectiveDate`}
+                            label={'Effective Date'}
+                            selected={selectedDate}
+                            handleChange={(date) => {
+                              handleEffectiveDateChange(date);
+                            }}
+                            //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                            rules={{ required: true }}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            showMonthDropdown
+                            showYearDropdown
+                            dateFormat="aa/MM/yyyy"
+                            //maxDate={new Date()}
+                            dropdownMode="select"
+                            placeholderText="Select date"
+                            customClassName="withBorder"
+                            className="withBorder"
+                            autoComplete={"off"}
+                            disabledKeyboardNavigation
+                            onChangeRaw={(e) => e.preventDefault()}
+                            disabled={false}
+                            mandatory={true}
+                            errors={errors.EffectiveDate}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    }
                   </>
                 }
                 <div className="input-group form-group col-md-12 input-withouticon">
