@@ -973,7 +973,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class="background-light-blue">
-                      <th>Total Tool Cost</th>
+                      <th>Net Tool Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
@@ -1044,14 +1044,6 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr>
-                      <th>Remark</th>
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
-                        })}
-                    </tr>
-
                     <tr class="background-light-blue">
                       <th>Net PO Price(INR)</th>
                       {viewCostingData &&
@@ -1078,10 +1070,14 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class="background-light-blue">
-                      <th>Net PO Price</th>
+                      {/* <th>Net PO Price {viewCostingData && (data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')}</th> */}
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
+                          return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
+                        })}
+                      {viewCostingData &&
+                        viewCostingData.map((data, index) => {
+                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
 
@@ -1131,6 +1127,14 @@ const CostingSummaryTable = (props) => {
                                 )}
                             </td>
                           )
+                        })}
+                    </tr>
+
+                    <tr>
+                      <th>Remark</th>
+                      {viewCostingData &&
+                        viewCostingData.map((data, index) => {
+                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
                         })}
                     </tr>
 
