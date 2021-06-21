@@ -736,7 +736,7 @@ class RMDomesticListing extends Component {
                             multiColumnSearch={true}
                             // exportCSV={true}
                             //ignoreSinglePage
-                            exportCSV
+                            exportCSV = {this.props.isSimulation ? false : true}
                             csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
                             pagination>

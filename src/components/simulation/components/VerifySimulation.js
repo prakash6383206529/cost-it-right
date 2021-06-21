@@ -45,6 +45,10 @@ function VerifySimulation(props) {
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
+    const renderCostingNumber = () => {
+        return <>Costing <br/> Number </> 
+    }
+
     const renderVendorName = () => {
         return <>Vendor <br />Name </>
     }
@@ -281,7 +285,7 @@ function VerifySimulation(props) {
                                 className="add-volume-table"
                                 pagination>
                                 <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Number'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
