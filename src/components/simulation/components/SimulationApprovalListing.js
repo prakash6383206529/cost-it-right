@@ -63,10 +63,10 @@ function SimulationApprovalListing(props) {
      * @description getting approval list table
      */
     const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = EMPTY_GUID,) => {
-        console.log('createdBy', getValues('createdBy'))
+
         let filterData = {
             logged_in_user_id: loggedInUserId(),
-            logged_in_user_level_id: userDetails().LoggedInLevelId,
+            logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
             token_number: null,
             simulated_by: createdBy,
             requestedBy: requestedBy,
