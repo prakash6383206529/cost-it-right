@@ -78,25 +78,25 @@ function ApproveRejectDrawer(props) {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj[0].Value,
           //NEED TO MAKE THIS 2   
-          TechnologyId: simulationDetail.SimulationTechnologyId,
+          TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedTechnologyForSimulation.value,
           ReasonId: 0
         }
         console.log(obj, "OBJ");
 
-        if (type === 'Approve') {
-          dispatch(
-            getAllSimulationApprovalList(obj, (res) => {
-              const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-              setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-              // setApprover(Data.Text)
-              // setSelectedApprover(Data.Value)
-              // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-              // setValue('approver', { label: Data.Text, value: Data.Value })
-            },
-            ),
-          )
-        }
+
+        dispatch(
+          getAllSimulationApprovalList(obj, (res) => {
+            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+            // setApprover(Data.Text)
+            // setSelectedApprover(Data.Value)
+            // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            // setValue('approver', { label: Data.Text, value: Data.Value })
+          },
+          ),
+        )
+
       }))
     }
 
@@ -385,7 +385,7 @@ function ApproveRejectDrawer(props) {
                 )}
                 {
                   // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
-                  isSimulation && type === 'Approve' &&
+                  isSimulation && (type === 'Approve' || type === 'Sender') &&
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -421,7 +421,6 @@ function ApproveRejectDrawer(props) {
                     </div>
                     {
                       type === 'Sender' &&
-
                       <div className="input-group form-group col-md-12 input-withouticon">
                         <div className="inputbox date-section">
                           <DatePickerHookForm
