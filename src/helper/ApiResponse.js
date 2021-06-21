@@ -46,6 +46,8 @@ export function formatLoginResult(res) {
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
             Department: res.Department,
+            LoggedInSimulationLevel: res.LoggedInSimulationLevel,
+            LoggedInSimulationLevelId: res.LoggedInSimulationLevelId
         };
         return userObj;
     }
