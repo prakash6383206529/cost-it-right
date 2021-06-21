@@ -56,7 +56,8 @@ function RunSimulationDrawer(props) {
     const IsAvailable = (id) => { }
 
     const SimulationRun = () => {
-        dispatch(runSimulationOnSelectedCosting({ ...objs, SimulationApplicability: multipleHeads }, (res) => {
+        //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+        dispatch(runSimulationOnSelectedCosting({ ...objs, SimulationApplicability: [] }, (res) => {
             if (res.data.Result) {
                 toastr.success('Simulation process has been run successfully.')
                 runSimulationCosting()
