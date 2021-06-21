@@ -46,7 +46,7 @@ function VerifySimulation(props) {
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
     const renderCostingNumber = () => {
-        return <>Costing <br/> Number </> 
+        return <>Costing <br /> Number </>
     }
 
     const renderVendorName = () => {
@@ -107,6 +107,18 @@ function VerifySimulation(props) {
     const newSRFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -199,7 +211,7 @@ function VerifySimulation(props) {
                                     <h5>{`Filter By:`}</h5>
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                {/* <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -214,7 +226,7 @@ function VerifySimulation(props) {
                                         handleChange={() => { }}
                                         errors={errors.partNo}
                                     />
-                                </div>
+                                </div> */}
                                 <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
@@ -289,9 +301,9 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>

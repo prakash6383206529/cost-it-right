@@ -15,25 +15,18 @@ import { getApprovalSimulatedCostingSummary } from '../actions/Simulation'
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { loggedInUserId } from '../../../helper';
-import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, approvalNumber, approvalProcessId } = props;
 
     const [showListing, setShowListing] = useState(false)
+    const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
+    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
+    const [showPushButton, setShowPushButton] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [viewButton, setViewButton] = useState(false)
-    const [costingSummary, setCostingSummary] = useState(true)
-    const [costingList, setCostingList] = useState([])
-    const [simulationDetail, setSimulationDetail] = useState({})
-    const [approvalLevelStep, setApprovalLevelStep] = useState([])
-    const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
-    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
-    const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
-    const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
-    const [pushButton, setPushButton] = useState(false)
-
+    const [costingSummary, setCostingSummary] = useState(false)
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState({})
@@ -60,31 +53,11 @@ function SimulationApprovalSummary(props) {
             approvalId: approvalProcessId,
             loggedInUserId: loggedInUserId(),
         }
-        dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId } = res.data.Data
-            setCostingList(SimulatedCostingList)
-            setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId })
-            // setIsApprovalDone(IsSent) UNCOMMENT IT AFTER CODE DEPLOY FROM KAMAL SIR END
-            setIsApprovalDone(false)
-            setShowFinalLevelButton(IsFinalLevelButtonShow)
-            setShowPushButton(IsPushedButtonShow)
-        }))
+        dispatch(getApprovalSimulatedCostingSummary(reqParams, () => { }))
     }, [])
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
-    }
-
-    const closeApproveDrawer = (e = '', type) => {
-        console.log("Entering here");
-        if (type === 'submit') {
-            setApproveDrawer(false)
-            setShowListing(true)
-        } else {
-            setApproveDrawer(false)
-            setRejectDrawer(false)
-        }
     }
 
     const renderDropdownListing = (label) => {
@@ -180,7 +153,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="8">
                                 <div className="left-border">
                                     {'Approval Workflow (Token No. '}
-                                    {`${simulationDetail && simulationDetail.Token ? simulationDetail.Token : '-'}) :`}
+                                    {`${approvalData && approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'}) :`}
                                 </div>
                             </Col>
                             <Col md="4" className="text-right">
@@ -197,7 +170,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* Code for approval workflow */}
-                        <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail.Token} />
+                        <ApprovalWorkFlow approvalLevelStep={[]} approvalNo={1234} />
 
                         <Row>
                             <Col md="10">
@@ -348,10 +321,10 @@ function SimulationApprovalSummary(props) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {costingList && costingList.map((el, index) => {
+                                                {approvalDetails && approvalDetails.map((el, index) => {
                                                     return (
                                                         <tr key={index}>
-                                                            <td>{el && el.CostingNumber ? el.CostingNumber : '-'}</td>
+                                                            <td>{el && el.CostingId ? el.CostingId : '-'}</td>
                                                             <td>{el && el.CostingHead ? el.CostingHead : '-'}</td>
                                                             <td>{el && el.VendorName ? el.VendorName : '-'}</td>
                                                             <td>{el && el.Technology ? el.Technology : '-'} </td>
@@ -359,11 +332,11 @@ function SimulationApprovalSummary(props) {
                                                             <td>{el && el.PartDescription !== null ? el.PartDescription : '-'}</td>
                                                             <td>{el && el.ECNNumber !== null ? el.ECNNumber : '-'}</td>
                                                             <td>{el && el.DrawingNo !== null ? el.DrawingNo : '-'}</td>
-                                                            <td>{el && el.RevisionNumber !== null ? el.RevisionNumber : '-'}</td>
+                                                            <td>{el && el.RevisionNo !== null ? el.RevisionNo : '-'}</td>
                                                             <td>{el && el.OldPOPrice !== null ? el.OldPOPrice : '-'}</td>
                                                             <td>{el && el.NewPOPrice !== null ? el.NewPOPrice : '-'}</td>
-                                                            <td>{el && el.OldRMPrice !== null ? el.OldRMPrice : '-'}</td>
-                                                            <td>{el && el.NewRMPrice !== null ? el.NewRMPrice : '-'}</td>
+                                                            <td>{el && el.RMOldCost !== null ? el.RMOldCost : '-'}</td>
+                                                            <td>{el && el.RMNewCost !== null ? el.RMNewCost : '-'}</td>
                                                             <td>{<button className="Edit mr-2" type={'button'} onClick={() => DisplayCompareCosting(el)} />}</td>
                                                         </tr>
                                                     )
@@ -434,56 +407,53 @@ function SimulationApprovalSummary(props) {
                             </div>
                         </Row>}
 
-                    {
-                        showPushButton &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                            <div className="col-sm-12 text-right bluefooter-butn">
-                                <Fragment>
-                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
-                                        <div className={"check-icon"}>
-                                            <img
-                                                src={require("../../../assests/images/check.png")}
-                                                alt="check-icon.jpg"
-                                            />
-                                        </div>{" "}
-                                        {"Push"}
-                                    </button>
-                                </Fragment>
-                            </div>
-                        </Row>
-                    }
+                    {/* {
+                            showPushButton &&
+                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <div className="col-sm-12 text-right bluefooter-butn">
+                                    <Fragment>
+                                        <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                                            <div className={"check-icon"}>
+                                                <img
+                                                    src={require("../../../../assests/images/check.png")}
+                                                    alt="check-icon.jpg"
+                                                />
+                                            </div>{" "}
+                                            {"Push"}
+                                        </button>
+                                    </Fragment>
+                                </div>
+                            </Row>
+                        } */}
                 </> :
                 <SimulationApprovalListing />
             }
 
-            {approveDrawer && <ApproveRejectDrawer
+            {/* {approveDrawer && <ApproveRejectDrawer
                 type={'Approve'}
                 isOpen={approveDrawer}
-                closeDrawer={closeApproveDrawer}
+                closeDrawer={closeDrawer}
                 // tokenNo={approvalNumber}
-                approvalData={[]}
+                approvalData={[approvalData]}
                 anchor={'right'}
-                isSimulation={true}
-                simulationDetail={simulationDetail}
-                // reasonId={approvalDetails.ReasonId}
+                reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={!showFinalLevelButtons}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
-            />}
+                IsPushDrawer={showPushDrawer}
+                dataSend={[approvalDetails, partDetail]}
+            />} */}
 
-            {rejectDrawer && <ApproveRejectDrawer
+            {/* {rejectDrawer && <ApproveRejectDrawer
                 type={'Reject'}
                 isOpen={rejectDrawer}
-                simulationDetail={simulationDetail}
-                closeDrawer={closeApproveDrawer}
-                isSimulation={true}
+                approvalData={[approvalData]}
+                closeDrawer={closeDrawer}
                 //  tokenNo={approvalNumber}
                 anchor={'right'}
                 IsFinalLevel={!showFinalLevelButtons}
-            // reasonId={approvalDetails.ReasonId}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
-            />}
+                reasonId={approvalDetails.ReasonId}
+                IsPushDrawer={showPushDrawer}
+                dataSend={[approvalDetails, partDetail]}
+            />} */}
 
             {/* {pushButton && <PushButtonDrawer
                 isOpen={pushButton}
@@ -494,7 +464,7 @@ function SimulationApprovalSummary(props) {
             />} */}
 
             {viewButton && <ViewDrawer
-                approvalLevelStep={approvalLevelStep}
+                approvalLevelStep={[]}
                 isOpen={viewButton}
                 closeDrawer={closeViewDrawer}
                 anchor={'top'}
