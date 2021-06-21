@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
@@ -24,7 +24,7 @@ class VBCPlantListing extends Component {
         this.state = {
             isEditFlag: false,
             isOpenVendor: false,
-            shown:false,
+            shown: false,
             ID: '',
             tableData: [],
             city: [],
@@ -345,20 +345,20 @@ class VBCPlantListing extends Component {
     * @description Renders the component
     */
 
-     handleExportCSVButtonClick = (onClick) => {
+    handleExportCSVButtonClick = (onClick) => {
         onClick();
         let products = []
         products = this.props.plantDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      } 
+    }
     render() {
-        const { handleSubmit, AddAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
 
 
@@ -378,7 +378,7 @@ class VBCPlantListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -463,8 +463,8 @@ class VBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -486,7 +486,7 @@ class VBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}

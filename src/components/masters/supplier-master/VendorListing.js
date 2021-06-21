@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
     getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
@@ -40,7 +40,7 @@ class VendorListing extends Component {
             isEditFlag: false,
             isOpenVendor: false,
             ID: '',
-            shown:false,
+            shown: false,
             isBulkUpload: false,
             tableData: [],
             vendorType: [],
@@ -399,7 +399,7 @@ class VendorListing extends Component {
     * @desc Submit the signup form values.
     * @returns {{}}
     */
-   
+
     onSubmit(values) {
     }
 
@@ -408,20 +408,20 @@ class VendorListing extends Component {
         let products = []
         products = this.props.supplierDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
     /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
 
         const options = {
             clearSearch: true,
@@ -438,7 +438,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className="container-fluid show-table-btn blue-before-inside">
+            <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid blue-before-inside"}>
                 {/* {this.props.loading && <Loader />} */}
                 <form
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -527,8 +527,8 @@ class VendorListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {BulkUploadAccessibility && (
                                         <button
                                             type="button"
@@ -559,7 +559,7 @@ class VendorListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${VendorMaster}.csv`}
                     //ignoreSinglePage
                     ref={"table"}

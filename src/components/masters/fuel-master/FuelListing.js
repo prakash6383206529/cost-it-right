@@ -10,7 +10,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import 'react-input-range/lib/css/index.css'
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -258,20 +258,20 @@ class FuelListing extends Component {
         let products = []
         products = this.props.fuelDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
@@ -286,7 +286,7 @@ class FuelListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -384,7 +384,7 @@ class FuelListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${FuelMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}

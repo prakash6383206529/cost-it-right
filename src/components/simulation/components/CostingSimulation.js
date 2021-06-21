@@ -332,7 +332,7 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldRMCost" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewRMCost" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={true} export={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
                         </Col>

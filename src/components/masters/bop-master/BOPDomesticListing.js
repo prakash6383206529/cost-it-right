@@ -13,7 +13,7 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -381,22 +381,22 @@ class BOPDomesticListing extends Component {
         let products = []
         products = this.props.bopDomesticList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
-
+        const a = getConfigurationKey().IsDestinationPlantConfigure;
         const options = {
             clearSearch: true,
             noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -416,7 +416,7 @@ class BOPDomesticListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -545,7 +545,7 @@ class BOPDomesticListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${BopDomestic}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
@@ -559,14 +559,14 @@ class BOPDomesticListing extends Component {
                             {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-                            {getConfigurationKey().IsDestinationPlantConfigure === false && <TableHeaderColumn width={100} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>}
-                            {getConfigurationKey().IsDestinationPlantConfigure === true && <TableHeaderColumn width={100} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>}
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === false} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === true} export={getConfigurationKey().IsDestinationPlantConfigure !== true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}  >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

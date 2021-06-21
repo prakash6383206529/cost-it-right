@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
@@ -222,19 +222,19 @@ class IndivisualPartListing extends Component {
     formToggle = () => {
         this.props.formToggle()
     }
-    
+
     handleExportCSVButtonClick = (onClick) => {
         onClick();
         let products = []
         products = this.props.newPartsListing
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
 
     /**
@@ -243,7 +243,7 @@ class IndivisualPartListing extends Component {
     */
     render() {
         const { isBulkUpload } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const onExportToCSV = (row) => {
             // ...
@@ -268,7 +268,7 @@ class IndivisualPartListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
 
                 <Row className="pt-4 no-filter-row">
@@ -301,7 +301,7 @@ class IndivisualPartListing extends Component {
                     hover={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${ComponentPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
@@ -317,7 +317,7 @@ class IndivisualPartListing extends Component {
                     <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
@@ -342,7 +342,7 @@ function mapStateToProps({ part, auth }) {
     const { newPartsListing } = part
     const { initialConfiguration } = auth;
 
-    return { newPartsListing,initialConfiguration };
+    return { newPartsListing, initialConfiguration };
 }
 
 /**

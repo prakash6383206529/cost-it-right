@@ -27,6 +27,7 @@ class PartMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false,
         }
     }
 
@@ -38,7 +39,7 @@ class PartMaster extends Component {
                 let Data = leftMenuData;
                 const accessData = Data && Data.find(el => el.PageName === PART)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
+                console.log(permmisionData,'permmisionDatapermmisionData')
                 if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
@@ -46,8 +47,10 @@ class PartMaster extends Component {
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
+
             }
         })
     }
@@ -140,6 +143,7 @@ class PartMaster extends Component {
                                         EditAccessibility={this.state.EditAccessibility}
                                         DeleteAccessibility={this.state.DeleteAccessibility}
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                        DownloadAccessibility={this.state.DownloadAccessibility}
                                     />
                                 </TabPane>}
                             {this.state.activeTab === '2' &&
@@ -151,6 +155,7 @@ class PartMaster extends Component {
                                         EditAccessibility={this.state.EditAccessibility}
                                         DeleteAccessibility={this.state.DeleteAccessibility}
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                        DownloadAccessibility={this.state.DownloadAccessibility}
                                     />
                                 </TabPane>}
                         </TabContent>

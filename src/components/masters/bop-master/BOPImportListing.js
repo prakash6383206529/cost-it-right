@@ -11,7 +11,7 @@ import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -19,7 +19,7 @@ import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { BopImport, BOPIMPORT, INR } from '../../../config/constants';
+import { BopImport, INR } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
 
 class BOPImportListing extends Component {
@@ -350,6 +350,19 @@ class BOPImportListing extends Component {
         this.props.displayForm()
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.bopImportList
+        return products; // must return the data which you want to be exported
+    }
+
+    createCustomExportCSVButton = (onClick) => {
+        return (
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+        );
+    }
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -358,26 +371,12 @@ class BOPImportListing extends Component {
 
     }
 
-
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.bopImportList
-        return products; // must return the data which you want to be exported
-      }
-    
-    createCustomExportCSVButton = (onClick) => {
-        return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
-        );
-      }
-
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
 
         const onExportToCSV = (row) => {
@@ -400,7 +399,7 @@ class BOPImportListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -530,7 +529,7 @@ class BOPImportListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${BopImport}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
@@ -544,8 +543,8 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
 
                             <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
-                            {getConfigurationKey().IsDestinationPlantConfigure === false && <TableHeaderColumn width={100} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>}
-                            {getConfigurationKey().IsDestinationPlantConfigure === true && <TableHeaderColumn width={100} dataField="DestinationPlant" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>}
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === false} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === true} export={getConfigurationKey().IsDestinationPlantConfigure !== true} dataField="DestinationPlant" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderBasicRate()}</TableHeaderColumn>

@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
@@ -24,7 +24,7 @@ class ZBCPlantListing extends Component {
         this.state = {
             isEditFlag: false,
             isOpenVendor: false,
-            shown:false,
+            shown: false,
             ID: '',
             tableData: [],
             city: [],
@@ -350,20 +350,20 @@ class ZBCPlantListing extends Component {
         let products = []
         products = this.props.plantDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      } 
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration } = this.props;
+        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
@@ -381,7 +381,7 @@ class ZBCPlantListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -466,8 +466,8 @@ class ZBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -489,7 +489,7 @@ class ZBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantZbc}.csv`}
                     //ignoreSinglePage
                     ref={"table"}

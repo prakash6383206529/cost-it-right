@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
@@ -35,6 +35,7 @@ class ClientListing extends Component {
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
+            DownloadAccessibility: false,
         }
     }
 
@@ -54,6 +55,7 @@ class ClientListing extends Component {
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
             }
@@ -227,13 +229,13 @@ class ClientListing extends Component {
         let products = []
         products = this.props.clientDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      } 
+    }
     /**
     * @method render
     * @description Renders the component
@@ -242,7 +244,7 @@ class ClientListing extends Component {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
 
-        
+
 
         const options = {
             clearSearch: true,
@@ -259,7 +261,7 @@ class ClientListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={this.state.DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
                 <div className="container-fluid">
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -290,7 +292,7 @@ class ClientListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        exportCSV
+                        exportCSV={this.state.DownloadAccessibility}
                         csvFileName={`${Clientmaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}

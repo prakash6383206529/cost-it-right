@@ -326,7 +326,7 @@ createCustomExportCSVButton = (onClick) => {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
     const options = {
       clearSearch: true,
@@ -341,8 +341,8 @@ createCustomExportCSVButton = (onClick) => {
     };
 
     return (
-      <div className="show-table-btn">
-        {/* {this.props.loading && <Loader />} */}
+      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+      {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             {this.state.shown && (
@@ -489,7 +489,7 @@ createCustomExportCSVButton = (onClick) => {
               bordered={false}
               options={options}
               search
-              exportCSV
+              exportCSV={DownloadAccessibility}
                 csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}

@@ -13,7 +13,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import AddSpecification from './AddSpecification';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -26,7 +26,7 @@ class SpecificationListing extends Component {
         super(props);
         this.state = {
             isOpen: false,
-            shown:false,
+            shown: false,
             isEditFlag: false,
             isBulkUpload: false,
             ID: '',
@@ -295,13 +295,13 @@ class SpecificationListing extends Component {
         let products = []
         products = this.props.rmSpecificationList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
@@ -309,7 +309,7 @@ class SpecificationListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;       
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const options = {
             clearSearch: true,
@@ -324,7 +324,7 @@ class SpecificationListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -415,7 +415,7 @@ class SpecificationListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${RmSpecification}.csv`}
                             //ignoreSinglePage
                             ref={'table'}

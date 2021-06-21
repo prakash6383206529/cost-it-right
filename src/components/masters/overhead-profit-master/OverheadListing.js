@@ -12,7 +12,7 @@ import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
@@ -414,20 +414,20 @@ class OverheadListing extends Component {
         let products = []
         products = this.props.overheadProfitList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, } = this.state;
 
         const options = {
@@ -443,7 +443,7 @@ class OverheadListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
@@ -577,7 +577,7 @@ class OverheadListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${OverheadMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}

@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import moment from 'moment';
@@ -258,13 +258,13 @@ class AssemblyPartListing extends Component {
         let products = []
         products = this.props.partsListing
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
@@ -272,7 +272,7 @@ class AssemblyPartListing extends Component {
     */
     render() {
         const { isOpenVisualDrawer, isBulkUpload } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const options = {
             clearSearch: true,
             noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -289,7 +289,7 @@ class AssemblyPartListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {/* {this.props.loading && <Loader />} */}
 
                 <Row className="pt-4 no-filter-row">
@@ -321,7 +321,7 @@ class AssemblyPartListing extends Component {
                     hover={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${AssemblyPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
@@ -339,7 +339,7 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} export={false} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 

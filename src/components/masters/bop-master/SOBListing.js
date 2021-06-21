@@ -241,7 +241,7 @@ createCustomExportCSVButton = (onClick) => {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
   
     const onExportToCSV = (row) => {
@@ -332,7 +332,7 @@ createCustomExportCSVButton = (onClick) => {
               hover={false}
               bordered={false}
               options={options}
-              exportCSV
+              exportCSV={DownloadAccessibility}
               csvFileName={`${Sob}.csv`}
               search
               ref={'table'}
