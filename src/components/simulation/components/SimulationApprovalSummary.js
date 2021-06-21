@@ -335,8 +335,8 @@ function SimulationApprovalSummary(props) {
                                                             <td>{el && el.RevisionNo !== null ? el.RevisionNo : '-'}</td>
                                                             <td>{el && el.OldPOPrice !== null ? el.OldPOPrice : '-'}</td>
                                                             <td>{el && el.NewPOPrice !== null ? el.NewPOPrice : '-'}</td>
-                                                            <td>{el && el.RMOldCost !== null ? el.RMOldCost : '-'}</td>
-                                                            <td>{el && el.RMNewCost !== null ? el.RMNewCost : '-'}</td>
+                                                            <td className={el.NewRMPrice > el.OldRMPrice ? 'red-value' : 'green-value'}>{el && el.OldRMPrice !== null ? el.OldRMPrice : '-'}</td>
+                                                            <td className={el.NewRMPrice > el.OldRMPrice ? 'red-value' : 'green-value'}>{el && el.NewRMPrice !== null ? el.NewRMPrice : '-'}</td>
                                                             <td>{<button className="Edit mr-2" type={'button'} onClick={() => DisplayCompareCosting(el)} />}</td>
                                                         </tr>
                                                     )
@@ -363,7 +363,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row className="mb-4">
                             <Col md="12" className="costing-summary-row">
-                                {compareCosting && <CostingSummaryTable viewMode={true} costingID={compareCostingObj.CostingId} />}
+                                {compareCosting && <CostingSummaryTable viewMode={true} costingID={compareCostingObj.CostingId} simulationMode={true} />}
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
