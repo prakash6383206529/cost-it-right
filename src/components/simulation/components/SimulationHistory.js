@@ -30,13 +30,7 @@ function SimulationHistory(props) {
     }
 
     const linkableFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <Fragment>
-                <div
-                    onClick={() => { }} className={'link'}>{cell}
-                </div>
-            </Fragment>
-        )
+        return <div onClick={() => { }} className={'link'}>{cell}</div>
     }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
