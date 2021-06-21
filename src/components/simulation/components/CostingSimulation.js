@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRMDomesticDataList } from '../../masters/actions/Material';
@@ -15,7 +15,7 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { RMDOMESTIC, RMIMPORT,simulationMaster } from '../../../config/constants';
+import { RMDOMESTIC, RMIMPORT, simulationMaster } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 
 function CostingSimulation(props) {
@@ -204,13 +204,13 @@ function CostingSimulation(props) {
         let products = []
         products = props.costingList
         return products; // must return the data which you want to be exported
-      }
+    }
 
     const createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     const onExportToCSV = (row) => {
         // ...
@@ -253,6 +253,18 @@ function CostingSimulation(props) {
         setShowApprovalHistory(true)
     }
 
+    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
@@ -272,7 +284,7 @@ function CostingSimulation(props) {
         const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
-    
+
 
     return (
         <>
@@ -292,7 +304,7 @@ function CostingSimulation(props) {
                                     <h5>{`Filter By:`}</h5>
                                 </div>
 
-                                <div className="flex-fill hide-label">
+                                {/* <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -307,7 +319,7 @@ function CostingSimulation(props) {
                                         handleChange={() => { }}
                                         errors={errors.partNo}
                                     />
-                                </div>
+                                </div> */}
                                 <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
@@ -386,10 +398,10 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>

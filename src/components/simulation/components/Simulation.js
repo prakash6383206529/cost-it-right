@@ -128,6 +128,8 @@ function Simulation(props) {
         setShowEditTable(false)
         setIsBulkUpload(false)
         setTableData([])
+        setMaster({ label: master.label, value: master.value })
+        setTechnology({ label: technology.label, value: technology.value })
     }
 
     /**
@@ -236,7 +238,7 @@ function Simulation(props) {
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        defaultValue={master.length !== 0 ? master : ''}
                                         options={renderListing('masters')}
                                         mandatory={false}
                                         handleChange={handleMasterChange}
@@ -256,7 +258,7 @@ function Simulation(props) {
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        defaultValue={technology.length !== 0 ? technology : ''}
                                         options={renderListing('technology')}
                                         mandatory={false}
                                         handleChange={handleTechnologyChange}
