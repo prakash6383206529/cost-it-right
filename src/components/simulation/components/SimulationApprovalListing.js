@@ -169,7 +169,11 @@ function SimulationApprovalListing(props) {
     }
 
     const statusFormatter = (cell, row, enumObject, rowIndex) => {
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={cell} >{row.DisplayStatus}</div>
+    }
+
+    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return <button className="View" type={'button'} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} />
     }
 
     const renderPlant = (cell, row, enumObject, rowIndex) => {
@@ -202,9 +206,6 @@ function SimulationApprovalListing(props) {
         setValue('status', '')
         getTableData()
     }
-
-
-
 
     const onRowSelect = (row, isSelected, e) => {
         if (isSelected) {
@@ -305,7 +306,7 @@ function SimulationApprovalListing(props) {
                     <div className="container-fluid approval-listing-page">
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                            <h1 className="mb-0">Simulation Approval</h1>
+                            <h1 className="mb-0">Simulation History</h1>
 
 
                             <Row className="pt-4 blue-before">
@@ -435,11 +436,14 @@ function SimulationApprovalListing(props) {
                             <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="TechnologyName" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Requested By'} </TableHeaderColumn>
                             <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </div>
                     :

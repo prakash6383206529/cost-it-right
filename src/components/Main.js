@@ -343,7 +343,8 @@ class Main extends Component {
 
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
-                    <Route path="/simulation-history" component={SimulationHistory} />
+                    {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
+                    <Route path="/simulation-history" component={SimulationApprovalListing} />
 
                     <Route path="/simulation" component={Simulation} />
 
@@ -351,7 +352,7 @@ class Main extends Component {
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 
-                    <Route path='/simulation-approval-listing' component={SimulationApprovalListing} />
+                    {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     <Route
                       render={(props) => (
