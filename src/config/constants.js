@@ -1584,4 +1584,6 @@ export const VolumeMaster = "Volume"
 export const ExchangeMaster = "Exchange-rate"
 export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
+
+export const simulationMaster = "Simulation"
 // MASTER PAGES NAME END

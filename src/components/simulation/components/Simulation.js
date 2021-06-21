@@ -211,7 +211,7 @@ function Simulation(props) {
 
 
     return (
-        <div className="container-fluid simulation-page">
+        <div className="container-fluid simulation-page ">
             {
                 !showEditTable &&
                 <>

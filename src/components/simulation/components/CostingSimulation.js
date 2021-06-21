@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRMDomesticDataList } from '../../masters/actions/Material';
@@ -15,7 +15,7 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { RMDOMESTIC, RMIMPORT,simulationMaster } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 
 function CostingSimulation(props) {
@@ -199,6 +199,19 @@ function CostingSimulation(props) {
     //     
     // }
 
+    const handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = props.costingList
+        return products; // must return the data which you want to be exported
+      }
+
+    const createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
     const onExportToCSV = (row) => {
         // ...
         let products = []
@@ -218,7 +231,7 @@ function CostingSimulation(props) {
         clearSearch: true,
         noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
         // paginationShowsTotal: renderPaginationShowsTotal(),
-        onExportToCSV: onExportToCSV,
+        exportCSVBtn: createCustomExportCSVButton,
         // exportCSVText: 'Custom Export CSV Text',
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -259,20 +272,21 @@ function CostingSimulation(props) {
         const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+    
 
     return (
         <>
             {
                 !showApprovalHistory &&
 
-                <div className="show-table-btn">
+                <div className="show-table-btn costing-simulation-page">
                     <Row>
                         <Col sm="12">
                             <h1 class="mb-0">Token No:{tokenNo}</h1>
                         </Col>
                     </Row>
                     <Row className="filter-row-large pt-4">
-                        <Col lg="10" md="12" className="filter-block">
+                        <Col lg="12" md="12" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills">
                                     <h5>{`Filter By:`}</h5>
@@ -327,7 +341,7 @@ function CostingSimulation(props) {
                                     />
                                 </div>
 
-                                <div className="flex-fill hide-label">
+                                <div className="flex-fill hide-label text-right">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -364,7 +378,7 @@ function CostingSimulation(props) {
                                 className="add-volume-table"
                                 pagination
                                 exportCSV
-                                csvFileName='table-export.csv'
+                                csvFileName={`${simulationMaster}.csv`}
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>

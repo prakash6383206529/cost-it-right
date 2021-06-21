@@ -1846,6 +1846,25 @@ $roboto: "Roboto", sans-serif;
 	}
 }
 
+// drawer-full-top start
+.MuiDrawer-root.drawer-full-top{
+   .MuiDrawer-paper{
+    margin-top: 60px;
+    left: 0;
+    .container{
+      max-width: 100%;
+      .drawer-wrapper{
+        width: 100%;
+      }
+    }
+   }
+   .react-bs-container-body{
+     min-height: unset !important;
+   }
+}
+// drawer-full-top end
+
+
 body {
 	.icon-small-primary {
 		width: 25px;
