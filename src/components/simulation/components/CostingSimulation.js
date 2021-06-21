@@ -17,6 +17,7 @@ import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { RMDOMESTIC, RMIMPORT, simulationMaster } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
+import SimulationApprovalListing from './SimulationApprovalListing';
 
 function CostingSimulation(props) {
     const { simulationId } = props
@@ -184,7 +185,12 @@ function CostingSimulation(props) {
                 }))
                 break;
             case RMIMPORT:
-                console.log('Called RMDOMESRIC')
+                dispatch(saveSimulationForRawMaterial(obj, res => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation saved successfully.')
+                        setShowApprovalHistory(true)
+                    }
+                }))
                 break;
 
             default:
@@ -479,7 +485,7 @@ function CostingSimulation(props) {
                 </div>
             }
 
-            {showApprovalHistory && <SimulationHistory />}
+            {showApprovalHistory && <SimulationApprovalListing />}
 
             {
                 CostingDetailDrawer &&
