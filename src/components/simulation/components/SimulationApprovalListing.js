@@ -17,6 +17,7 @@ import { EMPTY_GUID, PENDING } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList } from '../actions/Simulation'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
+import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
@@ -34,6 +35,8 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
+    const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+
     const dispatch = useDispatch()
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -132,7 +135,7 @@ function SimulationApprovalListing(props) {
         return (
             <Fragment>
                 <div
-                    onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
+                    onClick={() => viewDetails(row)}
                     className={'link'}
                 >
                     {cell}
@@ -172,26 +175,16 @@ function SimulationApprovalListing(props) {
     }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        return <button className="View" type={'button'} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} />
+        return <button className="View" type={'button'} onClick={() => viewDetails(row)} />
     }
 
-    const renderPlant = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-    }
-
-    const renderVendor = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
-    }
-
-    const viewDetails = (approvalNumber, approvalProcessId) => {
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
-        setShowApprovalSummary(true)
-        // return (
-        //     <ApprovalSummary
-        //         approvalNumber={approvalNumber ? approvalNumber : '2345438'}
-        //         approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
-        //     />
-        // )
+    const viewDetails = (rowObj) => {
+        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber })
+        if (rowObj.DisplayStatus === 'Draft') {
+            setRedirectCostingSimulation(true)
+        } else {
+            setShowApprovalSummary(true)
+        }
     }
 
     /**
@@ -298,16 +291,25 @@ function SimulationApprovalListing(props) {
         //setRejectDrawer(false)
     }
 
+    if (redirectCostingSimulation === true) {
+        return <Redirect
+            to={{
+                pathname: "/simulation",
+                state: {
+                    isFromApprovalListing: true,
+                    approvalProcessId: approvalData.approvalProcessId
+                }
+            }}
+        />
+    }
+
     return (
         <Fragment>
             {
                 !showApprovalSumary ?
                     <div className="container-fluid approval-listing-page">
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-
                             <h1 className="mb-0">Simulation History</h1>
-
-
                             <Row className="pt-4 blue-before">
                                 {shown &&
                                     <Col lg="10" md="12" className="filter-block">
@@ -403,15 +405,7 @@ function SimulationApprovalListing(props) {
                                         </div>
                                     </Col>
                                 }
-                                {/* <Col md="4" className="search-user-block">
-            <div className="d-flex justify-content-end bd-highlight">
-              <div>
-                
-            
-                
-              </div>
-            </div>
-          </Col> */}
+
                             </Row>
                         </form>
 
@@ -432,7 +426,7 @@ function SimulationApprovalListing(props) {
                         >
                             <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
                             <TableHeaderColumn dataField="CostingHead" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="TechnologyName" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
