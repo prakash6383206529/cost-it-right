@@ -1409,6 +1409,12 @@ p {
         top: 0;
         height: 100%;
       }
+      &.hide-left-border{
+        padding-left: 0;
+        &:before{
+          display: none;
+        }
+      }
     }
 
     .css-yk16xz-control,
