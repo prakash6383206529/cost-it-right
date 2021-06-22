@@ -849,6 +849,16 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
+
+.Balance {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/balance.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
+
 .edit-details-btn {
   width:25px;
   height: 13px;
@@ -911,6 +921,7 @@ input.form-control{
 }
 
 .Add,
+.Balance,
 .Edit,
 .Delete,
 .View,
@@ -4432,6 +4443,7 @@ body{
 
       .Add,
       .Edit,
+      .Balance,
       .Delete,
       .View,
       .Download,

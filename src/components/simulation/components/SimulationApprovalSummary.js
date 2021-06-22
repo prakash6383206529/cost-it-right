@@ -364,7 +364,7 @@ function SimulationApprovalSummary(props) {
                                                             <td>{el && el.NewPOPrice !== null ? el.NewPOPrice : '-'}</td>
                                                             <td className={el.NewRMPrice > el.OldRMPrice ? 'red-value' : 'green-value'}>{el && el.OldRMPrice !== null ? el.OldRMPrice : '-'}</td>
                                                             <td className={el.NewRMPrice > el.OldRMPrice ? 'red-value' : 'green-value'}>{el && el.NewRMPrice !== null ? el.NewRMPrice : '-'}</td>
-                                                            <td>{<button className="Edit mr-2" type={'button'} onClick={() => DisplayCompareCosting(el)} />}</td>
+                                                            <td>{<button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(el)} />}</td>
                                                         </tr>
                                                     )
                                                 })}
