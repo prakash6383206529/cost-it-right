@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
+import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
@@ -108,26 +108,12 @@ function ApproveRejectDrawer(props) {
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (type === 'Sender') {
-      let saveObj = {}
-      let temp = []
-      saveObj.SimulationId = simulationDetail.SimulationId
-      saveObj.Token = simulationDetail.TokenNo
-      saveObj.Currency = ""
-      saveObj.EffectiveDate = ""
-      saveObj.Remark = ""
-      saveObj.LoggedInUserId = userDetails().LoggedInUserId
-      saveObj.RawMaterialId = "00000000-0000-0000-0000-000000000000"
-      saveObj.RawMaterialCode = ""
-      saveObj.IsPartialSaved = selectedRowData.length === costingArr.length ? false : true
-      costingArr && costingArr.map(item => {
-        temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
-      })
-      saveObj.SelectedCostings = temp
+      let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
       switch (master) {
         case RMDOMESTIC:
-          dispatch(saveSimulationForRawMaterial(saveObj, res => {
+          dispatch(saveSimulationForRawMaterial(simObj, res => {
             if (res.data.Result) {
               toastr.success('Simulation has been saved successfully.')
             }
@@ -217,11 +203,12 @@ function ApproveRejectDrawer(props) {
       objs.LoggedInUserId = userLoggedIn
       objs.SenderLevelId = userData.LoggedInSimulationLevelId
       objs.SenderLevel = userData.LoggedInSimulationLevel
-      objs.Approver = data.approver && data.approver.value ? data.approver.value : ''
+      objs.SenderId = userLoggedIn
+      objs.ApproverId = data.approver && data.approver.value ? data.approver.value : ''
       objs.ApproverLevelId = data.approver && data.approver.levelId ? data.approver.levelId : ''
       objs.ApproverLevel = data.approver && data.approver.levelName ? data.approver.levelName : ''
       objs.Remark = data.remark
-      objs.IsApproved = 'Approve' ? true : false
+      objs.IsApproved = type === 'Approve' ? true : false
       objs.ApproverDepartmentId = data.dept && data.dept.value ? data.dept.value : ''
       objs.ApproverDepartmentName = data.dept && data.dept.label ? data.dept.label : ''
       objs.IsFinalApprovalProcess = false
@@ -385,7 +372,7 @@ function ApproveRejectDrawer(props) {
                 )}
                 {
                   // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
-                  isSimulation && (type === 'Approve' || type === 'Sender') &&
+                  isSimulation && (type === 'Approve' || type === 'Sender') && !IsFinalLevel &&
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm

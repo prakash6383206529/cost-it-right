@@ -12,12 +12,13 @@ import { getCostingSimulationList, getVerifySimulationList, saveSimulationForRaw
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, formatRMSimulationObject, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { RMDOMESTIC, RMIMPORT, simulationMaster } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import SimulationApprovalListing from './SimulationApprovalListing';
+import { Redirect } from 'react-router';
 
 function CostingSimulation(props) {
     const { simulationId } = props
@@ -161,23 +162,13 @@ function CostingSimulation(props) {
     const renderDropdownListing = (label) => { }
 
     const onSaveSimulation = () => {
-        let temp = []
-        let obj = {}
-        obj.SimulationId = simulationDetail.SimulationId
-        obj.Token = simulationDetail.TokenNo
-        obj.Currency = ""
-        obj.EffectiveDate = ""
-        obj.Remark = ""
-        obj.LoggedInUserId = userDetails().LoggedInUserId
-        obj.IsPartialSaved = selectedRowData.length === costingArr.length ? false : true
-        costingArr && costingArr.map(item => {
-            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
-        })
-        obj.SelectedCostings = temp
+
+        const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
+
 
         switch (selectedMasterForSimulation.label) {
             case RMDOMESTIC:
-                dispatch(saveSimulationForRawMaterial(obj, res => {
+                dispatch(saveSimulationForRawMaterial(simObj, res => {
                     if (res.data.Result) {
                         toastr.success('Simulation saved successfully.')
                         setShowApprovalHistory(true)
@@ -185,7 +176,7 @@ function CostingSimulation(props) {
                 }))
                 break;
             case RMIMPORT:
-                dispatch(saveSimulationForRawMaterial(obj, res => {
+                dispatch(saveSimulationForRawMaterial(simObj, res => {
                     if (res.data.Result) {
                         toastr.success('Simulation saved successfully.')
                         setShowApprovalHistory(true)
@@ -408,11 +399,11 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldPOPrice" width={100} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewPOPrice" width={100} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldRMPrice" width={100} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewRMPrice" width={100} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="SimulationCostingId" width={100} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
                         </Col>
@@ -485,7 +476,7 @@ function CostingSimulation(props) {
                 </div>
             }
 
-            {showApprovalHistory && <SimulationApprovalListing />}
+            {showApprovalHistory && <Redirect to='/simulation-history' />}
 
             {
                 CostingDetailDrawer &&
