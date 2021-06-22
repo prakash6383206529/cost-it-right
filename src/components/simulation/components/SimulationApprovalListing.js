@@ -68,7 +68,7 @@ function SimulationApprovalListing(props) {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
             token_number: null,
-            simulated_by: EMPTY_GUID,
+            simulated_by: createdBy,
             requestedBy: requestedBy,
             status: 0,
             // partNo: partNo,
