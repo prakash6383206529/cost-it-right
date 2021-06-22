@@ -195,7 +195,7 @@ function SimulationApprovalSummary(props) {
                                     <Col lg="10" md="12" className="filter-block">
                                         <div className="d-inline-flex justify-content-start align-items-top w100">
                                             <div className="flex-fills">
-                                                <h5>{`Filter By:`}</h5>
+                                                <h5 className="hide-left-border">{`Filter By:`}</h5>
                                             </div>
                                             <div className="flex-fill filled-small hide-label">
                                                 <SearchableSelectHookForm
