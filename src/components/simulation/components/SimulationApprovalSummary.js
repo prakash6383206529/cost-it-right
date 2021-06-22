@@ -81,6 +81,7 @@ function SimulationApprovalSummary(props) {
         if (type === 'submit') {
             setApproveDrawer(false)
             setShowListing(true)
+            setRejectDrawer(false)
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
