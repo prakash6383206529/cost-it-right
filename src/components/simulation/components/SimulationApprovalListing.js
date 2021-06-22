@@ -63,10 +63,6 @@ function SimulationApprovalListing(props) {
      * @description getting approval list table
      */
     const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = EMPTY_GUID,) => {
-<<<<<<< HEAD
-=======
-
->>>>>>> d9aac321f... Simulation and approval in progress
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
