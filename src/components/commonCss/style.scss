@@ -3002,12 +3002,12 @@ button:disabled{pointer-events: none;}
   }
 }
 
-.disabled-button,button:disabled {
+.disabled-button,button:disabled,.approval-btn:disabled {
   background-color: #e6e6e6 !important;
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus,.check-icon{
+  .plus,.check-icon,>img{
     filter: brightness(0.8) !important;
   }
   .cross-icon{
@@ -3726,6 +3726,69 @@ body{
     }
   }
 }
+
+.accordian-table-with-arrow,.accordian-table-with-arrow.table.cr-brdr-main{
+  border: none;
+  thead{
+    tr{
+      th{
+        border: none;
+        font-weight: bold;
+      }
+    }
+  }
+  tbody{
+    position: relative;
+    border-bottom: 4px solid #fff;
+    &:before{
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      border-top: 1px solid #C2CBE8;
+      content: "";
+      bottom: -2px;
+    }
+    tr{
+      td{
+        border-top: 1px solid #C2CBE8;
+        border-bottom: 1px solid #C2CBE8;
+        &:first-child{
+          border-left: 1px solid #C2CBE8;
+        }
+        &:last-child{
+          border-right: 1px solid #C2CBE8;
+        }
+        span{
+          display: inline-block;
+          width: 100%;
+        }
+      }
+      &.accordian-with-arrow,&.accordian-content{
+        .Close {
+          position: absolute;
+          left: 0px;
+          top: 0;
+          bottom: 0;
+          height: auto;
+          width: 15px;
+          background: transparent url(/static/media/caret-down.61c2a710.svg) 0% 0% no-repeat padding-box;
+          opacity: 1;
+          border: none;
+          background-position: center;
+        }
+        td:first-child{
+          span{
+            display: inline-block;
+            padding-left: 25px;
+            position: relative;
+          }
+        }
+      }
+    }
+  }
+}
+
 // radio-box standard radio buttons
 .radio-box{
   position: relative;

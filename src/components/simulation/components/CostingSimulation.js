@@ -421,7 +421,7 @@ function CostingSimulation(props) {
                         <div className="col-sm-12 text-right bluefooter-butn">
 
                             <button
-                                class="user-btn approval-btn mr-3"
+                                class="user-btn approval-btn mr5"
                                 onClick={sendForApproval}
                                 disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
                             >
