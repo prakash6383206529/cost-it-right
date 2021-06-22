@@ -2967,6 +2967,20 @@ button:disabled{pointer-events: none;}
     padding-right: 130px !important;
   }
 }
+.react-bs-table-csv-btn{
+  span{
+    .fa-download{
+      width: 14px;
+      height: 14px;
+      background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAMCAYAAAC0qUeeAAAABHNCSVQICAgIfAhkiAAAAJZJREFUKFPNkGERwlAMg78o4FDAHIADsIADcAJKhgQkgAMkgIM5CJcd2729ewLov7RJm1RUZXsAVsAgaV2O1SB76klazP+NbLsDNsCjyHEAPpLe6c2ebZ+Avg4MHCXdF+SAhuAs6TZ/x/YlpyWN5wvBTLQdOzvZzl+vkiIaK/4nnz+cRfuJHFAGq60nTxfyC9g2gtWt5xd090ovNQmXhAAAAABJRU5ErkJggg==) 0% 0% no-repeat padding-box;
+      margin-right: 0;
+      vertical-align: middle;
+      &:before{
+        opacity: 0;
+      }
+    }
+  }
+}
 
 .css-1pahdxg-control{
   border:1px solid #256bd1 !important;
