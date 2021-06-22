@@ -326,7 +326,7 @@ function SimulationApprovalSummary(props) {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pb-2">
                                     <Col md="12">
                                         <Table responsive className="table cr-brdr-main" size="sm">
                                             <thead>

@@ -294,7 +294,7 @@ function VerifySimulation(props) {
                                 // exportCSV
                                 //ignoreSinglePage
                                 selectRow={selectRowProp}
-                                className="add-volume-table"
+                                className="add-volume-table verify-simulation-table"
                                 pagination>
                                 <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>

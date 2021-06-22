@@ -2982,6 +2982,20 @@ button:disabled{pointer-events: none;}
   }
 }
 
+.verify-simulation-table{
+  .react-bs-container-body{
+    tbody{
+      tr{
+        td{
+          > input[type='checkbox'],input[type='radio']{
+            margin: 13px 0;
+          }
+        }
+      }
+    }
+  }
+}
+
 .css-1pahdxg-control{
   border:1px solid #256bd1 !important;
   box-shadow: none !important;
