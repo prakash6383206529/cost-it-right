@@ -255,17 +255,15 @@ export function getSelectListOfSimulationApplicability(callback) {
     };
 }
 
-export function getAllSimulationApprovalList(data, callback) {
+export function saveSimulationForRawMaterial(data, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationApprovalListByDepartment}`, data, headers);
+        const request = axios.post(API.saveSimulationForRawMaterial, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
-            callback(error);
             apiErrors(error);
         });
     };
@@ -288,8 +286,6 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
             apiErrors(error)
         })
     }
-<<<<<<< HEAD
-=======
 }
 
 export function getAllSimulationApprovalList(data, callback) {
@@ -397,5 +393,4 @@ export function simulationApprovalRequestBySender(data, callback) {
             apiErrors(error)
         })
     }
->>>>>>> d9aac321f... Simulation and approval in progress
 }
