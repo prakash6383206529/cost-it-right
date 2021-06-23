@@ -412,7 +412,7 @@ function ApproveRejectDrawer(props) {
                     {
                       type === 'Sender' &&
                       <>
-                        <div className="input-group form-group col-md-12 input-withouticon">
+                        {/* <div className="input-group form-group col-md-12 input-withouticon">
                           <SearchableSelectHookForm
                             label={'Reason'}
                             name={'reason'}
@@ -427,7 +427,7 @@ function ApproveRejectDrawer(props) {
                             handleChange={() => { }}
                             errors={errors.reason}
                           />
-                        </div>
+                        </div> */}
                         <div className="input-group form-group col-md-12 input-withouticon">
                           <div className="inputbox date-section">
                             <DatePickerHookForm
