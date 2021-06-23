@@ -575,7 +575,7 @@ class LabourListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn" : "container-fluid"}>
+        <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid"}>
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate

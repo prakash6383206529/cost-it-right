@@ -80,6 +80,7 @@ const CostingSummaryTable = (props) => {
   // useEffect(() => {
   //   
   // }, [showWarningMsg])
+
   useEffect(() => {
     if (!viewMode && viewCostingData && partInfo) {
       let obj = {}
@@ -98,7 +99,6 @@ const CostingSummaryTable = (props) => {
 
   }, [])
 
-
   /**
    * @method ViewBOP
    * @description SET VIEW BOP DATA FOR DRAWER
@@ -113,6 +113,7 @@ const CostingSummaryTable = (props) => {
       setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage })
     }
   }
+
   /**
    * @method viewConversionCostData
    * @description SET COVERSION DATA FOR DRAWER
@@ -127,6 +128,7 @@ const CostingSummaryTable = (props) => {
       setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails })
     }
   }
+
   /**
    * @method viewRM
    * @description SET RM DATA FOR DRAWER
@@ -137,6 +139,7 @@ const CostingSummaryTable = (props) => {
     setIndex(index)
     setViewRMData(data)
   }
+
   /**
    * @method overHeadProfit
    * @description SET OVERHEAD & PROFIT DATA FOR DRAWER
@@ -152,6 +155,7 @@ const CostingSummaryTable = (props) => {
     setViewProfitData(profitData)
     setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
   }
+
   /**
    * @method viewPackagingAndFrieghtData
    * @description SET PACKAGING AND FRIEGHT DATA FOR DRAWER
@@ -166,6 +170,7 @@ const CostingSummaryTable = (props) => {
       freightData: freightData,
     })
   }
+
   /**
    * @method viewToolCostData
    * @description SET TOOL DATA FOR DRAWER
@@ -183,10 +188,10 @@ const CostingSummaryTable = (props) => {
   }
 
   /**
-   * @method editHandler
-   * @description HANDLING EDIT OF COSTING SUMMARY
-   *
-   */
+  * @method editHandler
+  * @description HANDLING EDIT OF COSTING SUMMARY
+  *
+  */
   const editHandler = (index) => {
     const editObject = {
       partId: viewCostingData[index].partId,
@@ -214,7 +219,6 @@ const CostingSummaryTable = (props) => {
    * @method addNewCosting
    * @description ADD NEW COSTING (GO TO COSTING DETAIL)
   */
-
   const addNewCosting = (index) => {
     partNumber.isChanged = false
     dispatch(storePartNumber(partNumber))
@@ -247,7 +251,6 @@ const CostingSummaryTable = (props) => {
       }
 
       dispatch(createZBCCosting(data, (res) => {
-
         if (res.data.Result) {
           setPartInfo(res.data.Data)
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
@@ -255,6 +258,7 @@ const CostingSummaryTable = (props) => {
         }
       }),
       )
+
     } else if (type === VBC) {
       const data = {
         PartId: partInfo.PartId,
@@ -281,14 +285,13 @@ const CostingSummaryTable = (props) => {
         EffectiveDate: partInfo.EffectiveDate,
       }
 
-      dispatch(
-        createVBCCosting(data, (res) => {
-          if (res.data.Result) {
-            setPartInfo(res.data.Data)
-            dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-            showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
-          }
-        }),
+      dispatch(createVBCCosting(data, (res) => {
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
+        }
+      }),
       )
     }
   }
@@ -313,7 +316,6 @@ const CostingSummaryTable = (props) => {
     }
   }
 
-
   /**
    * @method addComparisonDrawerToggle
    * @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
@@ -324,6 +326,7 @@ const CostingSummaryTable = (props) => {
     setIsEditFlag(false)
     setEditObject({})
   }
+
   /**
    * @method closeAddComparisonDrawer
    * @description HIDE ADD COMPARISON DRAWER
@@ -346,6 +349,7 @@ const CostingSummaryTable = (props) => {
     setIsViewConversionCost(false)
     setIsViewToolCost(false)
   }
+
   /**
    * @method closeShowApproval
    * @description FOR CLOSING APPROVAL DRAWER
@@ -360,6 +364,7 @@ const CostingSummaryTable = (props) => {
       props.resetData()
     }
   }
+
   /**
    * @method closeShowApproval
    * @description FOR CLOSING APPROVAL DRAWER
@@ -371,7 +376,6 @@ const CostingSummaryTable = (props) => {
   const handleMultipleCostings = (checked, index) => {
 
     let temp = multipleCostings
-
     if (checked) {
       temp.push(viewCostingData[index].costingId)
       // setMultipleCostings(temp)
@@ -395,43 +399,34 @@ const CostingSummaryTable = (props) => {
       const ind = multipleCostings.findIndex((data) => data === id)
 
       if (ind !== -1) {
-
         temp.splice(ind, 1)
       }
+
       const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
       if (checkInd !== -1) {
-
         if (viewCostingData[checkInd].IsApprovalLocked) {
           setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
         }
       }
+
     } else {
 
       temp.push(id)
       const ind = multipleCostings.findIndex((data) => data === id)
       const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
 
-
       if (temp.length > 1 && isWarningFlag) {
         if (viewCostingData[checkInd].IsApprovalLocked === true) {
           setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
         }
-
       } else {
         setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
       }
     }
 
-
-
-
-
-
     setMultipleCostings(temp)
     setFlag(!flag)
   }
-
-
 
   const sendForApprovalData = (costingIds) => {
 
@@ -537,7 +532,6 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
-
     if (viewCostingData.length === 1) {
       setIsWarningFlag(viewCostingData && viewCostingData.length > 0 && viewCostingData[0].IsApprovalLocked)
       // setIsWarningFlag(false)
@@ -569,8 +563,6 @@ const CostingSummaryTable = (props) => {
       {
         stepOne &&
         <Fragment>
-
-
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -603,14 +595,14 @@ const CostingSummaryTable = (props) => {
                   onClick={addComparisonDrawerToggle}
                 >
                   <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
-              Add To Comparison{' '}
+                  Add To Comparison{' '}
                 </button>
                 {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
                 {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
               </Col>
             }
-
           </Row>
+
           <Row>
             <Col md="12">
               <div class="table-responsive">
@@ -676,6 +668,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                   </thead>
                   <tbody>
+
                     <tr>
                       <td>
                         <span class="d-block">Costing Version</span>
@@ -702,6 +695,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">RM Name-Grade</span>
@@ -727,6 +721,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Net RM Cost</th>
                       {viewCostingData &&
@@ -744,6 +739,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Net BOP Cost</th>
                       {viewCostingData &&
@@ -762,16 +758,17 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">Process Cost</span>
                         <span class="d-block small-grey-text">Operation Cost</span>
                         <span class="d-block small-grey-text">
                           Surface Treatment
-                    </span>
+                        </span>
                         <span class="d-block small-grey-text">
                           Transportation Cost
-                    </span>
+                        </span>
                       </td>
                       {viewCostingData &&
                         viewCostingData.map((data) => {
@@ -793,6 +790,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Net Conversion Cost</th>
                       {viewCostingData &&
@@ -811,11 +809,12 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">
                           Model Type For Overhead/Profit
-                    </span>
+                        </span>
                         <br />
                         <span class="d-block small-grey-text">Overhead On</span>
                         <span class="d-block small-grey-text">Profit On</span>
@@ -832,7 +831,7 @@ const CostingSummaryTable = (props) => {
                                 <span class="d-inline-block w-50">
                                   {data.aValue.applicability}
                                 </span>{' '}
-                            &nbsp;{' '}
+                                &nbsp;{' '}
                                 <span class="d-inline-block w-50">
                                   {data.aValue.value}
                                 </span>
@@ -841,7 +840,7 @@ const CostingSummaryTable = (props) => {
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {data.overheadOn.overheadTitle}
                                 </span>{' '}
-                            &nbsp;{' '}
+                                &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {checkForDecimalAndNull(data.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
@@ -850,7 +849,7 @@ const CostingSummaryTable = (props) => {
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {data.profitOn.profitTitle}
                                 </span>{' '}
-                            &nbsp;{' '}
+                                &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {checkForDecimalAndNull(data.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
@@ -859,7 +858,7 @@ const CostingSummaryTable = (props) => {
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {data.rejectionOn.rejectionTitle}
                                 </span>{' '}
-                            &nbsp;{' '}
+                                &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {checkForDecimalAndNull(data.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
@@ -868,7 +867,7 @@ const CostingSummaryTable = (props) => {
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {data.iccOn.iccTitle}
                                 </span>{' '}
-                            &nbsp;{' '}
+                                &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {checkForDecimalAndNull(data.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
@@ -877,7 +876,7 @@ const CostingSummaryTable = (props) => {
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {data.paymentTerms.paymentTitle}
                                 </span>{' '}
-                            &nbsp;{' '}
+                                &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
                                   {checkForDecimalAndNull(data.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
@@ -886,6 +885,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Net Overhead & Profits</th>
                       {viewCostingData &&
@@ -904,6 +904,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">Packaging Cost</span>
@@ -923,6 +924,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Net Packaging & Freight</th>
                       {viewCostingData &&
@@ -941,15 +943,16 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">
                           Tool Maintenance Cost
-                    </span>
+                        </span>
                         <span class="d-block small-grey-text">Tool Price</span>
                         <span class="d-block small-grey-text">
                           Amortization Quantity(Tool Life)
-                    </span>
+                        </span>
                       </td>
                       {viewCostingData &&
                         viewCostingData.map((data) => {
@@ -968,8 +971,9 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
-                      <th>Total Tool Cost</th>
+                      <th>Net Tool Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
@@ -986,6 +990,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Total Cost</th>
                       {viewCostingData &&
@@ -1003,11 +1008,12 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">
                           Hundi/Other Discount
-                    </span>
+                        </span>
                         <span class="d-block small-grey-text"></span>
                       </td>
                       {viewCostingData &&
@@ -1029,6 +1035,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
                       <th>Any Other Cost</th>
                       {viewCostingData &&
@@ -1036,13 +1043,7 @@ const CostingSummaryTable = (props) => {
                           return <td>{checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
-                    <tr>
-                      <th>Remark</th>
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
-                        })}
-                    </tr>
+
                     <tr class="background-light-blue">
                       <th>Net PO Price(INR)</th>
                       {viewCostingData &&
@@ -1050,6 +1051,7 @@ const CostingSummaryTable = (props) => {
                           return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
+
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">Currency</span>
@@ -1066,13 +1068,19 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
+
                     <tr class="background-light-blue">
-                      <th>Net PO Price</th>
+                      {/* <th>Net PO Price {viewCostingData && (data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')}</th> */}
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
+                          return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
+                        })}
+                      {viewCostingData &&
+                        viewCostingData.map((data, index) => {
+                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
+
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
@@ -1122,6 +1130,14 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
+                    <tr>
+                      <th>Remark</th>
+                      {viewCostingData &&
+                        viewCostingData.map((data, index) => {
+                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
+                        })}
+                    </tr>
+
                     {!viewMode && (
                       <tr class="background-light-blue">
                         <td className="text-center"></td>
@@ -1146,8 +1162,8 @@ const CostingSummaryTable = (props) => {
                                     class="mr-1"
                                     src={require('../../../assests/images/send-for-approval.svg')}
                                   ></img>
-                            Send For Approval
-                          </button>
+                                  Send For Approval
+                                </button>
                               }
                             </td>
 

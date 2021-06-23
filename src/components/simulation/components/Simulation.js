@@ -13,30 +13,18 @@ import { RMDomesticSimulation, RMImportSimulation } from '../../../config/master
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import CostingSimulation from './CostingSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
-
-    let options = {}
-
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        dispatch(getSelectListOfMasters(() => { }))
-        dispatch(getCostingTechnologySelectList(() => { }))
-        setShowEditTable(false)
-    }, [])
+    const { location } = props;
 
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-    const masterList = useSelector(state => state.simulation.masterSelectList)
-    const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    const rmImportListing = useSelector(state => state.material.rmImportDataList)
-    const technologySelectList = useSelector(state => state.costing.technologySelectList)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -46,6 +34,19 @@ function Simulation(props) {
     const [isbulkUpload, setIsBulkUpload] = useState(false)
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getSelectListOfMasters(() => { }))
+        dispatch(getCostingTechnologySelectList(() => { }))
+        setShowEditTable(false)
+    }, [])
+
+    const masterList = useSelector(state => state.simulation.masterSelectList)
+    const rmDomesticListing = useSelector(state => state.material.rmDataList)
+    const rmImportListing = useSelector(state => state.material.rmImportDataList)
+    const technologySelectList = useSelector(state => state.costing.technologySelectList)
 
     const handleMasterChange = (value) => {
         setMaster(value)
@@ -90,8 +91,6 @@ function Simulation(props) {
         }
     }
 
-
-
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
@@ -105,6 +104,7 @@ function Simulation(props) {
 
     const renderListing = (label) => {
         let temp = []
+
         if (label === 'masters') {
             masterList && masterList.map((item) => {
                 if (item.Value === '0') return false
@@ -113,8 +113,8 @@ function Simulation(props) {
             })
             return temp
         }
-        if (label === 'technology') {
 
+        if (label === 'technology') {
             technologySelectList && technologySelectList.map((item) => {
                 if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value })
@@ -128,6 +128,8 @@ function Simulation(props) {
         setShowEditTable(false)
         setIsBulkUpload(false)
         setTableData([])
+        setMaster({ label: master.label, value: master.value })
+        setTechnology({ label: technology.label, value: technology.value })
     }
 
     /**
@@ -203,16 +205,19 @@ function Simulation(props) {
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
             case RMIMPORT:
                 return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
-
             default:
                 break;
         }
     }
 
-
+    // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
+    if (location?.state?.isFromApprovalListing === true) {
+        const simulationId = location?.state?.approvalProcessId;
+        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+    }
 
     return (
-        <div className="container-fluid simulation-page">
+        <div className="container-fluid simulation-page ">
             {
                 !showEditTable &&
                 <>
@@ -236,7 +241,7 @@ function Simulation(props) {
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        defaultValue={master.length !== 0 ? master : ''}
                                         options={renderListing('masters')}
                                         mandatory={false}
                                         handleChange={handleMasterChange}
@@ -256,7 +261,7 @@ function Simulation(props) {
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        defaultValue={technology.length !== 0 ? technology : ''}
                                         options={renderListing('technology')}
                                         mandatory={false}
                                         handleChange={handleTechnologyChange}
@@ -266,12 +271,11 @@ function Simulation(props) {
                             </div>
                         </Col>
                     </Row>
+
                     {/* <RMDomesticListing isSimulation={true} /> */}
-                    {
-                        showMasterList && renderModule(master)
-                    }
-                    {
-                        showMasterList &&
+                    {showMasterList && renderModule(master)}
+
+                    {showMasterList &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2">
@@ -286,21 +290,18 @@ function Simulation(props) {
                                     </div>
                                 </div>
                             </div>
-                        </Row>
-                    }
-                    {
-                        showUploadDrawer &&
+                        </Row>}
+
+                    {showUploadDrawer &&
                         <SimulationUploadDrawer
                             isOpen={showUploadDrawer}
                             closeDrawer={closeDrawer}
                             anchor={"right"}
-                        />
-                    }
+                        />}
                 </>
             }
-            {
-                showEditTable && editMasterPage(master.label)
-            }
+
+            {showEditTable && editMasterPage(master.label)}
         </div>
     );
 }

@@ -38,7 +38,8 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config
+  config,
+  SIMULATION_APPROVAL_SUMMARY_PATH
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -222,7 +223,8 @@ class Main extends Component {
         location.pathname === APPROVAL_LISTING_PATH ||
         location.pathname === APPROVAL_SUMMARY_PATH ||
         location.pathname === COSTING_BULK_UPLOAD ||
-        location.pathname === COSTING_SUMMARY
+        location.pathname === COSTING_SUMMARY ||
+        location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH
         ? 'w-100'
         : ''
 
@@ -341,7 +343,8 @@ class Main extends Component {
 
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
-                    <Route path="/simulation-history" component={SimulationHistory} />
+                    {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
+                    <Route path="/simulation-history" component={SimulationApprovalListing} />
 
                     <Route path="/simulation" component={Simulation} />
 
@@ -349,7 +352,7 @@ class Main extends Component {
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 
-                    <Route path='/simulation-approval-listing' component={SimulationApprovalListing} />
+                    {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     <Route
                       render={(props) => (

@@ -15,8 +15,9 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { EMPTY_GUID, PENDING } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
+import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
@@ -34,6 +35,8 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
+    const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+
     const dispatch = useDispatch()
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -62,13 +65,13 @@ function SimulationApprovalListing(props) {
      * @method getTableData
      * @description getting approval list table
      */
+    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
 
-    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = EMPTY_GUID,) => {
         let filterData = {
             logged_in_user_id: loggedInUserId(),
-            logged_in_user_level_id: userDetails().LoggedInLevelId,
-            token_number: '',
-            simulated_by: '',
+            logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
+            token_number: null,
+            simulated_by: createdBy,
             requestedBy: requestedBy,
             status: status,
             // partNo: partNo,
@@ -119,7 +122,7 @@ function SimulationApprovalListing(props) {
         const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
         const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
-        const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
+        const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
@@ -132,7 +135,7 @@ function SimulationApprovalListing(props) {
         return (
             <Fragment>
                 <div
-                    onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
+                    onClick={() => viewDetails(row)}
                     className={'link'}
                 >
                     {cell}
@@ -142,15 +145,14 @@ function SimulationApprovalListing(props) {
     }
 
     const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
     const priceFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
             </>
         )
     }
@@ -159,38 +161,41 @@ function SimulationApprovalListing(props) {
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
             </>
         )
     }
 
     const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
     const statusFormatter = (cell, row, enumObject, rowIndex) => {
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={cell} >{row.DisplayStatus}</div>
     }
 
-    const renderPlant = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return <button className="View" type={'button'} onClick={() => viewDetails(row)} />
+    }
+
+    const viewDetails = (rowObj) => {
+        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
+        if (rowObj.DisplayStatus === 'Draft') {
+            dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+            setRedirectCostingSimulation(true)
+        } else {
+            setShowApprovalSummary(true)
+        }
+    }
+    const requestedByFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
-    const viewDetails = (approvalNumber, approvalProcessId) => {
 
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
-        setShowApprovalSummary(true)
-        return (
-            <ApprovalSummary
-                approvalNumber={approvalNumber ? approvalNumber : '2345438'}
-                approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
-            />
-        )
-    }
 
     /**
      * @method resetHandler
@@ -203,9 +208,6 @@ function SimulationApprovalListing(props) {
         setValue('status', '')
         getTableData()
     }
-
-
-
 
     const onRowSelect = (row, isSelected, e) => {
         if (isSelected) {
@@ -248,12 +250,14 @@ function SimulationApprovalListing(props) {
     }
 
     const sendForApproval = () => {
+        let count = 0
+        let technologyCount = 0
+
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        let count = 0
-        let technologyCount = 0
+
         selectedRowData.forEach((element, index, arr) => {
             if (index > 0) {
                 if (element.ReasonId !== arr[index - 1].ReasonId) {
@@ -265,6 +269,7 @@ function SimulationApprovalListing(props) {
                 return false
             }
         })
+
         selectedRowData.forEach((element, index, arr) => {
             if (index > 0) {
                 if (element.TechnologyId !== arr[index - 1].TechnologyId) {
@@ -276,14 +281,17 @@ function SimulationApprovalListing(props) {
                 return false
             }
         })
+
         if (technologyCount > 0) {
             return toastr.warning("Technology should be same for sending multiple costing for approval")
         }
+
         if (count > 0) {
             return toastr.warning("Reason should be same for sending multiple costing for approval")
         } else {
             setReasonId(selectedRowData[0].ReasonId)
         }
+
         setApproveDrawer(true)
     }
 
@@ -292,16 +300,28 @@ function SimulationApprovalListing(props) {
         getTableData()
         //setRejectDrawer(false)
     }
+
+    if (redirectCostingSimulation === true) {
+
+        return <Redirect
+            to={{
+                pathname: "/simulation",
+                state: {
+                    isFromApprovalListing: true,
+                    approvalProcessId: approvalData.approvalProcessId,
+                    master: approvalData.SimulationTechnologyHead
+                }
+            }}
+        />
+    }
+
     return (
         <Fragment>
             {
                 !showApprovalSumary ?
                     <div className="container-fluid approval-listing-page">
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-
-                            <h1 className="mb-0">Simulation Approval</h1>
-
-
+                            <h1 className="mb-0">Simulation History</h1>
                             <Row className="pt-4 blue-before">
                                 {shown &&
                                     <Col lg="10" md="12" className="filter-block">
@@ -397,15 +417,7 @@ function SimulationApprovalListing(props) {
                                         </div>
                                     </Col>
                                 }
-                                {/* <Col md="4" className="search-user-block">
-            <div className="d-flex justify-content-end bd-highlight">
-              <div>
-                
-            
-                
-              </div>
-            </div>
-          </Col> */}
+
                             </Row>
                         </form>
 
@@ -424,25 +436,27 @@ function SimulationApprovalListing(props) {
                             tableHeaderClass="my-custom-header"
                             pagination
                         >
-                            {/* <TableHeaderColumn dataField="TokenNumber" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="TokenNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NoOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No. of Costing'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Technology" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated On'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} > {'Requested On '}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="DisplayStatus" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                            <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="CostingHead" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
+                            <TableHeaderColumn dataField="TechnologyName" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
+                            <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </div>
                     :
                     <SimulationApprovalSummary
                         approvalNumber={approvalData.approvalNumber}
-                        approvalProcessId={approvalData.approvalProcessId}
+                        approvalId={approvalData.approvalProcessId}
                     /> //TODO list
             }
-
         </Fragment>
     )
 }

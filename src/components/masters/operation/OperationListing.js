@@ -502,7 +502,7 @@ class OperationListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <div className={DownloadAccessibility ? "container-fluid show-table-btn" : "container-fluid"}>
+                <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid"}>
                     <form>
                         <Row>
                             <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>

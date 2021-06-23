@@ -722,8 +722,9 @@ class RMImportListing extends Component {
               options={options}
               search
               //ignoreSinglePage
-              ref={'table'}
-              exportCSV={DownloadAccessibility}
+              ref={'table'}              
+              // exportCSV={DownloadAccessibility}
+              exportCSV={this.props.isSimulation ? false : true}
               csvFileName={`${RmImport}.csv`}
               pagination>
               {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

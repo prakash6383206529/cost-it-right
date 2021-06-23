@@ -849,6 +849,16 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
+
+.Balance {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/balance.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
+
 .edit-details-btn {
   width:25px;
   height: 13px;
@@ -911,6 +921,7 @@ input.form-control{
 }
 
 .Add,
+.Balance,
 .Edit,
 .Delete,
 .View,
@@ -1840,6 +1851,25 @@ $roboto: "Roboto", sans-serif;
     padding-bottom: 15px;
 	}
 }
+
+// drawer-full-top start
+.MuiDrawer-root.drawer-full-top{
+   .MuiDrawer-paper{
+    margin-top: 60px;
+    left: 0;
+    .container{
+      max-width: 100%;
+      .drawer-wrapper{
+        width: 100%;
+      }
+    }
+   }
+   .react-bs-container-body{
+     min-height: unset !important;
+   }
+}
+// drawer-full-top end
+
 
 body {
 	.icon-small-primary {
@@ -2937,6 +2967,34 @@ button:disabled{pointer-events: none;}
     padding-right: 130px !important;
   }
 }
+.react-bs-table-csv-btn{
+  span{
+    .fa-download{
+      width: 14px;
+      height: 14px;
+      background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAMCAYAAAC0qUeeAAAABHNCSVQICAgIfAhkiAAAAJZJREFUKFPNkGERwlAMg78o4FDAHIADsIADcAJKhgQkgAMkgIM5CJcd2729ewLov7RJm1RUZXsAVsAgaV2O1SB76klazP+NbLsDNsCjyHEAPpLe6c2ebZ+Avg4MHCXdF+SAhuAs6TZ/x/YlpyWN5wvBTLQdOzvZzl+vkiIaK/4nnz+cRfuJHFAGq60nTxfyC9g2gtWt5xd090ovNQmXhAAAAABJRU5ErkJggg==) 0% 0% no-repeat padding-box;
+      margin-right: 0;
+      vertical-align: middle;
+      &:before{
+        opacity: 0;
+      }
+    }
+  }
+}
+
+.verify-simulation-table{
+  .react-bs-container-body{
+    tbody{
+      tr{
+        td{
+          > input[type='checkbox'],input[type='radio']{
+            margin: 13px 0;
+          }
+        }
+      }
+    }
+  }
+}
 
 .css-1pahdxg-control{
   border:1px solid #256bd1 !important;
@@ -2977,12 +3035,12 @@ button:disabled{pointer-events: none;}
   }
 }
 
-.disabled-button,button:disabled {
+.disabled-button,button:disabled,.approval-btn:disabled {
   background-color: #e6e6e6 !important;
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus,.check-icon{
+  .plus,.check-icon,>img{
     filter: brightness(0.8) !important;
   }
   .cross-icon{
@@ -3701,6 +3759,69 @@ body{
     }
   }
 }
+
+.accordian-table-with-arrow,.accordian-table-with-arrow.table.cr-brdr-main{
+  border: none;
+  thead{
+    tr{
+      th{
+        border: none;
+        font-weight: bold;
+      }
+    }
+  }
+  tbody{
+    position: relative;
+    border-bottom: 4px solid #fff;
+    &:before{
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      border-top: 1px solid #C2CBE8;
+      content: "";
+      bottom: -2px;
+    }
+    tr{
+      td{
+        border-top: 1px solid #C2CBE8;
+        border-bottom: 1px solid #C2CBE8;
+        &:first-child{
+          border-left: 1px solid #C2CBE8;
+        }
+        &:last-child{
+          border-right: 1px solid #C2CBE8;
+        }
+        span{
+          display: inline-block;
+          width: 100%;
+        }
+      }
+      &.accordian-with-arrow,&.accordian-content{
+        .Close {
+          position: absolute;
+          left: 0px;
+          top: 0;
+          bottom: 0;
+          height: auto;
+          width: 15px;
+          background: transparent url(/static/media/caret-down.61c2a710.svg) 0% 0% no-repeat padding-box;
+          opacity: 1;
+          border: none;
+          background-position: center;
+        }
+        td:first-child{
+          span{
+            display: inline-block;
+            padding-left: 25px;
+            position: relative;
+          }
+        }
+      }
+    }
+  }
+}
+
 // radio-box standard radio buttons
 .radio-box{
   position: relative;
@@ -4048,11 +4169,11 @@ body{
       }
     }
   }
-  th:nth-child(11),th:nth-child(12),th:nth-child(13){
+  th:nth-child(9),th:nth-child(10),th:nth-child(13){
     min-width: 220px;
     width: 220px;
   }
-  th:nth-child(9),th:nth-child(10),th:nth-child(14){
+  th:nth-child(11),th:nth-child(12),th:nth-child(14){
     min-width: 110px;
     width: 110px;
   }
@@ -4413,6 +4534,7 @@ body{
 
       .Add,
       .Edit,
+      .Balance,
       .Delete,
       .View,
       .Download,

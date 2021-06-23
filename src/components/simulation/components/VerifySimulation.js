@@ -45,6 +45,10 @@ function VerifySimulation(props) {
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
+    const renderCostingNumber = () => {
+        return <>Costing <br /> Number </>
+    }
+
     const renderVendorName = () => {
         return <>Vendor <br />Name </>
     }
@@ -97,12 +101,34 @@ function VerifySimulation(props) {
     }
     const newBRFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value form-control' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const newSRFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-'
+    }
+
+    const renderPlant = (cell, row, enumObject, rowIndex) => {
+        // return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
+
+    }
+
+    const renderVendor = (cell, row, enumObject, rowIndex) => {
+        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -195,7 +221,7 @@ function VerifySimulation(props) {
                                     <h5>{`Filter By:`}</h5>
                                 </div>
 
-                                <div className="flex-fill filled-small hide-label">
+                                {/* <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -210,7 +236,7 @@ function VerifySimulation(props) {
                                         handleChange={() => { }}
                                         errors={errors.partNo}
                                     />
-                                </div>
+                                </div> */}
                                 <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
@@ -278,16 +304,16 @@ function VerifySimulation(props) {
                                 // exportCSV
                                 //ignoreSinglePage
                                 selectRow={selectRowProp}
-                                className="add-volume-table"
+                                className="add-volume-table verify-simulation-table"
                                 pagination>
                                 <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Number'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataFormat={renderVendor} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
