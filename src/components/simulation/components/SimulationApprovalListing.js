@@ -15,7 +15,7 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { EMPTY_GUID, PENDING } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
 import { Redirect, } from 'react-router-dom';
 
@@ -179,8 +179,9 @@ function SimulationApprovalListing(props) {
     }
 
     const viewDetails = (rowObj) => {
-        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber })
+        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
         if (rowObj.DisplayStatus === 'Draft') {
+            dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
             setShowApprovalSummary(true)
@@ -301,12 +302,14 @@ function SimulationApprovalListing(props) {
     }
 
     if (redirectCostingSimulation === true) {
+
         return <Redirect
             to={{
                 pathname: "/simulation",
                 state: {
                     isFromApprovalListing: true,
-                    approvalProcessId: approvalData.approvalProcessId
+                    approvalProcessId: approvalData.approvalProcessId,
+                    master: approvalData.SimulationTechnologyHead
                 }
             }}
         />

@@ -21,7 +21,7 @@ import SimulationApprovalListing from './SimulationApprovalListing';
 import { Redirect } from 'react-router';
 
 function CostingSimulation(props) {
-    const { simulationId, isFromApprovalListing } = props
+    const { simulationId, isFromApprovalListing, master } = props
 
     const { register, control, errors, } = useForm({
         mode: 'onBlur',
@@ -470,7 +470,7 @@ function CostingSimulation(props) {
                             simulationDetail={simulationDetail}
                             selectedRowData={selectedRowData}
                             costingArr={costingArr}
-                            master={selectedMasterForSimulation.label}
+                            master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
                         />}
