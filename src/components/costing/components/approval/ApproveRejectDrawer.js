@@ -181,7 +181,7 @@ function ApproveRejectDrawer(props) {
               setOpenPushButton(true)
 
             } else {
-              toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              toastr.success(IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }

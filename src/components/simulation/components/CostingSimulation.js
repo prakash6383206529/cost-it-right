@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller, } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { useEffect } from 'react';
@@ -32,19 +32,12 @@ function CostingSimulation(props) {
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
-    const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
-    console.log('costingArr: ', costingArr);
     const [id, setId] = useState('')
-
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
 
     const dispatch = useDispatch()
 
@@ -250,22 +243,37 @@ function CostingSimulation(props) {
         setIsApprovalDrawer(true)
     }
 
-    const closeDrawer = () => {
-        setIsApprovalDrawer(false);
-        setIsVerifyImpactDrawer(false);
-        setShowApprovalHistory(true)
+    const closeDrawer = (e = '', type) => {
+        if (type === 'submit') {
+            setIsApprovalDrawer(false);
+            setIsVerifyImpactDrawer(false);
+            setShowApprovalHistory(true)
+        } else {
+            setIsApprovalDrawer(false);
+            setIsVerifyImpactDrawer(false);
+        }
+    }
+
+    const verifyImpactDrawer = (e = '', type) => {
+        if (type === 'cancel') {
+            setIsVerifyImpactDrawer(false);
+        }
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return cell !== null ? cell : '-'
+    }
+
+    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
     }
 
     const ecnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return cell !== null ? cell : '-'
     }
 
     const revisionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return cell !== null ? cell : '-'
     }
 
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
@@ -398,22 +406,23 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldPOPrice" width={100} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewPOPrice" width={100} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldRMPrice" width={100} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewRMPrice" width={100} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="SimulationCostingId" width={100} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
                         </Col>
                     </Row>
+
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -422,13 +431,18 @@ function CostingSimulation(props) {
                                 onClick={sendForApproval}
                                 disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
                             >
-                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')} />
+                                <img
+                                    alt="APPROVAL.jpg"
+                                    class="mr-1"
+                                    src={require('../../../assests/images/send-for-approval.svg')}
+                                />
                                 {'Send For Approval'}
                             </button>
+
                             <button
                                 type="button"
                                 className="user-btn mr5 save-btn"
-                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                 onClick={onSaveSimulation}>
                                 <div className={"check-icon"}>
                                     <img
@@ -438,23 +452,16 @@ function CostingSimulation(props) {
                                 </div>
                                 {"Save Simulation"}
                             </button>
+
                             <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                 <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
                                 {"Verify Impact "}
                             </button>
+
                         </div>
                     </Row>
-                    {/* <button type="submit" className="user-btn mr5 save-btn" onClick={runCostingDetailSimulation}>
-                        <div className={"check-icon"}>
-                            <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                            />
-                        </div>{" "}
-                        {"Save Simulation"}
-                    </button> */}
-                    {
-                        isApprovalDrawer &&
+
+                    {isApprovalDrawer &&
                         <ApproveRejectDrawer
                             isOpen={isApprovalDrawer}
                             anchor={'right'}
@@ -466,32 +473,28 @@ function CostingSimulation(props) {
                             master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
-                        />
-                    }
-                    {
-                        isVerifyImpactDrawer &&
+                        />}
+
+                    {isVerifyImpactDrawer &&
                         <VerifyImpactDrawer
                             isOpen={isVerifyImpactDrawer}
                             anchor={'right'}
                             approvalData={[]}
                             type={'Approve'}
-                            closeDrawer={closeDrawer}
+                            closeDrawer={verifyImpactDrawer}
                             isSimulation={true}
-                        />
-                    }
+                        />}
                 </div>
             }
 
             {showApprovalHistory && <Redirect to='/simulation-history' />}
 
-            {
-                CostingDetailDrawer &&
+            {CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
                     anchor={"right"}
-                />
-            }
+                />}
         </>
 
     );
