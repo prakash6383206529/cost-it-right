@@ -20,7 +20,7 @@ import { toastr } from 'react-redux-toastr';
 import SimulationApprovalListing from './SimulationApprovalListing';
 
 function CostingSimulation(props) {
-    const { simulationId, isFromApprovalListing } = props
+    const { simulationId, isFromApprovalListing, master } = props
 
     const { register, control, errors, } = useForm({
         mode: 'onBlur',
@@ -464,7 +464,7 @@ function CostingSimulation(props) {
                             simulationDetail={simulationDetail}
                             selectedRowData={selectedRowData}
                             costingArr={costingArr}
-                            master={selectedMasterForSimulation.label}
+                            master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
                         />}
