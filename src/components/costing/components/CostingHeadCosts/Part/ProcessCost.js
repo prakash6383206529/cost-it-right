@@ -634,16 +634,15 @@ function ProcessCost(props) {
             setOperationCost={setOperationCost}
             item={props.item}
             IsAssemblyCalculation={false}
-
           />
-          {isOpen && (
-            <ToolCost
-              data={props.data && props.data.CostingToolsCostResponse}
-              setToolCost={setToolCost}
-              item={props.item}
-              IsAssemblyCalculation={false}
-            />
-          )}
+
+          {isOpen && <ToolCost
+            data={props.data && props.data.CostingToolsCostResponse}
+            setToolCost={setToolCost}
+            item={props.item}
+            IsAssemblyCalculation={false}
+          />}
+
         </div>
       </div>
       {isDrawerOpen && (
