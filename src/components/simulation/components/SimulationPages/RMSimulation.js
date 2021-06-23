@@ -68,24 +68,28 @@ function RMSimulation(props) {
 
         let tempArr = []
         list && list.map(item => {
-            let tempObj = {}
-            tempObj.CostingHead = item.CostingHead
-            tempObj.RawMaterialName = item.RawMaterial
-            tempObj.MaterialType = item.MaterialType
-            tempObj.RawMaterialGrade = item.RMGrade
-            tempObj.RawMaterialSpecification = item.RMSpec
-            tempObj.RawMaterialCategory = item.Category
-            tempObj.UOM = item.UOM
-            tempObj.OldBasicRate = item.BasicRate
-            tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-            tempObj.OldScrapRate = item.ScrapRate
-            tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-            tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-            tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-            tempObj.OldNetLandedCost = item.NetLandedCost
-            tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-            tempObj.EffectiveDate = item.EffectiveDate
-            tempArr.push(tempObj)
+            if (item.NewBasicRate || item.NewScrapRate) {
+                let tempObj = {}
+                tempObj.CostingHead = item.CostingHead
+                tempObj.RawMaterialName = item.RawMaterial
+                tempObj.MaterialType = item.MaterialType
+                tempObj.RawMaterialGrade = item.RMGrade
+                tempObj.RawMaterialSpecification = item.RMSpec
+                tempObj.RawMaterialCategory = item.Category
+                tempObj.UOM = item.UOM
+                tempObj.OldBasicRate = item.BasicRate
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
+                tempObj.OldScrapRate = item.ScrapRate
+                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+                tempObj.OldNetLandedCost = item.NetLandedCost
+                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                tempObj.EffectiveDate = item.EffectiveDate
+                tempArr.push(tempObj)
+            } else {
+                return false
+            }
         })
         obj.SimulationRawMaterials = tempArr
 
@@ -372,8 +376,8 @@ function RMSimulation(props) {
                                 <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false}  >Scrap Rate (INR)</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
-                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
-                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
+                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} editable={false} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
+                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} editable={false} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>

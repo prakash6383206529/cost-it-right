@@ -65,7 +65,7 @@ function SimulationApprovalListing(props) {
      * @method getTableData
      * @description getting approval list table
      */
-    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = EMPTY_GUID,) => {
+    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
 
         let filterData = {
             logged_in_user_id: loggedInUserId(),
@@ -73,7 +73,7 @@ function SimulationApprovalListing(props) {
             token_number: null,
             simulated_by: createdBy,
             requestedBy: requestedBy,
-            status: 0,
+            status: status,
             // partNo: partNo,
             // createdBy: createdBy,
         }
@@ -122,7 +122,7 @@ function SimulationApprovalListing(props) {
         const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
         const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
-        const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
+        const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
@@ -145,14 +145,14 @@ function SimulationApprovalListing(props) {
     }
 
     const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
     const priceFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
             </>
         )
     }
@@ -161,13 +161,13 @@ function SimulationApprovalListing(props) {
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
             </>
         )
     }
 
     const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
     const statusFormatter = (cell, row, enumObject, rowIndex) => {
@@ -186,6 +186,15 @@ function SimulationApprovalListing(props) {
             setShowApprovalSummary(true)
         }
     }
+    const requestedByFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
+    }
+
+    const renderVendor = (cell, row, enumObject, rowIndex) => {
+        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+    }
+
+
 
     /**
      * @method resetHandler
@@ -428,12 +437,12 @@ function SimulationApprovalListing(props) {
                             <TableHeaderColumn dataField="CostingHead" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="TechnologyName" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Simulated By'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Requested By'} </TableHeaderColumn>
+                            <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
                             <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
@@ -442,7 +451,7 @@ function SimulationApprovalListing(props) {
                     :
                     <SimulationApprovalSummary
                         approvalNumber={approvalData.approvalNumber}
-                        approvalProcessId={approvalData.approvalProcessId}
+                        approvalId={approvalData.approvalProcessId}
                     /> //TODO list
             }
         </Fragment>

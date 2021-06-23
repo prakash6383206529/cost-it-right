@@ -101,12 +101,12 @@ function VerifySimulation(props) {
     }
     const newBRFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value form-control' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const newSRFormatter = (cell, row, enumObject, rowIndex) => {
         const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
@@ -119,6 +119,16 @@ function VerifySimulation(props) {
 
     const revisionFormatter = (cell, row, enumObject, rowIndex) => {
         return cell != null ? cell : '-'
+    }
+
+    const renderPlant = (cell, row, enumObject, rowIndex) => {
+        // return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
+
+    }
+
+    const renderVendor = (cell, row, enumObject, rowIndex) => {
+        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -298,8 +308,8 @@ function VerifySimulation(props) {
                                 pagination>
                                 <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataFormat={renderVendor} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>

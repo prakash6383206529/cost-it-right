@@ -18,7 +18,7 @@ import { loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 
 function SimulationApprovalSummary(props) {
-    const { approvalDetails, approvalData, approvalNumber, approvalProcessId } = props;
+    const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -57,7 +57,7 @@ function SimulationApprovalSummary(props) {
 
         const reqParams = {
             approvalTokenNumber: approvalNumber,
-            approvalId: approvalProcessId,
+            approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
@@ -65,8 +65,8 @@ function SimulationApprovalSummary(props) {
             setCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId })
-            // setIsApprovalDone(IsSent) UNCOMMENT IT AFTER CODE DEPLOY FROM KAMAL SIR END
-            setIsApprovalDone(false)
+            setIsApprovalDone(IsSent)
+            // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
         }))
@@ -361,8 +361,8 @@ function SimulationApprovalSummary(props) {
                                                             <td>{el && el.ECNNumber !== null ? el.ECNNumber : '-'}</td>
                                                             <td>{el && el.DrawingNo !== null ? el.DrawingNo : '-'}</td>
                                                             <td>{el && el.RevisionNumber !== null ? el.RevisionNumber : '-'}</td>
-                                                            <td>{el && el.OldPOPrice !== null ? el.OldPOPrice : '-'}</td>
-                                                            <td>{el && el.NewPOPrice !== null ? el.NewPOPrice : '-'}</td>
+                                                            <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.OldPOPrice !== null ? el.OldPOPrice : '-'}</span></td>
+                                                            <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.NewPOPrice !== null ? el.NewPOPrice : '-'}</span></td>
                                                             <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.OldRMPrice !== null ? el.OldRMPrice : '-'}</span></td>
                                                             <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.NewRMPrice !== null ? el.NewRMPrice : '-'}</span></td>
                                                             <td>{<button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(el)} />}</td>
@@ -467,7 +467,7 @@ function SimulationApprovalSummary(props) {
                 isSimulation={true}
                 simulationDetail={simulationDetail}
                 // reasonId={approvalDetails.ReasonId}
-                IsFinalLevel={!showFinalLevelButtons}
+                IsFinalLevel={showFinalLevelButtons}
             // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
@@ -499,7 +499,7 @@ function SimulationApprovalSummary(props) {
                 isOpen={viewButton}
                 closeDrawer={closeViewDrawer}
                 anchor={'top'}
-                approvalNo={1}
+                approvalNo={simulationDetail.Token}
             />}
         </>
     )
