@@ -466,7 +466,7 @@ function SimulationApprovalSummary(props) {
                 isSimulation={true}
                 simulationDetail={simulationDetail}
                 // reasonId={approvalDetails.ReasonId}
-                IsFinalLevel={!showFinalLevelButtons}
+                IsFinalLevel={showFinalLevelButtons}
             // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
