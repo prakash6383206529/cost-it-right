@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller, } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { useEffect } from 'react';
@@ -12,33 +12,31 @@ import { getCostingSimulationList, getVerifySimulationList, saveSimulationForRaw
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { RMDOMESTIC, RMIMPORT, simulationMaster } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import SimulationApprovalListing from './SimulationApprovalListing';
-import { Redirect } from 'react-router';
 
 function CostingSimulation(props) {
-    const { simulationId } = props
+    const { simulationId, isFromApprovalListing } = props
+
+    const { register, control, errors, } = useForm({
+        mode: 'onBlur',
+        reValidateMode: 'onChange',
+    })
+
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
-    const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
-    console.log('costingArr: ', costingArr);
     const [id, setId] = useState('')
-
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
 
     const dispatch = useDispatch()
 
@@ -162,13 +160,23 @@ function CostingSimulation(props) {
     const renderDropdownListing = (label) => { }
 
     const onSaveSimulation = () => {
-
-        const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
-
+        let temp = []
+        let obj = {}
+        obj.SimulationId = simulationDetail.SimulationId
+        obj.Token = simulationDetail.TokenNo
+        obj.Currency = ""
+        obj.EffectiveDate = ""
+        obj.Remark = ""
+        obj.LoggedInUserId = userDetails().LoggedInUserId
+        obj.IsPartialSaved = selectedRowData.length === costingArr.length ? false : true
+        costingArr && costingArr.map(item => {
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
+        })
+        obj.SelectedCostings = temp
 
         switch (selectedMasterForSimulation.label) {
             case RMDOMESTIC:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
+                dispatch(saveSimulationForRawMaterial(obj, res => {
                     if (res.data.Result) {
                         toastr.success('Simulation saved successfully.')
                         setShowApprovalHistory(true)
@@ -176,7 +184,7 @@ function CostingSimulation(props) {
                 }))
                 break;
             case RMIMPORT:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
+                dispatch(saveSimulationForRawMaterial(obj, res => {
                     if (res.data.Result) {
                         toastr.success('Simulation saved successfully.')
                         setShowApprovalHistory(true)
@@ -408,21 +416,27 @@ function CostingSimulation(props) {
 
                         </Col>
                     </Row>
+
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
 
                             <button
-                                class="user-btn approval-btn mr5"
+                                class="user-btn approval-btn mr-3"
                                 onClick={sendForApproval}
                                 disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
                             >
-                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')} />
+                                <img
+                                    alt="APPROVAL.jpg"
+                                    class="mr-1"
+                                    src={require('../../../assests/images/send-for-approval.svg')}
+                                />
                                 {'Send For Approval'}
                             </button>
+
                             <button
                                 type="button"
                                 className="user-btn mr5 save-btn"
-                                disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                 onClick={onSaveSimulation}>
                                 <div className={"check-icon"}>
                                     <img
@@ -432,23 +446,16 @@ function CostingSimulation(props) {
                                 </div>
                                 {"Save Simulation"}
                             </button>
+
                             <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                 <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
                                 {"Verify Impact "}
                             </button>
+
                         </div>
                     </Row>
-                    {/* <button type="submit" className="user-btn mr5 save-btn" onClick={runCostingDetailSimulation}>
-                        <div className={"check-icon"}>
-                            <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                            />
-                        </div>{" "}
-                        {"Save Simulation"}
-                    </button> */}
-                    {
-                        isApprovalDrawer &&
+
+                    {isApprovalDrawer &&
                         <ApproveRejectDrawer
                             isOpen={isApprovalDrawer}
                             anchor={'right'}
@@ -460,10 +467,9 @@ function CostingSimulation(props) {
                             master={selectedMasterForSimulation.label}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
-                        />
-                    }
-                    {
-                        isVerifyImpactDrawer &&
+                        />}
+
+                    {isVerifyImpactDrawer &&
                         <VerifyImpactDrawer
                             isOpen={isVerifyImpactDrawer}
                             anchor={'right'}
@@ -471,21 +477,18 @@ function CostingSimulation(props) {
                             type={'Approve'}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
-                        />
-                    }
+                        />}
                 </div>
             }
 
-            {showApprovalHistory && <Redirect to='/simulation-history' />}
+            {showApprovalHistory && <SimulationApprovalListing />}
 
-            {
-                CostingDetailDrawer &&
+            {CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
                     anchor={"right"}
-                />
-            }
+                />}
         </>
 
     );

@@ -61,12 +61,12 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId })
-            // setIsApprovalDone(IsSent) UNCOMMENT IT AFTER CODE DEPLOY FROM KAMAL SIR END
-            setIsApprovalDone(false)
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId })
+            setIsApprovalDone(IsSent)
+            // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
         }))
@@ -77,7 +77,6 @@ function SimulationApprovalSummary(props) {
     }
 
     const closeApproveDrawer = (e = '', type) => {
-        console.log("Entering here");
         if (type === 'submit') {
             setApproveDrawer(false)
             setShowListing(true)

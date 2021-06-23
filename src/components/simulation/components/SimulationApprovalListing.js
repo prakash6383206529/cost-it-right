@@ -15,8 +15,9 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { EMPTY_GUID, PENDING } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
+import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
@@ -34,6 +35,7 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
+    const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
     const dispatch = useDispatch()
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -175,23 +177,21 @@ function SimulationApprovalListing(props) {
         return <button className="View" type={'button'} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} />
     }
 
-    const renderPlant = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+    const viewDetails = (rowObj) => {
+        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
+        if (rowObj.DisplayStatus === 'Draft') {
+            dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+            setRedirectCostingSimulation(true)
+        } else {
+            setShowApprovalSummary(true)
+        }
+    }
+    const requestedByFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
-    }
-
-    const viewDetails = (approvalNumber, approvalProcessId) => {
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
-        setShowApprovalSummary(true)
-        // return (
-        //     <ApprovalSummary
-        //         approvalNumber={approvalNumber ? approvalNumber : '2345438'}
-        //         approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
-        //     />
-        // )
     }
 
     /**
@@ -296,6 +296,20 @@ function SimulationApprovalListing(props) {
         setApproveDrawer(false)
         getTableData()
         //setRejectDrawer(false)
+    }
+
+    if (redirectCostingSimulation === true) {
+
+        return <Redirect
+            to={{
+                pathname: "/simulation",
+                state: {
+                    isFromApprovalListing: true,
+                    approvalProcessId: approvalData.approvalProcessId,
+                    master: approvalData.SimulationTechnologyHead
+                }
+            }}
+        />
     }
 
     return (
