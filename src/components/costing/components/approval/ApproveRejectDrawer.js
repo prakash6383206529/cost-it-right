@@ -16,8 +16,6 @@ import moment from 'moment'
 function ApproveRejectDrawer(props) {
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr } = props
-  console.log('isSimulation: ', simulationDetail);
-
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -33,7 +31,8 @@ function ApproveRejectDrawer(props) {
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+
 
   // const simulationDeptList = useSelector((state)=> state.simulation)
 
@@ -72,17 +71,15 @@ function ApproveRejectDrawer(props) {
       dispatch(getSimulationApprovalByDepartment(res => {
         const Data = res.data.SelectList
         const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-        console.log('departObj: ', departObj);
+
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj[0].Value,
           //NEED TO MAKE THIS 2   
-          TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedTechnologyForSimulation.value,
+          TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           ReasonId: 0
         }
-        console.log(obj, "OBJ");
-
 
         dispatch(
           getAllSimulationApprovalList(obj, (res) => {
@@ -120,7 +117,11 @@ function ApproveRejectDrawer(props) {
           }))
           break;
         case RMIMPORT:
-          console.log('Called RMDOMESRIC')
+          dispatch(saveSimulationForRawMaterial(simObj, res => {
+            if (res.data.Result) {
+              toastr.success('Simulation has been saved successfully.')
+            }
+          }))
           break;
 
         default:
@@ -212,6 +213,7 @@ function ApproveRejectDrawer(props) {
       objs.ApproverDepartmentId = data.dept && data.dept.value ? data.dept.value : ''
       objs.ApproverDepartmentName = data.dept && data.dept.label ? data.dept.label : ''
       objs.IsFinalApprovalProcess = false
+      objs.SimulationApprovalProcessSummaryId = simulationDetail.SimulationApprovalProcessSummaryId
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
         let senderObj = {}

@@ -15,7 +15,7 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { EMPTY_GUID, PENDING } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
 
 function SimulationApprovalListing(props) {
@@ -175,8 +175,17 @@ function SimulationApprovalListing(props) {
         return <button className="View" type={'button'} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} />
     }
 
-    const renderPlant = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+    const viewDetails = (rowObj) => {
+        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
+        if (rowObj.DisplayStatus === 'Draft') {
+            dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+            setRedirectCostingSimulation(true)
+        } else {
+            setShowApprovalSummary(true)
+        }
+    }
+    const requestedByFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
@@ -296,6 +305,20 @@ function SimulationApprovalListing(props) {
         setApproveDrawer(false)
         getTableData()
         //setRejectDrawer(false)
+    }
+
+    if (redirectCostingSimulation === true) {
+
+        return <Redirect
+            to={{
+                pathname: "/simulation",
+                state: {
+                    isFromApprovalListing: true,
+                    approvalProcessId: approvalData.approvalProcessId,
+                    master: approvalData.SimulationTechnologyHead
+                }
+            }}
+        />
     }
 
     return (
