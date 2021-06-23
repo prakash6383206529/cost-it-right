@@ -209,18 +209,32 @@ class UOMMaster extends Component {
     })
   }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.dataList
-    return products; // must return the data which you want to be exported
-  }
+  handleExportCSVButtonClick = () => {
+    // onClick();
 
-  createCustomExportCSVButton = (onClick) => {
+    var arr = this.props.dataList && this.props.dataList
+    // console.log(this.props.dataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    // arr && arr.map(item => {
+    //     let len = Object.keys(item).length
+    //     for (let i = 0; i < len; i++) {
+    //         // let s = Object.keys(item)[i]
+    //         if (item.Specification === null) {
+    //             item.Specification = ' '
+    //         } else {
+    //             return false
+    //         }
+    //     }
+    // })
+    let products = []
+    products = arr
+    return products; // must return the data which you want to be exported
+}
+
+createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+        <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
-  }
+}
 
   /**
   * @method render
@@ -234,7 +248,8 @@ class UOMMaster extends Component {
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
+      onExportToCSV: this.handleExportCSVButtonClick,
+            //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text

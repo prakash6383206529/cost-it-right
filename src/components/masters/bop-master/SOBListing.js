@@ -11,7 +11,7 @@ import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
@@ -222,17 +222,30 @@ class SOBListing extends Component {
   onSubmit = (values) => {
 
   }
+  handleExportCSVButtonClick = () => {
+    // onClick();
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
+    var arr = this.props.bopSobList && this.props.bopSobList
+    console.log(this.props.bopSobList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    arr && arr.map(item => {
+      let len = Object.keys(item).length
+      for (let i = 0; i < len; i++) {
+        // let s = Object.keys(item)[i]
+        if (item.Specification === null) {
+          item.Specification = ' '
+        } else {
+          return false
+        }
+      }
+    })
     let products = []
-    products = this.props.bopSobList
+    products = arr
     return products; // must return the data which you want to be exported
   }
 
-createCustomExportCSVButton = (onClick) => {
+  createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -243,7 +256,7 @@ createCustomExportCSVButton = (onClick) => {
   render() {
     const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
-  
+
     const onExportToCSV = (row) => {
       // ...
       let products = []
@@ -256,6 +269,7 @@ createCustomExportCSVButton = (onClick) => {
       noDataText: (this.props.bopSobList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
+      onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text

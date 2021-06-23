@@ -345,18 +345,33 @@ class VBCPlantListing extends Component {
     * @description Renders the component
     */
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+     handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.plantDataList && this.props.plantDataList
+        // console.log(this.props.bopImportList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        // arr && arr.map(item => {
+        //     let len = Object.keys(item).length
+        //     for (let i = 0; i < len; i++) {
+        //         // let s = Object.keys(item)[i]
+        //         if (item.Specification === null) {
+        //             item.Specification = ' '
+        //         } else {
+        //             return false
+        //         }
+        //     }
+        // })
         let products = []
-        products = this.props.plantDataList
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
+
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
@@ -369,7 +384,8 @@ class VBCPlantListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             exportCSVBtn: this.createCustomExportCSVButton,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
+            onExportToCSV: this.handleExportCSVButtonClick,
+                        paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text

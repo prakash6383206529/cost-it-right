@@ -443,17 +443,32 @@ class MachineRateListing extends Component {
 
     }
 
+    handleExportCSVButtonClick = () => {
+        // onClick();
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+        var arr = this.props.machineDatalist && this.props.machineDatalist
+        console.log(this.props.machineDatalist, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.MachineTonnage === null) {
+                    item.MachineTonnage = ' '
+                } else if (item.EffectiveDate === null) {
+                    item.EffectiveDate = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.machineDatalist
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
 
@@ -469,6 +484,7 @@ class MachineRateListing extends Component {
             noDataText: (this.props.machineDatalist === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text

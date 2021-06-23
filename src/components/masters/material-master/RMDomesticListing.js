@@ -506,24 +506,36 @@ class RMDomesticListing extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
+    onSubmit = (values) => { }
 
-    }
+    handleExportCSVButtonClick = () => {
+        // onClick();
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+        var arr = this.props.rmDataList && this.props.rmDataList
+        console.log(this.props.rmDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.RMFreightCost === null) {
+                    item.RMFreightCost = ' '
+                } else if (item.RMShearingCost === null) {
+                    item.RMShearingCost = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.rmDataList
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
-
-
 
     /**
     * @method render
@@ -537,6 +549,7 @@ class RMDomesticListing extends Component {
             clearSearch: true,
             noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -736,8 +749,7 @@ class RMDomesticListing extends Component {
                             multiColumnSearch={true}
                             // exportCSV={true}
                             ignoreSinglePage
-                            // exportCSV={DownloadAccessibility}
-                            exportCSV={this.props.isSimulation ? false : true}
+                            exportCSV={(DownloadAccessibility && this.props.isSimulation) ? true : true}
                             csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
                             pagination>

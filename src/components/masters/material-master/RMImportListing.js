@@ -498,20 +498,34 @@ class RMImportListing extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = (values) => { }
 
-  }
+  handleExportCSVButtonClick = () => {
+    // onClick();
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
+    var arr = this.props.rmImportDataList && this.props.rmImportDataList
+    console.log(this.props.rmImportDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    arr && arr.map(item => {
+      let len = Object.keys(item).length
+      for (let i = 0; i < len; i++) {
+        // let s = Object.keys(item)[i]
+        if (item.RMFreightCost === null) {
+          item.RMFreightCost = ' '
+        } else if (item.RMShearingCost === null) {
+          item.RMShearingCost = ' '
+        } else {
+          return false
+        }
+      }
+    })
     let products = []
-    products = this.props.rmImportDataList
+    products = arr
     return products; // must return the data which you want to be exported
   }
 
   createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -528,6 +542,7 @@ class RMImportListing extends Component {
       noDataText: (this.props.rmImportDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
+      onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -722,9 +737,8 @@ class RMImportListing extends Component {
               options={options}
               search
               //ignoreSinglePage
-              ref={'table'}              
-              // exportCSV={DownloadAccessibility}
-              exportCSV={this.props.isSimulation ? false : true}
+              ref={'table'}
+              exportCSV={(DownloadAccessibility && this.props.isSimulation) ? false : true}
               csvFileName={`${RmImport}.csv`}
               pagination>
               {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}

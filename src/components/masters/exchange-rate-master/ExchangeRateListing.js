@@ -286,16 +286,34 @@ class ExchangeRateListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+    handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        console.log(this.props.exchangeRateDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.BankRate === null) {
+                    item.BankRate = ' '
+                } else if (item.BankCommissionPercentage === null) {
+                    item.BankCommissionPercentage = ' '
+                } else if (item.CustomRate === null) {
+                    item.CustomRate = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.exchangeRateDataList
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
 
@@ -321,6 +339,7 @@ class ExchangeRateListing extends Component {
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text

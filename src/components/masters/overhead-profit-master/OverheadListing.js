@@ -409,16 +409,38 @@ class OverheadListing extends Component {
         }
     };
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+    handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.overheadProfitList && this.props.overheadProfitList
+        console.log(this.props.overheadProfitList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.ClientName === null) {
+                    item.ClientName = ' '
+                } else if (item.OverheadPercentage === null) {
+                    item.OverheadPercentage = ' '
+                } else if (item.OverheadRMPercentage === null) {
+                    item.OverheadRMPercentage = ' '
+                } else if (item.OverheadBOPPercentage === null) {
+                    item.OverheadBOPPercentage = ' '
+                } else if (item.OverheadMachiningCCPercentage === null) {
+                    item.OverheadMachiningCCPercentage = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.overheadProfitList
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
 
@@ -435,6 +457,7 @@ class OverheadListing extends Component {
             noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text

@@ -403,18 +403,37 @@ class VendorListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+    handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.supplierDataList && this.props.supplierDataList
+        console.log(this.props.supplierDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.Country == 'NA') {
+                    item.Country = ' '
+                } else if (item.State == 'NA') {
+                    item.State = ' '
+                } else if (item.City == 'NA') {
+                    item.City = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.supplierDataList
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
+
     /**
     * @method render
     * @description Renders the component
@@ -428,6 +447,7 @@ class VendorListing extends Component {
             noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text

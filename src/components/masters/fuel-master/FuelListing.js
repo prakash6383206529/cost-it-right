@@ -252,6 +252,34 @@ class FuelListing extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => { }
+    handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.fuelDataList && this.props.fuelDataList
+        // console.log(this.props.fuelDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        // arr && arr.map(item => {
+        //     let len = Object.keys(item).length
+        //     for (let i = 0; i < len; i++) {
+        //         // let s = Object.keys(item)[i]
+        //         if (item.Specification === null) {
+        //             item.Specification = ' '
+        //         } else {
+        //             return false
+        //         }
+        //     }
+        // })
+        let products = []
+        products = arr
+        return products; // must return the data which you want to be exported
+    }
+
+    createCustomExportCSVButton = (onClick) => {
+        return (
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
+        );
+    }
+
+
 
     handleExportCSVButtonClick = (onClick) => {
         onClick();

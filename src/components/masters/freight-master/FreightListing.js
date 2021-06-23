@@ -11,7 +11,7 @@ import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
@@ -28,7 +28,7 @@ class FreightListing extends Component {
       isEditFlag: false,
       tableData: [],
       isBulkUpload: false,
-      shown:false,
+      shown: false,
       costingHead: [],
       destinationLocation: [],
       sourceLocation: [],
@@ -308,16 +308,30 @@ class FreightListing extends Component {
 
   }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
+  handleExportCSVButtonClick = () => {
+    // onClick();
+
+    var arr = this.props.freightDetail && this.props.freightDetail
+    // console.log(this.props.freightDetail, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    // arr && arr.map(item => {
+    //   let len = Object.keys(item).length
+    //   for (let i = 0; i < len; i++) {
+    //     // let s = Object.keys(item)[i]
+    //     if (item.Specification === null) {
+    //       item.Specification = ' '
+    //     } else {
+    //       return false
+    //     }
+    //   }
+    // })
     let products = []
-    products = this.props.freightDetail
+    products = arr
     return products; // must return the data which you want to be exported
   }
 
-createCustomExportCSVButton = (onClick) => {
+  createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -333,6 +347,7 @@ createCustomExportCSVButton = (onClick) => {
       noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
+      onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -342,7 +357,7 @@ createCustomExportCSVButton = (onClick) => {
 
     return (
       <div className={DownloadAccessibility ? "show-table-btn" : ""}>
-      {/* {this.props.loading && <Loader />} */}
+        {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             {this.state.shown && (
@@ -490,7 +505,7 @@ createCustomExportCSVButton = (onClick) => {
               options={options}
               search
               exportCSV={DownloadAccessibility}
-                csvFileName={`${FreightMaster}.csv`}
+              csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination>

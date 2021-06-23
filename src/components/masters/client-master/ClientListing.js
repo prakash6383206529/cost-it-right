@@ -224,18 +224,33 @@ class ClientListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+    handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.clientDataList && this.props.clientDataList
+        console.log(this.props.clientDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.ClientName === null) {
+                    item.ClientName = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.clientDataList
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
+
     /**
     * @method render
     * @description Renders the component
@@ -251,6 +266,7 @@ class ClientListing extends Component {
             noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
