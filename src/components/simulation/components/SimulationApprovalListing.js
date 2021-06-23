@@ -62,7 +62,7 @@ function SimulationApprovalListing(props) {
      * @method getTableData
      * @description getting approval list table
      */
-    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = EMPTY_GUID,) => {
+    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
 
         let filterData = {
             logged_in_user_id: loggedInUserId(),
@@ -70,7 +70,7 @@ function SimulationApprovalListing(props) {
             token_number: null,
             simulated_by: createdBy,
             requestedBy: requestedBy,
-            status: 0,
+            status: status,
             // partNo: partNo,
             // createdBy: createdBy,
         }
@@ -119,7 +119,7 @@ function SimulationApprovalListing(props) {
         const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
         const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
-        const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
+        const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
@@ -448,7 +448,7 @@ function SimulationApprovalListing(props) {
                     :
                     <SimulationApprovalSummary
                         approvalNumber={approvalData.approvalNumber}
-                        approvalProcessId={approvalData.approvalProcessId}
+                        approvalId={approvalData.approvalProcessId}
                     /> //TODO list
             }
         </Fragment>
