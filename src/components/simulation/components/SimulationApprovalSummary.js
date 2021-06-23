@@ -18,7 +18,7 @@ import { loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 
 function SimulationApprovalSummary(props) {
-    const { approvalDetails, approvalData, approvalNumber, approvalProcessId } = props;
+    const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -57,7 +57,7 @@ function SimulationApprovalSummary(props) {
 
         const reqParams = {
             approvalTokenNumber: approvalNumber,
-            approvalId: approvalProcessId,
+            approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
