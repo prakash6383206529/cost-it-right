@@ -28,6 +28,7 @@ function ApproveRejectDrawer(props) {
 
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
+  const [reason, setReason] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
@@ -181,7 +182,7 @@ function ApproveRejectDrawer(props) {
               setOpenPushButton(true)
 
             } else {
-              toastr.success(IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -253,7 +254,7 @@ function ApproveRejectDrawer(props) {
               setOpenPushButton(true)
 
             } else {
-              toastr.success(!IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+              toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -410,37 +411,55 @@ function ApproveRejectDrawer(props) {
                     </div>
                     {
                       type === 'Sender' &&
-                      <div className="input-group form-group col-md-12 input-withouticon">
-                        <div className="inputbox date-section">
-                          <DatePickerHookForm
-                            name={`EffectiveDate`}
-                            label={'Effective Date'}
-                            selected={selectedDate}
-                            handleChange={(date) => {
-                              handleEffectiveDateChange(date);
-                            }}
-                            //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                            rules={{ required: true }}
+                      <>
+                        <div className="input-group form-group col-md-12 input-withouticon">
+                          <SearchableSelectHookForm
+                            label={'Reason'}
+                            name={'reason'}
+                            placeholder={'-Select-'}
                             Controller={Controller}
                             control={control}
+                            rules={{ required: true }}
                             register={register}
-                            showMonthDropdown
-                            showYearDropdown
-                            dateFormat="aa/MM/yyyy"
-                            //maxDate={new Date()}
-                            dropdownMode="select"
-                            placeholderText="Select date"
-                            customClassName="withBorder"
-                            className="withBorder"
-                            autoComplete={"off"}
-                            disabledKeyboardNavigation
-                            onChangeRaw={(e) => e.preventDefault()}
-                            disabled={false}
+                            //defaultValue={isEditFlag ? plantName : ''}
+                            options={approvalDropDown}
                             mandatory={true}
-                            errors={errors.EffectiveDate}
+                            handleChange={() => { }}
+                            errors={errors.reason}
                           />
                         </div>
-                      </div>
+                        <div className="input-group form-group col-md-12 input-withouticon">
+                          <div className="inputbox date-section">
+                            <DatePickerHookForm
+                              name={`EffectiveDate`}
+                              label={'Effective Date'}
+                              selected={selectedDate}
+                              handleChange={(date) => {
+                                handleEffectiveDateChange(date);
+                              }}
+                              //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                              rules={{ required: true }}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              showMonthDropdown
+                              showYearDropdown
+                              dateFormat="aa/MM/yyyy"
+                              //maxDate={new Date()}
+                              dropdownMode="select"
+                              placeholderText="Select date"
+                              customClassName="withBorder"
+                              className="withBorder"
+                              autoComplete={"off"}
+                              disabledKeyboardNavigation
+                              onChangeRaw={(e) => e.preventDefault()}
+                              disabled={false}
+                              mandatory={true}
+                              errors={errors.EffectiveDate}
+                            />
+                          </div>
+                        </div>
+                      </>
                     }
                   </>
                 }
