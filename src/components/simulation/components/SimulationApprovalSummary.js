@@ -17,6 +17,7 @@ import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import VerifyImpactDrawer from './VerifyImpactDrawer';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
@@ -39,6 +40,7 @@ function SimulationApprovalSummary(props) {
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState({})
+    const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -171,6 +173,16 @@ function SimulationApprovalSummary(props) {
         // const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
         // // const type_of_costing = 
         // getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+    }
+
+    const VerifyImpact = () => {
+        setIsVerifyImpactDrawer(true)
+    }
+
+    const verifyImpactDrawer = (e = '', type) => {
+        if (type === 'cancel') {
+            setIsVerifyImpactDrawer(false);
+        }
     }
 
     return (
@@ -400,9 +412,9 @@ function SimulationApprovalSummary(props) {
                         {/* Costing Summary page here */}
                     </div>
 
-                    {!isApprovalDone &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                            <div className="col-sm-12 text-right bluefooter-butn">
+                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                            {!isApprovalDone &&
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => { setRejectDrawer(true) }} >
                                         <div className={'cross-icon'}>
@@ -435,8 +447,13 @@ function SimulationApprovalSummary(props) {
                                             {'Approve & Push'}
                                         </button>}
                                 </Fragment>
-                            </div>
-                        </Row>}
+                            }
+                            <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                {"Verify Impact "}
+                            </button>
+                        </div>
+                    </Row>
 
                     {
                         showPushButton &&
@@ -504,7 +521,18 @@ function SimulationApprovalSummary(props) {
                 anchor={'top'}
                 approvalNo={simulationDetail.Token}
                 isSimulation={true}
-            />}
+            />
+            }
+            {isVerifyImpactDrawer &&
+                <VerifyImpactDrawer
+                    isOpen={isVerifyImpactDrawer}
+                    anchor={'right'}
+                    approvalData={[]}
+                    type={'Approve'}
+                    closeDrawer={verifyImpactDrawer}
+                    isSimulation={true}
+                />
+            }
         </>
     )
 }
