@@ -16,6 +16,7 @@ import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
@@ -33,6 +34,7 @@ function SimulationApprovalSummary(props) {
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
+    const [loader, setLoader] = useState(true)
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -69,6 +71,7 @@ function SimulationApprovalSummary(props) {
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
+            setLoader(false)
         }))
     }, [])
 
@@ -174,6 +177,7 @@ function SimulationApprovalSummary(props) {
         <>
             {showListing === false ?
                 <>
+                    {loader && <LoaderCustom />}
                     <div className="container-fluid approval-summary-page">
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
@@ -499,6 +503,7 @@ function SimulationApprovalSummary(props) {
                 closeDrawer={closeViewDrawer}
                 anchor={'top'}
                 approvalNo={simulationDetail.Token}
+                isSimulation={true}
             />}
         </>
     )

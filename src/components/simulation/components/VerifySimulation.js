@@ -12,6 +12,9 @@ import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
+import { getPlantSelectListByType } from '../../../actions/Common';
+import { EMPTY_GUID, ZBC } from '../../../config/constants';
+import { getRawMaterialNameChild } from '../../masters/actions/Material';
 
 
 function VerifySimulation(props) {
@@ -22,9 +25,12 @@ function VerifySimulation(props) {
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
+    const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
+    const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
+
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -33,17 +39,34 @@ function VerifySimulation(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getVerifySimulationList(props.token, (res) => {
+        verifyCostingList()
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getRawMaterialNameChild(() => { }))
+    }, [])
+
+    const verifyCostingList = (plantId = '', rawMatrialId = '') => {
+        dispatch(getVerifySimulationList(props.token, plantId, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const data = res.data.Data
+                if (data.SimulationImpactedCostings.length === 0) {
+                    toastr.warning('No approved costing exist for this raw material.')
+                    setHideRunButton(true)
+                    return false
+                }
                 setTokenNo(data.TokenId)
                 setSimualtionId(data.SimulationId)
+                setHideRunButton(false)
             }
         }))
-    }, [])
+    }
 
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
+
+    const { rawMaterialNameSelectList } = useSelector(state => state.material)
+
 
     const renderCostingNumber = () => {
         return <>Costing <br /> Number </>
@@ -57,7 +80,7 @@ function VerifySimulation(props) {
     }
 
     const renderDescription = () => {
-        return <>Part <br />Description </>
+        return <>Part <br />Name </>
     }
 
     const renderECN = () => {
@@ -131,6 +154,10 @@ function VerifySimulation(props) {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
+    const renderRM = (cell, row, enumObject, rowIndex) => {
+        return `${cell}(${row.RMCode ? row.RMCode : '-'})-${row.RMGrade ? row.RMGrade : '-'}`
+    }
+
     const onRowSelect = (row, isSelected, e) => {
         if (isSelected) {
             let tempArr = [...selectedRowData, row]
@@ -150,7 +177,26 @@ function VerifySimulation(props) {
         }
     }
 
-    const renderDropdownListing = (label) => { }
+    const renderDropdownListing = (label) => {
+        let temp = []
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+
+        if (label === 'material') {
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+    }
 
     const selectRowProp = {
         mode: 'checkbox',
@@ -204,6 +250,22 @@ function VerifySimulation(props) {
         }
     }
 
+    const handleMaterial = (value) => {
+        setMaterial(value)
+    }
+
+
+    const filterList = () => {
+        const plant = getValues('plantCode').value
+
+        verifyCostingList(plant, material.value)
+    }
+    const resetFilter = () => {
+        setValue('plantCode', '')
+        setValue('rawMaterial', '')
+        verifyCostingList('', '')
+    }
+
     return (
         <>
             {
@@ -247,7 +309,7 @@ function VerifySimulation(props) {
                                         rules={{ required: false }}
                                         register={register}
                                         // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('plantCode')}
+                                        options={renderDropdownListing('plant')}
                                         mandatory={false}
                                         handleChange={() => { }}
                                         errors={errors.plantCode}
@@ -256,17 +318,17 @@ function VerifySimulation(props) {
                                 <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
-                                        name={'rawMaterial'}
+                                        name={'material'}
                                         placeholder={'Raw Material'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
                                         // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('rm')}
+                                        options={renderDropdownListing('material')}
                                         mandatory={false}
-                                        handleChange={() => { }}
-                                        errors={errors.rawMaterial}
+                                        handleChange={handleMaterial}
+                                        errors={errors.material}
                                     />
                                 </div>
 
@@ -274,7 +336,7 @@ function VerifySimulation(props) {
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
-                                        onClick={() => { }}
+                                        onClick={resetFilter}
                                         className="reset mr10"
                                     >
                                         {'Reset'}
@@ -282,7 +344,7 @@ function VerifySimulation(props) {
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
-                                        onClick={() => { }}
+                                        onClick={filterList}
                                         className="apply mr5"
                                     >
                                         {'Apply'}
@@ -314,7 +376,7 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" dataFormat={renderRM} >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
@@ -335,7 +397,7 @@ function VerifySimulation(props) {
                                 </div>{" "}
                                 {"CANCEL"}
                             </button>
-                            <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
