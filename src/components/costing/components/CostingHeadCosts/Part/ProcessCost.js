@@ -17,6 +17,7 @@ import { getProcessCalculation } from '../../../actions/CostWorking';
 import { gridDataAdded, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
+import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -635,6 +636,13 @@ function ProcessCost(props) {
             item={props.item}
             IsAssemblyCalculation={false}
           />
+
+          {/* <OperationCostExcludedOverhead
+            data={props.data && props.data.CostingOperationCostResponse}
+            setOperationCost={setOperationCost}
+            item={props.item}
+            IsAssemblyCalculation={false}
+          /> */}
 
           {isOpen && <ToolCost
             data={props.data && props.data.CostingToolsCostResponse}
