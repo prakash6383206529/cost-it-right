@@ -65,7 +65,8 @@ function RMSimulation(props) {
         obj.Vendor = list[0].VendorName
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
-
+        obj.VendorId = list[0].VendorId
+        obj.TechnologyId = list[0].TechnologyId
         let tempArr = []
         list && list.map(item => {
             if (item.NewBasicRate || item.NewScrapRate) {
