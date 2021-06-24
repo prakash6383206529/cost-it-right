@@ -557,9 +557,7 @@ export function formViewData(costingSummary) {
   }
   obj.profitOn = {
     profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-',
-    profitValue: dataFromAPI.CostingPartDetails && checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) +
-      checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) +
-      checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost)
+    profitValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetProfitCost !== null ? dataFromAPI.CostingPartDetails.NetProfitCost : '-'
   }
   obj.rejectionOn = {
     rejectionTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability : '-',

@@ -250,6 +250,22 @@ function ViewOverheadProfit(props) {
                                 </td>
                               </tr>
                             )}
+                            {viewProfitData.IsProfitCombined && (
+                              <tr>
+                                <td>{viewProfitData.ProfitApplicability}</td>
+                                <td>
+                                  {viewProfitData.ProfitPercentage ? viewProfitData.ProfitPercentage : "-"}
+                                </td>
+                                <td>
+                                  {viewProfitData.ProfitCombinedCost ? viewProfitData.ProfitCombinedCost : "-"}
+                                </td>
+                                <td>
+                                  {viewProfitData.ProfitCombinedTotalCost
+                                    ? viewProfitData.ProfitCombinedTotalCost
+                                    : "-"}
+                                </td>
+                              </tr>
+                            )}
                           </>
                         )}
                         {Object.keys(viewProfitData).length === 0 && (
