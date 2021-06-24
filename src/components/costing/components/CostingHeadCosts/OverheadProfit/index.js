@@ -68,7 +68,7 @@ function OverheadProfit(props) {
   const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
 
   const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
-  const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
+  const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
   const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
 
@@ -296,7 +296,7 @@ function OverheadProfit(props) {
       let tempObj = {
         "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
         "IccDetailId": InventoryObj ? InventoryObj.InterestRateId : '',
-        "ICCApplicability": InventoryObj ? InventoryObj.ICCApplicability : '',
+        "ICCApplicability": Object.keys(ICCapplicability).length > 0 ? ICCapplicability.label : '',
         "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
         "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
         "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
@@ -307,7 +307,7 @@ function OverheadProfit(props) {
         props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
       }
     }, 200)
-  }, [ICCFieldValues, interestRateValues, IsIncludedSurfaceInOverheadProfit]);
+  }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability]);
 
   const PaymentTermsFieldValues = useWatch({
     control,
@@ -324,7 +324,7 @@ function OverheadProfit(props) {
       let tempObj = {
         "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
         "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
-        "PaymentTermApplicability": PaymentTermObj ? PaymentTermObj.PaymentTermApplicability : '',
+        "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability.label : '',
         "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
         "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
         "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',
@@ -335,7 +335,7 @@ function OverheadProfit(props) {
         props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
       }
     }, 200)
-  }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues]);
+  }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues, paymentTermsApplicability]);
 
   // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
   useEffect(() => {
