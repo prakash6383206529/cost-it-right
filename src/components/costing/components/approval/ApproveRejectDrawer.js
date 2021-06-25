@@ -22,7 +22,7 @@ function ApproveRejectDrawer(props) {
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit, setValue } = useForm({
+  const { register, control, errors, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -166,10 +166,18 @@ function ApproveRejectDrawer(props) {
 
 
 
-  const onSubmit = (data) => {
+  const onSubmit = () => {
+
+
+
+    const remark = getValues('remark')
+    const reason = getValues('reason')
+    const dept = getValues('dept')
+    const approver = getValues('approver')
+
 
     if (type === 'Reject') {
-      if (data.remark) {
+      if (remark) {
         setShowError(false)
       } else {
         setShowError(true)
@@ -178,14 +186,13 @@ function ApproveRejectDrawer(props) {
     }
 
     if (type === 'Sender') {
-      console.log(data.remark, "data.remark");
-      if (data.remark) {
+      if (remark) {
         setShowError(false)
       } else {
         setShowError(true)
         return false
       }
-      if (!data.reason && !selectedDate) return false
+      if (!reason && !selectedDate) return false
     }
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
@@ -197,12 +204,12 @@ function ApproveRejectDrawer(props) {
           LoggedInUserId: userLoggedIn,
           SenderLevelId: userData.LoggedInLevelId,
           SenderLevel: userData.LoggedInLevel,
-          ApproverDepartmentId: data.dept && data.dept.value ? data.dept.value : '',
-          ApproverDepartmentName: data.dept && data.dept.label ? data.dept.label : '',
-          Approver: data.approver && data.approver.value ? data.approver.value : '',
-          ApproverLevelId: data.approver && data.approver.levelId ? data.approver.levelId : '',
-          ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
-          Remark: data.remark,
+          ApproverDepartmentId: dept && dept.value ? dept.value : '',
+          ApproverDepartmentName: dept && dept.label ? dept.label : '',
+          Approver: approver && approver.value ? approver.value : '',
+          ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
+          ApproverLevel: approver && approver.levelName ? approver.levelName : '',
+          Remark: remark,
           IsApproved: type === 'Approve' ? true : false,
           IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
         })
@@ -239,13 +246,13 @@ function ApproveRejectDrawer(props) {
       objs.SenderLevelId = userData.LoggedInSimulationLevelId
       objs.SenderLevel = userData.LoggedInSimulationLevel
       objs.SenderId = userLoggedIn
-      objs.ApproverId = data.approver && data.approver.value ? data.approver.value : ''
-      objs.ApproverLevelId = data.approver && data.approver.levelId ? data.approver.levelId : ''
-      objs.ApproverLevel = data.approver && data.approver.levelName ? data.approver.levelName : ''
-      objs.Remark = data.remark
+      objs.ApproverId = approver && approver.value ? approver.value : ''
+      objs.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
+      objs.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
+      objs.Remark = remark
       objs.IsApproved = type === 'Approve' ? true : false
-      objs.ApproverDepartmentId = data.dept && data.dept.value ? data.dept.value : ''
-      objs.ApproverDepartmentName = data.dept && data.dept.label ? data.dept.label : ''
+      objs.ApproverDepartmentId = dept && dept.value ? dept.value : ''
+      objs.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       objs.IsFinalApprovalProcess = false
       objs.SimulationApprovalProcessSummaryId = simulationDetail.SimulationApprovalProcessSummaryId
 
@@ -253,21 +260,21 @@ function ApproveRejectDrawer(props) {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
-        senderObj.ReasonId = data.reason ? data.reason.value : ''
-        senderObj.Reason = data.reason ? data.reason.label : ''
+        senderObj.ReasonId = reason ? reason.value : ''
+        senderObj.Reason = reason ? reason.label : ''
         // senderObj.ApprovalToken = 0
         senderObj.DepartmentId = userDetails().DepartmentId
         senderObj.DepartmentName = userDetails().Department
-        senderObj.ApproverLevelId = data.approver && data.approver.levelId ? data.approver.levelId : ''
-        senderObj.ApproverDepartmentId = data.dept && data.dept.value ? data.dept.value : ''
-        senderObj.ApproverLevel = data.approver && data.approver.levelName ? data.approver.levelName : ''
-        senderObj.ApproverDepartmentName = data.dept && data.dept.label ? data.dept.label : ''
-        senderObj.ApproverId = data.approver && data.approver.value ? data.approver.value : ''
+        senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
+        senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
+        senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
+        senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
+        senderObj.ApproverId = approver && approver.value ? approver.value : ''
         senderObj.SenderLevelId = userData.LoggedInSimulationLevelId
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
-        senderObj.SenderRemark = data.remark
-        senderObj.EffectiveDate = moment(data.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.SenderRemark = remark
+        senderObj.EffectiveDate = moment(selectedDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
 
@@ -558,7 +565,7 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: type === 'Approve' ? false : true }}
+                    // rules={{ required: type === 'Approve' ? false : true }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
@@ -588,7 +595,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button  save-btn"
-                    onClick={onSubmit}
+                    onClick={() => { }}
                   >
                     <div className={'check-icon'}>
                       <img
