@@ -39,6 +39,8 @@ function CostingSimulation(props) {
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
     const [id, setId] = useState('')
+    const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
+    const [oldArr, setOldArr] = useState([])
     const [material, setMaterial] = useState([])
 
     const dispatch = useDispatch()
@@ -220,12 +222,6 @@ function CostingSimulation(props) {
         // setShowApprovalHistory(true)
     }
 
-    // const onExportToCSV = (onClick) => {
-    //     // Custom your onClick event here,
-    //     // it's not necessary to implement this function if you have no any process before onClick
-    //     
-    // }
-
     const handleExportCSVButtonClick = (onClick) => {
         onClick();
         let products = []
@@ -272,6 +268,12 @@ function CostingSimulation(props) {
 
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
+        const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
+        if (isChanged) {
+            setSaveDone(true)
+        } else {
+            setSaveDone(false)
+        }
     }
 
     const closeDrawer = (e = '', type) => {
@@ -282,6 +284,7 @@ function CostingSimulation(props) {
         } else {
             setIsApprovalDrawer(false);
             setIsVerifyImpactDrawer(false);
+            setOldArr(selectedRowData)
         }
     }
 
@@ -519,6 +522,7 @@ function CostingSimulation(props) {
                             master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
+                            isSaveDone={isSaveDone}
                         />}
 
                     {isVerifyImpactDrawer &&
