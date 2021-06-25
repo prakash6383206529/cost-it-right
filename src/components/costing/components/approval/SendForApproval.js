@@ -17,6 +17,7 @@ import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
+import PushSection from '../../../common/PushSection'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -635,6 +636,15 @@ const SendForApproval = (props) => {
                   isFinalApproverShow === false ?
                     <>
                       <Row className="px-3">
+                        <Col md="12">
+                          <div className="left-border">{"Push Drawer"}</div>
+                        </Col>
+                        <Col md="12">
+
+                          <PushSection />
+                        </Col>
+                      </Row>
+                      <Row className="px-3">
                         <Col md="4">
                           <div className="left-border">{"Approver"}</div>
                         </Col>
@@ -714,6 +724,7 @@ const SendForApproval = (props) => {
                         />
                       </Col>
                     </Row>
+
                 }
                 <Row className="mb-4">
                   <Col

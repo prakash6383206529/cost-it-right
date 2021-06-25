@@ -4,13 +4,14 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
+import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
+import PushSection from '../../../common/PushSection'
 
 
 function ApproveRejectDrawer(props) {
@@ -123,11 +124,11 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       switch (master) {
         case RMDOMESTIC:
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
+          // dispatch(saveSimulationForRawMaterial(simObj, res => {
+          //   if (res.data.Result) {
+          //     toastr.success('Simulation has been saved successfully.')
+          //   }
+          // }))
           break;
         case RMIMPORT:
           dispatch(saveSimulationForRawMaterial(simObj, res => {
@@ -377,7 +378,7 @@ function ApproveRejectDrawer(props) {
       //onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper'}>
+          <div className={'drawer-wrapper drawer-md'}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="drawer-heading">
                 <Col>
@@ -518,6 +519,16 @@ function ApproveRejectDrawer(props) {
                         </div>
                       </>
                     }
+                    <Row className="px-3">
+                      <Col md="12">
+                        <div className="left-border">{"Push Drawer"}</div>
+                      </Col>
+                      <Col md="12">
+
+                        <PushSection />
+                      </Col>
+                    </Row>
+
                   </>
                 }
                 <div className="input-group form-group col-md-12">
