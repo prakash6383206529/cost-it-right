@@ -5,6 +5,50 @@ const color3 = "#76E2C5";
 const color4 = "#F199CE";
 const color5 = "#256BD1";
 
+export const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        boxWidth: '20',
+      },
+    },
+  };
+
+export const data1 = {
+    labels: ['1', '2', '3', '4', '5', '6'],
+    datasets: [
+      {
+        label: 'RM',
+        data: [2, 4, 7, 3, 5, 2, 8, 4],
+        fill: false,
+        borderColor: color1,
+        backgroundColor:color1,
+      },
+      {
+        label: 'CC',
+        data: [5, 7, 10, 6, 8, 5, 11, 7],
+        fill: false,
+        borderColor: color2,
+        backgroundColor:color2,
+      },
+      {
+        label: 'VA',
+        data: [9, 11, 14, 10, 12, 9, 15, 12],
+        fill: false,
+        borderColor: color3,
+        backgroundColor:color3,
+      },
+      {
+        label: 'Others',
+        data: [14, 16, 20, 15, 18, 17, 21, 24],
+        fill: false,
+        borderColor: color4,
+        backgroundColor:color4,
+      }
+    ],
+  };
+
 export const chart1 = {
     credits: {
         enabled: false

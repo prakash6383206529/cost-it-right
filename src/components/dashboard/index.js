@@ -7,8 +7,8 @@ import { Col, Container, Row } from "reactstrap";
 import { DashboardMaster } from "../../config/constants";
 import { Field, reduxForm } from "redux-form";
 import {  searchableSelect} from '../layout/FormInputs'
-import { chart1,chart2,chart3,chart4,chart5 } from "./ChartsDashboard";
-
+import { data1,options} from "./ChartsDashboard";
+import { Line } from 'react-chartjs-2';
 
 function Dashboard (props) {
   const { handleSubmit, menusData } = props
@@ -25,15 +25,18 @@ function Dashboard (props) {
       }
     });
   })
+  
+  
 
   return(
     <>
-      {/*<div className="dashboard-top position-relative">
+      {/* <div className="dashboard-top position-relative">
           <div className="dashboard-text">
             <h2>Dashboard will come here</h2>
           </div>
           <img src={require('../../assests/images/dashboard-img.png')} alt='dashboard-background' />
        </div> */}
+
       <Container fluid className="dashboard-page">
         <Row>
           <Col md="12">
@@ -75,17 +78,16 @@ function Dashboard (props) {
             <Col md="6">
               <div className="graph-box">
                 <div className="left-border ">Cost Movement by Cost Drivers</div>
-                {/* <div className="graph-container">
-                  <HighchartsReact highcharts={Highcharts} options={chart1}/>
-                </div> */}
+                <div className="graph-container">
+                  <Line data={data1}  options={options} />
+                </div>
               </div>
             </Col>
             <Col md="6">
               <div className="graph-box">
                 <div className="left-border ">Cost Comparison by Plant</div>
-                {/* <div className="graph-container">
-                <HighchartsReact highcharts={Highcharts} options={chart2}/>
-                </div> */}
+                <div className="graph-container">
+                </div>
               </div>
             </Col>
         </Row>
@@ -93,30 +95,26 @@ function Dashboard (props) {
             <Col md="3">
               <div className="graph-box">
                 <div className="left-border ">Supplier Contribution(SOB)</div>
-                {/* <div className="graph-container">
-                  <HighchartsReact highcharts={Highcharts} options={chart3}/>
-                </div> */}
+                <div className="graph-container">
+                </div>
               </div>
             </Col>
             <Col md="3">
               <div className="graph-box">
                 <div className="left-border ">Cost Ratio(PFS)</div>
-                {/* <div className="graph-container">
-                  <HighchartsReact highcharts={Highcharts} options={chart4}/>
-                </div> */}
+                <div className="graph-container">
+                </div>
               </div>
             </Col>
             <Col md="6">
               <div className="graph-box">
                 <div className="left-border ">Cost Ratio(Buying)</div>
-                {/* <div className="graph-container">
-                  <HighchartsReact highcharts={Highcharts} options={chart5}/>
-                </div> */}
+                <div className="graph-container">
+                </div>
               </div>
             </Col>
         </Row>
         </form>
-
       </Container>
     </>
   )

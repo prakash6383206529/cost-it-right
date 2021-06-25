@@ -485,7 +485,7 @@ function ApproveRejectDrawer(props) {
                             errors={errors.reason}
                           />
                         </div>
-                        <div className="input-group form-group col-md-12 input-withouticon">
+                        <div className="input-group form-group col-md-12">
                           <div className="inputbox date-section">
                             <DatePickerHookForm
                               name={`EffectiveDate`}
