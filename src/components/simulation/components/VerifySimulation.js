@@ -133,15 +133,15 @@ function VerifySimulation(props) {
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const ecnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const revisionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const renderPlant = (cell, row, enumObject, rowIndex) => {
@@ -155,7 +155,7 @@ function VerifySimulation(props) {
     }
 
     const renderRM = (cell, row, enumObject, rowIndex) => {
-        return `${cell}(${row.RMCode ? row.RMCode : '-'})-${row.RMGrade ? row.RMGrade : '-'}`
+        return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -373,7 +373,7 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" dataFormat={renderRM} >{RMName()}</TableHeaderColumn>
