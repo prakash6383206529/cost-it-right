@@ -635,7 +635,7 @@ const SendForApproval = (props) => {
                 {
                   isFinalApproverShow === false ?
                     <>
-                      <Row className="px-3">
+                      {/* <Row className="px-3">
                         <Col md="12">
                           <div className="left-border">{"Push Drawer"}</div>
                         </Col>
@@ -643,7 +643,7 @@ const SendForApproval = (props) => {
 
                           <PushSection />
                         </Col>
-                      </Row>
+                      </Row> */}
                       <Row className="px-3">
                         <Col md="4">
                           <div className="left-border">{"Approver"}</div>
