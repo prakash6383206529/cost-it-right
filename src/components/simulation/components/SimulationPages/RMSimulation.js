@@ -91,15 +91,14 @@ function RMSimulation(props) {
             return null;
         })
         obj.SimulationRawMaterials = tempArr
-        console.log('obj: ', obj);
 
-        // dispatch(runVerifySimulation(obj, res => {
+        dispatch(runVerifySimulation(obj, res => {
 
-        //     if (res.data.Result) {
-        //         setToken(res.data.Identity)
-        //         setShowVerifyPage(true)
-        //     }
-        // }))
+            if (res.data.Result) {
+                setToken(res.data.Identity)
+                setShowVerifyPage(true)
+            }
+        }))
     }
 
     const cancelVerifyPage = () => {
