@@ -14,7 +14,7 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -414,9 +414,9 @@ class ProcessListing extends Component {
     return products; // must return the data which you want to be exported
   }
 
-createCustomExportCSVButton = (onClick) => {
+  createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -425,7 +425,7 @@ createCustomExportCSVButton = (onClick) => {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
 
     const options = {
@@ -441,7 +441,7 @@ createCustomExportCSVButton = (onClick) => {
     }
 
     return (
-      <div className="show-table-btn">
+      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -536,7 +536,7 @@ createCustomExportCSVButton = (onClick) => {
               bordered={false}
               options={options}
               search
-              exportCSV
+              exportCSV={DownloadAccessibility}
               csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}

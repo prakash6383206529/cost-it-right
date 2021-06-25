@@ -8,7 +8,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
@@ -177,13 +177,13 @@ class RMListing extends Component {
         let products = []
         products = this.props.rawMaterialTypeDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
@@ -191,7 +191,7 @@ class RMListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
-        const { AddAccessibility, } = this.props;
+        const { AddAccessibility, DownloadAccessibility } = this.props;
 
         const options = {
             clearSearch: true,
@@ -206,7 +206,7 @@ class RMListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
                 {this.props.loading && <Loader />}
                 <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
@@ -243,7 +243,7 @@ class RMListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${RmMaterial}.csv`}
                             //ignoreSinglePage
                             ref={'table'}

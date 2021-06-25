@@ -16,6 +16,8 @@ import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
+import VerifyImpactDrawer from './VerifyImpactDrawer';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
@@ -33,10 +35,12 @@ function SimulationApprovalSummary(props) {
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
+    const [loader, setLoader] = useState(true)
 
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState({})
+    const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -69,6 +73,7 @@ function SimulationApprovalSummary(props) {
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
+            setLoader(false)
         }))
     }, [])
 
@@ -170,10 +175,21 @@ function SimulationApprovalSummary(props) {
         // getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
 
+    const VerifyImpact = () => {
+        setIsVerifyImpactDrawer(true)
+    }
+
+    const verifyImpactDrawer = (e = '', type) => {
+        if (type === 'cancel') {
+            setIsVerifyImpactDrawer(false);
+        }
+    }
+
     return (
         <>
             {showListing === false ?
                 <>
+                    {loader && <LoaderCustom />}
                     <div className="container-fluid approval-summary-page">
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
@@ -396,9 +412,9 @@ function SimulationApprovalSummary(props) {
                         {/* Costing Summary page here */}
                     </div>
 
-                    {!isApprovalDone &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                            <div className="col-sm-12 text-right bluefooter-butn">
+                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                            {!isApprovalDone &&
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => { setRejectDrawer(true) }} >
                                         <div className={'cross-icon'}>
@@ -431,8 +447,13 @@ function SimulationApprovalSummary(props) {
                                             {'Approve & Push'}
                                         </button>}
                                 </Fragment>
-                            </div>
-                        </Row>}
+                            }
+                            <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                {"Verify Impact "}
+                            </button>
+                        </div>
+                    </Row>
 
                     {
                         showPushButton &&
@@ -499,7 +520,19 @@ function SimulationApprovalSummary(props) {
                 closeDrawer={closeViewDrawer}
                 anchor={'top'}
                 approvalNo={simulationDetail.Token}
-            />}
+                isSimulation={true}
+            />
+            }
+            {isVerifyImpactDrawer &&
+                <VerifyImpactDrawer
+                    isOpen={isVerifyImpactDrawer}
+                    anchor={'right'}
+                    approvalData={[]}
+                    type={'Approve'}
+                    closeDrawer={verifyImpactDrawer}
+                    isSimulation={true}
+                />
+            }
         </>
     )
 }

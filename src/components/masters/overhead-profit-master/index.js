@@ -24,6 +24,7 @@ class OverheadProfit extends Component {
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
+            DownloadAccessibility: false,
         }
     }
 
@@ -42,6 +43,7 @@ class OverheadProfit extends Component {
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
             }
@@ -150,6 +152,7 @@ class OverheadProfit extends Component {
                             AddAccessibility={this.state.AddAccessibility}
                             EditAccessibility={this.state.EditAccessibility}
                             DeleteAccessibility={this.state.DeleteAccessibility}
+                            DownloadAccessibility={this.state.DownloadAccessibility}
                           />
                         </TabPane>
                       )}
@@ -162,6 +165,7 @@ class OverheadProfit extends Component {
                             AddAccessibility={this.state.AddAccessibility}
                             EditAccessibility={this.state.EditAccessibility}
                             DeleteAccessibility={this.state.DeleteAccessibility}
+                            DownloadAccessibility={this.state.DownloadAccessibility}
                           />
                         </TabPane>
                       )}

@@ -219,7 +219,7 @@ function CostingHeaderTabs(props) {
         <Row className="justify-content-between align-items-end">
           <Col md="auto">
             <div className="form-group mb-0">
-              <label>Costing Effective Date</label>
+              <label>Costing Effective Date<span className="asterisk-required">*</span></label>
               <div className="inputbox date-section">
                 <DatePicker
                   name="EffectiveDate"

@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRMDomesticDataList } from '../../masters/actions/Material';
+import { getRawMaterialNameChild, getRMDomesticDataList } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
@@ -15,15 +15,16 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, formatRMSimulationObject, getConfigurationKey, userDetails } from '../../../helper';
 import SimulationHistory from './SimulationHistory';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { RMDOMESTIC, RMIMPORT, simulationMaster } from '../../../config/constants';
+import { EMPTY_GUID, RMDOMESTIC, RMIMPORT, simulationMaster, ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import SimulationApprovalListing from './SimulationApprovalListing';
 import { Redirect } from 'react-router';
+import { getPlantSelectListByType } from '../../../actions/Common';
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
 
-    const { register, control, errors, } = useForm({
+    const { register, control, errors, getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -38,11 +39,19 @@ function CostingSimulation(props) {
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
     const [id, setId] = useState('')
+    const [material, setMaterial] = useState([])
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getCostingSimulationList(simulationId, (res) => {
+        getCostingList()
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getRawMaterialNameChild(() => { }))
+    }, [])
+
+
+    const getCostingList = (plantId = '', rawMatrialId = '') => {
+        dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
@@ -51,11 +60,15 @@ function CostingSimulation(props) {
                 setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn })
             }
         }))
-    }, [])
+    }
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
+
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
+
+    const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
     const renderVendorName = () => {
         return <>Vendor <br />Name </>
@@ -65,7 +78,7 @@ function CostingSimulation(props) {
     }
 
     const renderDescription = () => {
-        return <>Part <br />Description </>
+        return <>Part <br />Name </>
     }
 
     const renderECN = () => {
@@ -158,7 +171,25 @@ function CostingSimulation(props) {
         }
     }
 
-    const renderDropdownListing = (label) => { }
+    const renderDropdownListing = (label) => {
+        let temp = []
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'material') {
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+    }
 
     const onSaveSimulation = () => {
 
@@ -297,6 +328,21 @@ function CostingSimulation(props) {
     }
 
 
+    const filterList = () => {
+        const plant = getValues('plantCode').value
+        getCostingList(plant, material.value)
+    }
+    const resetFilter = () => {
+        setValue('plantCode', '')
+        setValue('rawMaterial', '')
+        getCostingList('', '')
+    }
+
+    const handleMaterial = (value) => {
+        setMaterial(value)
+    }
+
+
     return (
         <>
             {
@@ -341,7 +387,7 @@ function CostingSimulation(props) {
                                         rules={{ required: false }}
                                         register={register}
                                         // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('plantCode')}
+                                        options={renderDropdownListing('plant')}
                                         mandatory={false}
                                         handleChange={() => { }}
                                         errors={errors.plantCode}
@@ -357,9 +403,9 @@ function CostingSimulation(props) {
                                         rules={{ required: false }}
                                         register={register}
                                         // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('rm')}
+                                        options={renderDropdownListing('material')}
                                         mandatory={false}
-                                        handleChange={() => { }}
+                                        handleChange={handleMaterial}
                                         errors={errors.rawMaterial}
                                     />
                                 </div>
@@ -368,7 +414,7 @@ function CostingSimulation(props) {
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
-                                        onClick={() => { }}
+                                        onClick={resetFilter}
                                         className="reset mr10"
                                     >
                                         {'Reset'}
@@ -376,7 +422,7 @@ function CostingSimulation(props) {
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
-                                        onClick={() => { }}
+                                        onClick={filterList}
                                         className="apply mr5"
                                     >
                                         {'Apply'}
@@ -417,7 +463,7 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
                         </Col>

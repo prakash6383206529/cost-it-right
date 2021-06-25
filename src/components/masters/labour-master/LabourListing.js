@@ -8,7 +8,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
 import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
 import { getMachineTypeSelectList, } from '../actions/MachineMaster';
@@ -44,6 +44,7 @@ class LabourListing extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
+      DownloadAccessibility: false,
     }
   }
 
@@ -78,6 +79,10 @@ class LabourListing extends Component {
             BulkUploadAccessibility:
               permmisionData && permmisionData.BulkUpload
                 ? permmisionData.BulkUpload
+                : false,
+            DownloadAccessibility:
+              permmisionData && permmisionData.Download
+                ? permmisionData.Download
                 : false,
           })
         }
@@ -530,9 +535,9 @@ class LabourListing extends Component {
     return products; // must return the data which you want to be exported
   }
 
-createCustomExportCSVButton = (onClick) => {
+  createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -548,6 +553,7 @@ createCustomExportCSVButton = (onClick) => {
       isBulkUpload,
       AddAccessibility,
       BulkUploadAccessibility,
+      DownloadAccessibility,
     } = this.state
 
     if (toggleForm) {
@@ -556,8 +562,6 @@ createCustomExportCSVButton = (onClick) => {
     const options = {
       clearSearch: true,
       noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
       exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
@@ -571,7 +575,7 @@ createCustomExportCSVButton = (onClick) => {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid show-table-btn blue-before-inside">
+        <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid"}>
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -731,7 +735,7 @@ createCustomExportCSVButton = (onClick) => {
             bordered={false}
             options={options}
             search
-            exportCSV
+            exportCSV={DownloadAccessibility}
             csvFileName={`${LabourMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
@@ -812,7 +816,7 @@ createCustomExportCSVButton = (onClick) => {
               dataFormat={this.buttonFormatter}
             >
               Actions
-          </TableHeaderColumn>
+            </TableHeaderColumn>
           </BootstrapTable>
           {isBulkUpload && (
             <BulkUpload

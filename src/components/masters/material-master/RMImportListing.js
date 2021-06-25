@@ -520,7 +520,7 @@ class RMImportListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
     const { isBulkUpload, } = this.state;
 
     const options = {
@@ -536,7 +536,7 @@ class RMImportListing extends Component {
     };
 
     return (
-      <div className="show-table-btn">
+      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 filter-row-large">
@@ -721,9 +721,9 @@ class RMImportListing extends Component {
               hover={false}
               options={options}
               search
-              // exportCSV
               //ignoreSinglePage
               ref={'table'}
+              // exportCSV={DownloadAccessibility}
               exportCSV={this.props.isSimulation ? false : true}
               csvFileName={`${RmImport}.csv`}
               pagination>
@@ -746,6 +746,9 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
               {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
               {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
+
             </BootstrapTable>
           </Col>
         </Row>

@@ -23,6 +23,7 @@ class PlantMaster extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             ActivateAccessibility: false,
+            DownloadAccessibility: false,
         }
     }
 
@@ -43,6 +44,7 @@ class PlantMaster extends Component {
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                         ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
             }
@@ -95,6 +97,7 @@ class PlantMaster extends Component {
                                         DeleteAccessibility={this.state.DeleteAccessibility}
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
+                                        DownloadAccessibility={this.state.DownloadAccessibility}
                                     />
                                 </TabPane>}
                             {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.activeTab === '2' &&
@@ -105,6 +108,7 @@ class PlantMaster extends Component {
                                         DeleteAccessibility={this.state.DeleteAccessibility}
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
+                                        DownloadAccessibility={this.state.DownloadAccessibility}
                                     />
                                 </TabPane>}
                         </TabContent>

@@ -12,7 +12,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { OperationMaster, REASON } from '../../../config/constants';
+import { OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -33,6 +33,7 @@ class ReasonListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      DownloadAccessibility: false,
     }
   }
 
@@ -64,6 +65,10 @@ class ReasonListing extends Component {
               permmisionData && permmisionData.Delete
                 ? permmisionData.Delete
                 : false,
+            DownloadAccessibility:
+              permmisionData && permmisionData.Download
+                ? permmisionData.Download
+                : false,                
           })
         }
       }
@@ -250,13 +255,11 @@ createCustomExportCSVButton = (onClick) => {
    * @description Renders the component
    */
   render() {
-    const { isEditFlag, isOpenDrawer, AddAccessibility } = this.state
+    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
       exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
@@ -299,8 +302,8 @@ createCustomExportCSVButton = (onClick) => {
             bordered={false}
             options={options}
             search
-            exportCSV
-            csvFileName={`${OperationMaster}.csv`}
+            exportCSV={DownloadAccessibility}
+            csvFileName={`${Reasonmaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

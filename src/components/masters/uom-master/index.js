@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -30,6 +30,7 @@ class UOMMaster extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      DownloadAccessibility: false,
     }
   }
 
@@ -52,6 +53,7 @@ class UOMMaster extends Component {
             AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
             EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
             DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
           })
         }
       }
@@ -214,9 +216,9 @@ class UOMMaster extends Component {
     return products; // must return the data which you want to be exported
   }
 
-createCustomExportCSVButton = (onClick) => {
+  createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -225,7 +227,7 @@ createCustomExportCSVButton = (onClick) => {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, uomId, AddAccessibility } = this.state;
+    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -244,7 +246,7 @@ createCustomExportCSVButton = (onClick) => {
 
     return (
       <>
-        <div className="container-fluid show-table-btn">
+        <div className={DownloadAccessibility ? "container-fluid show-table-btn" : "container-fluid"}>
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>
@@ -278,7 +280,7 @@ createCustomExportCSVButton = (onClick) => {
                 bordered={false}
                 options={options}
                 search
-                exportCSV
+                exportCSV={DownloadAccessibility}
                 csvFileName={`${UomMaster}.csv`}
                 //ignoreSinglePage
                 ref={"table"}

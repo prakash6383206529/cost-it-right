@@ -8,7 +8,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
@@ -28,7 +28,7 @@ class ExchangeRateListing extends Component {
             tableData: [],
             currency: [],
             toggleForm: false,
-            shown:false,
+            shown: false,
             data: { isEditFlag: false, ID: '' },
 
             ViewAccessibility: false,
@@ -36,6 +36,7 @@ class ExchangeRateListing extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false,
         }
     }
 
@@ -56,6 +57,7 @@ class ExchangeRateListing extends Component {
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
             }
@@ -289,13 +291,13 @@ class ExchangeRateListing extends Component {
         let products = []
         products = this.props.exchangeRateDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
     /**
     * @method render
@@ -303,7 +305,7 @@ class ExchangeRateListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { toggleForm, data, AddAccessibility, } = this.state;
+        const { toggleForm, data, AddAccessibility, DownloadAccessibility } = this.state;
 
         if (toggleForm) {
             return (
@@ -330,7 +332,7 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                <div className="container-fluid show-table-btn blue-before-inside">
+                <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid blue-before-inside"}>
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <Row>
@@ -406,8 +408,8 @@ class ExchangeRateListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        exportCSV
-                            csvFileName={`${ExchangeMaster}.csv`}
+                        exportCSV={DownloadAccessibility}
+                        csvFileName={`${ExchangeMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}

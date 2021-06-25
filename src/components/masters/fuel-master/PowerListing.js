@@ -14,7 +14,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -362,9 +362,9 @@ class PowerListing extends Component {
     return products; // must return the data which you want to be exported
   }
 
-createCustomExportCSVButton = (onClick) => {
+  createCustomExportCSVButton = (onClick) => {
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
 
@@ -373,7 +373,7 @@ createCustomExportCSVButton = (onClick) => {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, initialConfiguration } = this.props;
+    const { handleSubmit, AddAccessibility, initialConfiguration, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
     const options = {
       clearSearch: true,
@@ -389,7 +389,7 @@ createCustomExportCSVButton = (onClick) => {
 
     return (
 
-      <div className="show-table-btn">
+      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -568,7 +568,7 @@ createCustomExportCSVButton = (onClick) => {
                 bordered={false}
                 options={options}
                 search
-                exportCSV
+                exportCSV={DownloadAccessibility}
                 csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
@@ -589,8 +589,8 @@ createCustomExportCSVButton = (onClick) => {
                 bordered={false}
                 options={options}
                 search
-                exportCSV
-                    csvFileName={`${PowerMaster}.csv`}
+                exportCSV={DownloadAccessibility}
+                csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
                 pagination>
