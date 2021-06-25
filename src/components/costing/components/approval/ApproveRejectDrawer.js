@@ -167,6 +167,7 @@ function ApproveRejectDrawer(props) {
 
 
   const onSubmit = (data) => {
+    console.log('data: ', data);
 
     if (type === 'Reject') {
       if (data.remark) {
@@ -175,6 +176,17 @@ function ApproveRejectDrawer(props) {
         setShowError(true)
         return false
       }
+    }
+
+    if (type === 'Sender') {
+      console.log(data.remark, "data.remark");
+      if (data.remark) {
+        setShowError(false)
+      } else {
+        setShowError(true)
+        return false
+      }
+      if (!data.reason && !selectedDate) return false
     }
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
@@ -370,6 +382,14 @@ function ApproveRejectDrawer(props) {
     }
   }
 
+  const handleRemark = (e) => {
+    if (e) {
+      setShowError(false)
+    } else {
+      setShowError(true)
+    }
+  }
+
   return (
     <>
       <Drawer
@@ -378,7 +398,7 @@ function ApproveRejectDrawer(props) {
       //onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper drawer-md'}>
+          <div className={'drawer-wrapper'}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="drawer-heading">
                 <Col>
@@ -540,7 +560,7 @@ function ApproveRejectDrawer(props) {
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
                     rules={{ required: type === 'Approve' ? false : true }}
-                    handleChange={() => { }}
+                    handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
                     customClassName={'withBorder'}
