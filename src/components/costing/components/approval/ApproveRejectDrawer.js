@@ -124,11 +124,11 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       switch (master) {
         case RMDOMESTIC:
-          // dispatch(saveSimulationForRawMaterial(simObj, res => {
-          //   if (res.data.Result) {
-          //     toastr.success('Simulation has been saved successfully.')
-          //   }
-          // }))
+          dispatch(saveSimulationForRawMaterial(simObj, res => {
+            if (res.data.Result) {
+              toastr.success('Simulation has been saved successfully.')
+            }
+          }))
           break;
         case RMIMPORT:
           dispatch(saveSimulationForRawMaterial(simObj, res => {
@@ -167,7 +167,6 @@ function ApproveRejectDrawer(props) {
 
 
   const onSubmit = (data) => {
-    console.log('data: ', data);
 
     if (type === 'Reject') {
       if (data.remark) {
