@@ -268,11 +268,14 @@ function CostingSimulation(props) {
 
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
-        const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
-        if (isChanged) {
-            setSaveDone(true)
-        } else {
-            setSaveDone(false)
+        if (!isFromApprovalListing) {
+
+            const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
+            if (isChanged) {
+                setSaveDone(true)
+            } else {
+                setSaveDone(false)
+            }
         }
     }
 
