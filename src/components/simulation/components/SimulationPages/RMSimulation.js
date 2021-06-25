@@ -68,34 +68,38 @@ function RMSimulation(props) {
 
         let tempArr = []
         list && list.map(item => {
-            let tempObj = {}
-            tempObj.CostingHead = item.CostingHead
-            tempObj.RawMaterialName = item.RawMaterial
-            tempObj.MaterialType = item.MaterialType
-            tempObj.RawMaterialGrade = item.RMGrade
-            tempObj.RawMaterialSpecification = item.RMSpec
-            tempObj.RawMaterialCategory = item.Category
-            tempObj.UOM = item.UOM
-            tempObj.OldBasicRate = item.BasicRate
-            tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-            tempObj.OldScrapRate = item.ScrapRate
-            tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-            tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-            tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-            tempObj.OldNetLandedCost = item.NetLandedCost
-            tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-            tempObj.EffectiveDate = item.EffectiveDate
-            tempArr.push(tempObj)
+            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+                let tempObj = {}
+                tempObj.CostingHead = item.CostingHead
+                tempObj.RawMaterialName = item.RawMaterial
+                tempObj.MaterialType = item.MaterialType
+                tempObj.RawMaterialGrade = item.RMGrade
+                tempObj.RawMaterialSpecification = item.RMSpec
+                tempObj.RawMaterialCategory = item.Category
+                tempObj.UOM = item.UOM
+                tempObj.OldBasicRate = item.BasicRate
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
+                tempObj.OldScrapRate = item.ScrapRate
+                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+                tempObj.OldNetLandedCost = item.NetLandedCost
+                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                tempObj.EffectiveDate = item.EffectiveDate
+                tempArr.push(tempObj)
+            }
+            return null;
         })
         obj.SimulationRawMaterials = tempArr
+        console.log('obj: ', obj);
 
-        dispatch(runVerifySimulation(obj, res => {
+        // dispatch(runVerifySimulation(obj, res => {
 
-            if (res.data.Result) {
-                setToken(res.data.Identity)
-                setShowVerifyPage(true)
-            }
-        }))
+        //     if (res.data.Result) {
+        //         setToken(res.data.Identity)
+        //         setShowVerifyPage(true)
+        //     }
+        // }))
     }
 
     const cancelVerifyPage = () => {
@@ -185,7 +189,7 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? cell : row.BasicRate} </span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cell) : Number(row.BasicRate)} </span>
             </>
         )
     }
@@ -193,7 +197,7 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? cell : row.ScrapRate}</span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cell) : Number(row.ScrapRate)}</span>
             </>
         )
     }
