@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
@@ -487,7 +487,7 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
                                 //minDate={moment()}
                                 />
 
