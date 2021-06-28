@@ -398,3 +398,23 @@ export function simulationApprovalRequestBySender(data, callback) {
             })
     }
 }
+
+export function getComparisionSimulationData(id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.simulationComparisionData}/${id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                // dispatch({
+                //     type: GET_ALL_APPROVAL_DEPARTMENT,
+                //     payload: response.data.SelectList,
+                // })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
+    }
+}
