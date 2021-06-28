@@ -539,7 +539,7 @@ const CostingSummaryTable = (props) => {
   }, [viewCostingData])
 
   useEffect(() => {
-    if (costingID && Object.keys(costingID).length > 0) {
+    if (costingID && Object.keys(costingID).length > 0 && !simulationMode) {
       dispatch(getSingleCostingDetails(costingID, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data

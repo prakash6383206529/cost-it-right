@@ -11,13 +11,17 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary } from '../actions/Simulation'
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
+import { setCostingViewData } from '../../costing/actions/Costing';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
+import { CONSTANT } from '../../../helper/AllConastant';
+import NoContentFound from '../../common/NoContentFound';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
@@ -39,7 +43,7 @@ function SimulationApprovalSummary(props) {
 
 
     const [compareCosting, setCompareCosting] = useState(false)
-    const [compareCostingObj, setCompareCostingObj] = useState({})
+    const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
 
     const dispatch = useDispatch()
@@ -159,7 +163,17 @@ function SimulationApprovalSummary(props) {
 
     const DisplayCompareCosting = (el) => {
         setCompareCosting(true)
-        setCompareCostingObj(el)
+        // setCompareCostingObj(el)
+        dispatch(getComparisionSimulationData(el, res => {
+            console.log(res.data.Data, "DATA")
+            const Data = res.data.Data
+            const obj1 = formViewData(Data.OldCosting)
+            const obj2 = formViewData(Data.NewCosting)
+            const obj3 = formViewData(Data.Variance)
+            const objj3 = [obj1[0], obj2[0], obj3[0]]
+            setCompareCostingObj(objj3)
+            dispatch(setCostingViewData(objj3))
+        }))
     }
 
     /**
@@ -184,6 +198,106 @@ function SimulationApprovalSummary(props) {
             setIsVerifyImpactDrawer(false);
         }
     }
+    const renderVendorName = () => {
+        return <>Vendor <br />Name </>
+    }
+    const renderPlantCode = () => {
+        return <>Plant<br />Code </>
+    }
+
+    const renderDescription = () => {
+        return <>Part <br />Name </>
+    }
+
+    const renderECN = () => {
+        return <>ECN <br />No.</>
+    }
+
+    const revisionNumber = () => {
+        return <>Revision <br />No.</>
+    }
+
+    const OldPo = () => {
+        return <>PO Price <br />Old </>
+    }
+
+    const NewPO = () => {
+        return <>PO Price <br />New </>
+    }
+
+    const RMName = () => {
+        return <>RM <br />Name </>
+    }
+
+    const renderOldRM = () => {
+        return <>RM Cost<br /> Old</>
+    }
+
+    const renderNewRM = () => {
+        return <>RM Cost<br /> New</>
+    }
+
+    const renderRM = () => {
+        return <>Raw Material</>
+    }
+
+    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell && cell !== null ? cell : '-'
+    }
+
+    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
+    }
+
+    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
+    }
+
+    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? cell : '-'
+    }
+
+    const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newPOFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newRMFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const rmNameFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell ? `${cell}-${row.RMGrade}` : '-'
+    }
+
+
+    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell)} />
+            </>
+        )
+    }
+
+    const options = {
+        clearSearch: true,
+        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        prePage: <span className="prev-page-pg"></span>, // Previous page button text
+        nextPage: <span className="next-page-pg"></span>, // Next page button text
+        firstPage: <span className="first-page-pg"></span>, // First page button text
+        lastPage: <span className="last-page-pg"></span>,
+    };
 
     return (
         <>
@@ -343,7 +457,40 @@ function SimulationApprovalSummary(props) {
                                 </Row>
                                 <Row className="pb-2">
                                     <Col md="12">
-                                        <Table responsive className="table cr-brdr-main" size="sm">
+                                        <Row>
+                                            <Col>
+                                                <BootstrapTable
+                                                    data={costingList}
+                                                    striped={false}
+                                                    bordered={false}
+                                                    hover={false}
+                                                    options={options}
+                                                    search
+                                                    className="add-volume-table"
+                                                    pagination
+                                                >
+                                                    <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={rmNameFormatter} >{'Raw Material'}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
+                                                    {/* <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn> */}
+                                                    <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                                    {/* <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn> */}
+                                                    <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                                </BootstrapTable>
+
+                                            </Col>
+                                        </Row>
+                                        {/* <Table responsive className="table cr-brdr-main" size="sm">
                                             <thead>
                                                 <tr>
                                                     <th>{`Costing ID`}</th>
@@ -386,7 +533,7 @@ function SimulationApprovalSummary(props) {
                                                 })}
                                             </tbody>
 
-                                        </Table>
+                                        </Table> */}
                                     </Col>
                                 </Row>
                             </>
@@ -406,7 +553,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row className="mb-4">
                             <Col md="12" className="costing-summary-row">
-                                {compareCosting && <CostingSummaryTable viewMode={true} costingID={compareCostingObj.CostingId} simulationMode={true} />}
+                                {compareCosting && <CostingSummaryTable viewMode={true} costingID={compareCostingObj} simulationMode={true} />}
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
