@@ -2,25 +2,13 @@ import React, { Component, useEffect, useState } from 'react'
 import { Container, Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-// import { runSimulation } from '../actions/Simulation'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-    setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId,
-    storePartNumber, getSingleCostingDetails
-} from '../../costing/actions/Costing'
-import { useHistory } from "react-router-dom";
-import ViewBOP from '../../../components/costing/components/Drawers/ViewBOP'
-import ViewConversionCost from '../../../components/costing/components/Drawers/ViewConversionCost'
-import ViewRM from '../../../components/costing/components/Drawers/ViewRM'
-import ViewOverheadProfit from '../../../components/costing/components/Drawers/ViewOverheadProfit'
-import ViewPackagingAndFreight from '../../../components/costing/components/Drawers/ViewPackagingAndFreight'
-import ViewToolCost from '../../../components/costing/components/Drawers/viewToolCost'
-import { checkForDecimalAndNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
-import Attachament from '../../../components/costing/components/Drawers/Attachament'
-import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
+import { useDispatch } from 'react-redux'
+import { Redirect } from "react-router-dom";
+import { checkForDecimalAndNull, formatRMSimulationObject, getConfigurationKey } from '../../../helper'
+import { RMDOMESTIC, RMIMPORT, } from '../../../config/constants'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { getComparisionSimulationData } from '../actions/Simulation';
+import { saveSimulationForRawMaterial } from '../actions/Simulation';
 
 
 
@@ -35,124 +23,66 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { viewMode, showDetail, technologyId, costingID, showWarningMsg, pricesDetail } = props
-    let history = useHistory();
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master } = props
 
     const dispatch = useDispatch()
-    const [addComparisonToggle, setaddComparisonToggle] = useState(false)
-    const [isEditFlag, setIsEditFlag] = useState(false)
-    const [editObject, setEditObject] = useState({})
 
-
-
-
-    const [multipleCostings, setMultipleCostings] = useState([])
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
-
-    const [flag, setFlag] = useState(false)
-    const [isAttachment, setAttachment] = useState(false)
-
-
-    const [index, setIndex] = useState('')
-
-    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-
-    const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-    const partInfo = useSelector((state) => state.costing.partInfo)
-    const partNumber = useSelector(state => state.costing.partNo);
-    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
-    // const [showWarningMsg, setShowWarningMsg] = useState(false)
-    useEffect(() => {
-
-    }, [multipleCostings])
-
-
-
-
+    const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     /**
      * @method closeShowApproval
      * @description FOR CLOSING APPROVAL DRAWER
      */
     const closeShowApproval = (e = '', type) => {
         setIsApprovalDrawer(false)
-
-        // setMultipleCostings([])
-
-        if (type === 'Submit') {
-            // dispatch(storePartNumber(''))
-            props.resetData()
+        if (type === 'submit') {
+            setShowApprovalHistory(true)
+            // props.resetData()
+        }
+        else {
+            setIsApprovalDrawer(false)
         }
     }
 
-
-
-
-
-
-
-    const sendForApprovalData = (costingIds) => {
-
-        let temp = viewApprovalData
-        // costingIds &&
-        //     costingIds.map((id) => {
-        //         let index = viewCostingData.findIndex((data) => data.costingId == id)
-        //         if (index !== -1) {
-        //             let obj = {}
-        //             // add vendor key here
-        //             obj.typeOfCosting = viewCostingData[index].zbc
-        //             obj.plantCode = viewCostingData[index].plantCode
-        //             obj.plantName = viewCostingData[index].plantName
-        //             obj.plantId = viewCostingData[index].plantId
-        //             obj.vendorId = viewCostingData[index].vendorId
-        //             obj.vendorName = viewCostingData[index].vendorName
-        //             obj.vendorCode = viewCostingData[index].vendorCode
-        //             obj.vendorPlantId = viewCostingData[index].vendorPlantId
-        //             obj.vendorPlantName = viewCostingData[index].vendorPlantName
-        //             obj.vendorPlantCode = viewCostingData[index].vendorPlantCode
-        //             obj.costingName = viewCostingData[index].CostingNumber
-        //             obj.costingId = viewCostingData[index].costingId
-        //             obj.oldPrice = viewCostingData[index].oldPoPrice
-        //             obj.revisedPrice = viewCostingData[index].poPrice
-        //             obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
-        //             obj.consumptionQty = ''
-        //             obj.remainingQty = ''
-        //             obj.annualImpact = ''
-        //             obj.yearImpact = ''
-        //             obj.reason = ''
-        //             obj.ecnNo = ''
-        //             obj.effectiveDate = viewCostingData[index].effectiveDate
-        //             obj.partNo = viewCostingData[index].partId
-        //             temp.push(obj)
-        //         }
-        //         dispatch(setCostingApprovalData(temp))
-        //     })
+    const sendForApprovalData = () => {
         setIsApprovalDrawer(true)
     }
 
+    const onSaveSimulation = () => {
+
+        const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
 
-    useEffect(() => {
-        // if (viewCostingData !== undefined && viewCostingData.length === 0) {
-        //   setShowWarningMsg(true)
-        // } else {
-        //   setShowWarningMsg(false)
-        // }
-    }, [viewCostingData])
+        switch (master) {
+            case RMDOMESTIC:
+                dispatch(saveSimulationForRawMaterial(simObj, res => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation saved successfully.')
+                        setShowApprovalHistory(true)
+                    }
+                }))
+                break;
+            case RMIMPORT:
+                dispatch(saveSimulationForRawMaterial(simObj, res => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation saved successfully.')
+                        setShowApprovalHistory(true)
+                    }
+                }))
+                break;
 
-    useEffect(() => {
-        if (costingID && Object.keys(costingID).length > 0) {
-            dispatch(getComparisionSimulationData(costingID, (res) => {
-                if (res.data.Data) {
-                    let dataFromAPI = res.data.Data
-                    const tempObj = formViewData(dataFromAPI)
-                    dispatch(setCostingViewData(tempObj))
-                }
-            },
-            ))
+            default:
+                break;
         }
-    }, [costingID])
+        // setShowApprovalHistory(true)
+    }
+
+
     // table code ends here
+    if (showApprovalHistory === true) {
+
+        return <Redirect to='/simulation-history' />
+    }
 
     return (
         <div>
@@ -180,28 +110,28 @@ function CostingDetailSimulationDrawer(props) {
                                 </Row>
                                 <Row className="ml-0 pb-3">
                                     <Col md="12">
-                                        <h6 class="left-border d-inline-block mr-4">ZBC</h6>
+                                        <h6 class="left-border d-inline-block mr-4">{pricesDetail.CostingHead}</h6>
                                         <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>{pricesDetail.PlantCode}</span></div>
-                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>{pricesDetail.CostingId}</span></div>
+                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>{pricesDetail.CostingNumber}</span></div>
                                     </Col>
                                 </Row>
 
                                 <Row className="ml-0 pb-3">
                                     <Col md="3">
                                         <label>PO Price Old</label>
-                                        <label className="form-control input-form-control green-value">{pricesDetail.OldPOPrice}</label>
+                                        <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                     </Col>
                                     <Col md="3">
                                         <label>PO Price New</label>
-                                        <label className="form-control input-form-control green-value">{pricesDetail.NewPOPrice}</label>
+                                        <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                     </Col>
                                     <Col md="3">
                                         <label>RM Cost Old</label>
-                                        <label className="form-control input-form-control red-value">{pricesDetail.OldRMPrice}</label>
+                                        <label className={`${pricesDetail.OldRMPrice > pricesDetail.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                     </Col>
                                     <Col md="3">
                                         <label>RM Cost New</label>
-                                        <label className="form-control input-form-control red-value">{pricesDetail.NewRMPrice}</label>
+                                        <label className={`${pricesDetail.OldRMPrice > pricesDetail.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                     </Col>
                                 </Row>
 
@@ -219,7 +149,7 @@ function CostingDetailSimulationDrawer(props) {
                                             <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
                                             {'Send For Approval'}
                                         </button>
-                                        <button type="submit" className="user-btn float-none">
+                                        <button type="submit" className="user-btn float-none" onClick={onSaveSimulation}>
                                             <div className={"check-icon"}>
                                                 <img
                                                     src={require("../../../assests/images/check.png")}
@@ -242,7 +172,11 @@ function CostingDetailSimulationDrawer(props) {
                     isOpen={isApprovalDrawer}
                     anchor={'right'}
                     approvalData={[]}
-                    type={'Approve'}
+                    type={'Sender'}
+                    simulationDetail={simulationDetail}
+                    selectedRowData={selectedRowData}
+                    costingArr={costingArr}
+                    master={master}
                     closeDrawer={closeShowApproval}
                     isSimulation={true}
                 />

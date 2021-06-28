@@ -8,18 +8,19 @@ import { getRawMaterialNameChild, getRMDomesticDataList } from '../../masters/ac
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { getCostingSimulationList, getVerifySimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, getConfigurationKey, userDetails } from '../../../helper';
-import SimulationHistory from './SimulationHistory';
+import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, RMDOMESTIC, RMIMPORT, simulationMaster, ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import SimulationApprovalListing from './SimulationApprovalListing';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
+import { setCostingViewData } from '../../costing/actions/Costing';
+import { set } from 'lodash';
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
@@ -124,16 +125,27 @@ function CostingSimulation(props) {
         }
     }
 
-    const viewCosting = (id, data) => {
+    const viewCosting = (id, data, rowIndex) => {
+        let temp = costingArr[rowIndex]
+        temp = { ...temp, IsChecked: true }
+        let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+        setCostingArr(Arr)
+        let tempArr = [...selectedRowData, data]
+        setSelectedRowData(tempArr)
         setId(id)
-        setPricesDetail({ CostingId: data.CostingId, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice })
-        runCostingDetailSimulation()
+        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
+        dispatch(getComparisionSimulationData(id, res => {
+            const Data = res.data.Data
+            const obj1 = formViewData(Data.OldCosting)
+            dispatch(setCostingViewData(obj1))
+            runCostingDetailSimulation()
+        }))
     }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View" type={'button'} onClick={() => { viewCosting(cell, row) }} />
+                <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, rowIndex) }} />
             </>
         )
     }
@@ -288,8 +300,11 @@ function CostingSimulation(props) {
             setShowApprovalHistory(true)
         } else {
             setIsApprovalDrawer(false);
+            setCostingDetailDrawer(false)
             setIsVerifyImpactDrawer(false);
             setOldArr(selectedRowData)
+            setSelectedRowData([])
+            setCostingArr([])
         }
     }
 
@@ -343,6 +358,7 @@ function CostingSimulation(props) {
     const resetFilter = () => {
         setValue('plantCode', '')
         setValue('rawMaterial', '')
+        setMaterial('')
         getCostingList('', '')
     }
 
@@ -475,7 +491,6 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="NewRMRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-
                                 <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
@@ -532,7 +547,7 @@ function CostingSimulation(props) {
                             master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
-                            isSaveDone={isSaveDone}
+                        // isSaveDone={isSaveDone}
                         />}
 
                     {isVerifyImpactDrawer &&
@@ -554,8 +569,13 @@ function CostingSimulation(props) {
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
                     anchor={"right"}
-                    costingID={id}
                     pricesDetail={pricesDetail}
+                    simulationDetail={simulationDetail}
+                    selectedRowData={selectedRowData}
+                    costingArr={costingArr}
+                    master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
+                    closeDrawer={closeDrawer}
+                    isSimulation={true}
                 />}
         </>
 

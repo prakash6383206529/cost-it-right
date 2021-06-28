@@ -24,7 +24,8 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 
 function SimulationApprovalSummary(props) {
-    const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
+    const { approvalDetails, approvalData, } = props;
+    const { approvalNumber, approvalId } = props.location.state
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -510,7 +511,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row className="mb-4">
                             <Col md="12" className="costing-summary-row">
-                                {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} />}
+                                {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
