@@ -521,7 +521,7 @@ class UsersListing extends Component {
 					<TableHeaderColumn dataField="EmailAddress" columnTitle width={"220"} dataSort={true}>Email Id </TableHeaderColumn>
 					<TableHeaderColumn dataField="Mobile" width={"110"} dataSort={false}>Mobile No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="PhoneNumber" width={"110"} dataSort={false}>Phone No.</TableHeaderColumn>
-					<TableHeaderColumn dataField="DepartmentName" dataSort={true}>Company</TableHeaderColumn>
+					<TableHeaderColumn dataField="DepartmentName" dataSort={true}>Purchase Group</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
                                 filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}

@@ -208,8 +208,8 @@ class DepartmentsListing extends Component {
               tableHeaderClass="my-custom-header"
               pagination
             >
-              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>{getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}</TableHeaderColumn>
-              {getConfigurationKey().IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Company Code</TableHeaderColumn>}
+              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>{getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}</TableHeaderColumn>
+              {getConfigurationKey().IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Purchase Group Code</TableHeaderColumn>}
               <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>

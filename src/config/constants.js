@@ -16,9 +16,13 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL_QA}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL_PRODUCTION}`;
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
+// export const FILE_URL = `${process.env.REACT_APP_FILE_URL_QA}`;
+// export const FILE_URL = `${process.env.REACT_APP_FILE_URL_PRODUCTION}`;
 
 /** Export API */
 export const API = {

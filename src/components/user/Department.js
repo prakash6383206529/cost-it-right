@@ -179,7 +179,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
+											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Purchase Group'}`}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e)}
