@@ -467,7 +467,7 @@ function SimulationApprovalSummary(props) {
                                                     hover={false}
                                                     options={options}
                                                     search
-                                                    className="add-volume-table"
+                                                    className="add-volume-table mb-3"
                                                     pagination
                                                 >
                                                     <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
@@ -486,7 +486,7 @@ function SimulationApprovalSummary(props) {
                                                     <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                                     {/* <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn> */}
-                                                    <TableHeaderColumn dataField="SimulationCostingId" export={false} width={80} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="SimulationCostingId" dataAlign="right" export={false} width={80} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                                                 </BootstrapTable>
 
                                             </Col>
