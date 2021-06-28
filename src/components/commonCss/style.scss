@@ -1959,6 +1959,17 @@ body {
         min-width: 12px;
       }
     }
+    .react-bs-container-body{
+      tr{
+        td{
+          >div{
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
   }
 }
 .card-border {
@@ -4138,6 +4149,62 @@ body{
   }
 }
 // simulation page
+
+// simulation history pages start
+.smh-approval-summary-page{
+  .react-bs-container-body{
+    min-height: unset !important;
+    tr{
+      td{
+        >div{
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+  .costing-summary-table{
+    .background-light-blue{
+      th,td{
+        >span{
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+.table,:not(.table){
+  .green-row{
+    border-top: 1.3px solid #4DC771;
+    th,td{
+    background-color: #DBF4E2;
+    border-color: #4DC771;
+    color: #4DC771;
+    }
+  }
+  .red-row{
+    border-top: 1.3px solid #FC5774;
+    th,td{
+    background-color: #FEDCE2;
+    border-color: #FC5774;
+    color: #FC5774;
+    }
+  }
+}
+
+@-moz-document url-prefix() {
+  .table,:not(.table){
+    .green-row{
+      border-top: 2px solid #4DC771;
+    }
+    .red-row{
+      border-top: 2px solid #FC5774;
+    }
+  }
+}
+// simulation history page end
 
 // spacing css
 .mt9{margin-top: 9px;}

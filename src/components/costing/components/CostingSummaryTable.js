@@ -26,7 +26,7 @@ import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode,isApproval  } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -730,13 +730,13 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue`}>
+                    <tr class={`background-light-blue  ${simulationMode ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData.length > 0 && viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -754,7 +754,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -805,7 +805,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -900,7 +900,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -939,7 +939,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -986,7 +986,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -1052,7 +1052,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue`}>
+                    <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net PO Price(INR)</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
