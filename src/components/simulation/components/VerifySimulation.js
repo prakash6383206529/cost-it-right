@@ -263,6 +263,7 @@ function VerifySimulation(props) {
     const resetFilter = () => {
         setValue('plantCode', '')
         setValue('rawMaterial', '')
+        setMaterial('')
         verifyCostingList('', '')
     }
 

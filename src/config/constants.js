@@ -1463,9 +1463,10 @@ export const COSTING_SUMMARY = '/costing-summary'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
-export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-listing'
 export const DASHBOARD_PATH = '/'
 export const DASHBOARD_PATH_SECOND = '/dashboard'
+export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
+
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
