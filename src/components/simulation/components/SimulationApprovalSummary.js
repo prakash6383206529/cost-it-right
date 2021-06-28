@@ -305,7 +305,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false ?
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid approval-summary-page">
+                    <div className="container-fluid approval-summary-page smh-approval-summary-page">
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
                             <Col md="8">
@@ -349,7 +349,7 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <Row>
+                                <Row className="pt-4 blue-before">
                                     <Col lg="10" md="12" className="filter-block">
                                         <div className="d-inline-flex justify-content-start align-items-top w100">
                                             <div className="flex-fills">
@@ -486,7 +486,7 @@ function SimulationApprovalSummary(props) {
                                                     <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                                     {/* <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn> */}
-                                                    <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="SimulationCostingId" export={false} width={80} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                                                 </BootstrapTable>
 
                                             </Col>
