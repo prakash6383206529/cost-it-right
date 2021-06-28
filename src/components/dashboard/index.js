@@ -7,8 +7,11 @@ import { Col, Container, Row } from "reactstrap";
 import { DashboardMaster } from "../../config/constants";
 import { Field, reduxForm } from "redux-form";
 import {  searchableSelect} from '../layout/FormInputs'
-import { data1,options} from "./ChartsDashboard";
-import { Line } from 'react-chartjs-2';
+import { Costmovementgraph } from "./CostMovementGraph";
+import { Costcomparisonplantgraph } from "./CostComparisonPlantGraph";
+import {Suppliercontributiongraph} from './SupplierContributionGraph';
+import { Costratiograph } from "./CostRatioGraph";
+import {Costratiobuyinggraph} from './CostRatioBuyingGraph';
 
 function Dashboard (props) {
   const { handleSubmit, menusData } = props
@@ -45,7 +48,8 @@ function Dashboard (props) {
         </Row>
 
         <form onSubmit={handleSubmit}>
-        <Row>
+        <Row className="m-0">
+          <div className="graph-box w-100 d-flex pb-0">
           <Col md="3">
             <Field
               name="Business"
@@ -73,44 +77,39 @@ function Dashboard (props) {
               placeholder={"Select"}              
             />
           </Col>
+          </div>
         </Row>
         <Row className="graph-section">
             <Col md="6">
               <div className="graph-box">
-                <div className="left-border ">Cost Movement by Cost Drivers</div>
-                <div className="graph-container">
-                  <Line data={data1}  options={options} />
-                </div>
+                <h3 className="mb-3">Cost Movement by Cost Drivers</h3>
+                <Costmovementgraph/>
               </div>
             </Col>
             <Col md="6">
               <div className="graph-box">
-                <div className="left-border ">Cost Comparison by Plant</div>
-                <div className="graph-container">
-                </div>
+                <h3 className="mb-3">Cost Comparison by Plant</h3>
+                <Costcomparisonplantgraph/>
               </div>
             </Col>
         </Row>
         <Row className="graph-section">
             <Col md="3">
               <div className="graph-box">
-                <div className="left-border ">Supplier Contribution(SOB)</div>
-                <div className="graph-container">
-                </div>
+                <h3 className="mb-3">Supplier Contribution(SOB)</h3>
+                <Suppliercontributiongraph/>
               </div>
             </Col>
             <Col md="3">
               <div className="graph-box">
-                <div className="left-border ">Cost Ratio(PFS)</div>
-                <div className="graph-container">
-                </div>
+                <h3 className="mb-3">Cost Ratio(PFS)</h3>
+                <Costratiograph/>
               </div>
             </Col>
             <Col md="6">
               <div className="graph-box">
-                <div className="left-border ">Cost Ratio(Buying)</div>
-                <div className="graph-container">
-                </div>
+                <h3 className="mb-3">Cost Ratio(Buying)</h3>
+                <Costratiobuyinggraph/>
               </div>
             </Col>
         </Row>

@@ -676,10 +676,16 @@ button.add-btn {
 
 // dashboard css start
 .graph-box{
+    background-color: #fff;
     border: 1px solid rgba(37, 107, 209, 0.1);
     padding: 25px;
     box-shadow: 0 0 10px rgba(37, 107, 209, 0.15);
     margin-bottom: 30px;
+    .graph-container{
+      canvas{
+        max-height: 280px !important;
+      }
+    }
 }
 // dashboard css end
 
