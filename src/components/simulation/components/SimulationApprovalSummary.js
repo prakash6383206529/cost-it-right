@@ -45,6 +45,7 @@ function SimulationApprovalSummary(props) {
     const [compareCosting, setCompareCosting] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
+    const [id, setId] = useState('')
 
     const dispatch = useDispatch()
 
@@ -161,11 +162,11 @@ function SimulationApprovalSummary(props) {
         // getTableData()
     }
 
-    const DisplayCompareCosting = (el) => {
+    const DisplayCompareCosting = (el, data) => {
+        setId(data.CostingNumber)
         setCompareCosting(true)
         // setCompareCostingObj(el)
         dispatch(getComparisionSimulationData(el, res => {
-            console.log(res.data.Data, "DATA")
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
@@ -285,7 +286,7 @@ function SimulationApprovalSummary(props) {
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell)} />
+                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
             </>
         )
     }
@@ -476,7 +477,7 @@ function SimulationApprovalSummary(props) {
                                                     <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={rmNameFormatter} >{'Raw Material'}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
                                                     {/* <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn> */}
@@ -490,50 +491,7 @@ function SimulationApprovalSummary(props) {
 
                                             </Col>
                                         </Row>
-                                        {/* <Table responsive className="table cr-brdr-main" size="sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>{`Costing ID`}</th>
-                                                    <th>{`Costing Head`}</th>
-                                                    <th>{`Vendor Name`}</th>
-                                                    <th>{`Technology`}</th>
-                                                    <th>{`Part No.`}</th>
-                                                    <th>{`Part Description`}</th>
-                                                    <th>{`ECN No`}</th>
-                                                    <th>{`Drawing No.`}</th>
-                                                    <th>{`Revision No.`}</th>
-                                                    <th>{`PO Price Old`}</th>
-                                                    <th>{`PO Price New`}</th>
-                                                    <th>{`RM Cost Old`}</th>
-                                                    <th>{`RM Cost New`}</th>
-                                                    <th>{`Action`}</th>
 
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {costingList && costingList.map((el, index) => {
-                                                    return (
-                                                        <tr key={index}>
-                                                            <td>{el && el.CostingNumber ? el.CostingNumber : '-'}</td>
-                                                            <td>{el && el.CostingHead ? el.CostingHead : '-'}</td>
-                                                            <td>{el && el.VendorName ? el.VendorName : '-'}</td>
-                                                            <td>{el && el.Technology ? el.Technology : '-'} </td>
-                                                            <td>{el && el.PartNo !== null ? el.PartNo : '-'}</td>
-                                                            <td>{el && el.PartDescription !== null ? el.PartDescription : '-'}</td>
-                                                            <td>{el && el.ECNNumber !== null ? el.ECNNumber : '-'}</td>
-                                                            <td>{el && el.DrawingNo !== null ? el.DrawingNo : '-'}</td>
-                                                            <td>{el && el.RevisionNumber !== null ? el.RevisionNumber : '-'}</td>
-                                                            <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.OldPOPrice !== null ? el.OldPOPrice : '-'}</span></td>
-                                                            <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.NewPOPrice !== null ? el.NewPOPrice : '-'}</span></td>
-                                                            <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.OldRMPrice !== null ? el.OldRMPrice : '-'}</span></td>
-                                                            <td><span className={el.NewRMPrice > el.OldRMPrice ? 'red-value form-control' : 'green-value form-control'}>{el && el.NewRMPrice !== null ? el.NewRMPrice : '-'}</span></td>
-                                                            <td>{<button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(el)} />}</td>
-                                                        </tr>
-                                                    )
-                                                })}
-                                            </tbody>
-
-                                        </Table> */}
                                     </Col>
                                 </Row>
                             </>
@@ -553,7 +511,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row className="mb-4">
                             <Col md="12" className="costing-summary-row">
-                                {compareCosting && <CostingSummaryTable viewMode={true} costingID={compareCostingObj} simulationMode={true} />}
+                                {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} />}
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
