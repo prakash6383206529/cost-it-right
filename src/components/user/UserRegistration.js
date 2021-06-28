@@ -1206,7 +1206,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
+                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}:`}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1229,7 +1229,7 @@ class UserRegistration extends Component {
                         <Field
                           name="DepartmentId"
                           type="text"
-                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                           component={searchableSelect}
                           placeholder={'Select company'}
                           options={this.searchableSelectType('department')}
