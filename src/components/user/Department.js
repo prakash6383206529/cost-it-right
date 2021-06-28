@@ -154,7 +154,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? 'Update Company' : 'Add Company'}</h3>
+											<h3>{isEditFlag ? 'Update Purchase Group' : 'Add Purchase Group'}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e)}
