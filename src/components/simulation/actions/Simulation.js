@@ -150,7 +150,7 @@ export function runVerifySimulation(data, callback) {
 export function getVerifySimulationList(token, plantId, rawMatrialId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMatriaalId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -168,7 +168,7 @@ export function getVerifySimulationList(token, plantId, rawMatrialId, callback) 
 
 export function getCostingSimulationList(token, plantId, rawMatrialId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSimulationList}/${token}?plantId=${plantId}&rawMatriaalId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -392,5 +392,25 @@ export function simulationApprovalRequestBySender(data, callback) {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })
+    }
+}
+
+export function getComparisionSimulationData(id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.simulationComparisionData}/${id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                // dispatch({
+                //     type: GET_ALL_APPROVAL_DEPARTMENT,
+                //     payload: response.data.SelectList,
+                // })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
     }
 }
