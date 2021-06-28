@@ -150,7 +150,7 @@ export function runVerifySimulation(data, callback) {
 export function getVerifySimulationList(token, plantId, rawMatrialId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMatriaalId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -168,7 +168,7 @@ export function getVerifySimulationList(token, plantId, rawMatrialId, callback) 
 
 export function getCostingSimulationList(token, plantId, rawMatrialId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSimulationList}/${token}?plantId=${plantId}&rawMatriaalId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
