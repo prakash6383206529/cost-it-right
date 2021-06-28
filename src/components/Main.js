@@ -34,7 +34,7 @@ import CostingRoutes from './costing/Routes'
 import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
-  BOP, DASHBOARD,DASHBOARD_PATH,DASHBOARD_PATH_SECOND , FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
+  BOP, DASHBOARD, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
@@ -52,6 +52,7 @@ import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
 import ReportListing from './report/ReportListing'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
+import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -219,7 +220,7 @@ class Main extends Component {
     }
 
     const fullSizeClass =
-        location.pathname === COSTING_PATH ||
+      location.pathname === COSTING_PATH ||
         location.pathname === APPROVAL_LISTING_PATH ||
         location.pathname === APPROVAL_SUMMARY_PATH ||
         location.pathname === COSTING_BULK_UPLOAD ||
@@ -227,15 +228,15 @@ class Main extends Component {
         location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
         location.pathname === DASHBOARD_PATH ||
         location.pathname === DASHBOARD_PATH_SECOND
-         ? 'w-100' : ''
+        ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage =
-         location.pathname === DASHBOARD_PATH ||
-         location.pathname === DASHBOARD_PATH_SECOND
-          ? 'Dashboard-page' : ''
+      location.pathname === DASHBOARD_PATH ||
+        location.pathname === DASHBOARD_PATH_SECOND
+        ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
-        
+
 
     return (
       <Suspense fallback={<Loader />}>
@@ -280,6 +281,7 @@ class Main extends Component {
                 location.pathname !== COSTING_SUMMARY &&
                 location.pathname !== DASHBOARD_PATH &&
                 location.pathname !== DASHBOARD_PATH_SECOND &&
+                location.pathname !== SIMULATION_APPROVAL_SUMMARY_PATH &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -357,6 +359,8 @@ class Main extends Component {
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
                     <Route path="/simulation-history" component={SimulationApprovalListing} />
 
+                    <Route path='/simulation-approval-summary' component={SimulationApprovalSummary} />
+
                     <Route path="/simulation" component={Simulation} />
 
                     <Route path="/simulation-upload" component={SimulationUpload} />
@@ -378,7 +382,7 @@ class Main extends Component {
                   </Switch>
                 </div>
               </div>
-              
+
             </div>
           </div>
           {!this.state.visibelPageNotFound && (
