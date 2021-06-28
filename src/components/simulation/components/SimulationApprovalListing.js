@@ -346,7 +346,7 @@ function SimulationApprovalListing(props) {
                                                     errors={errors.partNo}
                                                 />
                                             </div> */}
-                                            <div className="flex-fill filled-small hide-label">
+                                            <div className="flex-fill hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
                                                     name={'createdBy'}
@@ -362,7 +362,7 @@ function SimulationApprovalListing(props) {
                                                     errors={errors.createdBy}
                                                 />
                                             </div>
-                                            <div className="flex-fill filled-small hide-label">
+                                            <div className="flex-fill hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
                                                     name={'requestedBy'}
@@ -378,7 +378,7 @@ function SimulationApprovalListing(props) {
                                                     errors={errors.requestedBy}
                                                 />
                                             </div>
-                                            <div className="flex-fill filled-small hide-label">
+                                            <div className="flex-fill hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
                                                     name={'status'}
@@ -396,7 +396,7 @@ function SimulationApprovalListing(props) {
                                             </div>
 
 
-                                            <div className="flex-fill filled-small hide-label">
+                                            <div className="flex-fill hide-label">
                                                 <button
                                                     type="button"
                                                     //disabled={pristine || submitting}
