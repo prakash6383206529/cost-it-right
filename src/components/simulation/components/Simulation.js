@@ -49,6 +49,7 @@ function Simulation(props) {
 
     const handleMasterChange = (value) => {
         setMaster(value)
+        dispatch(setMasterForSimulation(value))
         if (value !== '' && Object.keys(technology).length > 0) {
             setShowMasterList(true)
         }
