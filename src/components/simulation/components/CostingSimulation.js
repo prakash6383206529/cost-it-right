@@ -42,6 +42,7 @@ function CostingSimulation(props) {
     const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
     const [oldArr, setOldArr] = useState([])
     const [material, setMaterial] = useState([])
+    const [pricesDetail, setPricesDetail] = useState({})
 
     const dispatch = useDispatch()
 
@@ -123,15 +124,16 @@ function CostingSimulation(props) {
         }
     }
 
-    const viewCosting = (id) => {
+    const viewCosting = (id, data) => {
         setId(id)
+        setPricesDetail({ CostingId: data.CostingId, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice })
         runCostingDetailSimulation()
     }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View" type={'button'} onClick={() => { viewCosting(cell) }} />
+                <button className="View" type={'button'} onClick={() => { viewCosting(cell, row) }} />
             </>
         )
     }
@@ -553,6 +555,7 @@ function CostingSimulation(props) {
                     closeDrawer={closeDrawer2}
                     anchor={"right"}
                     costingID={id}
+                    pricesDetail={pricesDetail}
                 />}
         </>
 

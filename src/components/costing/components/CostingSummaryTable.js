@@ -22,6 +22,7 @@ import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval'
+import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
@@ -609,7 +610,10 @@ const CostingSummaryTable = (props) => {
                 <table class="table table-bordered costing-summary-table">
                   <thead>
                     <tr className="main-row">
-                      <th scope="col">VBC</th>
+                      {
+                        simulationMode ? <th scope="col">{props.id}</th> : <th scope="col">VBC</th>
+                      }
+
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
 
@@ -653,7 +657,9 @@ const CostingSummaryTable = (props) => {
                                   //   }
                                   // </div>
                                 }
-                                <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName} ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                {
+                                  simulationMode ? <span className="checkbox-text">{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName} ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                }
                               </div>
                               {!viewMode && (
                                 <div class="action w-40 d-inline-block text-right">
@@ -668,33 +674,35 @@ const CostingSummaryTable = (props) => {
                     </tr>
                   </thead>
                   <tbody>
-
-                    <tr>
-                      <td>
-                        <span class="d-block">Costing Version</span>
-                        <span class="d-block">PO Price</span>
-                      </td>
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return (
-                            <td>
-                              <span class="d-flex justify-content-between bg-grey">
-                                {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
-                                {
-                                  !viewMode &&
-                                  <a
-                                    class="text-primary d-inline-block change-version-block"
-                                    onClick={() => editHandler(index)}
-                                  >
-                                    <small>Change version</small>
-                                  </a>
-                                }
-                              </span>
-                              <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
-                            </td>
-                          )
-                        })}
-                    </tr>
+                    {
+                      !simulationMode &&
+                      <tr>
+                        <td>
+                          <span class="d-block">Costing Version</span>
+                          <span class="d-block">PO Price</span>
+                        </td>
+                        {viewCostingData &&
+                          viewCostingData.map((data, index) => {
+                            return (
+                              <td>
+                                <span class="d-flex justify-content-between bg-grey">
+                                  {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                  {
+                                    !viewMode &&
+                                    <a
+                                      class="text-primary d-inline-block change-version-block"
+                                      onClick={() => editHandler(index)}
+                                    >
+                                      <small>Change version</small>
+                                    </a>
+                                  }
+                                </span>
+                                <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                              </td>
+                            )
+                          })}
+                      </tr>
+                    }
 
                     <tr>
                       <td>
@@ -722,7 +730,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr class={`background-light-blue`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -1044,7 +1052,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr class={`background-light-blue`}>
                       <th>Net PO Price(INR)</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -1070,11 +1078,11 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class="background-light-blue">
-                      {/* <th>Net PO Price {viewCostingData && (data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')}</th> */}
-                      {viewCostingData &&
+                      <th>Net PO Price (INR)</th>
+                      {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
-                        })}
+                        })} */}
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>

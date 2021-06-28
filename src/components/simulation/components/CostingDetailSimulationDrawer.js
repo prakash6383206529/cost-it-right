@@ -35,7 +35,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { viewMode, showDetail, technologyId, costingID, showWarningMsg } = props
+    const { viewMode, showDetail, technologyId, costingID, showWarningMsg, pricesDetail } = props
     let history = useHistory();
 
     const dispatch = useDispatch()
@@ -181,27 +181,27 @@ function CostingDetailSimulationDrawer(props) {
                                 <Row className="ml-0 pb-3">
                                     <Col md="12">
                                         <h6 class="left-border d-inline-block mr-4">ZBC</h6>
-                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>Plant 001</span></div>
-                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>CS6745</span></div>
+                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>{pricesDetail.PlantCode}</span></div>
+                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>{pricesDetail.CostingId}</span></div>
                                     </Col>
                                 </Row>
 
                                 <Row className="ml-0 pb-3">
                                     <Col md="3">
                                         <label>PO Price Old</label>
-                                        <label className="form-control input-form-control green-value">7253.17</label>
+                                        <label className="form-control input-form-control green-value">{pricesDetail.OldPOPrice}</label>
                                     </Col>
                                     <Col md="3">
                                         <label>PO Price New</label>
-                                        <label className="form-control input-form-control green-value">7096.36</label>
+                                        <label className="form-control input-form-control green-value">{pricesDetail.NewPOPrice}</label>
                                     </Col>
                                     <Col md="3">
                                         <label>RM Cost Old</label>
-                                        <label className="form-control input-form-control red-value">4009.00</label>
+                                        <label className="form-control input-form-control red-value">{pricesDetail.OldRMPrice}</label>
                                     </Col>
                                     <Col md="3">
                                         <label>RM Cost New</label>
-                                        <label className="form-control input-form-control red-value">4029.00</label>
+                                        <label className="form-control input-form-control red-value">{pricesDetail.NewRMPrice}</label>
                                     </Col>
                                 </Row>
 
