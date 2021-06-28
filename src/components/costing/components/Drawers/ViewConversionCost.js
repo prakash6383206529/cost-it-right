@@ -35,7 +35,7 @@ function ViewConversionCost(props) {
       setIsShowToolCost(IsShowToolCost)
     }
     setCostingProcessCost(CostingProcessCostResponse)
-    setCostingOperationCostResponse(CostingOperationCostResponse)
+    setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
     setcostingToolsCost(CostingToolsCostResponse)
   }, [])
   return (
