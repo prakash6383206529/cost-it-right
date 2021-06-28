@@ -52,6 +52,7 @@ import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
 import ReportListing from './report/ReportListing'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
+import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -269,6 +270,7 @@ class Main extends Component {
                 location.pathname !== APPROVAL_LISTING_PATH &&
                 location.pathname !== COSTING_BULK_UPLOAD &&
                 location.pathname !== COSTING_SUMMARY &&
+                location.pathname !== SIMULATION_APPROVAL_SUMMARY_PATH &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -345,6 +347,8 @@ class Main extends Component {
 
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
                     <Route path="/simulation-history" component={SimulationApprovalListing} />
+
+                    <Route path='/simulation-approval-summary' component={SimulationApprovalSummary} />
 
                     <Route path="/simulation" component={Simulation} />
 
