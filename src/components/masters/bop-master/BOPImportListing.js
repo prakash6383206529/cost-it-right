@@ -276,6 +276,9 @@ class BOPImportListing extends Component {
     renderMinQuantity = () => {
         return <>Minimum Order<br /> Quantity</>
     }
+    renderPlant = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
+    }
 
 
     /**
@@ -543,8 +546,8 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
 
                             <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === false} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === true} export={getConfigurationKey().IsDestinationPlantConfigure !== true} dataField="DestinationPlant" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== false} export={getConfigurationKey().IsDestinationPlantConfigure === false} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.renderPlant}>{'Plant'} </TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== true} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.renderPlant}>{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderBasicRate()}</TableHeaderColumn>

@@ -293,6 +293,9 @@ class BOPDomesticListing extends Component {
     renderBasicRate = () => {
         return <>Basic<br /> Rate(INR)</>
     }
+    renderPlant = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
+    }
     /**
     * @method renderListing
     * @description Used to show type of listing
@@ -559,14 +562,14 @@ class BOPDomesticListing extends Component {
                             {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === false} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure === true} export={getConfigurationKey().IsDestinationPlantConfigure !== true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== false} export={getConfigurationKey().IsDestinationPlantConfigure === false} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== true} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}  >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

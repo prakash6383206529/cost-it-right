@@ -39,7 +39,10 @@ function CostingSimulation(props) {
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
     const [id, setId] = useState('')
+    const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
+    const [oldArr, setOldArr] = useState([])
     const [material, setMaterial] = useState([])
+    const [pricesDetail, setPricesDetail] = useState({})
 
     const dispatch = useDispatch()
 
@@ -121,15 +124,16 @@ function CostingSimulation(props) {
         }
     }
 
-    const viewCosting = (id) => {
+    const viewCosting = (id, data) => {
         setId(id)
+        setPricesDetail({ CostingId: data.CostingId, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice })
         runCostingDetailSimulation()
     }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View" type={'button'} onClick={() => { viewCosting(cell) }} />
+                <button className="View" type={'button'} onClick={() => { viewCosting(cell, row) }} />
             </>
         )
     }
@@ -220,12 +224,6 @@ function CostingSimulation(props) {
         // setShowApprovalHistory(true)
     }
 
-    // const onExportToCSV = (onClick) => {
-    //     // Custom your onClick event here,
-    //     // it's not necessary to implement this function if you have no any process before onClick
-    //     
-    // }
-
     const handleExportCSVButtonClick = (onClick) => {
         onClick();
         let products = []
@@ -272,6 +270,15 @@ function CostingSimulation(props) {
 
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
+        if (!isFromApprovalListing) {
+
+            const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
+            if (isChanged) {
+                setSaveDone(true)
+            } else {
+                setSaveDone(false)
+            }
+        }
     }
 
     const closeDrawer = (e = '', type) => {
@@ -282,6 +289,7 @@ function CostingSimulation(props) {
         } else {
             setIsApprovalDrawer(false);
             setIsVerifyImpactDrawer(false);
+            setOldArr(selectedRowData)
         }
     }
 
@@ -447,7 +455,7 @@ function CostingSimulation(props) {
                                 className="add-volume-table"
                                 pagination
                                 exportCSV
-                                csvFileName={`${simulationMaster}.csv`}
+                                csvFileName={`${simulationMaster}.xlsx`}
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
@@ -463,6 +471,11 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldRMRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewRMRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+
                                 <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
@@ -519,6 +532,7 @@ function CostingSimulation(props) {
                             master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
                             closeDrawer={closeDrawer}
                             isSimulation={true}
+                            isSaveDone={isSaveDone}
                         />}
 
                     {isVerifyImpactDrawer &&
@@ -540,6 +554,8 @@ function CostingSimulation(props) {
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
                     anchor={"right"}
+                    costingID={id}
+                    pricesDetail={pricesDetail}
                 />}
         </>
 
