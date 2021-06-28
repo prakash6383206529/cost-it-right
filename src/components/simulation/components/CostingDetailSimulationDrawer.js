@@ -20,6 +20,7 @@ import Attachament from '../../../components/costing/components/Drawers/Attacham
 import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
+import { getComparisionSimulationData } from '../actions/Simulation';
 
 
 
@@ -141,7 +142,7 @@ function CostingDetailSimulationDrawer(props) {
 
     useEffect(() => {
         if (costingID && Object.keys(costingID).length > 0) {
-            dispatch(getSingleCostingDetails(costingID, (res) => {
+            dispatch(getComparisionSimulationData(costingID, (res) => {
                 if (res.data.Data) {
                     let dataFromAPI = res.data.Data
                     const tempObj = formViewData(dataFromAPI)
