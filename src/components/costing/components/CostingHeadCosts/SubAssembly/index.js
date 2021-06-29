@@ -6,6 +6,7 @@ import PartCompoment from '../Part';
 import { getRMCCTabData, } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -14,6 +15,7 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
 
+  const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
@@ -151,7 +153,7 @@ function AssemblyPart(props) {
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={'plus'}></div>Add Operation</button>}
+              <div className={'plus'}></div>{`${CostingViewMode ? 'View Operation' : 'Add Operation'}`}</button>}
         </td>
       </tr>
 
