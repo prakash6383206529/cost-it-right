@@ -8,7 +8,7 @@ import {
   minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
   maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
-import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, } from "../layout/FormInputs";
+import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
@@ -190,7 +190,8 @@ class UserRegistration extends Component {
 
     if (label === 'department') {
       departmentList && departmentList.map(item =>
-        temp.push({ label: item.DepartmentName, value: item.DepartmentId, CompanyId: item.CompanyId })
+        // temp.push({ label: item.DepartmentName, value: item.DepartmentId, CompanyId: item.CompanyId })
+        temp.push({ Text: item.DepartmentName, Value: item.DepartmentId, CompanyId: item.CompanyId })
       );
       return temp;
     }
@@ -245,6 +246,7 @@ class UserRegistration extends Component {
     */
   departmentHandler = (newValue, actionMeta) => {
     this.setState({ department: newValue });
+    console.log('department: ', this.state.department);
   };
 
   /**
@@ -1231,13 +1233,17 @@ class UserRegistration extends Component {
                           type="text"
                           label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                           component={searchableSelect}
-                          placeholder={'Select company'}
+                          placeholder={'Select Purchase Group'}
                           options={this.searchableSelectType('department')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
                           required={true}
-                          handleChangeDescription={this.departmentHandler}
+                          selectionChanged={this.departmentHandler}
+                          optionValue={(option) => option.Value}
+                          optionLabel={(option) => option.Text}
+                          component={renderMultiSelectField}
                           valueDescription={this.state.department}
+                          className="multiselect-with-border"
                         />
                       </div>
                     </div>
