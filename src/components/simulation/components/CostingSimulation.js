@@ -29,6 +29,8 @@ function CostingSimulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const [shown,setshown] =useState(false);
+    
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
@@ -362,8 +364,9 @@ function CostingSimulation(props) {
                             <h1 class="mb-0">Token No:{tokenNo}</h1>
                         </Col>
                     </Row>
-                    <Row className="filter-row-large pt-4">
-                        <Col lg="12" md="12" className="filter-block">
+                    <Row className="filter-row-large pt-4 blue-before">
+                        {shown &&
+                        <Col lg="8" md="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills">
                                     <h5>{`Filter By:`}</h5>
@@ -418,7 +421,7 @@ function CostingSimulation(props) {
                                     />
                                 </div>
 
-                                <div className="flex-fill hide-label text-right">
+                                <div className="flex-fill hide-label">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -438,6 +441,21 @@ function CostingSimulation(props) {
                                 </div>
                             </div>
                         </Col>
+                        }
+
+                        <Col md="2" lg="2" className="search-user-block mb-3">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                {(shown) ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                )}
+                                </div>
+                            </div>
+                        </Col>
+                        
                     </Row>
                     <Row>
                         <Col>

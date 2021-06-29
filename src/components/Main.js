@@ -9,6 +9,7 @@ import Login from './login/Login'
 import NotFoundPage from './common/NotFoundPage'
 import User from './user'
 import Dashboard from './dashboard'
+import DashboardWithGraph from './dashboard/DashboardWithGraph'
 import { Loader } from '../../src/components/common/Loader'
 import PartMaster from './masters/part-master'
 import UOMMaster from './masters/uom-master'
@@ -34,13 +35,11 @@ import CostingRoutes from './costing/Routes'
 import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
-  BOP, DASHBOARD,DASHBOARD_PATH,DASHBOARD_PATH_SECOND , FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
+  BOP, DASHBOARD,FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config,
-  SIMULATION_APPROVAL_SUMMARY_PATH
-} from '../config/constants'
+  config,DASHBOARDWITHGRAPH_PATH,SIMULATION_APPROVAL_SUMMARY_PATH,DASHBOARDWITHGRAPH} from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -225,14 +224,12 @@ class Main extends Component {
         location.pathname === COSTING_BULK_UPLOAD ||
         location.pathname === COSTING_SUMMARY ||
         location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
-        location.pathname === DASHBOARD_PATH ||
-        location.pathname === DASHBOARD_PATH_SECOND
+        location.pathname === DASHBOARDWITHGRAPH_PATH
          ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage =
-         location.pathname === DASHBOARD_PATH ||
-         location.pathname === DASHBOARD_PATH_SECOND
+         location.pathname === DASHBOARDWITHGRAPH_PATH
           ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
         
@@ -278,8 +275,7 @@ class Main extends Component {
                 location.pathname !== APPROVAL_LISTING_PATH &&
                 location.pathname !== COSTING_BULK_UPLOAD &&
                 location.pathname !== COSTING_SUMMARY &&
-                location.pathname !== DASHBOARD_PATH &&
-                location.pathname !== DASHBOARD_PATH_SECOND &&
+                location.pathname !== DASHBOARDWITHGRAPH_PATH &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -304,6 +300,8 @@ class Main extends Component {
                     <Route path="/users" component={AuthMiddleware(User, USER)} />
 
                     <Route path="/dashboard" component={AuthMiddleware(Dashboard, DASHBOARD)} />
+
+                    <Route path="/dashboardWithGraph" component={(DashboardWithGraph)} />
 
                     <Route path="/part-master" component={AuthMiddleware(PartMaster, PART)} />
 

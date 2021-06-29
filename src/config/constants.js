@@ -1398,6 +1398,8 @@ export const AUDIT = 'Audit'
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
 
+export const DASHBOARDWITHGRAPH = 'DashboardWithGraph'
+
 export const RAW_MATERIAL = 'Raw Material'
 export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade'
 export const BOP = 'BOP'
@@ -1464,8 +1466,7 @@ export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-listing'
-export const DASHBOARD_PATH = '/'
-export const DASHBOARD_PATH_SECOND = '/dashboard'
+export const DASHBOARDWITHGRAPH_PATH = '/dashboardWithGraph'
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
@@ -1592,5 +1593,5 @@ export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 
 export const simulationMaster = "Simulation"
-export const DashboardMaster = "Analytics and Reports"
+export const DashboardMaster = "Dashboard"
 // MASTER PAGES NAME END

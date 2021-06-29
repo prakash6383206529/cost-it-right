@@ -21,7 +21,7 @@ import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
-    const [shown, setshown] = useState(true)
+    const [shown, setshown] = useState(false)
 
     const [tableData, setTableData] = useState([])
     const [partNoDropdown, setPartNoDropdown] = useState([])
@@ -324,7 +324,7 @@ function SimulationApprovalListing(props) {
                             <h1 className="mb-0">Simulation History</h1>
                             <Row className="pt-4 blue-before">
                                 {shown &&
-                                    <Col lg="10" md="12" className="filter-block">
+                                    <Col lg="10" md="10" className="filter-block">
                                         <div className="d-inline-flex justify-content-start align-items-top w100">
                                             <div className="flex-fills">
                                                 <h5>{`Filter By:`}</h5>
@@ -417,6 +417,18 @@ function SimulationApprovalListing(props) {
                                         </div>
                                     </Col>
                                 }
+                                <Col md="2" lg="2" className="search-user-block mb-3">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div>
+                                        {(shown) ? (
+                                            <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                        ) : (
+                                            <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                        )}
+                                        </div>
+                                    </div>
+                                </Col>
 
                             </Row>
                         </form>
