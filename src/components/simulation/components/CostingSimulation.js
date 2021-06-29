@@ -332,7 +332,7 @@ function CostingSimulation(props) {
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
+        return cell && cell !== null ? cell : '-'
     }
 
     const vendorFormatter = (cell, row, enumObject, rowIndex) => {
@@ -488,7 +488,7 @@ function CostingSimulation(props) {
                                 className="add-volume-table"
                                 pagination
                                 exportCSV
-                                csvFileName={`${simulationMaster}.xlsx`}
+                                csvFileName={`${simulationMaster}.csv`}
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
@@ -496,7 +496,7 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
