@@ -22,6 +22,7 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import { Redirect } from 'react-router';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, } = props;
@@ -301,9 +302,13 @@ function SimulationApprovalSummary(props) {
         lastPage: <span className="last-page-pg"></span>,
     };
 
+    if (showListing === true) {
+        return <Redirect to="/simulation-history" />
+    }
+
     return (
         <>
-            {showListing === false ?
+            {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
                     <div className="container-fluid approval-summary-page smh-approval-summary-page">
@@ -578,8 +583,8 @@ function SimulationApprovalSummary(props) {
                             </div>
                         </Row>
                     }
-                </> :
-                <SimulationApprovalListing />
+                </>
+                // <SimulationApprovalListing />
             }
 
             {approveDrawer && <ApproveRejectDrawer
