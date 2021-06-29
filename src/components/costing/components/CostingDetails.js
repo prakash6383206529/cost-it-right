@@ -1328,10 +1328,11 @@ function CostingDetails(props) {
             <span className="d-block mt-1">PDF</span>
           </button> */}
 
-          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+          {/* COMMENTED FOR NOW */}
+          {/* {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
             <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
             <span className="d-block mt-1">ADD BOM</span>
-          </button>}
+          </button>} */}
         </div>
       </span>
       <div className="login-container signup-form costing-details-page">
@@ -1532,7 +1533,7 @@ function CostingDetails(props) {
                               onClick={plantDrawerToggle}
                             >
                               <div className={"plus"}></div>ADD PLANT
-                          </button>
+                            </button>
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
