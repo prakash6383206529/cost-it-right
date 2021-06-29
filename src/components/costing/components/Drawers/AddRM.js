@@ -149,7 +149,7 @@ function AddRM(props) {
     return <>Net Cost<br />INR/UOM</>
   }
   const renderNetLandedConversionRate = () => {
-    return <>Net Cost<br />USD/UOM</>
+    return <>Net Cost<br />Currency/UOM</>
   }
 
   const netLandedFormat = (cell, row, enumObject, rowIndex) => {

@@ -105,7 +105,7 @@ function AddBOP(props) {
   }
 
   const renderNetLandedConversionRate = () => {
-    return <>Net Cost<br />USD/UOM</>
+    return <>Net Cost<br />Currency/UOM</>
   }
 
   const netLandedFormat = (cell, row, enumObject, rowIndex) => {
