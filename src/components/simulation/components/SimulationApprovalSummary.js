@@ -22,6 +22,7 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import { Redirect } from 'react-router';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, } = props;
@@ -215,6 +216,10 @@ function SimulationApprovalSummary(props) {
         return <>ECN <br />No.</>
     }
 
+    const renderRMName = () => {
+        return <>Raw Material<br />-Grade</>
+    }
+
     const revisionNumber = () => {
         return <>Revision <br />No.</>
     }
@@ -301,9 +306,13 @@ function SimulationApprovalSummary(props) {
         lastPage: <span className="last-page-pg"></span>,
     };
 
+    if (showListing === true) {
+        return <Redirect to="/simulation-history" />
+    }
+
     return (
         <>
-            {showListing === false ?
+            {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
                     <div className="container-fluid approval-summary-page smh-approval-summary-page">
@@ -476,7 +485,7 @@ function SimulationApprovalSummary(props) {
                                                     <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={rmNameFormatter} >{'Raw Material'}</TableHeaderColumn>
+                                                    <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={rmNameFormatter} >{renderRMName()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
@@ -579,8 +588,8 @@ function SimulationApprovalSummary(props) {
                             </div>
                         </Row>
                     }
-                </> :
-                <SimulationApprovalListing />
+                </>
+                // <SimulationApprovalListing />
             }
 
             {approveDrawer && <ApproveRejectDrawer
