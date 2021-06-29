@@ -31,7 +31,8 @@ function CostingSimulation(props) {
     })
 
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState('')
+    console.log('selectedRowData: ', selectedRowData);
+    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -152,6 +153,11 @@ function CostingSimulation(props) {
 
     const onRowSelect = (row, isSelected, e, rowIndex) => {
         if (isSelected) {
+            if (row.IsLockedBySimulation) {
+                setSelectedRowData([])
+                toastr.warning('This costing is already sent for approval through another token number.')
+                return false
+            }
             let temp = costingArr[rowIndex]
             temp = { ...temp, IsChecked: true }
             let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
@@ -172,9 +178,20 @@ function CostingSimulation(props) {
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
             let temp = []
+            let temp1 = []
             costingArr && costingArr.map((item => {
-                temp.push({ ...item, IsChecked: true })
+                if (item.IsLockedBySimulation) {
+                    temp1.push(item.CostingNumber)
+                }
+                else {
+                    temp.push({ ...item, IsChecked: true })
+                }
             }))
+            if (temp1.length > 0) {
+                setSelectedRowData([])
+                toastr.warning(`Costings ${temp1.map(item => item)} is already sent for approval through another token number.`)
+                return false
+            }
             setCostingArr(temp)
             setSelectedRowData(rows)
         } else {
