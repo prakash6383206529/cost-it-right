@@ -675,33 +675,54 @@ const CostingSummaryTable = (props) => {
                   </thead>
                   <tbody>
                     {
-                      !isApproval &&
-                      <tr>
-                        <td>
-                          <span class="d-block">Costing Version</span>
-                          <span class="d-block">PO Price</span>
-                        </td>
-                        {viewCostingData &&
-                          viewCostingData.map((data, index) => {
-                            return (
-                              <td>
-                                <span class="d-flex justify-content-between bg-grey">
-                                  {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
-                                  {
-                                    !viewMode &&
-                                    <a
-                                      class="text-primary d-inline-block change-version-block"
-                                      onClick={() => editHandler(index)}
-                                    >
-                                      <small>Change version</small>
-                                    </a>
-                                  }
-                                </span>
-                                <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
-                              </td>
-                            )
-                          })}
-                      </tr>
+                      !isApproval ?
+                        <tr>
+                          <td>
+                            <span class="d-block">Costing Version</span>
+                            <span class="d-block">PO Price</span>
+                            <span class="d-block">Part Number</span>
+                            <span class="d-block">Part Name</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData.map((data, index) => {
+                              return (
+                                <td>
+                                  <span class="d-flex justify-content-between bg-grey">
+                                    {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                    {
+                                      !viewMode &&
+                                      <a
+                                        class="text-primary d-inline-block change-version-block"
+                                        onClick={() => editHandler(index)}
+                                      >
+                                        <small>Change version</small>
+                                      </a>
+                                    }
+                                  </span>
+                                  <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  <span class="d-block">{data.partId}</span>
+                                  <span class="d-block">{data.partName}</span>
+
+                                </td>
+                              )
+                            })}
+                        </tr> :
+                        <tr>
+                          <td>
+                            <span class="d-block">Part Number</span>
+                            <span class="d-block">Part Name</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData.map((data, index) => {
+                              return (
+                                <td>
+                                  <span class="d-block">{data.partId}</span>
+                                  <span class="d-block">{data.partName}</span>
+
+                                </td>
+                              )
+                            })}
+                        </tr>
                     }
 
                     <tr>
