@@ -733,6 +733,7 @@ function RawMaterialCost(props) {
                     <tr>
                       <th>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
+                      <th>{`UOM`}</th>
                       <th>{`Scrap Rate`}</th>
                       {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "220px" }}>{`Gross Weight`}</th>
@@ -750,6 +751,7 @@ function RawMaterialCost(props) {
                           <tr key={index}>
                             <td>{item.RMName}</td>
                             <td>{item.RMRate}</td>
+                            <td>{item.UOM}</td>
                             <td>{item.ScrapRate}</td>
                             {
                               getTechnology.includes(costData.ETechnologyType) &&
