@@ -2916,6 +2916,7 @@ button:disabled{pointer-events: none;}
   th,td{
     >input[type=checkbox]{
       min-width: 18px;
+      display: block;
     }
   }
   .react-bs-table-search-form{
