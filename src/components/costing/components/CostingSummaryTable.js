@@ -56,6 +56,7 @@ const CostingSummaryTable = (props) => {
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
 
+
   const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
 
@@ -534,7 +535,8 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     if (viewCostingData.length === 1) {
-      setIsWarningFlag(viewCostingData && viewCostingData.length > 0 && viewCostingData[0].IsApprovalLocked)
+
+      setIsWarningFlag(viewCostingData && viewCostingData.length === 1 && viewCostingData[0].IsApprovalLocked)
       // setIsWarningFlag(false)
     }
   }, [viewCostingData])
