@@ -2365,7 +2365,7 @@ html {
 			}
     }
     .flex-fill.sliderange{
-      min-width: 195px;
+      min-width: 280px;
       .input-range{
         margin-top: 7px;
       }
@@ -2439,7 +2439,7 @@ html {
       left: -7px;
       font-family: $roboto !important;
       font-size: 10px;
-      top: -27px;
+      top: -30px;
       color: #A4ABC5;
     }
   }
@@ -2450,19 +2450,25 @@ html {
 		&:nth-child(3) {
 			right: 0px;
 			.input-range__label--value {
-				right: -15px;
+				right:auto;
 				font-size: 10px;
+        left: calc(100% - 7px);
+        display: inline-block;
+        width: 33px;
+        white-space: break-spaces;
+        word-break: break-word;
+        line-height: 9px;
 			}
 		}
 		&:nth-child(2) {
 			.input-range__label--value {
         right: 0px;
 				span {
-          right: -8px;
+          right: 15px;
           color: #3D4465;
           font-family: "Roboto", sans-serif;;
           font-size: 10px;
-          top: -12px;
+          top: -5px;
           &:after{
             content: "-";
             right: -5px;
@@ -4297,6 +4303,32 @@ body{
 
 // responsive media query start
 @media(max-width:1600px){
+
+  .content-page {
+    .filter-block {
+      .flex-fill.sliderange{
+        min-width: 200px;
+        .input-range{
+          margin-top: 7px;
+        }
+      }
+
+      .rm-domestic-filter,.rm-import-filter{
+        .flex-fill {
+          &:nth-child(2) {
+            width: 20%;
+          }
+          &:nth-child(4) {
+            width: 18%;
+          }
+          &:nth-child(5) {
+            width: 20%;
+          }
+        }
+      }
+    }
+  }
+
   // costing details page only
   .table.cr-brdr-main{font-size: 14px;}
   .table-responsive{
@@ -4787,7 +4819,7 @@ body{
               width: calc(20px * 80 / 100);
             }
           }
-
+          
           .rm-domestic-filter,.rm-import-filter{
             .flex-fill {
               &:last-child {
@@ -4796,6 +4828,9 @@ body{
               }
               &:nth-child(1) {
                 min-width: 76px;
+              }
+              &:nth-child(3),&:nth-child(7) {
+                width: 14%;
               }
             }
           }
@@ -4809,7 +4844,7 @@ body{
             }
           }
           .flex-fill.sliderange{
-            min-width: 195px;
+            min-width: 175px;
             .input-range{
               margin-top: 7px;
             }
