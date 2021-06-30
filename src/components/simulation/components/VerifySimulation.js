@@ -151,7 +151,7 @@ function VerifySimulation(props) {
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
     }
 
     const renderRM = (cell, row, enumObject, rowIndex) => {
