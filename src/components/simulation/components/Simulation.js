@@ -88,7 +88,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} />)
             default:
-                break;
+                return <div className="empty-table-paecholder" />;
         }
     }
 
@@ -219,10 +219,10 @@ function Simulation(props) {
     }
 
     return (
-        <div className="container-fluid simulation-page ">
+        <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <>
+                <div className="simulation-main">
                     <Row>
                         <Col sm="12">
                             <h1>{`Simulation`}</h1>
@@ -301,13 +301,12 @@ function Simulation(props) {
                             isOpen={showUploadDrawer}
                             closeDrawer={closeDrawer}
                             anchor={"right"}
-                        />
-                    }
-                </>
+                        />}
+                </div>
             }
-            {
-                showEditTable && editMasterPage(master.label)
-            }
+            <div className="simulation-edit">
+                {showEditTable && editMasterPage(master.label)}
+            </div>
         </div>
     );
 }
