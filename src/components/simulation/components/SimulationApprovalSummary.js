@@ -465,7 +465,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCompareCosting(!compareCosting) }}>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" disabled={!compareCosting} onClick={() => { setCompareCosting(!compareCosting) }}>
                                         {compareCosting ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}
                                     </button>
                                 </div>
