@@ -153,11 +153,11 @@ function CostingSimulation(props) {
 
     const onRowSelect = (row, isSelected, e, rowIndex) => {
         if (isSelected) {
-            // if (row.IsLockedBySimulation) {
-            //     setSelectedRowData([])
-            //     toastr.warning('This costing is already sent for approval through another token number.')
-            //     return false
-            // }
+            if (row.IsLockedBySimulation) {
+                setSelectedRowData([])
+                toastr.warning('This costing is already sent for approval through another token number.')
+                return false
+            }
             let temp = costingArr[rowIndex]
             temp = { ...temp, IsChecked: true }
             let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
@@ -276,7 +276,7 @@ function CostingSimulation(props) {
 
     const selectRowProp = {
         mode: 'checkbox',
-        clickToSelect: true,
+        // clickToSelect: true,
         unselectable: selectedIds,
         onSelect: onRowSelect,
         onSelectAll: onSelectAll,
