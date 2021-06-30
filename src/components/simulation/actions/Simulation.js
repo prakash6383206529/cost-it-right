@@ -14,6 +14,7 @@ import {
     config,
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
+    GET_SELECTED_COSTING_STATUS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -431,5 +432,26 @@ export function pushAPI(data, callback) {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })
+    }
+}
+
+
+export function getSimulationStatus(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getallSimualtionStatus}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTED_COSTING_STATUS,
+                    payload: response.data.SelectList,
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
     }
 }

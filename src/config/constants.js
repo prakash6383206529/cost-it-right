@@ -826,6 +826,8 @@ export const API = {
   simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
   simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,
+  getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
+
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
@@ -931,6 +933,7 @@ export const GET_RM_IMPORT_LIST = 'GET_RM_IMPORT_LIST'
 export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
+export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
@@ -1266,6 +1269,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+
 
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS'
