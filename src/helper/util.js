@@ -532,7 +532,7 @@ export function formViewData(costingSummary) {
   let obj = {}
 
   obj.zbc = dataFromAPI.TypeOfCosting ? dataFromAPI.TypeOfCosting : '-'
-  obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked ? dataFromAPI.IsApprovalLocked : '-'
+  obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
   obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
   obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'
