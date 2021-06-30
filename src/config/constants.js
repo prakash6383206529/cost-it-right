@@ -1595,3 +1595,5 @@ export const InterestMaster = "Interest-rate"
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
+
+export const VARIANCE = 'Variance'
