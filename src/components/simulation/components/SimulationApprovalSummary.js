@@ -332,7 +332,7 @@ function SimulationApprovalSummary(props) {
                                         <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
                                         {'Back '}
                                     </button>
-                                    <button type={'button'} className="apply mr-2" onClick={() => setViewButton(true)}>
+                                    <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
                                         View All
                                     </button>
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
