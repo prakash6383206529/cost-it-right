@@ -235,54 +235,59 @@ function VerifyImpactDrawer(props) {
 
               <Row >
                 <Col md="12" className="mt-3">
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Vendor Name:</span>
                     <span>M/S Vendor</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Vendor Code:</span>
                     <span>12001</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Technology:</span>
                     <span>SheetMetal</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Parts Supplied:</span>
                     <span>120</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Parts Amended:</span>
                     <span>120</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Master:</span>
                     <span>RM domestic</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Costing Head:</span>
                     <span>VBC</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Effective Date:</span>
                     <span>21-06-21</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
-                    <span class="cr-tbl-label d-block">Impact for Annum(INR)</span>
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                    <span class="cr-tbl-label d-block">Impact for Annum(INR):</span>
                     <span>5000</span>
                   </span>
 
-                  <span class="d-inline-block mr-4 mb-3 pl-3">
-                    <span class="cr-tbl-label d-block">Impact for the Quarter(INR)</span>
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                    <span class="cr-tbl-label d-block">Impact for the Quarter(INR):</span>
                     <span>12500</span>
+                  </span>
+
+                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                    <span class="cr-tbl-label d-block">Reason:</span>
+                    <span>Test</span>
                   </span>
                 </Col>
               </Row>
