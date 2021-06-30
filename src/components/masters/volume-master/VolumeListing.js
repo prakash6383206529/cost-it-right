@@ -551,18 +551,24 @@ class VolumeListing extends Component {
     // onClick();
 
     var arr = this.props.volumeDataList && this.props.volumeDataList
-    // console.log(this.props.volumeDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    // arr && arr.map(item => {
-    //   let len = Object.keys(item).length
-    //   for (let i = 0; i < len; i++) {
-    //     // let s = Object.keys(item)[i]
-    //     if (item.Specification === null) {
-    //       item.Specification = ' '
-    //     } else {
-    //       return false
-    //     }
-    //   }
-    // })
+    console.log(this.props.volumeDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    arr && arr.map(item => {
+      let len = Object.keys(item).length
+      for (let i = 0; i < len; i++) {
+        // let s = Object.keys(item)[i]
+        if (item.IsVendor === true) {
+          item.IsVendor = 'VBC'
+        }  else if (item.IsVendor === false) {
+          item.IsVendor = 'ZBC'
+        }  else if (item.VendorName === '-') {
+          item.VendorName = ' '
+        }  else if (item.Plant === '-') {
+          item.Plant = ' '
+        } else {
+          return false
+        }
+      }
+    })
     let products = []
     products = arr
     return products; // must return the data which you want to be exported

@@ -430,6 +430,12 @@ class InterestRateListing extends Component {
           item.ICCPercent = ' '
         } else if (item.PaymentTermPercent === null) {
           item.PaymentTermPercent = ' '
+        }  else if (item.IsVendor === true) {
+          item.IsVendor = 'VBC'
+        }  else if (item.IsVendor === false) {
+          item.IsVendor = 'ZBC'
+        }  else if (item.VendorName === '-') {
+          item.VendorName = ' '
         } else {
           return false
         }

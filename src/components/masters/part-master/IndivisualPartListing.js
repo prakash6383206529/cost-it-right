@@ -223,19 +223,38 @@ class IndivisualPartListing extends Component {
         this.props.formToggle()
     }
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
+    handleExportCSVButtonClick = () => {
+        // onClick();
+
+        var arr = this.props.newPartsListing && this.props.newPartsListing
+        console.log(this.props.newPartsListing, 'this.props.bopDomesticListthis.props.bopDomesticList')
+        arr && arr.map(item => {
+            let len = Object.keys(item).length
+            for (let i = 0; i < len; i++) {
+                // let s = Object.keys(item)[i]
+                if (item.ECNNumber === null) {
+                    item.ECNNumber = ' '
+                } else if (item.RevisionNumber === null) {
+                    item.RevisionNumber = ' '
+                } else if (item.DrawingNumber === null) {
+                    item.DrawingNumber = ' '
+                } else if (item.Technology === '-') {
+                    item.Technology = ' '
+                } else {
+                    return false
+                }
+            }
+        })
         let products = []
-        products = this.props.newPartsListing
+        products = arr
         return products; // must return the data which you want to be exported
     }
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
     }
-
 
     /**
     * @method render
@@ -259,6 +278,7 @@ class IndivisualPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text

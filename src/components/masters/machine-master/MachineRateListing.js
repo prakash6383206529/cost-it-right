@@ -456,6 +456,16 @@ class MachineRateListing extends Component {
                     item.MachineTonnage = ' '
                 } else if (item.EffectiveDate === null) {
                     item.EffectiveDate = ' '
+                } else if (item.IsVendor === true) {
+                    item.IsVendor = 'VBC'
+                } else if (item.IsVendor === false) {
+                    item.IsVendor = 'ZBC'
+                } else if (item.Plants === '-') {
+                    item.Plants = ' '
+                } else if (item.MachineTypeName === '-') {
+                    item.MachineTypeName = ' '
+                } else if (item.VendorName === '-') {
+                    item.VendorName = ' '
                 } else {
                     return false
                 }

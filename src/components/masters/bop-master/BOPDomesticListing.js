@@ -385,7 +385,13 @@ class BOPDomesticListing extends Component {
             let len = Object.keys(item).length
             for (let i = 0; i < len; i++) {
                 // let s = Object.keys(item)[i]
-                if (item.Specification === null) {
+                if (item.IsVendor === true) {
+                    item.IsVendor = 'VBC'
+                } if (item.IsVendor === false) {
+                    item.IsVendor = 'ZBV'
+                } if (item.Plants === '-') {
+                    item.Plants = ' '
+                }  if (item.Specification === '-') {
                     item.Specification = ' '
                 } else {
                     return false

@@ -240,8 +240,8 @@ class ReasonListing extends Component {
   handleExportCSVButtonClick = () => {
     // onClick();
 
-    var arr = this.props.bopImportList && this.props.bopImportList
-    // console.log(this.props.bopImportList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    var arr = this.props.reasonDataList && this.props.reasonDataList
+    console.log(this.props.reasonDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
     // arr && arr.map(item => {
     //     let len = Object.keys(item).length
     //     for (let i = 0; i < len; i++) {
@@ -263,20 +263,6 @@ createCustomExportCSVButton = (onClick) => {
         <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
 }
-
-
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.reasonDataList
-    return products; // must return the data which you want to be exported
-  }
-
-createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
-    );
-  }
 
   /**
    * @method render

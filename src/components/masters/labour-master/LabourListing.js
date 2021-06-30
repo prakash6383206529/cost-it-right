@@ -532,18 +532,26 @@ class LabourListing extends Component {
     // onClick();
 
     var arr = this.props.labourDataList && this.props.labourDataList
-    // console.log(this.props.labourDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    // arr && arr.map(item => {
-    //   let len = Object.keys(item).length
-    //   for (let i = 0; i < len; i++) {
-    //     // let s = Object.keys(item)[i]
-    //     if (item.Specification === null) {
-    //       item.Specification = ' '
-    //     } else {
-    //       return false
-    //     }
-    //   }
-    // })
+    console.log(this.props.labourDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
+    arr && arr.map(item => {
+      let len = Object.keys(item).length
+      for (let i = 0; i < len; i++) { 
+        // let s = Object.keys(item)[i]
+        if (item.Specification === null) {
+          item.Specification = ' '
+        }else if (item.IsContractBase === true) {
+          item.IsContractBase = 'VBC'
+        }else if (item.IsContractBase === false) {
+          item.IsContractBase = 'ZBC'
+        }else if (item.Vendor === '-') {
+          item.Vendor = ' '
+        }else if (item.Plant === '-') {
+          item.Plant = ' '
+        } else {
+          return false
+        }
+      }
+    })
     let products = []
     products = arr
     return products; // must return the data which you want to be exported

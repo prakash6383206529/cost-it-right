@@ -434,6 +434,10 @@ class ProfitListing extends Component {
                     item.ProfitPercentage = ' '
                 } else if (item.ProfitRMPercentage === null) {
                     item.ProfitRMPercentage = ' '
+                } else if (item.VendorName === '-') {
+                    item.VendorName = ' '
+                } else if (item.ClientName === '-') {
+                    item.ClientName = ' '
                 } else {
                     return false
                 }

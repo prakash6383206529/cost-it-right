@@ -462,9 +462,17 @@ class OperationListing extends Component {
         arr && arr.map(item => {
             let len = Object.keys(item).length
             for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
+                // let s = Object.keys(item)[i] 
                 if (item.Specification === null) {
                     item.Specification = ' '
+                } else if (item.CostingHead === true) {
+                    item.CostingHead = 'VBC'
+                } else if (item.CostingHead === false) {
+                    item.CostingHead = 'ZBC'
+                }  else if (item.Plants === '-') {
+                    item.Plants = ' '
+                }  else if (item.VendorName === '-') {
+                    item.VendorName = ' '
                 } else {
                     return false
                 }

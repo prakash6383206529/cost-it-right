@@ -358,9 +358,18 @@ class BOPImportListing extends Component {
         arr && arr.map(item => {
             let len = Object.keys(item).length
             for (let i = 0; i < len; i++) {
+
                 // let s = Object.keys(item)[i]
-                if (item.Specification === null) {
+                if (item.IsVendor === true) {
+                    item.IsVendor = 'VBC'
+                } else if (item.IsVendor === false) {
+                    item.IsVendor = 'ZBC'
+                } else if (item.Specification === null) {
                     item.Specification = ' '
+                } else if (item.Plants === '-') {
+                    item.Plants = ' '
+                } else if (item.Vendor === '-') {
+                    item.Vendor = ' '
                 } else {
                     return false
                 }

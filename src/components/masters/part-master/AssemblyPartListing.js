@@ -268,6 +268,8 @@ class AssemblyPartListing extends Component {
                     item.RevisionNumber = ' '
                 } else if (item.DrawingNumber === null) {
                     item.DrawingNumber = ' '
+                } else if (item.Technology === '-') {
+                    item.Technology = ' '
                 } else {
                     return false
                 }
@@ -282,7 +284,7 @@ class AssemblyPartListing extends Component {
         return (
             <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-    }
+    } 
 
     /**
     * @method render

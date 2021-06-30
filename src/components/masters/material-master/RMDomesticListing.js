@@ -521,6 +521,12 @@ class RMDomesticListing extends Component {
                     item.RMFreightCost = ' '
                 } else if (item.RMShearingCost === null) {
                     item.RMShearingCost = ' '
+                } else if (item.MaterialType === '-') {
+                    item.MaterialType = ' '
+                } else if (item.CostingHead === true) {
+                    item.CostingHead = 'VBC'
+                } else if (item.CostingHead === false) {
+                    item.CostingHead = 'ZBC'
                 } else {
                     return false
                 }

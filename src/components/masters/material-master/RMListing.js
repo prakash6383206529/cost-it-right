@@ -181,8 +181,10 @@ class RMListing extends Component {
             let len = Object.keys(item).length
             for (let i = 0; i < len; i++) {
                 // let s = Object.keys(item)[i]
-                if (item.Specification === null) {
-                    item.Specification = ' '
+                if (item.RMName === '-') {
+                    item.RMName = ' '
+                } else if (item.RMGrade === '-') {
+                    item.RMGrade = ' ' 
                 } else {
                     return false
                 }

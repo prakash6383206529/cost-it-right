@@ -428,6 +428,10 @@ class OverheadListing extends Component {
                     item.OverheadBOPPercentage = ' '
                 } else if (item.OverheadMachiningCCPercentage === null) {
                     item.OverheadMachiningCCPercentage = ' '
+                } else if (item.VendorName === '-') {
+                    item.VendorName = ' '
+                } else if (item.ClientName === '-') {
+                    item.ClientName = ' '
                 } else {
                     return false
                 }
