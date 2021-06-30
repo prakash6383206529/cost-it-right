@@ -25,10 +25,11 @@ import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
 
 function SimulationApprovalSummary(props) {
-    const { approvalDetails, approvalData, approvalNumber, approvalId } = props;
-
+    const { approvalDetails, approvalData, } = props;
+    const { approvalNumber, approvalId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
+
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -331,10 +332,10 @@ function SimulationApprovalSummary(props) {
                                         <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
                                         {'Back '}
                                     </button>
-                                    <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
+                                    <button type={'button'} className="apply mr-2" onClick={() => setViewButton(true)}>
                                         View All
                                     </button>
-                                    <button className="user-btn save-btn" onClick={VerifyImpact}>
+                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
                                         {"Verify Impact "}
                                     </button>
@@ -433,38 +434,6 @@ function SimulationApprovalSummary(props) {
                                                 <div className="flex-fill hide-label">
                                                     <SearchableSelectHookForm
                                                         label={''}
-                                                        name={'costingHead'}
-                                                        placeholder={'Costing Head'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('costingHead')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.costingHead}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'vendorName'}
-                                                        placeholder={'Vendor Name'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('users')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.vendorName}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
                                                         name={'plantCode'}
                                                         placeholder={'Plant Code'}
                                                         Controller={Controller}
@@ -476,22 +445,6 @@ function SimulationApprovalSummary(props) {
                                                         mandatory={false}
                                                         handleChange={() => { }}
                                                         errors={errors.plantCode}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'technology'}
-                                                        placeholder={'Technology'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('technology')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.technology}
                                                     />
                                                 </div>
                                                 <div className="flex-fill hide-label">
@@ -545,7 +498,7 @@ function SimulationApprovalSummary(props) {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pb-2">
                                     <Col md="12">
                                         <Row>
                                             <Col>
@@ -580,6 +533,7 @@ function SimulationApprovalSummary(props) {
 
                                             </Col>
                                         </Row>
+
                                     </Col>
                                 </Row>
                             </>
@@ -591,7 +545,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCompareCosting(!compareCosting) }}>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" disabled={!compareCosting} onClick={() => { setCompareCosting(!compareCosting) }}>
                                         {compareCosting ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}
                                     </button>
                                 </div>
@@ -663,6 +617,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
                 </>
+                // :
                 // <SimulationApprovalListing />
             }
 
@@ -676,7 +631,7 @@ function SimulationApprovalSummary(props) {
                 isSimulation={true}
                 simulationDetail={simulationDetail}
                 // reasonId={approvalDetails.ReasonId}
-                IsFinalLevel={!showFinalLevelButtons}
+                IsFinalLevel={showFinalLevelButtons}
             // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
