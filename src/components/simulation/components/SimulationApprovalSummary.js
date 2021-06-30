@@ -27,6 +27,7 @@ import { Redirect } from 'react-router';
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, } = props;
     const { approvalNumber, approvalId } = props.location.state
+    console.log('approvalNumber: ', approvalNumber);
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)

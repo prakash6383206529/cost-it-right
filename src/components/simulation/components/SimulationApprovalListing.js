@@ -28,6 +28,7 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+
     const dispatch = useDispatch()
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -126,7 +127,7 @@ function SimulationApprovalListing(props) {
         return (
             <Fragment>
                 <div
-                    onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
+                    onClick={() => viewDetails(row)}
                     className={'link'}
                 >
                     {cell}
@@ -136,14 +137,14 @@ function SimulationApprovalListing(props) {
     }
 
     const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
     const priceFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
             </>
         )
     }
@@ -152,13 +153,13 @@ function SimulationApprovalListing(props) {
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
             </>
         )
     }
 
     const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
     const statusFormatter = (cell, row, enumObject, rowIndex) => {
@@ -166,7 +167,7 @@ function SimulationApprovalListing(props) {
     }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        return <button className="View" type={'button'} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} />
+        return <button className="View" type={'button'} onClick={() => viewDetails(row)} />
     }
 
     const viewDetails = (rowObj) => {
@@ -185,6 +186,8 @@ function SimulationApprovalListing(props) {
     const renderVendor = (cell, row, enumObject, rowIndex) => {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
+
+
 
     /**
      * @method resetHandler

@@ -53,6 +53,7 @@ import axios from 'axios';
 import ReportListing from './report/ReportListing'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
+import CostingSimulation from './simulation/components/CostingSimulation'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',

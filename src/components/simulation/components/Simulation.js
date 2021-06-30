@@ -13,11 +13,13 @@ import { RMDomesticSimulation, RMImportSimulation } from '../../../config/master
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import CostingSimulation from './CostingSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
+    const { location } = props;
 
     let options = {}
 
@@ -210,7 +212,11 @@ function Simulation(props) {
         }
     }
 
-
+    // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
+    if (location?.state?.isFromApprovalListing === true) {
+        const simulationId = location?.state?.approvalProcessId;
+        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+    }
 
     return (
         <div className="container-fluid simulation-page ">
