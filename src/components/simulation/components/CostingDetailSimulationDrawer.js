@@ -141,7 +141,7 @@ function CostingDetailSimulationDrawer(props) {
 
                                 <Row className="ml-0 pb-3">
                                     <Col md="12">
-                                        <CostingSummaryTable simulationMode={true} viewMode={true} />
+                                        <CostingSummaryTable simulationMode={true} viewMode={true} simulationDrawer={true} />
                                     </Col>
                                 </Row>
 

@@ -26,7 +26,7 @@ import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -1072,14 +1072,17 @@ const CostingSummaryTable = (props) => {
                           return <td>{checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
+                    {
+                      !simulationDrawer &&
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                        <th>Net PO Price(INR)</th>
+                        {viewCostingData &&
+                          viewCostingData.map((data, index) => {
+                            return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                          })}
 
-                    <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
-                      <th>Net PO Price(INR)</th>
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        })}
-                    </tr>
+                      </tr>
+                    }
 
                     <tr>
                       <td>
@@ -1097,18 +1100,20 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-
-                    <tr class="background-light-blue">
-                      <th>Net PO Price (INR)</th>
-                      {/* {viewCostingData &&
+                    {
+                      !simulationDrawer &&
+                      <tr class="background-light-blue">
+                        <th>Net PO Price (INR)</th>
+                        {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
                         })} */}
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        })}
-                    </tr>
+                        {viewCostingData &&
+                          viewCostingData.map((data, index) => {
+                            return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                          })}
+                      </tr>
+                    }
 
                     <tr>
                       <td>Attachment</td>
