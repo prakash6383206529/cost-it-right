@@ -4136,6 +4136,11 @@ body{
     }
   }
   .costing-summary-table{
+    thead{
+      .main-row{
+        th{width: 25%;min-width: unset;}
+      }
+    }
     .background-light-blue{
       th,td{
         >span{
