@@ -204,8 +204,7 @@ function Simulation(props) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
-
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />
             default:
                 break;
         }
