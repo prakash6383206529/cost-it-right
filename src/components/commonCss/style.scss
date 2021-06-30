@@ -2910,8 +2910,7 @@ button:disabled{pointer-events: none;}
 .react-bs-table-container {
   th,td{
     >input[type=checkbox]{
-      min-width: 18px;
-      display: block;
+      min-width: 24px;
     }
   }
   .react-bs-table-search-form{
@@ -4093,7 +4092,15 @@ body{
   border-top-color: rgb(59, 59, 59);
 }
 // simulation page
+.container-fluid{
+  .container-fluid{
+    padding: 0;
+  }
+}
 .simulation-page{
+  .empty-table-paecholder{
+    min-height: calc(100vh - 350px);
+  }
   .filter-row-large{
     z-index: 11;
   }
@@ -4504,7 +4511,13 @@ body{
   }
 
   // simulation page
+  .costing-simulation-page{
+    .sf-btn-footer{
+      margin: 0 -27px -12px;
+    }
+  }
   .simulation-page{
+    .empty-table-paecholder{min-height: 314px;}
     .sf-btn-footer{
       margin: 0 -27px -12px;
     }
@@ -4700,7 +4713,7 @@ body{
           }
         }
         .search-user-block{
-          padding-right: 112px !important;
+          padding-right: 115px !important;
         }
       }
 

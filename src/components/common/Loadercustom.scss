@@ -9,6 +9,31 @@
             }
         }
     }
+    .simulation-main{
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    min-height: calc(100vh - 542px);
+                }
+            }
+        }
+    }
+    .simulation-edit{
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    min-height: calc(100vh - 464px);
+                }
+            }
+            &.verify-simulation-table{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        min-height: calc(100vh - 474px);
+                    }
+                }
+            }
+        }
+    }
     .react-bs-table-container{
         .react-bs-table{
             .react-bs-container-body{
@@ -177,6 +202,33 @@
                 }
             }
         }
+
+        .simulation-main{
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        min-height: calc(100vh - 473px);
+                    }
+                }
+            }
+        }
+        .simulation-edit{
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        min-height: calc(100vh - 417px);
+                    }
+                }
+                &.verify-simulation-table{
+                    .react-bs-table{
+                        .react-bs-container-body{
+                            min-height: calc(100vh - 421px);
+                        }
+                    }
+                }
+            }
+        }
+
         .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{

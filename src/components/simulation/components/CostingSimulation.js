@@ -396,7 +396,8 @@ function CostingSimulation(props) {
             {
                 !showApprovalHistory &&
 
-                <div className="show-table-btn costing-simulation-page">
+                <div className="show-table-btn costing-simulation-page blue-before-inside">
+                <div className="container-fluid">
                     <Row>
                         <Col sm="12">
                             <h1 class="mb-0">Token No:{tokenNo}</h1>
@@ -508,7 +509,7 @@ function CostingSimulation(props) {
                                 // exportCSV
                                 //ignoreSinglePage
                                 selectRow={selectRowProp}
-                                className="add-volume-table"
+                                className="add-volume-table this is"
                                 pagination
                                 exportCSV
                                 csvFileName={`${simulationMaster}.csv`}
@@ -576,7 +577,7 @@ function CostingSimulation(props) {
 
                         </div>
                     </Row>
-
+                </div>
                     {isApprovalDrawer &&
                         <ApproveRejectDrawer
                             isOpen={isApprovalDrawer}
