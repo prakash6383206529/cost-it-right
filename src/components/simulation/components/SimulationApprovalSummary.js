@@ -368,38 +368,6 @@ function SimulationApprovalSummary(props) {
                                             <div className="flex-fill filled-small hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
-                                                    name={'costingHead'}
-                                                    placeholder={'Costing Head'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('costingHead')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.costingHead}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'vendorName'}
-                                                    placeholder={'Vendor Name'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('users')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.vendorName}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
                                                     name={'plantCode'}
                                                     placeholder={'Plant Code'}
                                                     Controller={Controller}
@@ -411,22 +379,6 @@ function SimulationApprovalSummary(props) {
                                                     mandatory={false}
                                                     handleChange={() => { }}
                                                     errors={errors.plantCode}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'technology'}
-                                                    placeholder={'Technology'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('technology')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.technology}
                                                 />
                                             </div>
                                             <div className="flex-fill filled-small hide-label">
