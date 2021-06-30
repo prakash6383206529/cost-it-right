@@ -757,7 +757,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
+                              <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
