@@ -9,14 +9,14 @@ import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDeta
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -289,14 +289,30 @@ function ApproveRejectDrawer(props) {
       else if (type === 'Approve') {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
         dispatch(simulationApprovalRequestByApprove(objs, res => {
-          if (res.data.Result) {
+          if (true) {
             if (IsPushDrawer) {
               toastr.success('The simulation token has been approved')
               setOpenPushButton(true)
 
             } else {
-              toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
-              props.closeDrawer('', 'submit')
+              if (IsFinalLevel) {
+                let pushObj = {}
+                let temp = []
+                costingList && costingList.map(item => {
+                  const vendor = item.VendorName.split('(')[1]
+                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: item.DepartmentCode, Plant: '2000', MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                })
+                pushObj.LoggedInUserId = userLoggedIn
+                pushObj.AmmendentDataRequests = temp
+                console.log('pushObj: ', pushObj);
+                dispatch(pushAPI(pushObj, () => { }))
+                toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                props.closeDrawer('', 'submit')
+              } else {
+
+                toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                props.closeDrawer('', 'submit')
+              }
             }
           }
         }))

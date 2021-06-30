@@ -74,10 +74,10 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId })
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -584,7 +584,7 @@ function SimulationApprovalSummary(props) {
 
                                     {showFinalLevelButtons &&
                                         <button
-                                            type="button" className="mr5 user-btn" onClick={() => { }}                    >
+                                            type="button" className="mr5 user-btn" onClick={() => setApproveDrawer(true)}                    >
                                             <div className={'check-icon'}>
                                                 <img
                                                     src={require('../../../assests/images/check.png')}
@@ -632,6 +632,7 @@ function SimulationApprovalSummary(props) {
                 simulationDetail={simulationDetail}
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
+                costingList={costingList}
             // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
@@ -662,6 +663,7 @@ function SimulationApprovalSummary(props) {
                 approvalLevelStep={approvalLevelStep}
                 isOpen={viewButton}
                 closeDrawer={closeViewDrawer}
+
                 anchor={'top'}
                 approvalNo={simulationDetail.Token}
                 isSimulation={true}
