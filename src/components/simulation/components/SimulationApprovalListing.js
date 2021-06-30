@@ -14,7 +14,7 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { EMPTY_GUID } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
@@ -44,7 +44,7 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
         getTableData()
         dispatch(getAllPartSelectList(() => { }))
-        dispatch(getSelectedCostingList(() => { }))
+        dispatch(getSimulationStatus(() => { }))
         dispatch(getAllUserAPI(() => { }))
 
     }, [])
