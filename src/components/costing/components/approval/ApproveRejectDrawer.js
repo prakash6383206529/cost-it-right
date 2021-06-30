@@ -304,7 +304,6 @@ function ApproveRejectDrawer(props) {
                 })
                 pushObj.LoggedInUserId = userLoggedIn
                 pushObj.AmmendentDataRequests = temp
-                console.log('pushObj: ', pushObj);
                 dispatch(pushAPI(pushObj, () => { }))
                 toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
@@ -439,7 +438,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}
