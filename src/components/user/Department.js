@@ -21,7 +21,7 @@ class Department extends Component {
 			isLoader: false,
 			isSubmitted: false,
 			isEditFlag: false,
-			isCompanyConfigurable: getConfigurationKey().IsCompanyConfigureOnPlant
+			isCompanyConfigurable: true
 		};
 	}
 
@@ -179,7 +179,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Purchase Group'}`}</h3>
+											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}`}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e)}
@@ -203,21 +203,20 @@ class Department extends Component {
 												customClassName={'withBorder'}
 											/>
 										</div>
-										{
-											this.state.isCompanyConfigurable &&
-											<div className="input-group col-md-12 input-withouticon" >
-												<Field
-													label="Code"
-													name={"CompanyCode"}
-													type="text"
-													placeholder={''}
-													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-													component={renderText}
-													required={true}
-													customClassName={'withBorder'}
-												/>
-											</div>
-										}
+
+										<div className="input-group col-md-12 input-withouticon" >
+											<Field
+												label="Code"
+												name={"CompanyCode"}
+												type="text"
+												placeholder={''}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												component={renderText}
+												required={true}
+												customClassName={'withBorder'}
+											/>
+										</div>
+
 
 										<div className="col-md-12">
 											<div className="text-right mt-0">

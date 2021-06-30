@@ -209,7 +209,7 @@ class DepartmentsListing extends Component {
               pagination
             >
               <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>{getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}</TableHeaderColumn>
-              {getConfigurationKey().IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Purchase Group Code</TableHeaderColumn>}
+              <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Purchase Group Code</TableHeaderColumn>
               <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
