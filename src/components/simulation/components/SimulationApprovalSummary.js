@@ -396,7 +396,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{simulationDetail.EffectiveDate ? simulationDetail.EffectiveDate : '-'}</span>
+                                                <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                         </tr>
                                     </thead>
