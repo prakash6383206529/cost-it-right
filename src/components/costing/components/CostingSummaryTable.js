@@ -1073,7 +1073,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                    <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'red-row' : 'green-row' : '-'}`}>
                       <th>Net PO Price(INR)</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {

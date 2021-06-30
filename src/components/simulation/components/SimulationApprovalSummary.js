@@ -27,6 +27,8 @@ import { Redirect } from 'react-router';
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, } = props;
     const { approvalNumber, approvalId } = props.location.state
+    const [shown, setshown] = useState(false)
+    const [amendment, setAmendment] = useState(true)
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -330,8 +332,12 @@ function SimulationApprovalSummary(props) {
                                         <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
                                         {'Back '}
                                     </button>
-                                    <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
+                                    <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
                                         View All
+                                    </button>
+                                    <button className="user-btn save-btn" onClick={VerifyImpact}>
+                                        <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                        {"Verify Impact "}
                                     </button>
                                 </div>
                             </Col>
@@ -339,6 +345,65 @@ function SimulationApprovalSummary(props) {
 
                         {/* Code for approval workflow */}
                         <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail.Token} />
+
+                        <Row>
+                            <Col md="10"><div className="left-border">{'Amendment Details:'}</div></Col>
+                            {/* <Col md="2" className="text-right">
+                                <div className="right-border">
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAmendment(!amendment) }}>
+                                        {amendment ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}
+                                    </button>
+                                </div>
+                            </Col> */}
+                        </Row>
+                        {/* {amendment && */}
+                        <Row>
+                            <Col md="12" className="mb-2">
+                                <Table responsive className="table cr-brdr-main" size="sm">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <span className="d-block grey-text">{`Technology:`}</span>
+                                                <span className="d-block">{`Sheet Metal`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`Costing Head:`}</span>
+                                                <span className="d-block">{`VBC`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`No. Of Costing:`}</span>
+                                                <span className="d-block">{`10`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`Reason:`}</span>
+                                                <span className="d-block">{`Maxed Out Limit Tech`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`Token No.:`}</span>
+                                                <span className="d-block">{`542`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`Masters:`}</span>
+                                                <span className="d-block">{`RM Domestic`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
+                                                <span className="d-block">{`Bolts & Nuts`}</span>
+                                            </th>
+                                            <th>
+                                                <span className="d-block grey-text">{`Effective Date:`}</span>
+                                                <span className="d-block">{`01/06/2021`}</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </Table>
+                            </Col>
+                        </Row>
+                        {/* } */}
 
                         <Row>
                             <Col md="10">
@@ -360,108 +425,123 @@ function SimulationApprovalSummary(props) {
                         {costingSummary &&
                             <>
                                 <Row className="pt-4 blue-before">
-                                    <Col lg="10" md="12" className="filter-block">
-                                        <div className="d-inline-flex justify-content-start align-items-top w100">
-                                            <div className="flex-fills">
-                                                <h5 className="hide-left-border">{`Filter By:`}</h5>
+                                    {shown &&
+                                        <Col lg="10" md="10" className="filter-block">
+                                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                                                <div className="flex-fills">
+                                                    <h5 className="hide-left-border">{`Filter By:`}</h5>
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'costingHead'}
+                                                        placeholder={'Costing Head'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('costingHead')}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        errors={errors.costingHead}
+                                                    />
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'vendorName'}
+                                                        placeholder={'Vendor Name'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('users')}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        errors={errors.vendorName}
+                                                    />
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'plantCode'}
+                                                        placeholder={'Plant Code'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('plant')}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        errors={errors.plantCode}
+                                                    />
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'technology'}
+                                                        placeholder={'Technology'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('technology')}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        errors={errors.technology}
+                                                    />
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'partNo'}
+                                                        placeholder={'Part No.'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('PartList')}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        errors={errors.partNo}
+                                                    />
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <button
+                                                        type="button"
+                                                        //disabled={pristine || submitting}
+                                                        onClick={resetHandler}
+                                                        className="reset mr10"
+                                                    >
+                                                        {'Reset'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        //disabled={pristine || submitting}
+                                                        onClick={onSubmit}
+                                                        className="apply mr5"
+                                                    >
+                                                        {'Apply'}
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'costingHead'}
-                                                    placeholder={'Costing Head'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('costingHead')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.costingHead}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'vendorName'}
-                                                    placeholder={'Vendor Name'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('users')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.vendorName}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'plantCode'}
-                                                    placeholder={'Plant Code'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('plant')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.plantCode}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'technology'}
-                                                    placeholder={'Technology'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('technology')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.technology}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'partNo'}
-                                                    placeholder={'Part No.'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('PartList')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.partNo}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <button
-                                                    type="button"
-                                                    //disabled={pristine || submitting}
-                                                    onClick={resetHandler}
-                                                    className="reset mr10"
-                                                >
-                                                    {'Reset'}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    //disabled={pristine || submitting}
-                                                    onClick={onSubmit}
-                                                    className="apply mr5"
-                                                >
-                                                    {'Apply'}
-                                                </button>
+                                        </Col>
+                                    }
+
+                                    <Col md="2" lg="2" className="search-user-block mb-3">
+                                        <div className="d-flex justify-content-end bd-highlight w100">
+                                            <div>
+                                                {(shown) ? (
+                                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                                ) : (
+                                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                                )}
                                             </div>
                                         </div>
                                     </Col>
@@ -526,9 +606,9 @@ function SimulationApprovalSummary(props) {
                         {/* Costing Summary page here */}
                     </div>
 
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-sm-12 text-right bluefooter-butn">
-                            {!isApprovalDone &&
+                    {!isApprovalDone &&
+                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                            <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => { setRejectDrawer(true) }} >
                                         <div className={'cross-icon'}>
@@ -561,13 +641,9 @@ function SimulationApprovalSummary(props) {
                                             {'Approve & Push'}
                                         </button>}
                                 </Fragment>
-                            }
-                            <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
-                                <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
-                                {"Verify Impact "}
-                            </button>
-                        </div>
-                    </Row>
+                            </div>
+                        </Row>
+                    }
 
                     {
                         showPushButton &&
