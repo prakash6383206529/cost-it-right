@@ -14,7 +14,7 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { EMPTY_GUID } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
@@ -44,7 +44,7 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
         getTableData()
         dispatch(getAllPartSelectList(() => { }))
-        dispatch(getSelectedCostingList(() => { }))
+        dispatch(getSimulationStatus(() => { }))
         dispatch(getAllUserAPI(() => { }))
 
     }, [])
@@ -323,18 +323,18 @@ function SimulationApprovalListing(props) {
         <Fragment>
             {
                 !showApprovalSumary &&
-                    <div className="container-fluid approval-listing-page">
-                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                            <h1 className="mb-0">Simulation History</h1>
-                            <Row className="pt-4 blue-before">
-                                { shown &&
-                                    <Col lg="10" md="10" className="filter-block">
-                                        <div className="d-inline-flex justify-content-start align-items-top w100">
-                                            <div className="flex-fills">
-                                                <h5>{`Filter By:`}</h5>
-                                            </div>
+                <div className="container-fluid approval-listing-page">
+                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                        <h1 className="mb-0">Simulation History</h1>
+                        <Row className="pt-4 blue-before">
+                            {shown &&
+                                <Col lg="10" md="10" className="filter-block">
+                                    <div className="d-inline-flex justify-content-start align-items-top w100">
+                                        <div className="flex-fills">
+                                            <h5>{`Filter By:`}</h5>
+                                        </div>
 
-                                            {/* <div className="flex-fill hide-label">
+                                        {/* <div className="flex-fill hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
                                                     name={'partNo'}
@@ -417,60 +417,60 @@ function SimulationApprovalListing(props) {
                                             </button>
                                         </div>
                                     </div>
-                                    </Col>
-                                }
+                                </Col>
+                            }
 
-                                <Col md="2" lg="2" className="search-user-block mb-3">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div>
+                            <Col md="2" lg="2" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
                                         {(shown) ? (
                                             <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                         ) : (
                                             <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                         )}
-                                        </div>
                                     </div>
-                                </Col>
+                                </div>
+                            </Col>
 
-                            </Row>
-                        </form>
+                        </Row>
+                    </form>
 
-                        <BootstrapTable
-                            data={simualtionApprovalList}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            // selectRow={selectRowProp}
-                            // exportCSV
-                            //ignoreSinglePage
-                            //ref={'table'}
-                            trClassName={'userlisting-row'}
-                            tableHeaderClass="my-custom-header"
-                            pagination
-                        >
-                            <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={80} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CostingHead" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
-                            {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="TechnologyName" width={80} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ImpactCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ImpactParts" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
-                            <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
-                    </div>
-                    // :
-                    // <SimulationApprovalSummary
-                    //     approvalNumber={approvalData.approvalNumber}
-                    //     approvalId={approvalData.approvalProcessId}
-                    // /> //TODO list
+                    <BootstrapTable
+                        data={simualtionApprovalList}
+                        striped={false}
+                        hover={false}
+                        bordered={false}
+                        options={options}
+                        search
+                        // selectRow={selectRowProp}
+                        // exportCSV
+                        //ignoreSinglePage
+                        //ref={'table'}
+                        trClassName={'userlisting-row'}
+                        tableHeaderClass="my-custom-header"
+                        pagination
+                    >
+                        <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={80} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CostingHead" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
+                        {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
+                        <TableHeaderColumn dataField="TechnologyName" width={80} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ImpactCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ImpactParts" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="RequestedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
+                        <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                        <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                    </BootstrapTable>
+                </div>
+                // :
+                // <SimulationApprovalSummary
+                //     approvalNumber={approvalData.approvalNumber}
+                //     approvalId={approvalData.approvalProcessId}
+                // /> //TODO list
             }
         </Fragment>
     )

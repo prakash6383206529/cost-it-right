@@ -74,10 +74,10 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason } = res.data.Data
             setCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId })
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -368,35 +368,35 @@ function SimulationApprovalSummary(props) {
                                         <tr>
                                             <th>
                                                 <span className="d-block grey-text">{`Technology:`}</span>
-                                                <span className="d-block">{`Sheet Metal`}</span>
+                                                <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Costing Head:`}</span>
-                                                <span className="d-block">{`VBC`}</span>
+                                                <span className="d-block">{costingList.length > 0 && costingList[0].CostingHead}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
-                                                <span className="d-block">{`10`}</span>
+                                                <span className="d-block">{simulationDetail.NumberOfCostings}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Reason:`}</span>
-                                                <span className="d-block">{`Maxed Out Limit Tech`}</span>
+                                                <span className="d-block">{simulationDetail.SenderReason}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Token No.:`}</span>
-                                                <span className="d-block">{`542`}</span>
+                                                <span className="d-block">{simulationDetail.Token}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Masters:`}</span>
-                                                <span className="d-block">{`RM Domestic`}</span>
+                                                <span className="d-block">{costingList.length > 0 && costingList[0].SimulationTechnology}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
-                                                <span className="d-block">{`Bolts & Nuts`}</span>
+                                                <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
                                             </th>
                                             <th>
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{`01/06/2021`}</span>
+                                                <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                         </tr>
                                     </thead>

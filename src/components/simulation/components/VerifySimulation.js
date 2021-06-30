@@ -19,7 +19,7 @@ import { getRawMaterialNameChild } from '../../masters/actions/Material';
 
 function VerifySimulation(props) {
     const { cancelVerifyPage } = props
-    const [shown,setshown] = useState(false);
+    const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState('')
@@ -146,12 +146,12 @@ function VerifySimulation(props) {
 
     const renderPlant = (cell, row, enumObject, rowIndex) => {
         // return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-        return (cell !== null && cell !== '-') ? `${cell}` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}-(${row.PlantCode})` : '-'
 
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}-(${row.VendorCode})` : '-'
     }
 
     const renderRM = (cell, row, enumObject, rowIndex) => {
@@ -279,13 +279,13 @@ function VerifySimulation(props) {
                     </Row>
                     <Row className="filter-row-large pt-4 blue-before">
                         {shown &&
-                        <Col lg="8" md="8" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills">
-                                    <h5>{`Filter By:`}</h5>
-                                </div>
+                            <Col lg="8" md="8" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                    <div className="flex-fills">
+                                        <h5>{`Filter By:`}</h5>
+                                    </div>
 
-                                {/* <div className="flex-fill filled-small hide-label">
+                                    {/* <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -301,69 +301,69 @@ function VerifySimulation(props) {
                                         errors={errors.partNo}
                                     />
                                 </div> */}
-                                <div className="flex-fill  hide-label">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'plantCode'}
-                                        placeholder={'Plant Code'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('plant')}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        errors={errors.plantCode}
-                                    />
-                                </div>
-                                <div className="flex-fill  hide-label">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'material'}
-                                        placeholder={'Raw Material'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('material')}
-                                        mandatory={false}
-                                        handleChange={handleMaterial}
-                                        errors={errors.material}
-                                    />
-                                </div>
+                                    <div className="flex-fill  hide-label">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'plantCode'}
+                                            placeholder={'Plant Code'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={plant.length !== 0 ? plant : ''}
+                                            options={renderDropdownListing('plant')}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            errors={errors.plantCode}
+                                        />
+                                    </div>
+                                    <div className="flex-fill  hide-label">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'material'}
+                                            placeholder={'Raw Material'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={plant.length !== 0 ? plant : ''}
+                                            options={renderDropdownListing('material')}
+                                            mandatory={false}
+                                            handleChange={handleMaterial}
+                                            errors={errors.material}
+                                        />
+                                    </div>
 
-                                <div className="flex-fill  hide-label">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
+                                    <div className="flex-fill  hide-label">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {'Reset'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={filterList}
+                                            className="apply mr5"
+                                        >
+                                            {'Apply'}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
+                            </Col>
                         }
                         <Col md="2" lg="2" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                {(shown) ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                )}
+                                    {(shown) ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                    ) : (
+                                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                    )}
                                 </div>
                             </div>
                         </Col>
@@ -386,7 +386,7 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataFormat={renderVendor} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
