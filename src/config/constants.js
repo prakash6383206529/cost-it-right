@@ -1594,5 +1594,7 @@ export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 
 export const simulationMaster = "Simulation"
-export const DashboardMaster = "Dashboard"
+export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
+
+export const VARIANCE = 'Variance'
