@@ -166,7 +166,6 @@ function SimulationApprovalSummary(props) {
 
     const DisplayCompareCosting = (el, data) => {
         setId(data.CostingNumber)
-        setCompareCosting(true)
         // setCompareCostingObj(el)
         dispatch(getComparisionSimulationData(el, res => {
             const Data = res.data.Data
@@ -176,6 +175,7 @@ function SimulationApprovalSummary(props) {
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))
+            setCompareCosting(true)
         }))
     }
 
