@@ -33,7 +33,7 @@ function CostingSimulation(props) {
     const [shown,setshown] =useState(false);
     
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState('')
+    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -46,6 +46,7 @@ function CostingSimulation(props) {
     const [oldArr, setOldArr] = useState([])
     const [material, setMaterial] = useState([])
     const [pricesDetail, setPricesDetail] = useState({})
+    const [isView, setIsView] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -128,15 +129,15 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-        let temp = costingArr[rowIndex]
-        temp = { ...temp, IsChecked: true }
-        let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
-        setCostingArr(Arr)
-        let tempArr = [...selectedRowData, data]
-        setSelectedRowData(tempArr)
+        // let temp = costingArr[rowIndex]
+        // temp = { ...temp, IsChecked: true }
+        // let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+        // setCostingArr(Arr)
+        // let tempArr = [...selectedRowData, data]
+        // setSelectedRowData(tempArr)
         setId(id)
         setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        dispatch(getComparisionSimulationData(id, res => {
+        dispatch(getComparisionSimulationData(data.SimulationCostingId, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
@@ -154,6 +155,11 @@ function CostingSimulation(props) {
 
     const onRowSelect = (row, isSelected, e, rowIndex) => {
         if (isSelected) {
+            // if (row.IsLockedBySimulation) {
+            //     setSelectedRowData([])
+            //     toastr.warning('This costing is already sent for approval through another token number.')
+            //     return false
+            // }
             let temp = costingArr[rowIndex]
             temp = { ...temp, IsChecked: true }
             let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
@@ -169,14 +175,26 @@ function CostingSimulation(props) {
             let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
             setSelectedRowData(tempArr)
         }
+
     }
 
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
             let temp = []
+            let temp1 = []
             costingArr && costingArr.map((item => {
-                temp.push({ ...item, IsChecked: true })
+                if (item.IsLockedBySimulation) {
+                    temp1.push(item.CostingNumber)
+                }
+                else {
+                    temp.push({ ...item, IsChecked: true })
+                }
             }))
+            if (temp1.length > 0) {
+                setSelectedRowData([])
+                toastr.warning(`Costings ${temp1.map(item => item)} is already sent for approval through another token number.`)
+                return false
+            }
             setCostingArr(temp)
             setSelectedRowData(rows)
         } else {
@@ -317,7 +335,7 @@ function CostingSimulation(props) {
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
+        return cell && cell !== null ? cell : '-'
     }
 
     const vendorFormatter = (cell, row, enumObject, rowIndex) => {
@@ -367,6 +385,10 @@ function CostingSimulation(props) {
     const handleMaterial = (value) => {
         setMaterial(value)
     }
+
+    useEffect(() => {
+
+    }, [isView])
 
 
     return (
@@ -489,15 +511,17 @@ function CostingSimulation(props) {
                                 className="add-volume-table"
                                 pagination
                                 exportCSV
-                                csvFileName={`${simulationMaster}.xlsx`}
+                                csvFileName={`${simulationMaster}.csv`}
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
@@ -509,7 +533,7 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="NewRMRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
                         </Col>

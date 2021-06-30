@@ -588,22 +588,25 @@ class RMDomesticListing extends Component {
                                             valueDescription={this.state.plant}
                                         />
                                     </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Technology"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Technology'}
-                                            isClearable={false}
-                                            options={this.renderListing('technology')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleTechnologyChange}
-                                            valueDescription={this.state.technology}
-                                        />
-                                    </div>
+                                    {
+                                        !this.props.isSimulation &&
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="Technology"
+                                                type="text"
+                                                label=""
+                                                component={searchableSelect}
+                                                placeholder={'Technology'}
+                                                isClearable={false}
+                                                options={this.renderListing('technology')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleTechnologyChange}
+                                                valueDescription={this.state.technology}
+                                            />
+                                        </div>
+                                    }
                                     <div className="flex-fill">
                                         <Field
                                             name="RawMaterialId"

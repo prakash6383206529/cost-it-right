@@ -4,37 +4,29 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
-import { getApprovalList, getSelectedCostingList } from '../../../components/costing/actions/Approval'
+import { getSelectedCostingList } from '../../../components/costing/actions/Approval'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
-import ApprovalSummary from '../../costing/components/approval/ApprovalSummary'
-import { getAllPartSelectList, getCostingStatusSelectList, } from '../../../components/costing/actions/Costing'
+import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
 import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { EMPTY_GUID, PENDING } from '../../../config/constants'
+import { EMPTY_GUID } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
-import SimulationApprovalSummary from './SimulationApprovalSummary'
 import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
     const [shown, setshown] = useState(false)
 
-    const [tableData, setTableData] = useState([])
-    const [partNoDropdown, setPartNoDropdown] = useState([])
-    const [createdByDropdown, setCreatedByDropdown] = useState([])
-    const [requestedByDropdown, setRequestedByDropdown] = useState([])
-    const [statusDropdown, setStatusDropdown] = useState([])
     const [approvalData, setApprovalData] = useState('')
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [selectedIds, setSelectedIds] = useState('')
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
-    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
 
     const dispatch = useDispatch()
