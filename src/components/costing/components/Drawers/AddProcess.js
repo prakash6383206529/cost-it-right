@@ -115,8 +115,15 @@ function AddProcess(props) {
   const onSelectAll = (isSelected, rows) => {
     if (isSelected) {
       setSelectedRowData(rows)
-      // setSelectedRowData(this?.refs?.table?.state?.data.map(row => row));
-      // return this?.refs?.table?.state?.data.map(row => row.MachineRateId);
+
+      // if (selectedRowData.length !== processDrawerList.length) {
+      //   setSelectedRowData(processDrawerList.map(row => row))
+      //   // setSelectedRowData(this?.refs?.table?.state?.data.map(row => row));
+      //   return processDrawerList.map(row => row.MachineRateId);
+      // } else {
+      //   return;
+      // }
+
     } else {
       setSelectedRowData([])
     }
