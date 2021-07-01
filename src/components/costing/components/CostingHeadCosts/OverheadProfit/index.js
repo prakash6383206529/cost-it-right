@@ -1565,7 +1565,7 @@ function OverheadProfit(props) {
                       </Col>
                       <Col md="3">
                         <div className="d-inline-block">
-                          {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC &&
+                          {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>
@@ -1631,7 +1631,7 @@ function OverheadProfit(props) {
                       </Col>
                       <Col md="3">
                         <div className="d-inline-block">
-                          {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC &&
+                          {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>}
@@ -1917,7 +1917,7 @@ function OverheadProfit(props) {
                       </Col>
                       <Col md="3">
                         <div className="d-inline-block">
-                          {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC &&
+                          {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>
@@ -1983,7 +1983,7 @@ function OverheadProfit(props) {
                       </Col>
                       <Col md="3">
                         <div className="d-inline-block">
-                          {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC &&
+                          {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>
