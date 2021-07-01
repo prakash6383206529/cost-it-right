@@ -4,37 +4,29 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
-import { getApprovalList, getSelectedCostingList } from '../../../components/costing/actions/Approval'
+import { getSelectedCostingList } from '../../../components/costing/actions/Approval'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
-import ApprovalSummary from '../../costing/components/approval/ApprovalSummary'
-import { getAllPartSelectList, getCostingStatusSelectList, } from '../../../components/costing/actions/Costing'
+import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
 import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { EMPTY_GUID, PENDING } from '../../../config/constants'
+import { EMPTY_GUID } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList, setMasterForSimulation } from '../actions/Simulation'
-import SimulationApprovalSummary from './SimulationApprovalSummary'
+import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
-    const [shown, setshown] = useState(true)
+    const [shown, setshown] = useState(false)
 
-    const [tableData, setTableData] = useState([])
-    const [partNoDropdown, setPartNoDropdown] = useState([])
-    const [createdByDropdown, setCreatedByDropdown] = useState([])
-    const [requestedByDropdown, setRequestedByDropdown] = useState([])
-    const [statusDropdown, setStatusDropdown] = useState([])
     const [approvalData, setApprovalData] = useState('')
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [selectedIds, setSelectedIds] = useState('')
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
-    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
 
     const dispatch = useDispatch()
@@ -52,7 +44,7 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
         getTableData()
         dispatch(getAllPartSelectList(() => { }))
-        dispatch(getSelectedCostingList(() => { }))
+        dispatch(getSimulationStatus(() => { }))
         dispatch(getAllUserAPI(() => { }))
 
     }, [])
@@ -336,13 +328,13 @@ function SimulationApprovalListing(props) {
                         <h1 className="mb-0">Simulation History</h1>
                         <Row className="pt-4 blue-before">
                             {shown &&
-                                <Col lg="10" md="12" className="filter-block">
+                                <Col lg="10" md="10" className="filter-block">
                                     <div className="d-inline-flex justify-content-start align-items-top w100">
                                         <div className="flex-fills">
                                             <h5>{`Filter By:`}</h5>
                                         </div>
 
-                                        {/* <div className="flex-fill filled-small hide-label">
+                                        {/* <div className="flex-fill hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
                                                     name={'partNo'}
@@ -358,7 +350,7 @@ function SimulationApprovalListing(props) {
                                                     errors={errors.partNo}
                                                 />
                                             </div> */}
-                                        <div className="flex-fill filled-small hide-label">
+                                        <div className="flex-fill  hide-label">
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'createdBy'}
@@ -374,7 +366,7 @@ function SimulationApprovalListing(props) {
                                                 errors={errors.createdBy}
                                             />
                                         </div>
-                                        <div className="flex-fill filled-small hide-label">
+                                        <div className="flex-fill  hide-label">
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'requestedBy'}
@@ -406,8 +398,6 @@ function SimulationApprovalListing(props) {
                                                 errors={errors.status}
                                             />
                                         </div>
-
-
                                         <div className="flex-fill filled-small hide-label">
                                             <button
                                                 type="button"
@@ -430,6 +420,19 @@ function SimulationApprovalListing(props) {
                                 </Col>
                             }
 
+                            <Col md="2" lg="2" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
+                                        {(shown) ? (
+                                            <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                        ) : (
+                                            <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                        )}
+                                    </div>
+                                </div>
+                            </Col>
+
                         </Row>
                     </form>
 
@@ -448,21 +451,22 @@ function SimulationApprovalListing(props) {
                         tableHeaderClass="my-custom-header"
                         pagination
                     >
-                        <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CostingHead" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={80} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CostingHead" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
                         {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
-                        <TableHeaderColumn dataField="TechnologyName" width={90} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="TechnologyName" width={80} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ImpactCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ImpactParts" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
+                        <TableHeaderColumn dataField="RequestedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
                         <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
                         <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
                         <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                 </div>
+                // :
                 // <SimulationApprovalSummary
                 //     approvalNumber={approvalData.approvalNumber}
                 //     approvalId={approvalData.approvalProcessId}

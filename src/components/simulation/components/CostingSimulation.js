@@ -30,8 +30,10 @@ function CostingSimulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const [shown,setshown] =useState(false);
+    
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState('')
+    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -44,6 +46,7 @@ function CostingSimulation(props) {
     const [oldArr, setOldArr] = useState([])
     const [material, setMaterial] = useState([])
     const [pricesDetail, setPricesDetail] = useState({})
+    const [isView, setIsView] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -126,15 +129,15 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-        let temp = costingArr[rowIndex]
-        temp = { ...temp, IsChecked: true }
-        let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
-        setCostingArr(Arr)
-        let tempArr = [...selectedRowData, data]
-        setSelectedRowData(tempArr)
+        // let temp = costingArr[rowIndex]
+        // temp = { ...temp, IsChecked: true }
+        // let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+        // setCostingArr(Arr)
+        // let tempArr = [...selectedRowData, data]
+        // setSelectedRowData(tempArr)
         setId(id)
         setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        dispatch(getComparisionSimulationData(id, res => {
+        dispatch(getComparisionSimulationData(data.SimulationCostingId, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
@@ -152,6 +155,11 @@ function CostingSimulation(props) {
 
     const onRowSelect = (row, isSelected, e, rowIndex) => {
         if (isSelected) {
+            if (row.IsLockedBySimulation) {
+                setSelectedRowData([])
+                toastr.warning('This costing is already sent for approval through another token number.')
+                return false
+            }
             let temp = costingArr[rowIndex]
             temp = { ...temp, IsChecked: true }
             let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
@@ -167,14 +175,26 @@ function CostingSimulation(props) {
             let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
             setSelectedRowData(tempArr)
         }
+
     }
 
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
             let temp = []
+            let temp1 = []
             costingArr && costingArr.map((item => {
-                temp.push({ ...item, IsChecked: true })
+                if (item.IsLockedBySimulation) {
+                    temp1.push(item.CostingNumber)
+                }
+                else {
+                    temp.push({ ...item, IsChecked: true })
+                }
             }))
+            if (temp1.length > 0) {
+                setSelectedRowData([])
+                toastr.warning(`Costings ${temp1.map(item => item)} is already sent for approval through another token number.`)
+                return false
+            }
             setCostingArr(temp)
             setSelectedRowData(rows)
         } else {
@@ -258,7 +278,7 @@ function CostingSimulation(props) {
 
     const selectRowProp = {
         mode: 'checkbox',
-        clickToSelect: true,
+        // clickToSelect: true,
         unselectable: selectedIds,
         onSelect: onRowSelect,
         onSelectAll: onSelectAll,
@@ -315,7 +335,7 @@ function CostingSimulation(props) {
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
+        return cell && cell !== null ? cell : '-'
     }
 
     const vendorFormatter = (cell, row, enumObject, rowIndex) => {
@@ -366,20 +386,26 @@ function CostingSimulation(props) {
         setMaterial(value)
     }
 
+    useEffect(() => {
+
+    }, [isView])
+
 
     return (
         <>
             {
                 !showApprovalHistory &&
 
-                <div className="show-table-btn costing-simulation-page">
+                <div className="show-table-btn costing-simulation-page blue-before-inside">
+                <div className="container-fluid">
                     <Row>
                         <Col sm="12">
                             <h1 class="mb-0">Token No:{tokenNo}</h1>
                         </Col>
                     </Row>
-                    <Row className="filter-row-large pt-4">
-                        <Col lg="12" md="12" className="filter-block">
+                    <Row className="filter-row-large pt-4 blue-before">
+                        {shown &&
+                        <Col lg="8" md="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills">
                                     <h5>{`Filter By:`}</h5>
@@ -434,7 +460,7 @@ function CostingSimulation(props) {
                                     />
                                 </div>
 
-                                <div className="flex-fill hide-label text-right">
+                                <div className="flex-fill hide-label">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -454,6 +480,21 @@ function CostingSimulation(props) {
                                 </div>
                             </div>
                         </Col>
+                        }
+
+                        <Col md="3" lg="3" className="search-user-block mb-3">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                {(shown) ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                )}
+                                </div>
+                            </div>
+                        </Col>
+                        
                     </Row>
                     <Row>
                         <Col>
@@ -468,18 +509,20 @@ function CostingSimulation(props) {
                                 // exportCSV
                                 //ignoreSinglePage
                                 selectRow={selectRowProp}
-                                className="add-volume-table"
+                                className="add-volume-table this is"
                                 pagination
                                 exportCSV
-                                csvFileName={`${simulationMaster}.xlsx`}
+                                csvFileName={`${simulationMaster}.csv`}
                             >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
@@ -491,7 +534,7 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="NewRMRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="SimulationCostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingId" export={false} width={100} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                             </BootstrapTable>
 
                         </Col>
@@ -534,7 +577,7 @@ function CostingSimulation(props) {
 
                         </div>
                     </Row>
-
+                </div>
                     {isApprovalDrawer &&
                         <ApproveRejectDrawer
                             isOpen={isApprovalDrawer}

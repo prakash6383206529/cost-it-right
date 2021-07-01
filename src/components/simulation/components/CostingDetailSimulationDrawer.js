@@ -77,6 +77,10 @@ function CostingDetailSimulationDrawer(props) {
         // setShowApprovalHistory(true)
     }
 
+    const cancel = (e = '') => {
+        toggleDrawer(e)
+    }
+
 
     // table code ends here
     if (showApprovalHistory === true) {
@@ -137,7 +141,7 @@ function CostingDetailSimulationDrawer(props) {
 
                                 <Row className="ml-0 pb-3">
                                     <Col md="12">
-                                        <CostingSummaryTable simulationMode={true} viewMode={true} />
+                                        <CostingSummaryTable simulationMode={true} viewMode={true} simulationDrawer={true} />
                                     </Col>
                                 </Row>
 
@@ -145,7 +149,7 @@ function CostingDetailSimulationDrawer(props) {
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">
                                     <div className="text-right px-3">
-                                        <button class="user-btn approval-btn mr5 float-none" onClick={sendForApprovalData}>
+                                        {/* <button class="user-btn approval-btn mr5 float-none" onClick={sendForApprovalData}>
                                             <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
                                             {'Send For Approval'}
                                         </button>
@@ -157,6 +161,15 @@ function CostingDetailSimulationDrawer(props) {
                                                 />
                                             </div>{" "}
                                             {"Save Simulation"}
+                                        </button> */}
+                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                            <div className={"cross-icon"}>
+                                                <img
+                                                    src={require("../../../assests/images/times.png")}
+                                                    alt="cancel-icon.jpg"
+                                                />
+                                            </div>{" "}
+                                            {"CANCEL"}
                                         </button>
                                     </div>
                                 </div>

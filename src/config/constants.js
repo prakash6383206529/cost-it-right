@@ -825,6 +825,8 @@ export const API = {
   simulationReject: `${BASE_URL}/app-simulation-approval-system/rejected-simulated-costing-by-approver`,
   simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
+  getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
+
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
@@ -930,6 +932,7 @@ export const GET_RM_IMPORT_LIST = 'GET_RM_IMPORT_LIST'
 export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
+export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
@@ -1266,6 +1269,7 @@ export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
 
+
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS'
 export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS'
@@ -1398,6 +1402,8 @@ export const AUDIT = 'Audit'
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
 
+export const DASHBOARDWITHGRAPH = 'DashboardWithGraph'
+
 export const RAW_MATERIAL = 'Raw Material'
 export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade'
 export const BOP = 'BOP'
@@ -1463,10 +1469,8 @@ export const COSTING_SUMMARY = '/costing-summary'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
-export const DASHBOARD_PATH = '/'
-export const DASHBOARD_PATH_SECOND = '/dashboard'
 export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
-
+export const DASHBOARDWITHGRAPH_PATH = '/dashboardWithGraph'
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
@@ -1595,3 +1599,5 @@ export const InterestMaster = "Interest-rate"
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
+
+export const VARIANCE = 'Variance'
