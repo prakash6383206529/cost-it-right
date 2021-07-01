@@ -155,6 +155,20 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr>
                           )}
+                          {viewOverheadData.IsOverheadCombined && (
+                            <tr>
+                              <td>{viewOverheadData.OverheadApplicability}</td>
+                              <td>
+                                {viewOverheadData.OverheadPercentage ? viewOverheadData.OverheadPercentage : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedCost ? viewOverheadData.OverheadCombinedCost : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedTotalCost ? viewOverheadData.OverheadCombinedTotalCost : "-"}
+                              </td>
+                            </tr>
+                          )}
                         </>
                       )}
                       {Object.keys(viewOverheadData).length === 0 && (
