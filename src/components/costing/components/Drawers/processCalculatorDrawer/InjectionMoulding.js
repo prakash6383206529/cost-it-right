@@ -142,14 +142,14 @@ function InjectionMoulding(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
                   <div className="left-border">{'Moulding Process Cost:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cavity`}
                         name={'cavity'}
@@ -174,7 +174,7 @@ function InjectionMoulding(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`M/c Tonnage Required`}
                         name={'tonnage'}
@@ -199,7 +199,7 @@ function InjectionMoulding(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`MHR`}
                         name={'mhr'}
@@ -224,7 +224,7 @@ function InjectionMoulding(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'cycleTime'}
@@ -250,7 +250,7 @@ function InjectionMoulding(props) {
                       />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of Shots per Hour @ eff`}
                         name={'shotNumber'}
@@ -275,7 +275,7 @@ function InjectionMoulding(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Process Cost(Rs/pc)`}
                         name={'processCost'}
@@ -300,7 +300,7 @@ function InjectionMoulding(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Total Mfg Cost`}
                         name={'totalMfgCost'}
@@ -333,7 +333,7 @@ function InjectionMoulding(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Part Cost w/o paint(Rs/pc)`}
                         name={'withoutPaintPartCost'}
@@ -358,7 +358,7 @@ function InjectionMoulding(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Part Cost with paint(Rs/pc)`}
                         name={'paintedPartCost'}
@@ -383,7 +383,7 @@ function InjectionMoulding(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Packing Cost(Rs/pc)`}
                         name={'packingCost'}
@@ -407,7 +407,7 @@ function InjectionMoulding(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Transport Cost(Rs/pc)`}
                         name={'transportCost'}
@@ -431,7 +431,7 @@ function InjectionMoulding(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Final Part Cost with pkg & frt(Rs/pc)`}
                         name={'finalPartCost'}
@@ -455,7 +455,7 @@ function InjectionMoulding(props) {
                         disabled={true}
                       />
                     </Col>
-                    {/* <Col md="3">
+                    {/* <Col md="4">
                   <TextFieldHookForm
                     label={`Feed/Min(mm/min)`}
                     name={'feedMin'}
@@ -488,7 +488,7 @@ function InjectionMoulding(props) {
             </Col>
             <Col md="12">
               <Row className={'mt15'}>
-                <Col md="3">
+                <Col md="4">
                   <TextFieldHookForm
                     label={`Total Cut time (min)`}
                     name={'cutTime'}
@@ -513,7 +513,7 @@ function InjectionMoulding(props) {
                     disabled={true}
                   />
                 </Col>
-                <Col md="3">
+                <Col md="4">
                   <TextFieldHookForm
                     label={`Additional Time(%)`}
                     name={'clampingPercentage'}
@@ -538,7 +538,7 @@ function InjectionMoulding(props) {
                     disabled={false}
                   />
                 </Col>
-                <Col md="3">
+                <Col md="4">
                   <TextFieldHookForm
                     label={`Additional Time(min)`}
                     name={'clampingValue'}
@@ -562,7 +562,7 @@ function InjectionMoulding(props) {
                     disabled={true}
                   />
                 </Col>
-                <Col md="3"></Col>
+                <Col md="4"></Col>
               </Row>
             </Col> */}
 
@@ -598,7 +598,7 @@ function InjectionMoulding(props) {
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
+                <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
                 </div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
