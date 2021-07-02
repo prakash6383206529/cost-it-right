@@ -83,7 +83,7 @@ function ViewPackagingAndFreight(props) {
                                 {item.PackagingDescription ? item.PackagingDescription : '-'}
                               </td>
                               <td>
-                                {item.IsPackagingCostFixed && item.IsPackagingCostFixed === false ? 'Fixed' : 'Percentage'}
+                                {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
                               </td>
                               <td>
                                 {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
