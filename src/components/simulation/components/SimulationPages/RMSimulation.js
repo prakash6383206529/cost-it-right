@@ -65,10 +65,12 @@ function RMSimulation(props) {
         obj.Vendor = list[0].VendorName
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
-
+        obj.VendorId = list[0].VendorId
+        obj.TechnologyId = list[0].TechnologyId
+        obj.VendorId = list[0].VendorId
         let tempArr = []
         list && list.map(item => {
-            if (item.NewBasicRate || item.NewScrapRate) {
+            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead
                 tempObj.RawMaterialName = item.RawMaterial
@@ -86,10 +88,12 @@ function RMSimulation(props) {
                 tempObj.OldNetLandedCost = item.NetLandedCost
                 tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
                 tempObj.EffectiveDate = item.EffectiveDate
+                tempObj.RawMaterialId = item.RawMaterialId
+                tempObj.PlantId = item.PlantId
+                tempObj.Delta = 0
                 tempArr.push(tempObj)
-            } else {
-                return false
             }
+            return null;
         })
         obj.SimulationRawMaterials = tempArr
 
@@ -189,7 +193,7 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? cell : row.BasicRate} </span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cell) : Number(row.BasicRate)} </span>
             </>
         )
     }
@@ -197,7 +201,7 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? cell : row.ScrapRate}</span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cell) : Number(row.ScrapRate)}</span>
             </>
         )
     }

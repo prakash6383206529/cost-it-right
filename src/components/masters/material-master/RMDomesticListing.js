@@ -607,22 +607,25 @@ class RMDomesticListing extends Component {
                                             valueDescription={this.state.plant}
                                         />
                                     </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Technology"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Technology'}
-                                            isClearable={false}
-                                            options={this.renderListing('technology')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleTechnologyChange}
-                                            valueDescription={this.state.technology}
-                                        />
-                                    </div>
+                                    {
+                                        !this.props.isSimulation &&
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="Technology"
+                                                type="text"
+                                                label=""
+                                                component={searchableSelect}
+                                                placeholder={'Technology'}
+                                                isClearable={false}
+                                                options={this.renderListing('technology')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleTechnologyChange}
+                                                valueDescription={this.state.technology}
+                                            />
+                                        </div>
+                                    }
                                     <div className="flex-fill">
                                         <Field
                                             name="RawMaterialId"
@@ -778,6 +781,8 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
                             {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

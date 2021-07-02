@@ -16,16 +16,17 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval'
+import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer,customClass } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -54,6 +55,7 @@ const CostingSummaryTable = (props) => {
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
+
 
   const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
@@ -271,6 +273,9 @@ const CostingSummaryTable = (props) => {
         VendorPlantCode: tempData.vendorPlantCode,
         VendorName: tempData.vendorName,
         VendorCode: tempData.vendorCode,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantName : '',
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
@@ -287,8 +292,8 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          setPartInfo(res.data.Data)
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          setPartInfo(res.data.Data)
           showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
         }
       }),
@@ -533,13 +538,14 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     if (viewCostingData.length === 1) {
-      setIsWarningFlag(viewCostingData && viewCostingData.length > 0 && viewCostingData[0].IsApprovalLocked)
+
+      setIsWarningFlag(viewCostingData && viewCostingData.length === 1 && viewCostingData[0].IsApprovalLocked)
       // setIsWarningFlag(false)
     }
   }, [viewCostingData])
 
   useEffect(() => {
-    if (costingID && Object.keys(costingID).length > 0) {
+    if (costingID && Object.keys(costingID).length > 0 && !simulationMode) {
       dispatch(getSingleCostingDetails(costingID, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
@@ -603,13 +609,16 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row>
+          <Row className={customClass}>
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
                   <thead>
                     <tr className="main-row">
-                      <th scope="col">VBC</th>
+                      {
+                        isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC</th>
+                      }
+
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
 
@@ -653,7 +662,9 @@ const CostingSummaryTable = (props) => {
                                   //   }
                                   // </div>
                                 }
-                                <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName} ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                {
+                                  isApproval ? <span className="checkbox-text">{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                }
                               </div>
                               {!viewMode && (
                                 <div class="action w-40 d-inline-block text-right">
@@ -668,33 +679,56 @@ const CostingSummaryTable = (props) => {
                     </tr>
                   </thead>
                   <tbody>
+                    {
+                      !isApproval ?
+                        <tr>
+                          <td>
+                            <span class="d-block">Costing Version</span>
+                            <span class="d-block">PO Price</span>
+                            <span class="d-block">Part Number</span>
+                            <span class="d-block">Part Name</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData.map((data, index) => {
+                              return (
+                                <td>
+                                  <span class="d-flex justify-content-between bg-grey">
+                                    {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                    {
+                                      !viewMode &&
+                                      <a
+                                        class="text-primary d-inline-block change-version-block"
+                                        onClick={() => editHandler(index)}
+                                      >
+                                        <small>Change version</small>
+                                      </a>
+                                    }
+                                  </span>
+                                  <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  <span class="d-block">{data.partId}</span>
+                                  <span class="d-block">{data.partName}</span>
 
-                    <tr>
-                      <td>
-                        <span class="d-block">Costing Version</span>
-                        <span class="d-block">PO Price</span>
-                      </td>
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return (
-                            <td>
-                              <span class="d-flex justify-content-between bg-grey">
-                                {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
-                                {
-                                  !viewMode &&
-                                  <a
-                                    class="text-primary d-inline-block change-version-block"
-                                    onClick={() => editHandler(index)}
-                                  >
-                                    <small>Change version</small>
-                                  </a>
-                                }
-                              </span>
-                              <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
-                            </td>
-                          )
-                        })}
-                    </tr>
+                                </td>
+                              )
+                            })}
+                        </tr> :
+                        <tr>
+                          <td>
+                            <span class="d-block">Part Number</span>
+                            <span class="d-block">Part Name</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData.map((data, index) => {
+                              return (
+                                <td>
+                                  <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partId : ''}</span>
+                                  <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partName : ''}</span>
+
+                                </td>
+                              )
+                            })}
+                        </tr>
+                    }
 
                     <tr>
                       <td>
@@ -707,28 +741,28 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data) => {
                           return (
                             <td>
-                              <span class="d-block small-grey-text">{data.rm}</span>
+                              <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.rm : ''}</span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                             </td>
                           )
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData.length > 0 && viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}
+                              <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               <button
                                 type="button"
                                 class="float-right mb-0 View "
@@ -746,14 +780,17 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewBop(index)}
-                              >
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              {
+                                data.CostingHeading !== VARIANCE &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewBop(index)}
+                                >
+                                </button>
+                              }
 
-                              </button>
                             </td>
                           )
                         })}
@@ -775,16 +812,16 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.pCost, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.pCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                             </td>
                           )
@@ -797,14 +834,16 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewConversionCost(index)}
-                              >
-
-                              </button>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              {
+                                data.CostingHeading !== VARIANCE &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewConversionCost(index)}
+                                >
+                                </button>
+                              }
                             </td>
                           )
                         })}
@@ -822,63 +861,65 @@ const CostingSummaryTable = (props) => {
                         <span class="d-block small-grey-text">ICC On</span>
                         <span class="d-block small-grey-text">Payment Terms</span>
                       </td>
+
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
+
                             <td>
-                              <span class="d-block">{data.modelType}</span>
+                              <span class="d-block">{data.CostingHeading !== VARIANCE ? data.modelType : ''}</span>
                               <div class="d-flex">
                                 <span class="d-inline-block w-50">
-                                  {data.aValue.applicability}
+                                  {data.CostingHeading !== VARIANCE ? data.aValue.applicability : ''}
                                 </span>{' '}
                                 &nbsp;{' '}
                                 <span class="d-inline-block w-50">
-                                  {data.aValue.value}
+                                  {data.CostingHeading !== VARIANCE ? data.aValue.value : ''}
                                 </span>
                               </div>
                               <div class="d-flex">
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.overheadOn.overheadTitle}
+                                  {data.CostingHeading !== VARIANCE ? data.overheadOn.overheadTitle : ''}
                                 </span>{' '}
                                 &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {checkForDecimalAndNull(data.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}
+                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                               </div>
                               <div class="d-flex">
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.profitOn.profitTitle}
+                                  {data.CostingHeading !== VARIANCE ? data.profitOn.profitTitle : ''}
                                 </span>{' '}
                                 &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {checkForDecimalAndNull(data.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}
+                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                               </div>
                               <div class="d-flex">
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.rejectionOn.rejectionTitle}
+                                  {data.CostingHeading !== VARIANCE ? data.rejectionOn.rejectionTitle : ''}
                                 </span>{' '}
                                 &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {checkForDecimalAndNull(data.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}
+                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                               </div>
                               <div class="d-flex">
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.iccOn.iccTitle}
+                                  {data.CostingHeading !== VARIANCE ? data.iccOn.iccTitle : ''}
                                 </span>{' '}
                                 &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {checkForDecimalAndNull(data.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}
+                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                               </div>
                               <div class="d-flex">
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.paymentTerms.paymentTitle}
+                                  {data.CostingHeading !== VARIANCE ? data.paymentTerms.paymentTitle : ''}
                                 </span>{' '}
                                 &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {checkForDecimalAndNull(data.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}
+                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>
                               </div>
                             </td>
@@ -892,14 +933,17 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => overHeadProfit(index)}
-                              >
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              {
+                                data.CostingHeading !== VARIANCE &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => overHeadProfit(index)}
+                                >
 
-                              </button>
+                                </button>
+                              }
                             </td>
                           )
                         })}
@@ -915,10 +959,10 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.packagingCost, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.packagingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.freight, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.freight, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                             </td>
                           )
@@ -931,14 +975,17 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewPackagingAndFrieghtData(index)}
-                              >
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              {
+                                data.CostingHeading !== VARIANCE &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewPackagingAndFrieghtData(index)}
+                                >
 
-                              </button>
+                                </button>
+                              }
                             </td>
                           )
                         })}
@@ -959,13 +1006,13 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {checkForDecimalAndNull(data.toolPrice, initialConfiguration.NoOfDecimalForPrice)}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.amortizationQty}
+                                {data.CostingHeading !== VARIANCE ? data.amortizationQty : ''}
                               </span>
                             </td>
                           )
@@ -978,14 +1025,17 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewToolCostData(index)}
-                              >
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              {
+                                data.CostingHeading !== VARIANCE &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewToolCostData(index)}
+                                >
 
-                              </button>
+                                </button>
+                              }
                             </td>
                           )
                         })}
@@ -997,7 +1047,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {checkForDecimalAndNull(data.totalCost, initialConfiguration.NoOfDecimalForPrice)}
+                              {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               {/* <button
                             type="button"
                             class="float-right mb-0 View "
@@ -1021,15 +1071,15 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <div className="d-flex">
-                                <span className="d-inline-block w-50 ">{data.otherDiscount.discount}</span> &nbsp;{' '}
-                                <span className="d-inline-block w-50 ">{data.otherDiscount.value}</span>
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.discount : ''}</span> &nbsp;{' '}
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.value : ''}</span>
                               </div>
                               <div className="d-flex">
                                 <span className="d-inline-block w-50 small-grey-text">
-                                  {data.otherDiscountValue.discountPercentValue}
+                                  {data.CostingHeading !== VARIANCE ? data.otherDiscountValue.discountPercentValue : ''}
                                 </span>{' '}
                                 {' '}
-                                <span className="d-inline-block w-50 small-grey-text">{checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                             </td>
                           )
@@ -1040,17 +1090,20 @@ const CostingSummaryTable = (props) => {
                       <th>Any Other Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                          return <td>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                         })}
                     </tr>
+                    {
+                      !simulationDrawer &&
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'red-row' : 'green-row' : '-'}`}>
+                        <th>Net PO Price(INR)</th>
+                        {viewCostingData &&
+                          viewCostingData.map((data, index) => {
+                            return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                          })}
 
-                    <tr class="background-light-blue">
-                      <th>Net PO Price(INR)</th>
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        })}
-                    </tr>
+                      </tr>
+                    }
 
                     <tr>
                       <td>
@@ -1061,70 +1114,66 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <div>
-                                <span className="d-inline-block w-50 small-grey-text">{data.currency.currencyTitle}</span> {' '}
-                                <span className="d-inline-block w-50 ">{checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.currency.currencyTitle : ''}</span> {' '}
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                             </td>
                           )
                         })}
                     </tr>
-
-                    <tr class="background-light-blue">
-                      {/* <th>Net PO Price {viewCostingData && (data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')}</th> */}
-                      {viewCostingData &&
+                    {
+                      !simulationDrawer &&
+                      <tr class="background-light-blue">
+                        <th>Net PO Price (INR)</th>
+                        {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
-                        })}
-                      {viewCostingData &&
-                        viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        })}
-                    </tr>
+                        })} */}
+                        {viewCostingData &&
+                          viewCostingData.map((data, index) => {
+                            return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                          })}
+                      </tr>
+                    }
 
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
-                            <td>
-                              {data.attachment && data.attachment.length == 0 ? (
-                                'No attachment found'
-                              ) : data.attachment.length == 1 ? (
 
-                                <td>
-                                  {data.attachment &&
-                                    data.attachment.map((f) => {
-                                      const withOutTild = f.FileURL
-                                        ? f.FileURL.replace('~', '')
-                                        : ''
-                                      const fileURL = `${FILE_URL}${withOutTild}`
-                                      return (
-                                        <div className={"single-attachment images"}>
-                                          <a href={fileURL} target="_blank">
-                                            {f.OriginalFileName}
-                                          </a>
-                                        </div>
-                                      )
-                                    })}
-                                </td>
-                              )
-                                : (
-                                  // <img
-                                  //   src={require('../../../assests/images/times.png')}
-                                  //   alt="cancel-icon.jpg"
-                                  // />
-                                  // <button
-                                  //   onClick={() => {
-                                  //     setAttachment(true)
-                                  //   }}
-                                  // >
-                                  //   View Attachment
-                                  // </button>
-                                  <a
-                                    href="javascript:void(0)"
-                                    onClick={() => setAttachment(true)}
-                                  > View Attachment</a>
-                                )}
+                            <td>
+                              {
+                                data.CostingHeading !== VARIANCE &&
+                                  data.attachment && data.attachment.length == 0 ? (
+                                  'No attachment found'
+                                ) : data.attachment.length == 1 ? (
+
+                                  <td>
+                                    {data.attachment && data.CostingHeading !== VARIANCE &&
+                                      data.attachment.map((f) => {
+                                        const withOutTild = f.FileURL
+                                          ? f.FileURL.replace('~', '')
+                                          : ''
+                                        const fileURL = `${FILE_URL}${withOutTild}`
+                                        return (
+                                          <div className={"single-attachment images"}>
+                                            <a href={fileURL} target="_blank">
+                                              {f.OriginalFileName}
+                                            </a>
+                                          </div>
+                                        )
+                                      })}
+                                  </td>
+                                )
+                                  : (
+
+                                    <a
+                                      href="javascript:void(0)"
+                                      onClick={() => setAttachment(true)}
+                                    > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</a>
+                                  )
+                              }
                             </td>
                           )
                         })}
@@ -1134,7 +1183,7 @@ const CostingSummaryTable = (props) => {
                       <th>Remark</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
+                          return <td><span className="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.remark : ''}</span></td>
                         })}
                     </tr>
 

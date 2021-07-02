@@ -14,6 +14,7 @@ import {
     config,
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
+    GET_SELECTED_COSTING_STATUS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -147,10 +148,10 @@ export function runVerifySimulation(data, callback) {
     };
 }
 
-export function getVerifySimulationList(token, callback) {
+export function getVerifySimulationList(token, plantId, rawMatrialId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifySimulationList}/${token}`, headers);
+        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -166,9 +167,9 @@ export function getVerifySimulationList(token, callback) {
     }
 }
 
-export function getCostingSimulationList(token, callback) {
+export function getCostingSimulationList(token, plantId, rawMatrialId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSimulationList}/${token}`, headers);
+        const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -392,5 +393,45 @@ export function simulationApprovalRequestBySender(data, callback) {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })
+    }
+}
+
+export function getComparisionSimulationData(id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.simulationComparisionData}/${id}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                // dispatch({
+                //     type: GET_ALL_APPROVAL_DEPARTMENT,
+                //     payload: response.data.SelectList,
+                // })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
+    }
+}
+
+export function getSimulationStatus(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getallSimualtionStatus}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTED_COSTING_STATUS,
+                    payload: response.data.SelectList,
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            // callback(error);
+            apiErrors(error);
+        });
     }
 }

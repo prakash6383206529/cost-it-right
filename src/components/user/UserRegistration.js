@@ -1042,7 +1042,7 @@ class UserRegistration extends Component {
                           customClassName={'withBorder'}
                         />
                       </div>
-                      <div className="input-group col-md-3 input-withouticon">
+                      <div className="col-md-3">
                         <div className="row form-group">
                           <div className="Phone phoneNumber col-md-8 input-withouticon">
                             <Field
@@ -1057,7 +1057,7 @@ class UserRegistration extends Component {
                               customClassName={'withBorder'}
                             />
                           </div>
-                          <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
+                          <div className="ext phoneNumber col-md-4 pl-0 pr-0">
                             <Field
                               label="Extension"
                               name={"Extension"}

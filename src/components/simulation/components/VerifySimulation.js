@@ -12,19 +12,25 @@ import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
+import { getPlantSelectListByType } from '../../../actions/Common';
+import { EMPTY_GUID, ZBC } from '../../../config/constants';
+import { getRawMaterialNameChild } from '../../masters/actions/Material';
 
 
 function VerifySimulation(props) {
     const { cancelVerifyPage } = props
-
+    const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
+    const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
+    const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
+
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -33,17 +39,34 @@ function VerifySimulation(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getVerifySimulationList(props.token, (res) => {
+        verifyCostingList()
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getRawMaterialNameChild(() => { }))
+    }, [])
+
+    const verifyCostingList = (plantId = '', rawMatrialId = '') => {
+        dispatch(getVerifySimulationList(props.token, plantId, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const data = res.data.Data
+                if (data.SimulationImpactedCostings.length === 0) {
+                    toastr.warning('No approved costing exist for this raw material.')
+                    setHideRunButton(true)
+                    return false
+                }
                 setTokenNo(data.TokenId)
                 setSimualtionId(data.SimulationId)
+                setHideRunButton(false)
             }
         }))
-    }, [])
+    }
 
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
+
+    const { rawMaterialNameSelectList } = useSelector(state => state.material)
+
 
     const renderCostingNumber = () => {
         return <>Costing <br /> Number </>
@@ -57,7 +80,7 @@ function VerifySimulation(props) {
     }
 
     const renderDescription = () => {
-        return <>Part <br />Description </>
+        return <>Part <br />Name </>
     }
 
     const renderECN = () => {
@@ -110,25 +133,29 @@ function VerifySimulation(props) {
     }
 
     const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const ecnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const revisionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-'
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const renderPlant = (cell, row, enumObject, rowIndex) => {
         // return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-        return (cell !== null && cell !== '-') ? `${cell}` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}-(${row.PlantCode})` : '-'
 
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}-(${row.VendorCode})` : '-'
+    }
+
+    const renderRM = (cell, row, enumObject, rowIndex) => {
+        return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
     }
 
     const onRowSelect = (row, isSelected, e) => {
@@ -150,7 +177,26 @@ function VerifySimulation(props) {
         }
     }
 
-    const renderDropdownListing = (label) => { }
+    const renderDropdownListing = (label) => {
+        let temp = []
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+
+        if (label === 'material') {
+            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+    }
 
     const selectRowProp = {
         mode: 'checkbox',
@@ -204,6 +250,23 @@ function VerifySimulation(props) {
         }
     }
 
+    const handleMaterial = (value) => {
+        setMaterial(value)
+    }
+
+
+    const filterList = () => {
+        const plant = getValues('plantCode').value
+
+        verifyCostingList(plant, material.value)
+    }
+    const resetFilter = () => {
+        setValue('plantCode', '')
+        setValue('rawMaterial', '')
+        setMaterial('')
+        verifyCostingList('', '')
+    }
+
     return (
         <>
             {
@@ -214,14 +277,15 @@ function VerifySimulation(props) {
                             <h1 class="mb-0">Token No:{tokenNo}</h1>
                         </Col>
                     </Row>
-                    <Row className="filter-row-large pt-4">
-                        <Col lg="10" md="12" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills">
-                                    <h5>{`Filter By:`}</h5>
-                                </div>
+                    <Row className="filter-row-large pt-4 blue-before">
+                        {shown &&
+                            <Col lg="8" md="8" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                    <div className="flex-fills">
+                                        <h5>{`Filter By:`}</h5>
+                                    </div>
 
-                                {/* <div className="flex-fill filled-small hide-label">
+                                    {/* <div className="flex-fill filled-small hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -237,56 +301,69 @@ function VerifySimulation(props) {
                                         errors={errors.partNo}
                                     />
                                 </div> */}
-                                <div className="flex-fill filled-small hide-label">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'plantCode'}
-                                        placeholder={'Plant Code'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('plantCode')}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        errors={errors.plantCode}
-                                    />
-                                </div>
-                                <div className="flex-fill filled-small hide-label">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'rawMaterial'}
-                                        placeholder={'Raw Material'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('rm')}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        errors={errors.rawMaterial}
-                                    />
-                                </div>
+                                    <div className="flex-fill  hide-label">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'plantCode'}
+                                            placeholder={'Plant Code'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={plant.length !== 0 ? plant : ''}
+                                            options={renderDropdownListing('plant')}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            errors={errors.plantCode}
+                                        />
+                                    </div>
+                                    <div className="flex-fill  hide-label">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'material'}
+                                            placeholder={'Raw Material'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={plant.length !== 0 ? plant : ''}
+                                            options={renderDropdownListing('material')}
+                                            mandatory={false}
+                                            handleChange={handleMaterial}
+                                            errors={errors.material}
+                                        />
+                                    </div>
 
-                                <div className="flex-fill filled-small hide-label">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={() => { }}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={() => { }}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
+                                    <div className="flex-fill  hide-label">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {'Reset'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={filterList}
+                                            className="apply mr5"
+                                        >
+                                            {'Apply'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </Col>
+                        }
+                        <Col md="2" lg="2" className="search-user-block mb-3">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                    {(shown) ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                    ) : (
+                                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                    )}
                                 </div>
                             </div>
                         </Col>
@@ -309,12 +386,12 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataFormat={renderVendor} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" dataFormat={renderRM} >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
@@ -335,7 +412,7 @@ function VerifySimulation(props) {
                                 </div>{" "}
                                 {"CANCEL"}
                             </button>
-                            <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}

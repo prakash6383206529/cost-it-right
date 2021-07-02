@@ -87,7 +87,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} />)
             default:
-                break;
+                return <div className="empty-table-paecholder"/>;
         }
     }
 
@@ -204,7 +204,7 @@ function Simulation(props) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />
             default:
                 break;
         }
@@ -217,10 +217,10 @@ function Simulation(props) {
     }
 
     return (
-        <div className="container-fluid simulation-page ">
+        <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <>
+                <div className="simulation-main">
                     <Row>
                         <Col sm="12">
                             <h1>{`Simulation`}</h1>
@@ -298,10 +298,11 @@ function Simulation(props) {
                             closeDrawer={closeDrawer}
                             anchor={"right"}
                         />}
-                </>
+                </div>
             }
-
-            {showEditTable && editMasterPage(master.label)}
+            <div className="simulation-edit">
+                {showEditTable && editMasterPage(master.label)}
+            </div>
         </div>
     );
 }

@@ -1323,6 +1323,7 @@ p {
     margin-bottom: 14px;
     font-weight: $font-medium;
   }
+  
 
   .error-block {
     h1 {
@@ -1442,6 +1443,12 @@ p {
     padding: 30px;
     margin: 0 -15px -15px;
   }
+}
+
+.Dashboard-page{
+  background-color: transparent;
+  padding: 0;
+  box-shadow: none;
 }
 
 /*Footer Content Css*/

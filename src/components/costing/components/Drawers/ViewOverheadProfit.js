@@ -155,6 +155,20 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr>
                           )}
+                          {viewOverheadData.IsOverheadCombined && (
+                            <tr>
+                              <td>{viewOverheadData.OverheadApplicability}</td>
+                              <td>
+                                {viewOverheadData.OverheadPercentage ? viewOverheadData.OverheadPercentage : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedCost ? viewOverheadData.OverheadCombinedCost : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedTotalCost ? viewOverheadData.OverheadCombinedTotalCost : "-"}
+                              </td>
+                            </tr>
+                          )}
                         </>
                       )}
                       {Object.keys(viewOverheadData).length === 0 && (
@@ -246,6 +260,22 @@ function ViewOverheadProfit(props) {
                                 <td>
                                   {viewProfitData.ProfitCCTotalCost
                                     ? viewProfitData.ProfitCCTotalCost
+                                    : "-"}
+                                </td>
+                              </tr>
+                            )}
+                            {viewProfitData.IsProfitCombined && (
+                              <tr>
+                                <td>{viewProfitData.ProfitApplicability}</td>
+                                <td>
+                                  {viewProfitData.ProfitPercentage ? viewProfitData.ProfitPercentage : "-"}
+                                </td>
+                                <td>
+                                  {viewProfitData.ProfitCombinedCost ? viewProfitData.ProfitCombinedCost : "-"}
+                                </td>
+                                <td>
+                                  {viewProfitData.ProfitCombinedTotalCost
+                                    ? viewProfitData.ProfitCombinedTotalCost
                                     : "-"}
                                 </td>
                               </tr>
