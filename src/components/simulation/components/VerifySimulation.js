@@ -146,12 +146,12 @@ function VerifySimulation(props) {
 
     const renderPlant = (cell, row, enumObject, rowIndex) => {
         // return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-        return (cell !== null && cell !== '-') ? `${cell}-(${row.PlantCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
 
     }
 
     const renderVendor = (cell, row, enumObject, rowIndex) => {
-        return (cell !== null && cell !== '-') ? `${cell}-(${row.VendorCode})` : '-'
+        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
     const renderRM = (cell, row, enumObject, rowIndex) => {
