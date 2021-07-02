@@ -1121,7 +1121,7 @@ const CostingSummaryTable = (props) => {
                     {
                       !simulationDrawer &&
                       <tr class="background-light-blue">
-                        <th>Net PO Price (INR)</th>
+                        <th>Net PO Price (in Currency)</th>
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
