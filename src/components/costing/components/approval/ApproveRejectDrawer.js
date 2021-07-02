@@ -595,7 +595,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button  save-btn"
-                    onClick={() => { }}
+                    onClick={onSubmit}
                   >
                     <div className={'check-icon'}>
                       <img
