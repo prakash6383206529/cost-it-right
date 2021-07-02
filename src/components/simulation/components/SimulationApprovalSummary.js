@@ -44,6 +44,7 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [oldCostingList, setOldCostingList] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -76,6 +77,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason } = res.data.Data
             setCostingList(SimulatedCostingList)
+            setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason })
             setIsApprovalDone(IsSent)
@@ -160,10 +162,9 @@ function SimulationApprovalSummary(props) {
     */
     const resetHandler = () => {
         setValue('partNo', '')
-        setValue('createdBy', '')
-        setValue('requestedBy', '')
-        setValue('status', '')
-        // getTableData()
+        setValue('plantCode', '')
+        setCostingList(oldCostingList)
+
     }
 
     const DisplayCompareCosting = (el, data) => {
@@ -186,12 +187,23 @@ function SimulationApprovalSummary(props) {
     * @description filtering data on Apply button
     */
     const onSubmit = (values) => {
-        // const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
-        // const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
-        // const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
-        // const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
-        // // const type_of_costing = 
-        // getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+        const tempPartNo = getValues('partNo') && getValues('partNo').value
+        const tempPlant = getValues('plantCode') && getValues('plantCode').value
+
+        let temp = []
+        if (tempPartNo && tempPlant) {
+            temp = costingList && costingList.filter(item => item.PartId === tempPartNo && item.PlantId === tempPlant)
+        } else {
+            if (tempPlant) {
+                temp = costingList && costingList.filter(item => item.PlantId === tempPlant)
+
+            } else {
+                temp = costingList && costingList.filter(item => item.PartId === tempPartNo)
+
+            }
+        }
+        setCostingList(temp)
+
     }
 
     const VerifyImpact = () => {
@@ -522,7 +534,7 @@ function SimulationApprovalSummary(props) {
                                                     <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                                    {/* <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn> */}
+                                                    <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>

@@ -87,7 +87,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} />)
             default:
-                return <div className="empty-table-paecholder"/>;
+                return <div className="empty-table-paecholder" />;
         }
     }
 
@@ -153,7 +153,7 @@ function Simulation(props) {
         switch (master.label) {
             case RMDOMESTIC:
 
-                rmDomesticListing.forEach((element, index) => {
+                rmDomesticListing && rmDomesticListing.forEach((element, index) => {
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
