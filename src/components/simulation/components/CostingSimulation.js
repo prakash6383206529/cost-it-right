@@ -20,7 +20,12 @@ import SimulationApprovalListing from './SimulationApprovalListing';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { set } from 'lodash';
+import { CostingSimulationDownload } from '../../../config/masterData'
+import ReactExport from 'react-export-excel';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
@@ -391,6 +396,25 @@ function CostingSimulation(props) {
 
     }, [isView])
 
+    const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+
+        return (<ExcelSheet data={temp} name={'Costing'}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
+    }
+
+    const renderColumn = () => returnExcelColumn(CostingSimulationDownload, costingList && costingList.length > 0 ? costingList : [])
+
+
     // useEffect(()=>{
     //     if()
     // },[])
@@ -582,7 +606,9 @@ function CostingSimulation(props) {
                                     <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
                                     {"Verify Impact "}
                                 </button>
-
+                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {renderColumn()}
+                                </ExcelFile>
                             </div>
                         </Row>
                     </div>
