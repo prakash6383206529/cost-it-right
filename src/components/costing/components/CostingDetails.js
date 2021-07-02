@@ -150,9 +150,7 @@ function CostingDetails(props) {
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
-        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => {
-
-        }))
+        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => { }))
         dispatch(
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data

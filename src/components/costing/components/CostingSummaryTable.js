@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { DRAFT, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
@@ -273,6 +273,9 @@ const CostingSummaryTable = (props) => {
         VendorPlantCode: tempData.vendorPlantCode,
         VendorName: tempData.vendorName,
         VendorCode: tempData.vendorCode,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantName : '',
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
@@ -289,8 +292,8 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          setPartInfo(res.data.Data)
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          setPartInfo(res.data.Data)
           showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
         }
       }),
