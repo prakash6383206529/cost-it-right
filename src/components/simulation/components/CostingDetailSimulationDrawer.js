@@ -97,7 +97,7 @@ function CostingDetailSimulationDrawer(props) {
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
-                        <div className={"drawer-wrapper drawer-md simulation-costing-details-drawers"}>
+                        <div className={"drawer-wrapper drawer-1500px simulation-costing-details-drawers"}>
                             <form noValidate className="form">
                                 <Row className="drawer-heading">
                                     <Col>
@@ -139,11 +139,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Col>
                                 </Row>
 
-                                <Row className="ml-0 pb-3">
-                                    <Col md="12">
-                                        <CostingSummaryTable simulationMode={true} viewMode={true} simulationDrawer={true} />
-                                    </Col>
-                                </Row>
+                                <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} simulationDrawer={true} />
 
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -162,7 +158,7 @@ function CostingDetailSimulationDrawer(props) {
                                             </div>{" "}
                                             {"Save Simulation"}
                                         </button> */}
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                        <button type={"button"} className="cancel-btn" onClick={cancel}>
                                             <div className={"cross-icon"}>
                                                 <img
                                                     src={require("../../../assests/images/times.png")}
