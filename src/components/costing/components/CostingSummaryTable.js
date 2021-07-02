@@ -26,7 +26,7 @@ import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer,customClass } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -609,7 +609,7 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row>
+          <Row className={customClass}>
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
@@ -756,7 +756,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData.length > 0 && viewCostingData[1].netRM ? 'red-row' : 'green-row' : '-'}`}>
+                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData.length > 0 && viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -1095,7 +1095,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'red-row' : 'green-row' : '-'}`}>
                         <th>Net PO Price(INR)</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
