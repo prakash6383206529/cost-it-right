@@ -34,14 +34,22 @@
             }
         }
     }
+    .report-listing-page{
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: inline-block;
+                        width: 1580px;
+                    }
+                }
+            }
+        }
+    }
     .react-bs-table-container{
         .react-bs-table{
             .react-bs-container-body{
                 min-height: calc(100vh - 395px);
-                .react-bs-table-no-data{
-                    display: inline-block;
-                    width: 1580px;
-                }
                 .table{
                     tbody{
                         tr:last-child{
@@ -116,6 +124,16 @@
 @media(max-width:1600px){
     :not(.login-container.signup-form) {
         .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: inline-block;
+                        width: 1270px;
+                    }
+                }
+            }
+        }
+        .report-listing-page .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{
                     .react-bs-table-no-data{
@@ -234,6 +252,16 @@
         }
 
         .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    min-height: calc(100vh - 360px);
+                    .react-bs-table-no-data{
+                        width: 1075px;
+                    }
+                }
+            }
+        }
+        .report-listing-page .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{
                     min-height: calc(100vh - 360px);
