@@ -38,6 +38,10 @@
         .react-bs-table{
             .react-bs-container-body{
                 min-height: calc(100vh - 395px);
+                .react-bs-table-no-data{
+                    display: inline-block;
+                    width: 1580px;
+                }
                 .table{
                     tbody{
                         tr:last-child{
