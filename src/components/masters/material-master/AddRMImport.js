@@ -935,20 +935,23 @@ class AddRMImport extends Component {
             this.cancel()
             return false
           }
-          const toastrConfirmOptions = {
-            onOk: () => {
-              this.props.reset()
-              this.props.updateRMImportAPI(requestData, (res) => {
-                if (res.data.Result) {
-                  toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                  this.clearForm();
-                }
-              })
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
+          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+            const toastrConfirmOptions = {
+              onOk: () => {
+                this.props.reset()
+                this.props.updateRMImportAPI(requestData, (res) => {
+                  if (res.data.Result) {
+                    toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                    this.clearForm();
+                  }
+                })
+              },
+              onCancel: () => { },
+              component: () => <ConfirmComponent />,
+            }
+            return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
           }
-          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+
         }
       }
 
@@ -1423,7 +1426,7 @@ class AddRMImport extends Component {
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
                             >
-                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                              {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>
                           <Col md="4">

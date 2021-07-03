@@ -328,9 +328,6 @@ function CostingSimulation(props) {
             setIsApprovalDrawer(false);
             setCostingDetailDrawer(false)
             setIsVerifyImpactDrawer(false);
-            setOldArr(selectedRowData)
-            setSelectedRowData([])
-            setCostingArr([])
         }
     }
 
