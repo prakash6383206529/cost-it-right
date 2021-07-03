@@ -14,11 +14,12 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
+import ReactExport from 'react-export-excel';
 
 class FreightListing extends Component {
   constructor(props) {
@@ -308,36 +309,47 @@ class FreightListing extends Component {
 
   }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
-
-    var arr = this.props.freightDetail && this.props.freightDetail
-    console.log(this.props.freightDetail, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    arr && arr.map(item => {
-      let len = Object.keys(item).length
-      for (let i = 0; i < len; i++) {
-        // let s = Object.keys(item)[i]
-        if (item.IsVendor === true) {
-          item.IsVendor = 'VBC'
-        } else if (item.IsVendor === false) {
-          item.IsVendor = 'ZBC'
-        } else if (item.VendorName === '-') {
-          item.VendorName = ' '
-        } else {
-          return false
-        }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      if (item.CostingHead === true) {
+        item.CostingHead = 'Vendor Based'
+      } else if (item.CostingHead === false) {
+        item.CostingHead = 'Zero Based'
       }
+      return item
     })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
+
+    return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.freightDetail && this.props.freightDetail.length > 0 ? this.props.freightDetail : []
+    if (arr != []) {
+      arr && arr.map(item => {
+        let len = Object.keys(item).length
+        for (let i = 0; i < len; i++) {
+          // let s = Object.keys(item)[i]
+          if (item.IsVendor === true) {
+            item.IsVendor = 'Vendor Based'
+          } else if (item.IsVendor === false) {
+            item.IsVendor = 'Zero Based'
+          } else if (item.VendorName === '-') {
+            item.VendorName = ' '
+          } else {
+            return false
+          }
+        }
+      })
+    }
+    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, arr)
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
 
   /**
   * @method render
@@ -345,13 +357,14 @@ class FreightListing extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -360,7 +373,7 @@ class FreightListing extends Component {
     };
 
     return (
-      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+      <div className="">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -494,6 +507,11 @@ class FreightListing extends Component {
                       <div className={"plus"}></div>ADD
                     </button>
                   )}
+                  {DownloadAccessibility &&
+                    <ExcelFile filename={`${FreightMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      {this.renderColumn(`${FreightMaster}`)}
+                    </ExcelFile>
+                  }
                 </div>
               </div>
             </Col>
@@ -508,8 +526,8 @@ class FreightListing extends Component {
               bordered={false}
               options={options}
               search
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${FreightMaster}.csv`}
+              // exportCSV={DownloadAccessibility}
+              // csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination>

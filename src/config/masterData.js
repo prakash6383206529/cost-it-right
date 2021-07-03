@@ -1081,6 +1081,82 @@ export const MHRMoreZBC = [
 
 ]
 
+export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "UOM", value: "UOM", },
+    { label: "Specification", value: "Specification", },
+    { label: "Plants", value: "Plants", },
+    { label: "Vendor", value: "Vendor", },
+    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "BasicRate", value: "BasicRate", },
+    { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "EffectiveDate", value: "EffectiveDate", }
+]
+
+export const BOP_IMPORT_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "UOM", value: "UOM", },
+    { label: "Specification", value: "Specification", },
+    { label: "Plants", value: "Plants", },
+    { label: "Vendor", value: "Vendor", },
+    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "BasicRate", value: "BasicRate", },
+    { label: "NetLandedCostConversion", value: "NetLandedCostConversion", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "Specification", value: "Specification", },
+    { label: "NoOfVendors", value: "NoOfVendors", },
+    { label: "Plant", value: "Plant", },
+    { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
+    { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
+]
+
+export const CLIENT_DOWNLOAD_EXCEl = [
+    { label: "CompanyName", value: "CompanyName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ClientEmailId", value: "ClientEmailId", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
+
+export const EXCHANGERATE_DOWNLOAD_EXCEl = [
+    { label: "Currency", value: "Currency", },
+    { label: "CurrencyExchangeRate", value: "CurrencyExchangeRate", },
+    { label: "BankRate", value: "BankRate", },
+    { label: "BankCommissionPercentage", value: "BankCommissionPercentage", },
+    { label: "CustomRate", value: "CustomRate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "DateOfModification", value: "DateOfModification", },
+]
+
+export const FREIGHT_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "Mode", value: "Mode", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "SourceCity", value: "SourceCity", },
+    { label: "DestinationCity", value: "DestinationCity", },
+]
+
+
+
+
+
+
+
+
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */

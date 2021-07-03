@@ -17,12 +17,13 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { BOP_DOMESTIC_DOWNLOAD_EXCEl, BOP_ZBC_DOMESTIC, costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { getConfigurationKey } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
 
 class BOPDomesticListing extends Component {
     constructor(props) {
@@ -39,11 +40,11 @@ class BOPDomesticListing extends Component {
             vendor: [],
         }
     }
-
     /**
     * @method componentDidMount
     * @description Called after rendering the component
     */
+
     componentDidMount() {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
@@ -379,37 +380,47 @@ class BOPDomesticListing extends Component {
 
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.bopDomesticList && this.props.bopDomesticList
-        console.log(this.props.bopDomesticList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.IsVendor === true) {
-                    item.IsVendor = 'VBC'
-                } if (item.IsVendor === false) {
-                    item.IsVendor = 'ZBV'
-                } if (item.Plants === '-') {
-                    item.Plants = ' '
-                }  if (item.Specification === '-') {
-                    item.Specification = ' '
-                } else {
-                    return false
-                }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
             }
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${BopDomestic}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.bopDomesticList && this.props.bopDomesticList.length > 0 ? this.props.bopDomesticList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'VBC'
+                    } if (item.IsVendor === false) {
+                        item.IsVendor = 'ZBV'
+                    } if (item.Plants === '-') {
+                        item.Plants = ' '
+                    } if (item.Vendor === '-') {
+                        item.Vendor = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -420,12 +431,14 @@ class BOPDomesticListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
         const a = getConfigurationKey().IsDestinationPlantConfigure;
+        const ExcelFile = ReactExport.ExcelFile;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -440,7 +453,7 @@ class BOPDomesticListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -554,6 +567,11 @@ class BOPDomesticListing extends Component {
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
                                         <div className={'plus'}></div>ADD</button>}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${BopDomestic}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${BopDomestic}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </div>
                         </Col>
@@ -569,8 +587,8 @@ class BOPDomesticListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${BopDomestic}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${BopDomestic}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             // selectRow={selectRow}

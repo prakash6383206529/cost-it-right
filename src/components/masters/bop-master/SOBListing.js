@@ -14,11 +14,12 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj } from '../../../config/masterData';
+import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey } from '../../../helper';
 import { Sob } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
 
 class SOBListing extends Component {
   constructor(props) {
@@ -222,32 +223,44 @@ class SOBListing extends Component {
   onSubmit = (values) => {
 
   }
-  handleExportCSVButtonClick = () => {
-    // onClick();
 
-    var arr = this.props.bopSobList && this.props.bopSobList
-    console.log(this.props.bopSobList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    arr && arr.map(item => {
-      let len = Object.keys(item).length
-      for (let i = 0; i < len; i++) {
-        // let s = Object.keys(item)[i]
-        if (item.Specification === null) {
-          item.Specification = ' '
-        } else {
-          return false
-        }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      if (item.CostingHead === true) {
+        item.CostingHead = 'Vendor Based'
+      } else if (item.CostingHead === false) {
+        item.CostingHead = 'Zero Based'
       }
+      return item
     })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
+
+    return (<ExcelSheet data={temp} name={`${Sob}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.bopSobList && this.props.bopSobList.length > 0 ? this.props.bopSobList : []
+    if (arr != []) {
+      arr && arr.map(item => {
+        let len = Object.keys(item).length
+        for (let i = 0; i < len; i++) {
+          // let s = Object.keys(item)[i]
+          if (item.Specification === null) {
+            item.Specification = ' '
+          } if (item.Plants === '-') {
+            item.Plants = ' '
+          }
+        }
+      })
+    }
+    return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, arr)
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
 
   /**
   * @method render
@@ -256,6 +269,7 @@ class SOBListing extends Component {
   render() {
     const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const onExportToCSV = (row) => {
       // ...
@@ -268,8 +282,8 @@ class SOBListing extends Component {
       clearSearch: true,
       noDataText: (this.props.bopSobList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -278,7 +292,7 @@ class SOBListing extends Component {
     };
 
     return (
-      <div className="show-table-btn">
+      <div className="">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
@@ -333,6 +347,11 @@ class SOBListing extends Component {
                 ) : (
                   <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                 )}
+                {DownloadAccessibility &&
+                  <ExcelFile filename={`${Sob}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                    {this.renderColumn(`${Sob}`)}
+                  </ExcelFile>
+                }
               </div>
             </Col>
           </Row>
@@ -346,8 +365,8 @@ class SOBListing extends Component {
               hover={false}
               bordered={false}
               options={options}
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${Sob}.csv`}
+              // exportCSV={DownloadAccessibility}
+              // csvFileName={`${Sob}.csv`}
               search
               ref={'table'}
               pagination>
@@ -372,6 +391,7 @@ class SOBListing extends Component {
           ID={this.state.ID}
           anchor={'right'}
         />}
+
       </div >
     );
   }

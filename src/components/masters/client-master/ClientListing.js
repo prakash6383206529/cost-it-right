@@ -18,6 +18,8 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import ReactExport from 'react-export-excel';
+import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -224,31 +226,39 @@ class ClientListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.clientDataList && this.props.clientDataList
-        console.log(this.props.clientDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.ClientName === null) {
-                    item.ClientName = ' '
-                } else {
-                    return false
-                }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.ClientName === null) {
+                item.ClientName = ' '
             }
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${Clientmaster}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.clientDataList && this.props.clientDataList.length > 0 ? this.props.clientDataList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.ClientName === null) {
+                        item.ClientName = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -257,16 +267,15 @@ class ClientListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
-
-
+        const { isOpenVendor, isEditFlag, AddAccessibility,DownloadAccessibility } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
             noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -277,9 +286,9 @@ class ClientListing extends Component {
         };
 
         return (
-            <div className={this.state.DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {/* {this.props.loading && <Loader />} */}
-                <div className="container-fluid">
+                < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <h1 className="mb-0">Customer Master</h1>
                         <Row className="pt-4 no-filter-row">
@@ -295,6 +304,11 @@ class ClientListing extends Component {
                                             <div className={"plus"}></div>ADD
                                         </button>
                                     )}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${Clientmaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${Clientmaster}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </Col>
                         </Row>
@@ -308,8 +322,8 @@ class ClientListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        exportCSV={this.state.DownloadAccessibility}
-                        csvFileName={`${Clientmaster}.csv`}
+                        // exportCSV={this.state.DownloadAccessibility}
+                        // csvFileName={`${Clientmaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}
@@ -324,15 +338,17 @@ class ClientListing extends Component {
                         <TableHeaderColumn dataField="CityName" dataAlign="left" >{'City'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="ClientId" dataAlign="right" className="action" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
-                    {isOpenVendor && <AddClientDrawer
-                        isOpen={isOpenVendor}
-                        closeDrawer={this.closeVendorDrawer}
-                        isEditFlag={isEditFlag}
-                        ID={this.state.ID}
-                        anchor={'right'}
-                    />}
-                </div>
-            </div>
+                    {
+                        isOpenVendor && <AddClientDrawer
+                            isOpen={isOpenVendor}
+                            closeDrawer={this.closeVendorDrawer}
+                            isEditFlag={isEditFlag}
+                            ID={this.state.ID}
+                            anchor={'right'}
+                        />
+                    }
+                </div >
+            </div >
         );
     }
 }

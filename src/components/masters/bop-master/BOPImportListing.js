@@ -15,12 +15,13 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
+import ReactExport from 'react-export-excel';
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -353,48 +354,55 @@ class BOPImportListing extends Component {
         this.props.displayForm()
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.bopImportList && this.props.bopImportList
-        console.log(this.props.bopImportList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-
-                // let s = Object.keys(item)[i]
-                if (item.IsVendor === true) {
-                    item.IsVendor = 'VBC'
-                } else if (item.IsVendor === false) {
-                    item.IsVendor = 'ZBC'
-                } else if (item.Specification === null) {
-                    item.Specification = ' '
-                } else if (item.Plants === '-') {
-                    item.Plants = ' '
-                } else if (item.Vendor === '-') {
-                    item.Vendor = ' '
-                } else {
-                    return false
-                }
-            }
-        })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
-
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
-    }
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
 
+    }
+
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+
+        return (<ExcelSheet data={temp} name={`${BopImport}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.bopImportList && this.props.bopImportList.length > 0 ? this.props.bopImportList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'VBC'
+                    } if (item.IsVendor === false) {
+                        item.IsVendor = 'ZBV'
+                    } if (item.Plants === '-') {
+                        item.Plants = ' '
+                    } if (item.Vendor === '-') {
+                        item.Vendor = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -404,6 +412,7 @@ class BOPImportListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const onExportToCSV = (row) => {
             // ...
@@ -416,8 +425,8 @@ class BOPImportListing extends Component {
             clearSearch: true,
             noDataText: (this.props.bopImportList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -426,9 +435,9 @@ class BOPImportListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {this.props.loading && <Loader />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="pt-4 filter-row-large">
                         {this.state.shown && (
                             <Col md="12" lg="10" className="filter-block">
@@ -541,12 +550,17 @@ class BOPImportListing extends Component {
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
                                         <div className={'plus'}></div>ADD</button>}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${BopImport}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${BopImport}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </div>
                         </Col>
                     </Row>
 
-                </form>
+                </form >
                 <Row>
                     <Col>
                         <BootstrapTable
@@ -556,8 +570,8 @@ class BOPImportListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${BopImport}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${BopImport}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
@@ -581,15 +595,17 @@ class BOPImportListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'BOPImport'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'BOP Import'}
-                    anchor={'right'}
-                />}
+                {
+                    isBulkUpload && <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={this.closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'BOPImport'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'BOP Import'}
+                        anchor={'right'}
+                    />
+                }
             </div >
         );
     }
