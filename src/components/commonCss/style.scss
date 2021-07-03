@@ -3249,6 +3249,8 @@ opacity: 0.5;
     background-color: #fff;
     background-clip: padding-box;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    max-width: 100%;
+    overflow: hidden;
     }
     .green-value{
       background-color: #DBF4E2;
@@ -4189,6 +4191,15 @@ body{
         >span{
           display: inline-block;
           vertical-align: middle;
+        }
+      }
+    }
+  }
+  .netRm-row{
+    td{
+      &:nth-child(3),&:nth-child(4){
+        .View{
+          display: none;
         }
       }
     }
