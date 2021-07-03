@@ -210,11 +210,17 @@ function Simulation(props) {
         }
     }
 
+    useEffect(() => {
+
+    }, [rmDomesticListing])
+
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
         return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
+
+
 
     return (
         <div className="container-fluid simulation-page">
