@@ -950,21 +950,24 @@ class AddRMDomestic extends Component {
           this.cancel()
           return false
         }
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateRMDomesticAPI(requestData, (res) => {
-              if (res.data.Result) {
-                toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                this.clearForm()
-                // this.cancel()
-              }
-            })
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
+        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+
+          const toastrConfirmOptions = {
+            onOk: () => {
+              this.props.reset()
+              this.props.updateRMDomesticAPI(requestData, (res) => {
+                if (res.data.Result) {
+                  toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                  this.clearForm()
+                  // this.cancel()
+                }
+              })
+            },
+            onCancel: () => { },
+            component: () => <ConfirmComponent />,
+          }
+          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
     }
 
