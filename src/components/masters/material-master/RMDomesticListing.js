@@ -26,9 +26,9 @@ import { getPlantSelectListByType, getTechnologySelectList } from '../../../acti
 import { ZBC, RmDomestic } from '../../../config/constants'
 
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-
 import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
 import { RowController } from 'ag-grid-community';
 
 class RMDomesticListing extends Component {
@@ -618,13 +618,16 @@ class RMDomesticListing extends Component {
             filter: true,
         };
 
+        const agGridOptions = {
+        };
+
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -844,19 +847,22 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
                         </BootstrapTable> */}
                         <div className="example-wrapper">
-                            {/* <div className="example-header">
-                                Page Size:
-                                <select onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="100">100</option>
-                                    <option value="500">500</option>
-                                    <option value="1000">1000</option>
-                                </select>
-                            </div> */}
+                        <div className="example-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                
+                                <div className="paging-container d-inline-block">
+                                    <span className="d-inline-block">Page Size:</span>
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+
+                            </div>
                             <div
-                                className="ag-theme-balham"
+                                className="ag-theme-material"
                                 style={{
-                                    height: '500px',
                                     width: '100%'
                                 }}
                             >
@@ -865,27 +871,28 @@ class RMDomesticListing extends Component {
                                     rowData={this.props.rmDataList}
                                     pagination={true}
                                     paginationPageSize={10}
+                                    gridOptions={agGridOptions}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn field="CostingHead" pinned="left"></AgGridColumn>
-                                    <AgGridColumn field="RawMaterial" sortable={true} ></AgGridColumn>
-                                    <AgGridColumn field="RMGrade" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="RMSpec" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="MaterialType" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="Category" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="Plant" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="VendorName" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="UOM" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="BasicRate" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" sortable={true} cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
-                                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-                                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                    <AgGridColumn  field="CostingHead" pinned="left"></AgGridColumn>
+                                    <AgGridColumn  field="RawMaterial" sortable={true} ></AgGridColumn>
+                                    <AgGridColumn  field="RMGrade" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="RMSpec" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="MaterialType" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="Category" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="TechnologyName" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="Plant" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="VendorName" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="UOM" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="BasicRate" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="RMFreightCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="RMShearingCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="ScrapRate" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="NetLandedCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn  field="EffectiveDate" sortable={true} cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn  field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn  field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    <AgGridColumn  field="VendorId" hide={true}></AgGridColumn>
+                                    <AgGridColumn  field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>
                             </div>
                         </div>
