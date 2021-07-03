@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -18,6 +18,7 @@ function AddProcess(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
   const dispatch = useDispatch()
+  const table = useRef()
 
   const costData = useContext(costingInfoContext)
 
@@ -97,7 +98,7 @@ function AddProcess(props) {
     nextPage: <span className="next-page-pg"></span>, // Next page button text
     firstPage: <span className="first-page-pg"></span>, // First page button text
     lastPage: <span className="last-page-pg"></span>,
-
+    sizePerPage: 5,
   };
 
   const onRowSelect = (row, isSelected, e) => {
@@ -114,6 +115,15 @@ function AddProcess(props) {
   const onSelectAll = (isSelected, rows) => {
     if (isSelected) {
       setSelectedRowData(rows)
+
+      // if (selectedRowData.length !== processDrawerList.length) {
+      //   setSelectedRowData(processDrawerList.map(row => row))
+      //   // setSelectedRowData(this?.refs?.table?.state?.data.map(row => row));
+      //   return processDrawerList.map(row => row.MachineRateId);
+      // } else {
+      //   return;
+      // }
+
     } else {
       setSelectedRowData([])
     }
@@ -188,7 +198,7 @@ function AddProcess(props) {
                   multiColumnSearch={true}
                   //exportCSV
                   //ignoreSinglePage
-                  //ref={'table'}
+                  ref={table}
                   pagination>
                   <TableHeaderColumn dataField="MachineRateId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ProcessName"  >{'Process Name'}</TableHeaderColumn>

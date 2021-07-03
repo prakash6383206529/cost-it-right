@@ -315,6 +315,7 @@ class UserRegistration extends Component {
               department: DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+              // TechnologyLevelGrid:
             })
 
             if (Data.IsAdditionalAccess) {
@@ -528,9 +529,10 @@ class UserRegistration extends Component {
       return false;
     }
     const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return el.TechnologyId === technology.value
+      return Number(el.TechnologyId) === Number(technology.value)
       // && el.LevelId === level.value
     })
+
     if (isExistTechnology !== -1) {
       // toastr.warning('Technology and Level already allowed.')
       toastr.warning('Technology cannot have multiple level.')
@@ -606,7 +608,7 @@ class UserRegistration extends Component {
     }
 
     const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return el.SimulationTechnologyId === simulationHeads.value
+      return Number(el.SimulationTechnologyId) === Number(simulationHeads.value)
       // && el.LevelId === level.value
     })
 
@@ -808,10 +810,10 @@ class UserRegistration extends Component {
       toastr.warning('Users technology level should not be empty.')
       return false;
     }
-    if (HeadLevelGrid && HeadLevelGrid.length === 0) {
-      toastr.warning('Users head level should not be empty.')
-      return false
-    }
+    // if (HeadLevelGrid && HeadLevelGrid.length === 0) {
+    //   toastr.warning('Users head level should not be empty.')
+    //   return false
+    // }
 
     //this.setState({ isSubmitted: true })
 

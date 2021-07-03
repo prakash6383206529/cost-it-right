@@ -187,6 +187,18 @@ function SimulationApprovalListing(props) {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
+    const renderImpactCost = () => {
+        return <>Impacted <br />Costing</>
+    }
+
+    const renderImpactPart = () => {
+        return <>Impacted <br />Parts</>
+    }
+
+    const renderHead = () => {
+        return <>Costing <br />Head</>
+    }
+
 
 
     /**
@@ -452,12 +464,12 @@ function SimulationApprovalListing(props) {
                         pagination
                     >
                         <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={80} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CostingHead" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CostingHead" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{renderHead()}</TableHeaderColumn>
                         {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
                         <TableHeaderColumn dataField="TechnologyName" width={80} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ImpactCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Costing '}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ImpactParts" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{'Impact Parts'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ImpactCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactCost()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ImpactParts" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactPart()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="RequestedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>

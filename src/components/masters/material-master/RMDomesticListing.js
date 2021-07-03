@@ -25,13 +25,19 @@ import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RmDomestic } from '../../../config/constants'
 
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+import { RowController } from 'ag-grid-community';
+
 class RMDomesticListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            shown: false,
+            // shown: false,
             tableData: [],
             RawMaterial: [],
             RMGrade: [],
@@ -42,7 +48,8 @@ class RMDomesticListing extends Component {
             maxRange: 0,
             isBulkUpload: false,
             shown: this.props.isSimulation ? true : false,
-            technology: []
+            technology: [],
+            gridApi: null,
         }
     }
 
@@ -135,7 +142,7 @@ class RMDomesticListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    editItemDetails = (Id, rowData = {}) => {
         let data = {
             isEditFlag: true,
             Id: Id,
@@ -186,15 +193,32 @@ class RMDomesticListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    // buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { EditAccessibility, DeleteAccessibility } = this.props;
+    //     return (
+    //         <>
+    //             {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+    //             {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+    //         </>
+    //     )
+    // }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     /**
     * @method costingHeadFormatter
@@ -274,8 +298,9 @@ class RMDomesticListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -471,6 +496,7 @@ class RMDomesticListing extends Component {
         };
         return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
+
     handleHeadChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });
@@ -543,6 +569,11 @@ class RMDomesticListing extends Component {
         );
     }
 
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
     /**
     * @method render
     * @description Renders the component
@@ -562,6 +593,16 @@ class RMDomesticListing extends Component {
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
 
+        };
+
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            effectiveDateRenderer: this.effectiveDateFormatter,
         };
 
         return (
@@ -748,7 +789,7 @@ class RMDomesticListing extends Component {
                 </form >
                 <Row>
                     <Col>
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.rmDataList}
                             striped={false}
                             bordered={false}
@@ -762,7 +803,6 @@ class RMDomesticListing extends Component {
                             csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
                             pagination>
-                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
@@ -783,7 +823,53 @@ class RMDomesticListing extends Component {
                             {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
-                        </BootstrapTable>
+                        </BootstrapTable> */}
+                        <div className="example-wrapper">
+                            {/* <div className="example-header">
+                                Page Size:
+                                <select onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="100">100</option>
+                                    <option value="500">500</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                            </div> */}
+                            <div
+                                className="ag-theme-balham"
+                                style={{
+                                    height: '500px',
+                                    width: '100%'
+                                }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    rowData={this.props.rmDataList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    frameworkComponents={frameworkComponents}>
+                                    <AgGridColumn field="CostingHead" pinned="left"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" sortable={true} ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="MaterialType" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="Category" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="Plant" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="VendorName" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="UOM" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" sortable={true} cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                </AgGridReact>
+                            </div>
+                        </div>
                     </Col>
                 </Row>
                 {
