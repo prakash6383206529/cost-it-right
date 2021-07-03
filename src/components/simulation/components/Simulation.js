@@ -280,9 +280,9 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2">
                                     <div>
-                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable}>
+                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false}>
                                             <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                             {renderColumn(master.label)}
                                         </ExcelFile>
                                         <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
