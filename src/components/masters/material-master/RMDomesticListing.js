@@ -31,6 +31,34 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
 import { RowController } from 'ag-grid-community';
 
+const gridOptions = {
+    columnDefs: [
+        // simple column, easy to understand
+        { headerName: 'A', field: 'a' },
+        // the grid works with embedded fields
+        { headerName: 'B', field: 'b.name' },
+        // or use value getter, all works with quick filter
+        { headerName: 'C', valueGetter: "'zz' + data.c.name" },
+        // or use the object value, so value passed around is an object
+        {
+            headerName: 'D',
+            field: 'd',
+            cellRenderer: 'boldRenderer',
+            // this is needed to avoid toString=[object,object] result with objects
+            getQuickFilterText: function (params) {
+                return params.value.name;
+            }
+        },
+        // this fails filter - it's working with a complex object, so the quick filter
+        // text gets [object,object]
+        {
+            headerName: 'E',
+            field: 'e',
+            cellRenderer: 'boldRenderer'
+        }
+    ],
+};
+
 class RMDomesticListing extends Component {
     constructor(props) {
         super(props);
@@ -50,6 +78,11 @@ class RMDomesticListing extends Component {
             shown: this.props.isSimulation ? true : false,
             technology: [],
             gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+
+
         }
     }
 
@@ -588,10 +621,37 @@ class RMDomesticListing extends Component {
         );
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+        params.api.paginationGoToPage(1);
+
+
+
+    };
+
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
+        console.log(this.state.gridApi, "GRID");
         this.state.gridApi.paginationSetPageSize(Number(value));
     };
+
+
+
+    onBtExport = () => {
+        this.state.gridApi.exportDataAsCsv();
+        console.log(this.state.gridApi.getModel().rowsToDisplay[0].data, "grid");
+
+    };
+
+    onFilterTextBoxChanged(e) {
+        console.log('e: ', e);
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+
+
 
     /**
     * @method render
@@ -616,6 +676,8 @@ class RMDomesticListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
+            sortable: true,
+
         };
 
         const agGridOptions = {
@@ -787,7 +849,7 @@ class RMDomesticListing extends Component {
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
+                                                    onClick={this.onBtExport}
                                                 >
                                                     <div className={"upload"}></div>Bulk Upload
                                                 </button>
@@ -847,9 +909,9 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
                         </BootstrapTable> */}
                         <div className="example-wrapper">
-                        <div className="example-header">
+                            <div className="example-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                
+
                                 <div className="paging-container d-inline-block">
                                     <span className="d-inline-block">Page Size:</span>
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -868,31 +930,33 @@ class RMDomesticListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    // columnDefs={c}
                                     rowData={this.props.rmDataList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    // paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
                                     gridOptions={agGridOptions}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn  field="CostingHead" pinned="left"></AgGridColumn>
-                                    <AgGridColumn  field="RawMaterial" sortable={true} ></AgGridColumn>
-                                    <AgGridColumn  field="RMGrade" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="RMSpec" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="MaterialType" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="Category" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="TechnologyName" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="Plant" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="VendorName" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="UOM" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="BasicRate" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="RMFreightCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="RMShearingCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="ScrapRate" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="NetLandedCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn  field="EffectiveDate" sortable={true} cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn  field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn  field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
-                                    <AgGridColumn  field="VendorId" hide={true}></AgGridColumn>
-                                    <AgGridColumn  field="TechnologyId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade"></AgGridColumn>
+                                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="MaterialType"></AgGridColumn>
+                                    <AgGridColumn field="Category"></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName"></AgGridColumn>
+                                    <AgGridColumn field="Plant"></AgGridColumn>
+                                    <AgGridColumn field="VendorName"></AgGridColumn>
+                                    <AgGridColumn field="UOM"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate"></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost"></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost"></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>
                             </div>
                         </div>
