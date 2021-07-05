@@ -249,8 +249,8 @@ class RMDomesticListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -674,7 +674,6 @@ class RMDomesticListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
-
         };
 
 
@@ -875,7 +874,7 @@ class RMDomesticListing extends Component {
                                                 //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                             }
-                                            <button type="button" className="user-btn" onClick={() => this.resetState()}>Reset Filter</button>
+                                            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
                                         </>
                                     </div>
                                 </div>
@@ -921,27 +920,16 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
                         </BootstrapTable> */}
-                        <div className="example-wrapper">
-                            <div className="example-header">
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                                <div className="paging-container d-inline-block">
-                                    <span className="d-inline-block">Page Size:</span>
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{
-                                    width: '100%'
-                                }}
+                                style={{height: '100%', width: '100%'}}
                             >
                                 <AgGridReact
+                                    style={{height: '100%', width: '100%'}}
                                     defaultColDef={defaultColDef}
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}
@@ -971,11 +959,18 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </Col>
