@@ -609,7 +609,6 @@ class RMDomesticListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        console.log(this.state.gridApi, "GRID");
         this.state.gridApi.paginationSetPageSize(Number(value));
     };
 
