@@ -34,10 +34,10 @@ const CustomHeader = {
 export function loginUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.login, requestData, headers)
+        axios.post(API.login, requestData, CustomHeader)
             .then((response) => {
                 if (response && response.data && response.data.Result) {
-                    dispatch(getLoginSuccess(response));
+                    // dispatch(getLoginSuccess(response));
                     callback(response);
                 }
             })

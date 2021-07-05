@@ -563,7 +563,7 @@ export const API = {
 
 
   //LOGIN API
-  login: `${BASE_URL}/user/login`,
+  login: `${BASE_URL}/user/login-ad`,
   tokenAPI: `${BASE_URL}/token`,
   AutoSignin: `${BASE_URL}/user/external-login`,
   logout: `${BASE_URL}/user/logout`,

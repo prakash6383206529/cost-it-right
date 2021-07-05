@@ -52,20 +52,22 @@ class Login extends Component {
       password: values.Password,
       grant_type: 'password',
     }
-    // this.props.loginUserAPI(values, (res) => {
-    this.props.TokenAPI(reqParams, (res) => {
+    this.props.loginUserAPI(values, (res) => {
+      console.log('res: ', res);
+      // this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
-        let userDetail = formatLoginResult(res.data);
+        let userDetail = formatLoginResult(res.data.Data);
+        console.log('userDetail: ', userDetail);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-        // this.setState({ isRedirect: true })
+        // // this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
       }
-    })
-    // });
+      // })
+    });
   }
 
   render() {
