@@ -514,7 +514,7 @@ function CostingSimulation(props) {
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div>
                                         {(shown) ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                            <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
                                                 <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                         ) : (
                                             <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
