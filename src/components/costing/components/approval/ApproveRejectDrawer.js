@@ -496,7 +496,7 @@ function ApproveRejectDrawer(props) {
                     {
                       type === 'Sender' &&
                       <>
-                        <div className="input-group form-group col-md-12 input-withouticon">
+                        <div className="input-group form-group col-md-12">
                           <SearchableSelectHookForm
                             label={'Reason'}
                             name={'reason'}
@@ -595,7 +595,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button  save-btn"
-                    onClick={() => { }}
+                    onClick={onSubmit}
                   >
                     <div className={'check-icon'}>
                       <img
