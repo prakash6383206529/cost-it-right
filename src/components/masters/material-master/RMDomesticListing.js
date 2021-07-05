@@ -21,43 +21,19 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, RMDomesticSimulation, RMDomesticZBC } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RmDomestic } from '../../../config/constants'
-
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import ReactExport from 'react-export-excel';
 
-import { RowController } from 'ag-grid-community';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-const gridOptions = {
-    columnDefs: [
-        // simple column, easy to understand
-        { headerName: 'A', field: 'a' },
-        // the grid works with embedded fields
-        { headerName: 'B', field: 'b.name' },
-        // or use value getter, all works with quick filter
-        { headerName: 'C', valueGetter: "'zz' + data.c.name" },
-        // or use the object value, so value passed around is an object
-        {
-            headerName: 'D',
-            field: 'd',
-            cellRenderer: 'boldRenderer',
-            // this is needed to avoid toString=[object,object] result with objects
-            getQuickFilterText: function (params) {
-                return params.value.name;
-            }
-        },
-        // this fails filter - it's working with a complex object, so the quick filter
-        // text gets [object,object]
-        {
-            headerName: 'E',
-            field: 'e',
-            cellRenderer: 'boldRenderer'
-        }
-    ],
-};
+const gridOptions = {};
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -81,7 +57,7 @@ class RMDomesticListing extends Component {
             gridColumnApi: null,
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
-
+            showData: false
 
         }
     }
@@ -283,8 +259,9 @@ class RMDomesticListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -636,21 +613,42 @@ class RMDomesticListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(value));
     };
 
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+        return (
 
-
-    onBtExport = () => {
-        this.state.gridApi.exportDataAsCsv();
-        console.log(this.state.gridApi.getModel().rowsToDisplay[0].data, "grid");
-
-    };
-
-    onFilterTextBoxChanged(e) {
-        console.log('e: ', e);
-        this.state.gridApi.setQuickFilter(e.target.value);
+            <ExcelSheet data={temp} name={'RM Domestic'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
 
 
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(RMDomesticZBC, tempArr)
+    };
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
 
 
     /**
@@ -680,12 +678,13 @@ class RMDomesticListing extends Component {
 
         };
 
-        const agGridOptions = {
-        };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
+            costingHeadRenderer: this.costingHeadFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
         };
 
         return (
@@ -849,7 +848,7 @@ class RMDomesticListing extends Component {
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
-                                                    onClick={this.onBtExport}
+                                                    onClick={this.bulkToggle}
                                                 >
                                                     <div className={"upload"}></div>Bulk Upload
                                                 </button>
@@ -857,12 +856,27 @@ class RMDomesticListing extends Component {
                                             {AddAccessibility && (
                                                 <button
                                                     type="button"
-                                                    className={"user-btn"}
+                                                    className={"user-btn mr5"}
                                                     onClick={this.formToggle}
                                                 >
                                                     <div className={"plus"}></div>ADD
                                                 </button>
                                             )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
+
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+                                            <button type="button" className="user-btn" onClick={() => this.resetState()}>Reset Filter</button>
                                         </>
                                     </div>
                                 </div>
@@ -933,11 +947,16 @@ class RMDomesticListing extends Component {
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}
                                     pagination={true}
-                                    // paginationPageSize={10}
+                                    paginationPageSize={10}
                                     onGridReady={this.onGridReady}
-                                    gridOptions={agGridOptions}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn field="CostingHead"></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
