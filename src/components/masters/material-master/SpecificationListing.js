@@ -20,6 +20,8 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { RmSpecification } from '../../../config/constants';
+import { SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import ReactExport from 'react-export-excel';
 
 class SpecificationListing extends Component {
     constructor(props) {
@@ -290,18 +292,43 @@ class SpecificationListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.rmSpecificationList
-        return products; // must return the data which you want to be exported
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // }
+            return item
+        })
+
+        return (<ExcelSheet data={temp} name={`${RmSpecification}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.rmSpecificationList && this.props.rmSpecificationList.length > 0 ? this.props.rmSpecificationList : []
+        // if (arr != []) {
+        //     arr && arr.map(item => {
+        //         let len = Object.keys(item).length
+        //         for (let i = 0; i < len; i++) {
+        //             // let s = Object.keys(item)[i]
+        //             if (item.RMName === '-') {
+        //                 item.RMName = ' '
+        //             } else if (item.RMGrade === '-') {
+        //                 item.RMGrade = ' '
+        //             } else {
+        //                 return false
+        //             }
+        //         }
+        //     })
+        // }
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, arr)
     }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
-    }
 
     /**
     * @method render
@@ -310,6 +337,7 @@ class SpecificationListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
@@ -324,7 +352,7 @@ class SpecificationListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -401,6 +429,11 @@ class SpecificationListing extends Component {
                                 className={'user-btn'}
                                 onClick={this.openModel}>
                                 <div className={'plus'}></div>{`ADD`}</button>}
+                            {DownloadAccessibility &&
+                                <ExcelFile filename={`${RmSpecification}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {this.renderColumn(`${RmSpecification}`)}
+                                </ExcelFile>
+                            }
                         </Col>
                     </Row>
                 </form>
@@ -415,8 +448,8 @@ class SpecificationListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${RmSpecification}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${RmSpecification}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

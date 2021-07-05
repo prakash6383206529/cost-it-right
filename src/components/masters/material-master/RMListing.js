@@ -14,6 +14,8 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
 import Association from './Association';
 import { RmMaterial } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 class RMListing extends Component {
     constructor(props) {
@@ -172,33 +174,41 @@ class RMListing extends Component {
 
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList
-        console.log(this.props.rawMaterialTypeDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.RMName === '-') {
-                    item.RMName = ' '
-                } else if (item.RMGrade === '-') {
-                    item.RMGrade = ' ' 
-                } else {
-                    return false
-                }
-            }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // }
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${RmMaterial}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList.length > 0 ? this.props.rawMaterialTypeDataList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.RMName === '-') {
+                        item.RMName = ' '
+                    } else if (item.RMGrade === '-') {
+                        item.RMGrade = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -208,6 +218,7 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
@@ -215,7 +226,7 @@ class RMListing extends Component {
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             onExportToCSV: this.handleExportCSVButtonClick,
-                        prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
@@ -223,7 +234,7 @@ class RMListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {this.props.loading && <Loader />}
                 <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
@@ -247,6 +258,11 @@ class RMListing extends Component {
                                 {`Add`}
                             </button>
                         )}
+                        {DownloadAccessibility &&
+                            <ExcelFile filename={`${RmMaterial}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                {this.renderColumn(`${RmMaterial}`)}
+                            </ExcelFile>
+                        }
                     </Col>
 
                 </Row>
@@ -260,8 +276,8 @@ class RMListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${RmMaterial}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${RmMaterial}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}

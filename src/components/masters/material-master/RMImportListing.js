@@ -24,7 +24,8 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { INR, ZBC, RmImport } from '../../../config/constants'
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import ReactExport from 'react-export-excel';
 
 class RMImportListing extends Component {
   constructor(props) {
@@ -500,39 +501,47 @@ class RMImportListing extends Component {
   */
   onSubmit = (values) => { }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
-
-    var arr = this.props.rmImportDataList && this.props.rmImportDataList
-    console.log(this.props.rmImportDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    arr && arr.map(item => {
-      let len = Object.keys(item).length
-      for (let i = 0; i < len; i++) {
-        // let s = Object.keys(item)[i]
-        if (item.RMFreightCost === null) {
-          item.RMFreightCost = ' '
-        } else if (item.RMShearingCost === null) {
-          item.RMShearingCost = ' '
-        } else if (item.MaterialType === '-') {
-          item.MaterialType = ' '
-        } else if (item.CostingHead === true) {
-          item.CostingHead = 'VBC'
-        } else if (item.CostingHead === false) {
-          item.CostingHead = 'ZBC'
-        } else {
-          return false
-        }
-      }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      // if (item.ClientName === null) {
+      //   item.ClientName = ' '
+      // }
+      return item
     })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
-  }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
+    return (<ExcelSheet data={temp} name={`${RmImport}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.rmImportDataList && this.props.rmImportDataList.length > 0 ? this.props.rmImportDataList : []
+    if (arr != []) {
+      arr && arr.map(item => {
+        let len = Object.keys(item).length
+        for (let i = 0; i < len; i++) {
+          // let s = Object.keys(item)[i]
+          if (item.RMFreightCost === null) {
+            item.RMFreightCost = ' '
+          } else if (item.RMShearingCost === null) {
+            item.RMShearingCost = ' '
+          } else if (item.MaterialType === '-') {
+            item.MaterialType = ' '
+          } else if (item.CostingHead === true) {
+            item.CostingHead = 'VBC'
+          } else if (item.CostingHead === false) {
+            item.CostingHead = 'ZBC'
+          } else {
+            return false
+          }
+        }
+      })
+    }
+    return this.returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, arr)
   }
 
   /**
@@ -542,6 +551,7 @@ class RMImportListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
     const { isBulkUpload, } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const options = {
       clearSearch: true,
@@ -557,7 +567,7 @@ class RMImportListing extends Component {
     };
 
     return (
-      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+      <div className="">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 filter-row-large">
@@ -729,6 +739,11 @@ class RMImportListing extends Component {
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
+                    {DownloadAccessibility &&
+                      <ExcelFile filename={`${RmImport}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.renderColumn(`${RmImport}`)}
+                      </ExcelFile>
+                    }
                   </div>
                 </div>
               </Col>
@@ -748,8 +763,8 @@ class RMImportListing extends Component {
               //ignoreSinglePage
               ref={'table'}
               // exportCSV={(DownloadAccessibility && this.props.isSimulation) ? false : true}
-              exportCSV={this.props.isSimulation ? false : true}
-              csvFileName={`${RmImport}.csv`}
+              // exportCSV={this.props.isSimulation ? false : true}
+              // csvFileName={`${RmImport}.csv`}
               pagination>
               {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
               <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>

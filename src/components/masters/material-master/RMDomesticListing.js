@@ -21,7 +21,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, RMDOMESTICe_DOWNLOAD_EXCEl, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RmDomestic } from '../../../config/constants'
 
@@ -30,6 +30,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { RowController } from 'ag-grid-community';
+import ReactExport from 'react-export-excel';
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -534,39 +535,47 @@ class RMDomesticListing extends Component {
     */
     onSubmit = (values) => { }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.rmDataList && this.props.rmDataList
-        console.log(this.props.rmDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.RMFreightCost === null) {
-                    item.RMFreightCost = ' '
-                } else if (item.RMShearingCost === null) {
-                    item.RMShearingCost = ' '
-                } else if (item.MaterialType === '-') {
-                    item.MaterialType = ' '
-                } else if (item.CostingHead === true) {
-                    item.CostingHead = 'VBC'
-                } else if (item.CostingHead === false) {
-                    item.CostingHead = 'ZBC'
-                } else {
-                    return false
-                }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.ClientName === null) {
+                item.ClientName = ' '
             }
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${RmDomestic}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.rmDataList && this.props.rmDataList.length > 0 ? this.props.rmDataList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.RMFreightCost === null) {
+                        item.RMFreightCost = ' '
+                    } else if (item.RMShearingCost === null) {
+                        item.RMShearingCost = ' '
+                    } else if (item.MaterialType === '-') {
+                        item.MaterialType = ' '
+                    } else if (item.CostingHead === true) {
+                        item.CostingHead = 'VBC'
+                    } else if (item.CostingHead === false) {
+                        item.CostingHead = 'ZBC'
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, arr)
     }
 
     onPageSizeChanged = (newPageSize) => {
@@ -581,12 +590,13 @@ class RMDomesticListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility } = this.props;
         const { isBulkUpload, } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -606,7 +616,7 @@ class RMDomesticListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -780,6 +790,11 @@ class RMDomesticListing extends Component {
                                                     <div className={"plus"}></div>ADD
                                                 </button>
                                             )}
+                                            {DownloadAccessibility &&
+                                                <ExcelFile filename={`${RmDomestic}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                    {this.renderColumn(`${RmDomestic}`)}
+                                                </ExcelFile>
+                                            }
                                         </>
                                     </div>
                                 </div>

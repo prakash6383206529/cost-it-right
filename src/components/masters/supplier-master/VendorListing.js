@@ -28,6 +28,8 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import ReactExport from 'react-export-excel';
+import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -403,35 +405,43 @@ class VendorListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.supplierDataList && this.props.supplierDataList
-        console.log(this.props.supplierDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.Country == 'NA') {
-                    item.Country = ' '
-                } else if (item.State == 'NA') {
-                    item.State = ' '
-                } else if (item.City == 'NA') {
-                    item.City = ' '
-                } else {
-                    return false
-                }
-            }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // } 
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${VendorMaster}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.reasonDataList && this.props.reasonDataList.length > 0 ? this.props.reasonDataList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.Country == 'NA') {
+                        item.Country = ' '
+                    } else if (item.State == 'NA') {
+                        item.State = ' '
+                    } else if (item.City == 'NA') {
+                        item.City = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -441,6 +451,7 @@ class VendorListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
@@ -458,7 +469,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid blue-before-inside"}>
+            <div className= "container-fluid blue-before-inside">
                 {/* {this.props.loading && <Loader />} */}
                 <form
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -567,6 +578,11 @@ class VendorListing extends Component {
                                             <div className={"plus"}></div>ADD
                                         </button>
                                     )}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${VendorMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${VendorMaster}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </div>
                         </Col>
@@ -579,8 +595,8 @@ class VendorListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${VendorMaster}.csv`}
+                    // exportCSV={DownloadAccessibility}
+                    // csvFileName={`${VendorMaster}.csv`}
                     //ignoreSinglePage
                     ref={"table"}
                     trClassName={"userlisting-row"}

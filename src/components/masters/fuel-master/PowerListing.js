@@ -21,6 +21,8 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PowerMaster } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 class PowerListing extends Component {
   constructor(props) {
@@ -351,22 +353,50 @@ class PowerListing extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = (values) => {}
+   
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+        // if (item.CostingHead === true) {
+        //     item.CostingHead = 'Vendor Based'
+        // } else if (item.CostingHead === false) {
+        //     item.CostingHead = 'Zero Based'
+        // }
+        return item
+    })
 
-  }
-
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.powerDataList
-    return products; // must return the data which you want to be exported
-  }
-
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
+    return (<ExcelSheet data={temp} name={`${PowerMaster}`}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+        }
+    </ExcelSheet>);
+}
+renderColumn = (fileName) => {
+    let arr = this.props.powerDataList && this.props.powerDataList.length > 0 ? this.props.powerDataList : []
+    // if (arr != []) {
+    //     arr && arr.map(item => {
+    //         let len = Object.keys(item).length
+    //         for (let i = 0; i < len; i++) {
+    //             // let s = Object.keys(item)[i]
+    //             if (item.IsVendor === true) {
+    //                 item.IsVendor = 'VBC'
+    //             } if (item.IsVendor === false) {
+    //                 item.IsVendor = 'ZBV'
+    //             } if (item.Plants === '-') {
+    //                 item.Plants = ' '
+    //             } if (item.Vendor === '-') {
+    //                 item.Vendor = ' '
+    //             } else {
+    //                 return false
+    //             }
+    //         }
+    //     })
+    // }
+    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, arr)
+}
 
   /**
   * @method render
@@ -375,11 +405,13 @@ class PowerListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, initialConfiguration, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
+
     const options = {
       clearSearch: true,
       noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
+      // exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -389,7 +421,7 @@ class PowerListing extends Component {
 
     return (
 
-      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+      <div className="">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -550,6 +582,11 @@ class PowerListing extends Component {
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
+                     {DownloadAccessibility &&
+                                        <ExcelFile filename={`${PowerMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${PowerMaster}`)}
+                                        </ExcelFile>
+                                    }
                   </>
                 </div>
               </div>
@@ -568,8 +605,8 @@ class PowerListing extends Component {
                 bordered={false}
                 options={options}
                 search
-                exportCSV={DownloadAccessibility}
-                csvFileName={`${PowerMaster}.csv`}
+                // exportCSV={DownloadAccessibility}
+                // csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
                 pagination>

@@ -24,6 +24,8 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
+import ReactExport from 'react-export-excel';
+import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 class InterestRateListing extends Component {
   constructor(props) {
@@ -417,40 +419,49 @@ class InterestRateListing extends Component {
   onSubmit(values) {
   }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
-
-    var arr = this.props.interestRateDataList && this.props.interestRateDataList
-    console.log(this.props.interestRateDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    arr && arr.map(item => {
-      let len = Object.keys(item).length
-      for (let i = 0; i < len; i++) {
-        // let s = Object.keys(item)[i]
-        if (item.ICCPercent === null) {
-          item.ICCPercent = ' '
-        } else if (item.PaymentTermPercent === null) {
-          item.PaymentTermPercent = ' '
-        }  else if (item.IsVendor === true) {
-          item.IsVendor = 'VBC'
-        }  else if (item.IsVendor === false) {
-          item.IsVendor = 'ZBC'
-        }  else if (item.VendorName === '-') {
-          item.VendorName = ' '
-        } else {
-          return false
-        }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      if (item.ClientName === null) {
+        item.ClientName = ' '
       }
+      return item
     })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
+
+    return (<ExcelSheet data={temp} name={`${InterestMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.interestRateDataList && this.props.interestRateDataList.length > 0 ? this.props.interestRateDataList : []
+    if (arr != []) {
+      arr && arr.map(item => {
+        let len = Object.keys(item).length
+        for (let i = 0; i < len; i++) {
+          // let s = Object.keys(item)[i]
+          if (item.ICCPercent === null) {
+            item.ICCPercent = ' '
+          } else if (item.PaymentTermPercent === null) {
+            item.PaymentTermPercent = ' '
+          } else if (item.IsVendor === true) {
+            item.IsVendor = 'VBC'
+          } else if (item.IsVendor === false) {
+            item.IsVendor = 'ZBC'
+          } else if (item.VendorName === '-') {
+            item.VendorName = ' '
+          } else {
+            return false
+          }
+        }
+      })
+    }
+    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, arr)
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
   /**
   * @method render
   * @description Renders the component
@@ -458,6 +469,7 @@ class InterestRateListing extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     if (toggleForm) {
       return (
@@ -472,8 +484,8 @@ class InterestRateListing extends Component {
       noDataText: (this.props.interestRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -486,7 +498,7 @@ class InterestRateListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid blue-before-inside"}>
+        <div className="">
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -605,6 +617,11 @@ class InterestRateListing extends Component {
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
+                    {DownloadAccessibility &&
+                      <ExcelFile filename={`${InterestMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.renderColumn(`${InterestMaster}`)}
+                      </ExcelFile>
+                    }
                   </div>
                 </div>
               </Col>
@@ -617,8 +634,8 @@ class InterestRateListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${InterestMaster}.csv`}
+            // exportCSV={DownloadAccessibility}
+            // csvFileName={`${InterestMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

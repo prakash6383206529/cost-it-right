@@ -17,6 +17,8 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantVbc } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { VBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 class VBCPlantListing extends Component {
     constructor(props) {
@@ -345,36 +347,51 @@ class VBCPlantListing extends Component {
     * @description Renders the component
     */
 
-     handleExportCSVButtonClick = () => {
-        // onClick();
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // } 
+            return item
+        })
 
-        var arr = this.props.plantDataList && this.props.plantDataList
-        // console.log(this.props.bopImportList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        // arr && arr.map(item => {
-        //     let len = Object.keys(item).length
-        //     for (let i = 0; i < len; i++) {
-        //         // let s = Object.keys(item)[i]
-        //         if (item.Specification === null) {
-        //             item.Specification = ' '
-        //         } else {
-        //             return false
-        //         }
-        //     }
-        // })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
+        return (<ExcelSheet data={temp} name={`${PlantVbc}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
     }
-
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+    renderColumn = (fileName) => {
+        let arr = this.props.plantDataList && this.props.plantDataList.length > 0 ? this.props.plantDataList : []
+        // if (arr != []) {
+        //     arr && arr.map(item => {
+        //         let len = Object.keys(item).length
+        //         for (let i = 0; i < len; i++) {
+        //             // let s = Object.keys(item)[i]
+        //             if (item.ECNNumber === null) {
+        //                 item.ECNNumber = ' '
+        //             } else if (item.RevisionNumber === null) {
+        //                 item.RevisionNumber = ' '
+        //             } else if (item.DrawingNumber === null) {
+        //                 item.DrawingNumber = ' '
+        //             } else if (item.Technology === '-') {
+        //                 item.Technology = ' '
+        //             } else {
+        //                 return false
+        //             }
+        //         }
+        //     })
+        // }
+        return this.returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, arr)
     }
 
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
 
         const options = {
@@ -383,9 +400,9 @@ class VBCPlantListing extends Component {
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
-                        paginationShowsTotal: this.renderPaginationShowsTotal,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -394,7 +411,7 @@ class VBCPlantListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -490,6 +507,11 @@ class VBCPlantListing extends Component {
                                             <div className={"plus"}></div>ADD
                                         </button>
                                     )}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${PlantVbc}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${PlantVbc}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </div>
                         </Col>
@@ -502,8 +524,8 @@ class VBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${PlantVbc}.csv`}
+                    // exportCSV={DownloadAccessibility}
+                    // csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}

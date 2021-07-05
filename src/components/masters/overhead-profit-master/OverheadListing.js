@@ -15,11 +15,12 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj } from '../../../config/masterData';
+import { costingHeadObj, OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import { OverheadMaster } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
 
 class OverheadListing extends Component {
     constructor(props) {
@@ -409,45 +410,52 @@ class OverheadListing extends Component {
         }
     };
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.overheadProfitList && this.props.overheadProfitList
-        console.log(this.props.overheadProfitList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.ClientName === null) {
-                    item.ClientName = ' '
-                } else if (item.OverheadPercentage === null) {
-                    item.OverheadPercentage = ' '
-                } else if (item.OverheadRMPercentage === null) {
-                    item.OverheadRMPercentage = ' '
-                } else if (item.OverheadBOPPercentage === null) {
-                    item.OverheadBOPPercentage = ' '
-                } else if (item.OverheadMachiningCCPercentage === null) {
-                    item.OverheadMachiningCCPercentage = ' '
-                } else if (item.VendorName === '-') {
-                    item.VendorName = ' '
-                } else if (item.ClientName === '-') {
-                    item.ClientName = ' '
-                } else {
-                    return false
-                }
-            }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // } 
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${OverheadMaster}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
     }
-
+    renderColumn = (fileName) => {
+        let arr = this.props.operationList && this.props.operationList.length > 0 ? this.props.operationList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.ClientName === null) {
+                        item.ClientName = ' '
+                    } else if (item.OverheadPercentage === null) {
+                        item.OverheadPercentage = ' '
+                    } else if (item.OverheadRMPercentage === null) {
+                        item.OverheadRMPercentage = ' '
+                    } else if (item.OverheadBOPPercentage === null) {
+                        item.OverheadBOPPercentage = ' '
+                    } else if (item.OverheadMachiningCCPercentage === null) {
+                        item.OverheadMachiningCCPercentage = ' '
+                    } else if (item.VendorName === '-') {
+                        item.VendorName = ' '
+                    } else if (item.ClientName === '-') {
+                        item.ClientName = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, arr)
+    }
     /**
     * @method render
     * @description Renders the component
@@ -455,13 +463,14 @@ class OverheadListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
             noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -470,7 +479,7 @@ class OverheadListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
@@ -590,6 +599,11 @@ class OverheadListing extends Component {
                                             <div className={"plus"}></div>ADD
                                         </button>
                                     }
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${OverheadMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${OverheadMaster}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </div>
                         </Col>
@@ -604,8 +618,8 @@ class OverheadListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${OverheadMaster}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${OverheadMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

@@ -18,6 +18,8 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
 import { FuelMaster } from '../../../config/constants';
+import { FUELLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import ReactExport from 'react-export-excel';
 
 class FuelListing extends Component {
     constructor(props) {
@@ -252,48 +254,50 @@ class FuelListing extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => { }
-    handleExportCSVButtonClick = () => {
-        // onClick();
 
-        var arr = this.props.fuelDataList && this.props.fuelDataList
-        // console.log(this.props.fuelDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        // arr && arr.map(item => {
-        //     let len = Object.keys(item).length
-        //     for (let i = 0; i < len; i++) {
-        //         // let s = Object.keys(item)[i]
-        //         if (item.Specification === null) {
-        //             item.Specification = ' '
-        //         } else {
-        //             return false
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.CostingHead === true) {
+            //     item.CostingHead = 'Vendor Based'
+            // } else if (item.CostingHead === false) {
+            //     item.CostingHead = 'Zero Based'
+            // }
+            return item
+        })
+
+        return (<ExcelSheet data={temp} name={`${FuelMaster}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.fuelDataList && this.props.fuelDataList.length > 0 ? this.props.fuelDataList : []
+        // if (arr != []) {
+        //     arr && arr.map(item => {
+        //         let len = Object.keys(item).length
+        //         for (let i = 0; i < len; i++) {
+        //             // let s = Object.keys(item)[i]
+        //             if (item.IsVendor === true) {
+        //                 item.IsVendor = 'VBC'
+        //             } if (item.IsVendor === false) {
+        //                 item.IsVendor = 'ZBV'
+        //             } if (item.Plants === '-') {
+        //                 item.Plants = ' '
+        //             } if (item.Vendor === '-') {
+        //                 item.Vendor = ' '
+        //             } else {
+        //                 return false
+        //             }
         //         }
-        //     }
-        // })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
+        //     })
+        // }
+        return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, arr)
     }
-
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
-    }
-
-
-
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.fuelDataList
-        return products; // must return the data which you want to be exported
-    }
-
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
-    }
-
+    
     /**
     * @method render
     * @description Renders the component
@@ -301,11 +305,13 @@ class FuelListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
+            // exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -314,7 +320,7 @@ class FuelListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -397,6 +403,11 @@ class FuelListing extends Component {
                                         className={'user-btn'}
                                         onClick={this.formToggle}>
                                         <div className={'plus'}></div>ADD</button>}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${FuelMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${FuelMaster}`)}
+                                        </ExcelFile>
+                                    }
                                 </div>
                             </div>
                         </Col>
@@ -412,8 +423,8 @@ class FuelListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${FuelMaster}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${FuelMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

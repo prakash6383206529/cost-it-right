@@ -18,6 +18,8 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
 import { AssemblyPart } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -253,38 +255,46 @@ class AssemblyPartListing extends Component {
         })
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.partsListing && this.props.partsListing
-        console.log(this.props.partsListing, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.ECNNumber === null) {
-                    item.ECNNumber = ' '
-                } else if (item.RevisionNumber === null) {
-                    item.RevisionNumber = ' '
-                } else if (item.DrawingNumber === null) {
-                    item.DrawingNumber = ' '
-                } else if (item.Technology === '-') {
-                    item.Technology = ' '
-                } else {
-                    return false
-                }
-            }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // } 
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
-    } 
+        return (<ExcelSheet data={temp} name={`${AssemblyPart}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.partsListing && this.props.partsListing.length > 0 ? this.props.partsListing : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.ECNNumber === null) {
+                        item.ECNNumber = ' '
+                    } else if (item.RevisionNumber === null) {
+                        item.RevisionNumber = ' '
+                    } else if (item.DrawingNumber === null) {
+                        item.DrawingNumber = ' '
+                    } else if (item.Technology === '-') {
+                        item.Technology = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, arr)
+    }
 
     /**
     * @method render
@@ -293,6 +303,8 @@ class AssemblyPartListing extends Component {
     render() {
         const { isOpenVisualDrawer, isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -300,8 +312,8 @@ class AssemblyPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -330,6 +342,11 @@ class AssemblyPartListing extends Component {
                                     className={'user-btn'}
                                     onClick={this.displayForm}>
                                     <div className={'plus'}></div>ADD</button>}
+                                {DownloadAccessibility &&
+                                    <ExcelFile filename={`${AssemblyPart}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                        {this.renderColumn(`${AssemblyPart}`)}
+                                    </ExcelFile>
+                                }
                             </div>
                         </div>
                     </Col>
@@ -342,8 +359,8 @@ class AssemblyPartListing extends Component {
                     hover={false}
                     options={options}
                     search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${AssemblyPart}.csv`}
+                    // exportCSV={DownloadAccessibility}
+                    // csvFileName={`${AssemblyPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}

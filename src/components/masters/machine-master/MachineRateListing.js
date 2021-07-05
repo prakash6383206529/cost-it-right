@@ -16,11 +16,12 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import { MachineRate } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -439,47 +440,53 @@ class MachineRateListing extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
+    onSubmit = (values) => {}
 
-    }
-
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.machineDatalist && this.props.machineDatalist
-        console.log(this.props.machineDatalist, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i]
-                if (item.MachineTonnage === null) {
-                    item.MachineTonnage = ' '
-                } else if (item.EffectiveDate === null) {
-                    item.EffectiveDate = ' '
-                } else if (item.IsVendor === true) {
-                    item.IsVendor = 'VBC'
-                } else if (item.IsVendor === false) {
-                    item.IsVendor = 'ZBC'
-                } else if (item.Plants === '-') {
-                    item.Plants = ' '
-                } else if (item.MachineTypeName === '-') {
-                    item.MachineTypeName = ' '
-                } else if (item.VendorName === '-') {
-                    item.VendorName = ' '
-                } else {
-                    return false
-                }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.ClientName === null) {
+                item.ClientName = ' '
             }
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${MachineRate}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.machineDatalist && this.props.machineDatalist.length > 0 ? this.props.machineDatalist : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.MachineTonnage === null) {
+                        item.MachineTonnage = ' '
+                    } else if (item.EffectiveDate === null) {
+                        item.EffectiveDate = ' '
+                    } else if (item.IsVendor === true) {
+                        item.IsVendor = 'VBC'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'ZBC'
+                    } else if (item.Plants === '-') {
+                        item.Plants = ' '
+                    } else if (item.MachineTypeName === '-') {
+                        item.MachineTypeName = ' '
+                    } else if (item.VendorName === '-') {
+                        item.VendorName = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -489,12 +496,14 @@ class MachineRateListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload, isLoader } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.machineDatalist === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -503,7 +512,7 @@ class MachineRateListing extends Component {
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className="">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -652,6 +661,11 @@ class MachineRateListing extends Component {
                                         className={'user-btn'}
                                         onClick={this.displayForm}>
                                         <div className={'plus'}></div>ADD</button>}
+                                    {DownloadAccessibility &&
+                                        <ExcelFile filename={`${MachineRate}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            {this.renderColumn(`${MachineRate}`)}
+                                        </ExcelFile>
+                                    }
 
                                 </div>
                             </div>
@@ -669,8 +683,8 @@ class MachineRateListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${MachineRate}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${MachineRate}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
 import { OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
@@ -20,6 +20,8 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
+import ReactExport from 'react-export-excel';
+import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 class ReasonListing extends Component {
   constructor(props) {
@@ -68,7 +70,7 @@ class ReasonListing extends Component {
             DownloadAccessibility:
               permmisionData && permmisionData.Download
                 ? permmisionData.Download
-                : false,                
+                : false,
           })
         }
       }
@@ -237,32 +239,46 @@ class ReasonListing extends Component {
     )
   }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      // if (item.ClientName === null) {
+      //   item.ClientName = ' '
+      // } 
+      return item
+    })
 
-    var arr = this.props.reasonDataList && this.props.reasonDataList
-    console.log(this.props.reasonDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    // arr && arr.map(item => {
-    //     let len = Object.keys(item).length
-    //     for (let i = 0; i < len; i++) {
-    //         // let s = Object.keys(item)[i]
-    //         if (item.Specification === null) {
-    //             item.Specification = ' '
-    //         } else {
-    //             return false
+    return (<ExcelSheet data={temp} name={`${Reasonmaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.reasonDataList && this.props.reasonDataList.length > 0 ? this.props.reasonDataList : []
+    // if (arr != []) {
+    //     arr && arr.map(item => {
+    //         let len = Object.keys(item).length
+    //         for (let i = 0; i < len; i++) {
+    //             // let s = Object.keys(item)[i]
+    //             if (item.ECNNumber === null) {
+    //                 item.ECNNumber = ' '
+    //             } else if (item.RevisionNumber === null) {
+    //                 item.RevisionNumber = ' '
+    //             } else if (item.DrawingNumber === null) {
+    //                 item.DrawingNumber = ' '
+    //             } else if (item.Technology === '-') {
+    //                 item.Technology = ' '
+    //             } else {
+    //                 return false
+    //             }
     //         }
-    //     }
-    // })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
-}
-
-createCustomExportCSVButton = (onClick) => {
-    return (
-        <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-}
+    //     })
+    // }
+    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, arr)
+  }
 
   /**
    * @method render
@@ -270,13 +286,14 @@ createCustomExportCSVButton = (onClick) => {
    */
   render() {
     const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
-            //paginationShowsTotal: true,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
+      //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -306,6 +323,11 @@ createCustomExportCSVButton = (onClick) => {
                       <div className={'plus'}></div>ADD
                     </button>
                   )}
+                  {DownloadAccessibility &&
+                    <ExcelFile filename={`${Reasonmaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      {this.renderColumn(`${Reasonmaster}`)}
+                    </ExcelFile>
+                  }
                 </div>
               </div>
             </Col>
@@ -317,8 +339,8 @@ createCustomExportCSVButton = (onClick) => {
             bordered={false}
             options={options}
             search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${Reasonmaster}.csv`}
+            // exportCSV={DownloadAccessibility}
+            // csvFileName={`${Reasonmaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
@@ -332,7 +354,7 @@ createCustomExportCSVButton = (onClick) => {
               dataSort={true}
             >
               Reason
-          </TableHeaderColumn>
+            </TableHeaderColumn>
             <TableHeaderColumn
               width={100}
               dataField="IsActive"
@@ -341,7 +363,7 @@ createCustomExportCSVButton = (onClick) => {
               dataFormat={this.statusButtonFormatter}
             >
               Status
-          </TableHeaderColumn>
+            </TableHeaderColumn>
             <TableHeaderColumn
               width={80}
               className="action"
@@ -353,7 +375,7 @@ createCustomExportCSVButton = (onClick) => {
               dataFormat={this.buttonFormatter}
             >
               Actions
-          </TableHeaderColumn>
+            </TableHeaderColumn>
           </BootstrapTable>
         </div>
         {isOpenDrawer && (

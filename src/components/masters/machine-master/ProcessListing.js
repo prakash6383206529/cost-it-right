@@ -21,6 +21,8 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
 import { ProcessMaster } from '../../../config/constants'
+import ReactExport from 'react-export-excel';
+import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 
 class ProcessListing extends Component {
   constructor(props) {
@@ -407,17 +409,39 @@ class ProcessListing extends Component {
    */
   onSubmit = (values) => { }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.processList
-    return products; // must return the data which you want to be exported
-  }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      // if (item.ClientName === null) {
+      //     item.ClientName = ' '
+      // }
+      return item
+    })
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
+    return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.processList && this.props.processList.length > 0 ? this.props.processList : []
+    // if (arr != []) {
+    //     arr && arr.map(item => {
+    //         let len = Object.keys(item).length
+    //         for (let i = 0; i < len; i++) {
+    //             // let s = Object.keys(item)[i]
+    //             if (item.ClientName === null) {
+    //                 item.ClientName = ' '
+    //             } else {
+    //                 return false
+    //             }
+    //         }
+    //     })
+    // }
+    return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, arr)
   }
 
   /**
@@ -427,6 +451,7 @@ class ProcessListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const options = {
       clearSearch: true,
@@ -441,7 +466,7 @@ class ProcessListing extends Component {
     }
 
     return (
-      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+      <div className="">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -521,6 +546,11 @@ class ProcessListing extends Component {
                     className={'user-btn'}
                     onClick={this.processToggler}>
                     <div className={'plus'}></div>ADD</button>}
+                  {DownloadAccessibility &&
+                    <ExcelFile filename={`${ProcessMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      {this.renderColumn(`${ProcessMaster}`)}
+                    </ExcelFile>
+                  }
                 </div>
               </div>
             </Col>
@@ -536,8 +566,8 @@ class ProcessListing extends Component {
               bordered={false}
               options={options}
               search
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${ProcessMaster}.csv`}
+              // exportCSV={DownloadAccessibility}
+              // csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination

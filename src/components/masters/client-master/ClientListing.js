@@ -12,7 +12,7 @@ import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { CLIENT, Clientmaster } from '../../../config/constants';
+import { CLIENT, Clientmaster } from '../../../config/constants'; 
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';

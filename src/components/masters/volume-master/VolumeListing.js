@@ -13,7 +13,7 @@ import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '..
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
 import $ from 'jquery'
-import { costingHeadObjs, Months } from '../../../config/masterData'
+import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
@@ -24,6 +24,8 @@ import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
+import ReactExport from 'react-export-excel';
+
 const initialTableData = [
   {
     VolumeApprovedDetailId: 0,
@@ -547,39 +549,46 @@ class VolumeListing extends Component {
    */
   onSubmit(values) { }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
-
-    var arr = this.props.volumeDataList && this.props.volumeDataList
-    console.log(this.props.volumeDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    arr && arr.map(item => {
-      let len = Object.keys(item).length
-      for (let i = 0; i < len; i++) {
-        // let s = Object.keys(item)[i]
-        if (item.IsVendor === true) {
-          item.IsVendor = 'VBC'
-        }  else if (item.IsVendor === false) {
-          item.IsVendor = 'ZBC'
-        }  else if (item.VendorName === '-') {
-          item.VendorName = ' '
-        }  else if (item.Plant === '-') {
-          item.Plant = ' '
-        } else {
-          return false
-        }
-      }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      // if (item.ClientName === null) {
+      //   item.ClientName = ' '
+      // } 
+      return item
     })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
-  }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
+    return (<ExcelSheet data={temp} name={`${VolumeMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
   }
-
+  renderColumn = (fileName) => {
+    let arr = this.props.reasonDataList && this.props.reasonDataList.length > 0 ? this.props.reasonDataList : []
+    if (arr != []) {
+      arr && arr.map(item => {
+        let len = Object.keys(item).length
+        for (let i = 0; i < len; i++) {
+          // let s = Object.keys(item)[i]
+          if (item.IsVendor === true) {
+            item.IsVendor = 'VBC'
+          } else if (item.IsVendor === false) {
+            item.IsVendor = 'ZBC'
+          } else if (item.VendorName === '-') {
+            item.VendorName = ' '
+          } else if (item.Plant === '-') {
+            item.Plant = ' '
+          } else {
+            return false
+          }
+        }
+      })
+    }
+    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, arr)
+  }
   /**
    * @method render
    * @description Renders the component
@@ -596,6 +605,8 @@ class VolumeListing extends Component {
       BulkUploadAccessibility,
       DownloadAccessibility
     } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
+
     const options = {
       clearSearch: true,
       noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -624,7 +635,7 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid blue-before-inside"}>
+        <div className="container-fluid blue-before-inside">
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -801,6 +812,11 @@ class VolumeListing extends Component {
                         <div className={'plus'}></div>ADD
                       </button>
                     )}
+                    {DownloadAccessibility &&
+                      <ExcelFile filename={`${VolumeMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.renderColumn(`${VolumeMaster}`)}
+                      </ExcelFile>
+                    }
                   </div>
                 </div>
               </Col>
@@ -813,8 +829,8 @@ class VolumeListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${VolumeMaster}.csv`}
+            // exportCSV={DownloadAccessibility}
+            // csvFileName={`${VolumeMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

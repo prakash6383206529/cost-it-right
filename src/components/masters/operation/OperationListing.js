@@ -24,10 +24,11 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import ReactExport from 'react-export-excel';
 
 
 class OperationListing extends Component {
@@ -454,39 +455,47 @@ class OperationListing extends Component {
     onSubmit(values) {
     }
 
-    handleExportCSVButtonClick = () => {
-        // onClick();
-
-        var arr = this.props.operationList && this.props.operationList
-        console.log(this.props.operationList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-        arr && arr.map(item => {
-            let len = Object.keys(item).length
-            for (let i = 0; i < len; i++) {
-                // let s = Object.keys(item)[i] 
-                if (item.Specification === null) {
-                    item.Specification = ' '
-                } else if (item.CostingHead === true) {
-                    item.CostingHead = 'VBC'
-                } else if (item.CostingHead === false) {
-                    item.CostingHead = 'ZBC'
-                }  else if (item.Plants === '-') {
-                    item.Plants = ' '
-                }  else if (item.VendorName === '-') {
-                    item.VendorName = ' '
-                } else {
-                    return false
-                }
-            }
+    returnExcelColumn = (data = [], TempData) => {
+        const ExcelFile = ReactExport.ExcelFile;
+        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+        let temp = []
+        temp = TempData.map((item) => {
+            // if (item.ClientName === null) {
+            //   item.ClientName = ' '
+            // } 
+            return item
         })
-        let products = []
-        products = arr
-        return products; // must return the data which you want to be exported
-    }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+        return (<ExcelSheet data={temp} name={`${OperationMaster}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
+    }
+    renderColumn = (fileName) => {
+        let arr = this.props.operationList && this.props.operationList.length > 0 ? this.props.operationList : []
+        if (arr != []) {
+            arr && arr.map(item => {
+                let len = Object.keys(item).length
+                for (let i = 0; i < len; i++) {
+                    // let s = Object.keys(item)[i]
+                    if (item.Specification === null) {
+                        item.Specification = ' '
+                    } else if (item.CostingHead === true) {
+                        item.CostingHead = 'VBC'
+                    } else if (item.CostingHead === false) {
+                        item.CostingHead = 'ZBC'
+                    } else if (item.Plants === '-') {
+                        item.Plants = ' '
+                    } else if (item.VendorName === '-') {
+                        item.VendorName = ' '
+                    } else {
+                        return false
+                    }
+                }
+            })
+        }
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, arr)
     }
 
     /**
@@ -496,6 +505,7 @@ class OperationListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         if (toggleForm) {
             return (
@@ -510,9 +520,9 @@ class OperationListing extends Component {
             noDataText: (this.props.operationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
-                        //paginationShowsTotal: true,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
+            //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -524,7 +534,7 @@ class OperationListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid"}>
+                <div className="">
                     <form>
                         <Row>
                             <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
@@ -649,6 +659,11 @@ class OperationListing extends Component {
                                                 <div className={"plus"}></div>ADD
                                             </button>
                                         )}
+                                        {DownloadAccessibility &&
+                                            <ExcelFile filename={`${OperationMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {this.renderColumn(`${OperationMaster}`)}
+                                            </ExcelFile>
+                                        }
                                     </div>
                                 </div>
                             </Col>
@@ -661,8 +676,8 @@ class OperationListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        exportCSV={DownloadAccessibility}
-                        csvFileName={`${OperationMaster}.csv`}
+                        // exportCSV={DownloadAccessibility}
+                        // csvFileName={`${OperationMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}

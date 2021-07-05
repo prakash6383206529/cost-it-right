@@ -16,6 +16,8 @@ import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { applySuperScript } from '../../../helper/validation';
+import ReactExport from 'react-export-excel';
+import { UOM_DOWNLOAD_EXCEl } from '../../../config/masterData';
 
 class UOMMaster extends Component {
   constructor(props) {
@@ -209,32 +211,45 @@ class UOMMaster extends Component {
     })
   }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      // if (item.ClientName === null) {
+      //   item.ClientName = ' '
+      // } 
+      return item
+    })
 
-    var arr = this.state.dataList && this.state.dataList
-    console.log(this.state.dataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    // arr && arr.map(item => {
-    //     let len = Object.keys(item).length
-    //     for (let i = 0; i < len; i++) {
-    //         // let s = Object.keys(item)[i]
-    //         if (item.ClientName === null) {
-    //             item.ClientName = ' '
-    //         }else {
-    //             return false
+    return (<ExcelSheet data={temp} name={`${UomMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.dataList && this.props.dataList.length > 0 ? this.props.dataList : []
+    // if (arr != []) {
+    //     arr && arr.map(item => {
+    //         let len = Object.keys(item).length
+    //         for (let i = 0; i < len; i++) {
+    //             // let s = Object.keys(item)[i]
+    //             if (item.Country == 'NA') {
+    //                 item.Country = ' '
+    //             } else if (item.State == 'NA') {
+    //                 item.State = ' '
+    //             } else if (item.City == 'NA') {
+    //                 item.City = ' '
+    //             } else {
+    //                 return false
+    //             }
     //         }
-    //     }
-    // })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
+    //     })
+    // }
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, arr)
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
 
   /**
   * @method render
@@ -242,6 +257,8 @@ class UOMMaster extends Component {
   */
   render() {
     const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
+
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -261,7 +278,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn" : "container-fluid"}>
+        <div className="container-fluid">
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>
@@ -284,6 +301,11 @@ class UOMMaster extends Component {
                 </Col> */}
               </>
             )}
+            {DownloadAccessibility &&
+              <ExcelFile filename={`${UomMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                {this.renderColumn(`${UomMaster}`)}
+              </ExcelFile>
+            }
           </Row>
 
           <Row>
@@ -295,8 +317,8 @@ class UOMMaster extends Component {
                 bordered={false}
                 options={options}
                 search
-                exportCSV={DownloadAccessibility}
-                csvFileName={`${UomMaster}.csv`}
+                // exportCSV={DownloadAccessibility}
+                // csvFileName={`${UomMaster}.csv`}
                 //ignoreSinglePage
                 ref={"table"}
                 trClassName={"userlisting-row"}

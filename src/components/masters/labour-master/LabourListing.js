@@ -24,6 +24,8 @@ import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import ReactExport from 'react-export-excel';
 
 class LabourListing extends Component {
   constructor(props) {
@@ -528,39 +530,47 @@ class LabourListing extends Component {
    */
   onSubmit(values) { }
 
-  handleExportCSVButtonClick = () => {
-    // onClick();
-
-    var arr = this.props.labourDataList && this.props.labourDataList
-    console.log(this.props.labourDataList, 'this.props.bopDomesticListthis.props.bopDomesticList')
-    arr && arr.map(item => {
-      let len = Object.keys(item).length
-      for (let i = 0; i < len; i++) { 
-        // let s = Object.keys(item)[i]
-        if (item.Specification === null) {
-          item.Specification = ' '
-        }else if (item.IsContractBase === true) {
-          item.IsContractBase = 'VBC'
-        }else if (item.IsContractBase === false) {
-          item.IsContractBase = 'ZBC'
-        }else if (item.Vendor === '-') {
-          item.Vendor = ' '
-        }else if (item.Plant === '-') {
-          item.Plant = ' '
-        } else {
-          return false
-        }
+  returnExcelColumn = (data = [], TempData) => {
+    const ExcelFile = ReactExport.ExcelFile;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    let temp = []
+    temp = TempData.map((item) => {
+      if (item.ClientName === null) {
+        item.ClientName = ' '
       }
+      return item
     })
-    let products = []
-    products = arr
-    return products; // must return the data which you want to be exported
-  }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' />//onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
+    return (<ExcelSheet data={temp} name={`${LabourMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+  renderColumn = (fileName) => {
+    let arr = this.props.labourDataList && this.props.labourDataList.length > 0 ? this.props.labourDataList : []
+    if (arr != []) {
+      arr && arr.map(item => {
+        let len = Object.keys(item).length
+        for (let i = 0; i < len; i++) {
+          // let s = Object.keys(item)[i]
+          if (item.Specification === null) {
+            item.Specification = ' '
+          } else if (item.IsContractBase === true) {
+            item.IsContractBase = 'VBC'
+          } else if (item.IsContractBase === false) {
+            item.IsContractBase = 'ZBC'
+          } else if (item.Vendor === '-') {
+            item.Vendor = ' '
+          } else if (item.Plant === '-') {
+            item.Plant = ' '
+          } else {
+            return false
+          }
+        }
+      })
+    }
+    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, arr)
   }
 
   /**
@@ -577,6 +587,7 @@ class LabourListing extends Component {
       BulkUploadAccessibility,
       DownloadAccessibility,
     } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
     if (toggleForm) {
       return <AddLabour hideForm={this.hideForm} data={data} />
@@ -584,8 +595,8 @@ class LabourListing extends Component {
     const options = {
       clearSearch: true,
       noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -598,7 +609,7 @@ class LabourListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid"}>
+        <div className="container-fluid">
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -746,6 +757,11 @@ class LabourListing extends Component {
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
+                    {DownloadAccessibility &&
+                      <ExcelFile filename={`${LabourMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.renderColumn(`${LabourMaster}`)}
+                      </ExcelFile>
+                    }
                   </div>
                 </div>
               </Col>
@@ -758,8 +774,8 @@ class LabourListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${LabourMaster}.csv`}
+            // exportCSV={DownloadAccessibility}
+            // csvFileName={`${LabourMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
@@ -852,6 +868,7 @@ class LabourListing extends Component {
               anchor={'right'}
             />
           )}
+       
         </div>
       </>
     )
