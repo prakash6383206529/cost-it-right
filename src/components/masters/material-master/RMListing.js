@@ -16,6 +16,15 @@ import Association from './Association';
 import { RmMaterial } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class RMListing extends Component {
     constructor(props) {
@@ -24,7 +33,13 @@ class RMListing extends Component {
             isOpen: false,
             isEditFlag: false,
             ID: '',
-            isOpenAssociation: false
+            isOpenAssociation: false,
+            gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
+
         }
     }
 
@@ -128,18 +143,32 @@ class RMListing extends Component {
     * @method indexFormatter
     * @description Renders serial number
     */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
+    // indexFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
+
+    // indexFormatter = (props) => {
+    //     console.log(props, 'propssssssssssssss')
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
 
     /**
     * @method renderPaginationShowsTotal
@@ -175,9 +204,6 @@ class RMListing extends Component {
     }
 
     returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
         let temp = []
         temp = TempData.map((item) => {
             // if (item.ClientName === null) {
@@ -211,6 +237,34 @@ class RMListing extends Component {
         return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, arr)
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+        params.api.paginationGoToPage(1);
+    };
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -218,7 +272,25 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
-        const ExcelFile = ReactExport.ExcelFile;
+
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            // effectiveDateRenderer: this.effectiveDateFormatter,
+            // costingHeadRenderer: this.costingHeadFormatter,
+            // customLoadingOverlay: LoaderCustom,
+            // customNoRowsOverlay: NoContentFound,
+            // freightCostFormatter: this.freightCostFormatter,
+            // shearingCostFormatter: this.shearingCostFormatter,
+            // costFormatter: this.costFormatter,
+            // indexFormatter: this.indexFormatter
+        };
 
         const options = {
             clearSearch: true,
@@ -234,7 +306,8 @@ class RMListing extends Component {
         };
 
         return (
-            <div className="">
+            // <div className="">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
@@ -269,7 +342,7 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.rawMaterialTypeDataList}
                             striped={false}
                             bordered={false}
@@ -281,15 +354,60 @@ class RMListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
+                            pagination> */}
+                        {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>{this.renderDensity()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>{'Raw Material'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" dataSort={true}>{'Grade'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
-                        </BootstrapTable>
+                        </BootstrapTable> */}
+
+                        <div className="example-wrapper">
+                            <div className="example-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+
+                                <div className="paging-container d-inline-block">
+                                    <span className="d-inline-block">Page Size:</span>
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{
+                                    width: '100%'
+                                }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={this.props.rawMaterialTypeDataList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                    <AgGridColumn field="RawMaterial"></AgGridColumn>
+                                    <AgGridColumn field="Density"></AgGridColumn>
+                                    <AgGridColumn field="RMName"></AgGridColumn>
+                                    <AgGridColumn field="RMGrade"></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                            </div>
+                        </div>
                     </Col>
                 </Row>
                 {isOpen && <AddMaterialType

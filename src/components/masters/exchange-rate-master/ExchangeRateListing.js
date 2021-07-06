@@ -22,6 +22,15 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class ExchangeRateListing extends Component {
     constructor(props) {
@@ -153,12 +162,14 @@ class ExchangeRateListing extends Component {
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForInputOutput) : '';
     }
+
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -228,8 +239,9 @@ class ExchangeRateListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
     onExportToCSV = (row) => {
@@ -344,6 +356,19 @@ class ExchangeRateListing extends Component {
                 />
             )
         }
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            effectiveDateRenderer: this.effectiveDateFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound
+        };
         const options = {
             clearSearch: true,
             noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -362,7 +387,9 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                <div className="">
+                {/* <div className=""> */}
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <Row>
@@ -436,7 +463,7 @@ class ExchangeRateListing extends Component {
                         </Row>
 
                     </form>
-                    <BootstrapTable
+                    {/* <BootstrapTable
                         data={this.props.exchangeRateDataList}
                         striped={false}
                         hover={false}
@@ -458,7 +485,55 @@ class ExchangeRateListing extends Component {
                         <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="DateOfModification" width={130} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable>
+                    </BootstrapTable> */}
+
+                    <div className="example-wrapper">
+                        <div className="example-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+
+                            <div className="paging-container d-inline-block">
+                                <span className="d-inline-block">Page Size:</span>
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div
+                            className="ag-theme-material"
+                            style={{
+                                width: '100%'
+                            }}
+                        >
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                // columnDefs={c}
+                                rowData={this.props.exchangeRateDataList}
+                                pagination={true}
+                                paginationPageSize={10}
+                                onGridReady={this.onGridReady}
+                                gridOptions={gridOptions}
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: CONSTANT.EMPTY_DATA,
+                                }}
+                                frameworkComponents={frameworkComponents}
+                            >
+                                <AgGridColumn field="Currency"></AgGridColumn>
+                                <AgGridColumn field="CurrencyExchangeRate"></AgGridColumn>
+                                <AgGridColumn field="BankRate"></AgGridColumn>
+                                <AgGridColumn field="BankCommissionPercentage"></AgGridColumn>
+                                <AgGridColumn field="CustomRate"></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                <AgGridColumn field="DateOfModification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ExchangeRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            </AgGridReact>
+                        </div>
+                    </div>
+
                 </div>
             </ >
         );

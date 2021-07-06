@@ -22,6 +22,15 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { RmSpecification } from '../../../config/constants';
 import { SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class SpecificationListing extends Component {
     constructor(props) {
@@ -35,6 +44,12 @@ class SpecificationListing extends Component {
             specificationData: [],
             RawMaterial: [],
             RMGrade: [],
+            gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
+
         }
     }
 
@@ -293,9 +308,6 @@ class SpecificationListing extends Component {
     }
 
     returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
         let temp = []
         temp = TempData.map((item) => {
             // if (item.ClientName === null) {
@@ -329,6 +341,33 @@ class SpecificationListing extends Component {
         return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, arr)
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+        params.api.paginationGoToPage(1);
+    };
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
 
     /**
     * @method render
@@ -337,8 +376,23 @@ class SpecificationListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const ExcelFile = ReactExport.ExcelFile;
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            // effectiveDateRenderer: this.effectiveDateFormatter,
+            // costingHeadRenderer: this.costingHeadFormatter,
+            // customLoadingOverlay: LoaderCustom,
+            // customNoRowsOverlay: NoContentFound,
+            // freightCostFormatter: this.freightCostFormatter,
+            // shearingCostFormatter: this.shearingCostFormatter,
+            // costFormatter: this.costFormatter
+        };
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -352,7 +406,8 @@ class SpecificationListing extends Component {
         };
 
         return (
-            <div className="">
+            // <div className="">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -441,7 +496,7 @@ class SpecificationListing extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.rmSpecificationList}
                             striped={false}
                             bordered={false}
@@ -452,13 +507,56 @@ class SpecificationListing extends Component {
                             // csvFileName={`${RmSpecification}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
+                            pagination>*/}
+                        {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="RMGrade" dataAlign="left" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="left">Specification</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
+                        </BootstrapTable>  */}
+
+                        <div className="example-wrapper">
+                            <div className="example-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+
+                                <div className="paging-container d-inline-block">
+                                    <span className="d-inline-block">Page Size:</span>
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{
+                                    width: '100%'
+                                }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={this.props.rmSpecificationList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    <AgGridColumn field="RMName"></AgGridColumn>
+                                    <AgGridColumn field="RMGrade"></AgGridColumn>
+                                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                            </div>
+                        </div>
                     </Col>
                 </Row>
                 {isOpen && <AddSpecification

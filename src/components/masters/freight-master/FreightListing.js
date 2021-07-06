@@ -20,6 +20,15 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class FreightListing extends Component {
   constructor(props) {
@@ -34,6 +43,12 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
+
     }
   }
 
@@ -171,26 +186,30 @@ class FreightListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility, DeleteAccessibility } = this.props;
-    return (
-      <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
-      </>
-    )
-  }
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+     buttonFormatter = (props) => {
+      const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+      const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+      const { EditAccessibility, DeleteAccessibility } = this.props;
+      return (
+          <>
+              {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+              {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+          </>
+      )
+  };
 
   /**
   * @method costingHeadFormatter
   * @description Renders Costing head
   */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'VBC' : 'ZBC';
+  costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
   }
 
   /**
@@ -214,13 +233,13 @@ class FreightListing extends Component {
     return <>Costing Head </>
   }
 
-  /**
-  * @method costingHeadFormatter
-  * @description Renders Costing head
-  */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'Vendor Based' : 'Zero Based';
-  }
+  // /**
+  // * @method costingHeadFormatter
+  // * @description Renders Costing head
+  // */
+  // costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+  //   return cell ? 'Vendor Based' : 'Zero Based';
+  // }
 
   /**
   * @method effectiveDateFormatter
@@ -350,6 +369,33 @@ class FreightListing extends Component {
     return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, arr)
   }
 
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+    params.api.paginationGoToPage(1);
+  };
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
 
   /**
   * @method render
@@ -372,8 +418,24 @@ class FreightListing extends Component {
 
     };
 
+    
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+  };
+
+  const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      costingHeadRenderer: this.costingHeadFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound
+  };
+
     return (
-      <div className="">
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -519,7 +581,7 @@ class FreightListing extends Component {
         </form>
         <Row>
           <Col>
-            <BootstrapTable
+            {/* <BootstrapTable
               data={this.props.freightDetail}
               striped={false}
               hover={false}
@@ -530,15 +592,61 @@ class FreightListing extends Component {
               // csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
-              pagination>
-              {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-              <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-              <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="left" dataSort={true} >{'Source City'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
-              <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>
+              pagination> */}
+            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+            <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="left" dataSort={true} >{'Source City'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
+            <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+            </BootstrapTable>  */}
+
+            <div className="example-wrapper">
+              <div className="example-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+
+                <div className="paging-container d-inline-block">
+                  <span className="d-inline-block">Page Size:</span>
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+
+              </div>
+              <div
+                className="ag-theme-material"
+                style={{
+                  width: '100%'
+                }}
+              >
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  // columnDefs={c}
+                  rowData={this.props.freightDetail}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={this.onGridReady}
+                  gridOptions={gridOptions}
+                  loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  noRowsOverlayComponentParams={{
+                    title: CONSTANT.EMPTY_DATA,
+                  }}
+                  frameworkComponents={frameworkComponents}
+                >
+                  <AgGridColumn field="IsVendor" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                  <AgGridColumn field="Mode"></AgGridColumn>
+                  <AgGridColumn field="VendorName"></AgGridColumn>
+                  <AgGridColumn field="SourceCity"></AgGridColumn>
+                  <AgGridColumn field="DestinationCity"></AgGridColumn>
+                  <AgGridColumn field="FreightId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                </AgGridReact>
+              </div>
+            </div>
+
           </Col>
         </Row>
       </div >

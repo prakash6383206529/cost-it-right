@@ -28,7 +28,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { RowController } from 'ag-grid-community';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -326,9 +325,10 @@ class RMDomesticListing extends Component {
         return <>Net <br />Cost(INR) </>
     }
 
-    costFormatter = (cell, row, enumObject, rowIndex) => {
+    costFormatter = (props) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
     /**
@@ -344,16 +344,18 @@ class RMDomesticListing extends Component {
   * @method shearingCostFormatter
   * @description Renders buttons
   */
-    shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-';
+    shearingCostFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
     }
 
     /**
     * @method freightCostFormatter
     * @description Renders buttons
     */
-    freightCostFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? cell : '-';
+    freightCostFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
     }
 
     renderEffectiveDate = () => {
@@ -584,56 +586,10 @@ class RMDomesticListing extends Component {
     */
     onSubmit = (values) => { }
 
-    returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-        let temp = []
-        temp = TempData.map((item) => {
-            if (item.ClientName === null) {
-                item.ClientName = ' '
-            }
-            return item
-        })
-
-        return (<ExcelSheet data={temp} name={`${RmDomestic}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
-    }
-    renderColumn = (fileName) => {
-        let arr = this.props.rmDataList && this.props.rmDataList.length > 0 ? this.props.rmDataList : []
-        if (arr != []) {
-            arr && arr.map(item => {
-                let len = Object.keys(item).length
-                for (let i = 0; i < len; i++) {
-                    // let s = Object.keys(item)[i]
-                    if (item.RMFreightCost === null) {
-                        item.RMFreightCost = ' '
-                    } else if (item.RMShearingCost === null) {
-                        item.RMShearingCost = ' '
-                    } else if (item.MaterialType === '-') {
-                        item.MaterialType = ' '
-                    } else if (item.CostingHead === true) {
-                        item.CostingHead = 'VBC'
-                    } else if (item.CostingHead === false) {
-                        item.CostingHead = 'ZBC'
-                    } else {
-                        return false
-                    }
-                }
-            })
-        }
-        return this.returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, arr)
-    }
-
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
         params.api.paginationGoToPage(1);
-
-
-
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -641,33 +597,39 @@ class RMDomesticListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(value));
     };
 
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData.map((item) => {
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-            return item
-        })
-        return (
-
-            <ExcelSheet data={temp} name={'RM Domestic'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
-    }
-
-
-
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
         data && data.map((item => {
             tempArr.push(item.data)
         }))
-        return this.returnExcelColumn(RMDomesticZBC, tempArr)
+        return this.returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.RMFreightCost === null) {
+                item.RMFreightCost = ' '
+            } else if (item.RMShearingCost === null) {
+                item.RMShearingCost = ' '
+            } else if (item.MaterialType === '-') {
+                item.MaterialType = ' '
+            } else if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            } else {
+                return false
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={TempData} name={RmDomestic}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
@@ -715,189 +677,192 @@ class RMDomesticListing extends Component {
             costingHeadRenderer: this.costingHeadFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
+            freightCostFormatter: this.freightCostFormatter,
+            shearingCostFormatter: this.shearingCostFormatter,
+            costFormatter: this.costFormatter
         };
 
         return (
             // <div className="">
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                    {/* { this.props.loading && <Loader />} */}
-                    < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                        <Row className="filter-row-large pt-4 ">
-                            {this.state.shown &&
-                                <Col md="12" lg="11" className="filter-block ">
-                                    <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
-                                        <div className="flex-fills">
-                                            <h5>{`Filter By:`}</h5>
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="CostingHead"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={'Costing Head'}
-                                                isClearable={false}
-                                                options={this.renderListing('costingHead')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.costingHead === null || this.state.costingHead.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleHeadChange}
-                                                valueDescription={this.state.costingHead}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="Plant"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={'Plant'}
-                                                isClearable={false}
-                                                options={this.renderListing('plant')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.plant === null || this.state.plant.length === 0) ? [] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handlePlantChange}
-                                                valueDescription={this.state.plant}
-                                            />
-                                        </div>
-                                        {
-                                            !this.props.isSimulation &&
-                                            <div className="flex-fill">
-                                                <Field
-                                                    name="Technology"
-                                                    type="text"
-                                                    label=""
-                                                    component={searchableSelect}
-                                                    placeholder={'Technology'}
-                                                    isClearable={false}
-                                                    options={this.renderListing('technology')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleTechnologyChange}
-                                                    valueDescription={this.state.technology}
-                                                />
-                                            </div>
-                                        }
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="RawMaterialId"
-                                                type="text"
-                                                label={""}
-                                                component={searchableSelect}
-                                                placeholder={"Raw Material"}
-                                                isClearable={false}
-                                                options={this.renderListing("material")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={this.state.RawMaterial === null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleRMChange}
-                                                valueDescription={this.state.RawMaterial}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="RawMaterialGradeId"
-                                                type="text"
-                                                label={""}
-                                                component={searchableSelect}
-                                                placeholder={"RM Grade"}
-                                                isClearable={false}
-                                                options={this.renderListing("grade")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={
-                                                    this.state.RMGrade === null || this.state.RMGrade.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleGradeChange}
-                                                valueDescription={this.state.RMGrade}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="VendorId"
-                                                type="text"
-                                                label={""}
-                                                component={searchableSelect}
-                                                placeholder={"Vendor"}
-                                                isClearable={false}
-                                                options={this.renderListing("VendorNameList")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={
-                                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleVendorName}
-                                                valueDescription={this.state.vendorName}
-                                            />
-                                        </div>
-                                        <div className="flex-fill sliderange ">
-                                            <InputRange
-                                                //formatLabel={value => `${value}cm`}
-                                                maxValue={this.state.maxRange}
-                                                minValue={0}
-                                                value={this.state.value}
-                                                height={2}
-                                                onChange={(value) => this.setState({ value })}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={this.resetFilter}
-                                                className="reset mr10"
-                                            >
-                                                {"Reset"}
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={this.filterList}
-                                                className="user-btn"
-                                            >
-                                                {"Apply"}
-                                            </button>
-                                        </div>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                {/* { this.props.loading && <Loader />} */}
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
+                    <Row className="filter-row-large pt-4 ">
+                        {this.state.shown &&
+                            <Col md="12" lg="11" className="filter-block ">
+                                <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
+                                    <div className="flex-fills">
+                                        <h5>{`Filter By:`}</h5>
                                     </div>
-                                </Col>
-                                // ) : ("")
-                            }
-                            {
-                                !this.props.isSimulation &&
-                                <Col md="6" lg="6" className="search-user-block mb-3">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div>
-                                            <>
-                                                {this.state.shown ? (
-                                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                                ) : (
-                                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                                )}
-                                                {BulkUploadAccessibility && (
-                                                    <button
-                                                        type="button"
-                                                        className={"user-btn mr5"}
-                                                        onClick={this.bulkToggle}
-                                                    >
-                                                        <div className={"upload"}></div>Bulk Upload
-                                                    </button>
-                                                )}
-                                                {AddAccessibility && (
-                                                    <button
-                                                        type="button"
-                                                        className={"user-btn mr5"}
-                                                        onClick={this.formToggle}
-                                                    >
-                                                        <div className={"plus"}></div>ADD
-                                                    </button>
-                                                )}
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="CostingHead"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Costing Head'}
+                                            isClearable={false}
+                                            options={this.renderListing('costingHead')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.costingHead === null || this.state.costingHead.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleHeadChange}
+                                            valueDescription={this.state.costingHead}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="Plant"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Plant'}
+                                            isClearable={false}
+                                            options={this.renderListing('plant')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.plant === null || this.state.plant.length === 0) ? [] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handlePlantChange}
+                                            valueDescription={this.state.plant}
+                                        />
+                                    </div>
+                                    {
+                                        !this.props.isSimulation &&
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="Technology"
+                                                type="text"
+                                                label=""
+                                                component={searchableSelect}
+                                                placeholder={'Technology'}
+                                                isClearable={false}
+                                                options={this.renderListing('technology')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleTechnologyChange}
+                                                valueDescription={this.state.technology}
+                                            />
+                                        </div>
+                                    }
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="RawMaterialId"
+                                            type="text"
+                                            label={""}
+                                            component={searchableSelect}
+                                            placeholder={"Raw Material"}
+                                            isClearable={false}
+                                            options={this.renderListing("material")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={this.state.RawMaterial === null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleRMChange}
+                                            valueDescription={this.state.RawMaterial}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="RawMaterialGradeId"
+                                            type="text"
+                                            label={""}
+                                            component={searchableSelect}
+                                            placeholder={"RM Grade"}
+                                            isClearable={false}
+                                            options={this.renderListing("grade")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.RMGrade === null || this.state.RMGrade.length === 0 ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleGradeChange}
+                                            valueDescription={this.state.RMGrade}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="VendorId"
+                                            type="text"
+                                            label={""}
+                                            component={searchableSelect}
+                                            placeholder={"Vendor"}
+                                            isClearable={false}
+                                            options={this.renderListing("VendorNameList")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleVendorName}
+                                            valueDescription={this.state.vendorName}
+                                        />
+                                    </div>
+                                    <div className="flex-fill sliderange ">
+                                        <InputRange
+                                            //formatLabel={value => `${value}cm`}
+                                            maxValue={this.state.maxRange}
+                                            minValue={0}
+                                            value={this.state.value}
+                                            height={2}
+                                            onChange={(value) => this.setState({ value })}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {"Reset"}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.filterList}
+                                            className="user-btn"
+                                        >
+                                            {"Apply"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </Col>
+                            // ) : ("")
+                        }
+                        {
+                            !this.props.isSimulation &&
+                            <Col md="6" lg="6" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
+                                        <>
+                                            {this.state.shown ? (
+                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            ) : (
+                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                >
+                                                    <div className={"upload"}></div>Bulk Upload
+                                                </button>
+                                            )}
+                                            {AddAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.formToggle}
+                                                >
+                                                    <div className={"plus"}></div>ADD
+                                                </button>
+                                            )}
                                             {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                    <ExcelFile filename={RmDomestic} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
@@ -987,7 +952,7 @@ class RMDomesticListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}>
                                     <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
                                     <AgGridColumn field="MaterialType"></AgGridColumn>
@@ -997,10 +962,10 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="VendorName"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost"></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost"></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost"></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate" ></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}

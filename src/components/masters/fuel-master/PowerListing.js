@@ -23,6 +23,15 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { PowerMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class PowerListing extends Component {
   constructor(props) {
@@ -153,15 +162,18 @@ class PowerListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { DeleteAccessibility, EditAccessibility } = this.props;
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   /**
   * @method costingHeadFormatter
@@ -353,28 +365,28 @@ class PowerListing extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {}
-   
+  onSubmit = (values) => { }
+
   returnExcelColumn = (data = [], TempData) => {
     const ExcelFile = ReactExport.ExcelFile;
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData.map((item) => {
-        // if (item.CostingHead === true) {
-        //     item.CostingHead = 'Vendor Based'
-        // } else if (item.CostingHead === false) {
-        //     item.CostingHead = 'Zero Based'
-        // }
-        return item
+      // if (item.CostingHead === true) {
+      //     item.CostingHead = 'Vendor Based'
+      // } else if (item.CostingHead === false) {
+      //     item.CostingHead = 'Zero Based'
+      // }
+      return item
     })
 
     return (<ExcelSheet data={temp} name={`${PowerMaster}`}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-        }
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
     </ExcelSheet>);
-}
-renderColumn = (fileName) => {
+  }
+  renderColumn = (fileName) => {
     let arr = this.props.powerDataList && this.props.powerDataList.length > 0 ? this.props.powerDataList : []
     // if (arr != []) {
     //     arr && arr.map(item => {
@@ -396,7 +408,7 @@ renderColumn = (fileName) => {
     //     })
     // }
     return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, arr)
-}
+  }
 
   /**
   * @method render
@@ -416,12 +428,29 @@ renderColumn = (fileName) => {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
+    };
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      // effectiveDateRenderer: this.effectiveDateFormatter,
+      // costingHeadRenderer: this.costingHeadFormatter,
+      // customLoadingOverlay: LoaderCustom,
+      // customNoRowsOverlay: NoContentFound,
+      // freightCostFormatter: this.freightCostFormatter,
+      // shearingCostFormatter: this.shearingCostFormatter,
+      costFormatter: this.costFormatter
     };
 
     return (
 
-      <div className="">
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -582,11 +611,11 @@ renderColumn = (fileName) => {
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
-                     {DownloadAccessibility &&
-                                        <ExcelFile filename={`${PowerMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {this.renderColumn(`${PowerMaster}`)}
-                                        </ExcelFile>
-                                    }
+                    {DownloadAccessibility &&
+                      <ExcelFile filename={`${PowerMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.renderColumn(`${PowerMaster}`)}
+                      </ExcelFile>
+                    }
                   </>
                 </div>
               </div>
@@ -597,7 +626,7 @@ renderColumn = (fileName) => {
           <Col>
 
             {/* ZBC POWER LISTING */}
-            {!this.state.IsVendor &&
+            {/* {!this.state.IsVendor &&
               <BootstrapTable
                 data={this.props.powerDataList}
                 striped={false}
@@ -609,16 +638,16 @@ renderColumn = (fileName) => {
                 // csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
-                pagination>
-                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
+                pagination> */}
+            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
                 <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{'Net Cost Per Unit'}</TableHeaderColumn>
                 <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-              </BootstrapTable>}
+              </BootstrapTable>} */}
 
             {/* VENDOR POWER LISTING */}
-            {this.state.IsVendor &&
+            {/* {this.state.IsVendor &&
               <BootstrapTable
                 data={this.props.vendorPowerDataList}
                 striped={false}
@@ -630,14 +659,82 @@ renderColumn = (fileName) => {
                 csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
-                pagination>
-                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                pagination> */}
+            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
                 {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>}
                 <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costFormatterForVBC} >{'Net Cost Per Unit'}</TableHeaderColumn>
                 <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-              </BootstrapTable>}
+              </BootstrapTable>} */}
 
+
+            <div className="example-wrapper">
+              <div className="example-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+
+                <div className="paging-container d-inline-block">
+                  <span className="d-inline-block">Page Size:</span>
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+
+              </div>
+              <div
+                className="ag-theme-material"
+                style={{
+                  width: '100%'
+                }}
+              >
+                {!this.state.IsVendor &&
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    // columnDefs={c}
+                    rowData={this.props.powerDataList}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={this.onGridReady}
+                    gridOptions={gridOptions}
+                    loadingOverlayComponent={'customLoadingOverlay'}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: CONSTANT.EMPTY_DATA,
+                    }}
+                    frameworkComponents={frameworkComponents}
+                  >
+                    <AgGridColumn field="StateName"></AgGridColumn>
+                    <AgGridColumn field="PlantName"></AgGridColumn>
+                    <AgGridColumn field="NetPowerCostPerUnit"></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  </AgGridReact>}
+
+
+                {this.state.IsVendor &&
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    // columnDefs={c}
+                    rowData={this.props.vendorPowerDataList}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={this.onGridReady}
+                    gridOptions={gridOptions}
+                    loadingOverlayComponent={'customLoadingOverlay'}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: CONSTANT.EMPTY_DATA,
+                    }}
+                    frameworkComponents={frameworkComponents}
+                  >
+                    <AgGridColumn field="VendorName"></AgGridColumn>
+                    <AgGridColumn field="VendorPlantName"></AgGridColumn>
+                    <AgGridColumn field="NetPowerCostPerUnit"></AgGridColumn>
+                    <AgGridColumn field="PowerDetailId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  </AgGridReact>}
+
+              </div>
+            </div>
           </Col>
         </Row>
       </div >
