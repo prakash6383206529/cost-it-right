@@ -53,12 +53,12 @@ class Login extends Component {
       grant_type: 'password',
     }
     this.props.loginUserAPI(values, (res) => {
-      console.log('res: ', res);
+
       // this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data.Data);
-        console.log('userDetail: ', userDetail);
+
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
         // // this.setState({ isRedirect: true })
