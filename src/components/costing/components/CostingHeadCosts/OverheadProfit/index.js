@@ -1564,7 +1564,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        <div className="d-inline-block">
+                        <div className="d-inline-block w-100">
                           {overheadObj?.OverheadApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
@@ -1630,7 +1630,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        <div className="d-inline-block">
+                        <div className="d-inline-block w-100">
                           {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
@@ -1916,7 +1916,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        <div className="d-inline-block">
+                        <div className="d-inline-block w-100">
                           {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
@@ -1982,7 +1982,7 @@ function OverheadProfit(props) {
                         />
                       </Col>
                       <Col md="3">
-                        <div className="d-inline-block">
+                        <div className="d-inline-block w-100">
                           {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
                             <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
