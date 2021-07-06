@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -256,6 +257,7 @@ class AddIndivisualPart extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
