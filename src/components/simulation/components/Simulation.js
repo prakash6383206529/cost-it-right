@@ -149,6 +149,7 @@ function Simulation(props) {
     const editTable = () => {
         let flag = true;
         let vendorFlag = true;
+        let plantFlag = true;
         //  setShowEditTable(true)
         switch (master.label) {
             case RMDOMESTIC:
@@ -166,9 +167,14 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
+                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
+                            toastr.warning('Please select one Plant at a time.')
+                            plantFlag = false
+                            return false
+                        }
                     }
                 });
-                if (flag === true && vendorFlag === true) {
+                if (flag === true && vendorFlag === true && plantFlag === true) {
                     setShowEditTable(true)
                 }
                 break;
@@ -186,9 +192,14 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
+                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
+                            toastr.warning('Please select one Plant at a time.')
+                            plantFlag = false
+                            return false
+                        }
                     }
                 })
-                if (flag === true && vendorFlag === true) {
+                if (flag === true && vendorFlag === true && plantFlag === true) {
                     setShowEditTable(true)
                 }
                 break;
