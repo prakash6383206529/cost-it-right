@@ -18,6 +18,8 @@ import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -543,7 +545,7 @@ class AddSpecification extends Component {
                             {" "}
                             <img
                               alt={""}
-                              src={require("../../../assests/images/times.png")}
+                              src={cancelImg}
                             ></img>
                           </div>{" "}
                           {"Cancel"}
@@ -555,7 +557,7 @@ class AddSpecification extends Component {
                           <div className={"check-icon"}>
                             <img
                               alt={""}
-                              src={require("../../../assests/images/check.png")}
+                              src={saveImg}
                             ></img>
                           </div>{" "}
                           {isEditFlag ? "Update" : "Save"}

@@ -31,11 +31,11 @@ import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import moment from 'moment';
-
-
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import WarningMessage from '../../common/WarningMessage';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -1675,7 +1675,7 @@ class AddRMImport extends Component {
                           >
                             <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/times.png")}
+                                src={cancelImg}
                                 alt="cancel-icon.jpg"
                               />
                             </div>{" "}
@@ -1687,7 +1687,7 @@ class AddRMImport extends Component {
                           >
                             <div className={"check-icon"}>
                               <img
-                                src={require("../../../assests/images/check.png")}
+                                src={saveImg}
                                 alt="check-icon.jpg"
                               />
                             </div>{" "}

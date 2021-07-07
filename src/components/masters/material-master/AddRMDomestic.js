@@ -32,6 +32,8 @@ import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 const selector = formValueSelector('AddRMDomestic')
 
@@ -1678,7 +1680,7 @@ class AddRMDomestic extends Component {
                           >
                             <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/times.png")}
+                                src={cancelImg}
                                 alt="cancel-icon.jpg"
                               />
                             </div>{" "}
@@ -1690,7 +1692,7 @@ class AddRMDomestic extends Component {
                           >
                             <div className={"check-icon"}>
                               <img
-                                src={require("../../../assests/images/check.png")}
+                                src={saveImg}
                                 alt="check-icon.jpg"
                               />
                             </div>{" "}

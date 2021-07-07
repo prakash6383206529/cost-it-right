@@ -9,6 +9,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddRawMaterial extends Component {
   constructor(props) {
@@ -153,7 +155,7 @@ class AddRawMaterial extends Component {
                       >
                         <div className={"cross-icon"}>
                           <img
-                            src={require("../../../assests/images/times.png")}
+                            src={cancelImg}
                             alt="cancel-icon.jpg"
                           />
                         </div>
@@ -166,7 +168,7 @@ class AddRawMaterial extends Component {
                       >
                         <div className={"check-icon"}>
                           <img
-                            src={require("../../../assests/images/check.png")}
+                            src={saveImg}
                             alt=""
                           />
                         </div>
