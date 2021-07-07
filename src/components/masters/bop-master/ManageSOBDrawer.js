@@ -3,15 +3,15 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { required } from "../../../helper/validation";
-
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 function ManageSOBDrawer(props) {
 
@@ -352,12 +352,12 @@ function ManageSOBDrawer(props) {
                     type={'button'}
                     className="reset mr15 cancel-btn"
                     onClick={cancel} >
-                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                    <div className={'cross-icon'}><img src={cancelImg} alt='cancel-icon.jpg' /></div> {'Cancel'}
                   </button>
                   <button
                     type={'submit'}
                     className="submit-button mr5 save-btn">
-                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                    <div className={'check-icon'}><img src={saveImg} alt='check-icon.jpg' /> </div>
                     {'Update'}
                   </button>
                 </div>

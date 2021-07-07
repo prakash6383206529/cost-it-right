@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-  required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
-  maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, applySuperScript
+  required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
+  maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
@@ -13,9 +13,8 @@ import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
@@ -25,9 +24,10 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
-import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
-import { applySuperScripts } from '../../../helper';
+import { AcceptableBOPUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -1092,7 +1092,7 @@ class AddBOPDomestic extends Component {
                           >
                             <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/times.png")}
+                                src={cancelImg}
                                 alt="cancel-icon.jpg"
                               />
                             </div>{" "}
@@ -1104,7 +1104,7 @@ class AddBOPDomestic extends Component {
                           >
                             <div className={"check-icon"}>
                               <img
-                                src={require("../../../assests/images/check.png")}
+                                src={saveImg}
                                 alt="check-icon.jpg"
                               />{" "}
                             </div>

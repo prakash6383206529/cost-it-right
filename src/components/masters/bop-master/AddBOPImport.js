@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-  required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
-  postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthFour, decimalLengthsix
+  required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
+  postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
@@ -32,6 +32,8 @@ import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -1183,7 +1185,7 @@ class AddBOPImport extends Component {
                           >
                             <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/times.png")}
+                                src={cancelImg}
                                 alt="cancel-icon.jpg"
                               />
                             </div>{" "}
@@ -1195,7 +1197,7 @@ class AddBOPImport extends Component {
                           >
                             <div className={"check-icon"}>
                               <img
-                                src={require("../../../assests/images/check.png")}
+                                src={saveImg}
                                 alt="check-icon.jpg"
                               />{" "}
                             </div>
