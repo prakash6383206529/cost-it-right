@@ -151,7 +151,7 @@ class ClientListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-     buttonFormatter = (props) => {
+    buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
@@ -163,6 +163,15 @@ class ClientListing extends Component {
             </>
         )
     };
+
+    
+    /**
+    * @method hyphenFormatter
+    */
+     hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
+    }
 
     /**
     * @method handlePlant
@@ -244,46 +253,11 @@ class ClientListing extends Component {
     onSubmit(values) {
     }
 
-    returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-        let temp = []
-        temp = TempData.map((item) => {
-            if (item.ClientName === null) {
-                item.ClientName = ' '
-            }
-            return item
-        })
-
-        return (<ExcelSheet data={temp} name={`${Clientmaster}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
-    }
-    renderColumn = (fileName) => {
-        let arr = this.props.clientDataList && this.props.clientDataList.length > 0 ? this.props.clientDataList : []
-        if (arr != []) {
-            arr && arr.map(item => {
-                let len = Object.keys(item).length
-                for (let i = 0; i < len; i++) {
-                    // let s = Object.keys(item)[i]
-                    if (item.ClientName === null) {
-                        item.ClientName = ' '
-                    } else {
-                        return false
-                    }
-                }
-            })
-        }
-        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, arr)
-    }
-
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
         params.api.paginationGoToPage(1);
     };
+
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(value));
@@ -295,12 +269,31 @@ class ClientListing extends Component {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
+
         return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr)
     };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.ClientName === null) {
+                item.ClientName = ' '
+            } else {
+                return false
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={TempData} name={Clientmaster}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
+
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
@@ -340,7 +333,8 @@ class ClientListing extends Component {
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter:this.hyphenFormatter
         };
 
         return (
@@ -358,17 +352,24 @@ class ClientListing extends Component {
                                     {AddAccessibility && (
                                         <button
                                             type="button"
-                                            className={"user-btn"}
+                                            className={"user-btn mr5"}
                                             onClick={this.formToggle}
                                         >
                                             <div className={"plus"}></div>ADD
                                         </button>
                                     )}
-                                    {DownloadAccessibility &&
-                                        <ExcelFile filename={`${Clientmaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {this.renderColumn(`${Clientmaster}`)}
-                                        </ExcelFile>
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                     }
+
+                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                                 </div>
                             </Col>
                         </Row>
@@ -399,25 +400,13 @@ class ClientListing extends Component {
                         <TableHeaderColumn dataField="ClientId" dataAlign="right" className="action" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable> */}
 
-                    <div className="example-wrapper">
-                        <div className="example-header">
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                            <div className="paging-container d-inline-block">
-                                <span className="d-inline-block">Page Size:</span>
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
-
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{
-                                width: '100%'
-                            }}
+                            style={{ height: '100%', width: '100%' }}
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
@@ -434,18 +423,23 @@ class ClientListing extends Component {
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="CompanyName"></AgGridColumn>
-                                <AgGridColumn field="ClientName"></AgGridColumn>
-                                <AgGridColumn field="ClientEmailId"></AgGridColumn>
-                                <AgGridColumn field="CountryName"></AgGridColumn>
-                                <AgGridColumn field="StateName"></AgGridColumn>
-                                <AgGridColumn field="CityName"></AgGridColumn>
+                                <AgGridColumn field="CompanyName" headerName="Company"></AgGridColumn>
+                                <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
+                                <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
+                                <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                                <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                                 <AgGridColumn field="ClientId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-
-
 
                     {
                         isOpenVendor && <AddClientDrawer
