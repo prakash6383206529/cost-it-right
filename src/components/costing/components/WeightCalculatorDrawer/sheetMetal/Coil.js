@@ -56,7 +56,7 @@ function Coil(props) {
     }
 
     const {
-        register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+        register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues,

@@ -14,7 +14,7 @@ import moment from 'moment'
 
 
 function PushSection(props) {
-    const { register, handleSubmit, errors, control } = useForm();
+    const { register, handleSubmit, formState: { errors }, control } = useForm();
 
     return (
         <>

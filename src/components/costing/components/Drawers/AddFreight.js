@@ -25,7 +25,7 @@ function AddFreight(props) {
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},

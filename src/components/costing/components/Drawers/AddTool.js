@@ -23,7 +23,7 @@ function AddTool(props) {
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},

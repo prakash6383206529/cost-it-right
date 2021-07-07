@@ -4,7 +4,7 @@ import { Col, Row, } from 'reactstrap';
 
 function Plate(props) {
 
-  const { register, control, errors } = useForm({
+  const { register, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });

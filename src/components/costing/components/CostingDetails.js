@@ -32,7 +32,7 @@ import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -75,14 +75,14 @@ function CostingDetails(props) {
   const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
-  
+
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
 
   // client based costing
-  const [clientDrawer,setClientDrawer] = useState(false)
-  const [isOpenDrawer,setIsOpenDrawer] = useState(false)
+  const [clientDrawer, setClientDrawer] = useState(false)
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   // client based costing
 
   const fieldValues = useWatch({
@@ -310,11 +310,11 @@ function CostingDetails(props) {
   }
 
   // client based costing start 
-  const toggleCLientCosting = () =>{
+  const toggleCLientCosting = () => {
     setClientDrawer(true)
   }
 
-  const closeCLientCostingDrawer = () =>{
+  const closeCLientCostingDrawer = () => {
     setClientDrawer(false)
   }
   // client based costing end
@@ -1811,15 +1811,15 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
-                          
-                        {/* client based costing button */}
+
+                          {/* client based costing button */}
                           {/* <button type={"button"} className="reset-btn w-auto px-3 mr5" onClick={toggleCLientCosting} >{"Client based costing"}</button> */}
-                        {/* client based costing button */}
+                          {/* client based costing button */}
 
 
-                          
+
                           <button type={"button"} className="reset-btn" onClick={cancel} >
-                          <div className="cancel-icon"></div>
+                            <div className="cancel-icon"></div>
                             {"Clear"}
                           </button>
                           {IsShowNextBtn &&
@@ -1901,13 +1901,13 @@ function CostingDetails(props) {
       />}
 
       {clientDrawer && (
-          <Clientbasedcostingdrawer
-            isOpen={clientDrawer}
-            closeDrawer={closeCLientCostingDrawer}
-            isEditFlag={false}
-            anchor={'right'}
-          />
-        )}
+        <Clientbasedcostingdrawer
+          isOpen={clientDrawer}
+          closeDrawer={closeCLientCostingDrawer}
+          isEditFlag={false}
+          anchor={'right'}
+        />
+      )}
     </>
   );
 }

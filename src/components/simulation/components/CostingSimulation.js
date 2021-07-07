@@ -30,7 +30,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
 
-    const { register, control, errors, getValues, setValue } = useForm({
+    const { register, control, formState: { errors }, getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })

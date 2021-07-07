@@ -15,6 +15,10 @@ import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutPart
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+const gridOptions = {};
 
 function AddBOP(props) {
 
@@ -30,7 +34,7 @@ function AddBOP(props) {
   const { bopDrawerList } = useSelector(state => state.costing)
 
 
-  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+  const { register, handleSubmit, control, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -221,6 +225,23 @@ function AddBOP(props) {
     getDataList()
   }
 
+  const isFirstColumn = (params) => {
+    console.log('params: ', params);
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    console.log('displayedColumns: ', displayedColumns);
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    console.log('thisIsFirstColumn: ', thisIsFirstColumn);
+    return thisIsFirstColumn;
+  }
+
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
+  };
+
 
   /**
   * @method render
@@ -280,7 +301,7 @@ function AddBOP(props) {
             </form >
             <Row className="mx-0">
               <Col className="hidepage-size">
-                <BootstrapTable
+                {/* <BootstrapTable
                   data={tableData}
                   striped={false}
                   bordered={false}
@@ -303,7 +324,56 @@ function AddBOP(props) {
                   <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" dataFormat={currencyFormatter} searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
                   <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
-                </BootstrapTable>
+                </BootstrapTable> */}
+                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-header">
+                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  </div>
+                  <div
+                    className="ag-theme-material"
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <AgGridReact
+                      style={{ height: '100%', width: '100%' }}
+                      defaultColDef={defaultColDef}
+                      // columnDefs={c}
+                      rowData={tableData}
+                      pagination={true}
+                      paginationPageSize={10}
+                      // onGridReady={onGridReady}
+                      gridOptions={gridOptions}
+                      loadingOverlayComponent={'customLoadingOverlay'}
+                      noRowsOverlayComponent={'customNoRowsOverlay'}
+                      noRowsOverlayComponentParams={{
+                        title: CONSTANT.EMPTY_DATA,
+                      }}
+                      suppressRowClickSelection={true}
+                      rowSelection={'multiple'}
+                    // frameworkComponents={frameworkComponents}
+                    >
+                      <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
+                      <AgGridColumn field="EntryType" ></AgGridColumn>
+                      <AgGridColumn field="BoughtOutPartNumber"></AgGridColumn>
+                      <AgGridColumn field="BoughtOutPartName"></AgGridColumn>
+                      <AgGridColumn field="BoughtOutPartCategory"></AgGridColumn>
+                      <AgGridColumn field="Specification"></AgGridColumn>
+                      {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
+                      <AgGridColumn field="Currency"></AgGridColumn>
+                      <AgGridColumn field="VendorName"></AgGridColumn>
+                      <AgGridColumn field="UOM"></AgGridColumn>
+                      <AgGridColumn field="NetLandedCost"></AgGridColumn>
+                      <AgGridColumn field="NetLandedCostConversion" ></AgGridColumn>
+
+                    </AgGridReact>
+                    <div className="paging-container d-inline-block float-right">
+                      <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                        <option value="10" selected={true}>10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </Col>
             </Row>
 

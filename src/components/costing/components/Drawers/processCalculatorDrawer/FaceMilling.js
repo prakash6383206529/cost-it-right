@@ -94,7 +94,7 @@ function FaceMilling(props) {
     setValue,
     getValues,
     reset,
-    errors,
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -686,7 +686,7 @@ function FaceMilling(props) {
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>
-                <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
+                  <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
                 </div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
