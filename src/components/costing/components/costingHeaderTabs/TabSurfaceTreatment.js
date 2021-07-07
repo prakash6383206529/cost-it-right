@@ -655,12 +655,7 @@ function TabSurfaceTreatment(props) {
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={"save-icon"}></div>
                       {"Save"}
                     </button>
                   </div>

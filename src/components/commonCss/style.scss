@@ -1144,6 +1144,50 @@ input.form-control{
   background-size: contain;
 }
 
+.next-icon{
+  width: 16px;
+  height: 11px;
+  background: transparent url("../../assests/images/right-arrow-white.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-left: 5px;
+  background-size: contain;
+}
+
+.back-icon{
+  width: 8px;
+  height: 13px;
+  background: transparent url("../../assests/images/back.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
+.add-rounded{
+  width: 30px;
+  height: 30px;
+  background: transparent url("../../assests/images/add-bom.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.send-for-approval{
+  margin-right: 5px;
+  width: 13px;
+  height: 16px;
+  background: transparent url("../../assests/images/send-for-approval.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.compare-arrows{
+  margin-right: 5px;
+  width: 20px;
+  height: 14px;
+  background: transparent url("../../assests/images/compare.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
 .save-icon{
   width: 18px;
   height: 12px;

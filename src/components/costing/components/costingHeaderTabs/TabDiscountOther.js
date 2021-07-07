@@ -829,12 +829,7 @@ function TabDiscountOther(props) {
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}
                       >
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../../assests/images/check.png")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"save-icon"}></div>
                         {"Save"}
                       </button>}
 
@@ -844,12 +839,7 @@ function TabDiscountOther(props) {
                         onClick={() => setGoToNext(true)}
                       >
                         {"Next"}
-                        <div className={"check-icon ml-1"}>
-                          <img
-                            src={require("../../../../assests/images/right-arrow-white.svg")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"next-icon"}></div>
                       </button>}
 
                     </div>

@@ -249,9 +249,7 @@ class SimulationUploadDrawer extends Component {
                                     <div className="col-md-12 pl-3 pr-3">
                                         <div className="text-right ">
                                             <button type="submit" className="btn-primary save-btn">
-                                                <div className={"check-icon"}>
-                                                    <img src={require("../../../assests/images/check.png")} alt="" />
-                                                </div>
+                                                <div className={"save-icon"}></div>
                                                 {"SAVE"}
                                             </button>
                                         </div>
