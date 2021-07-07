@@ -4,9 +4,10 @@ import { getMenuByUser, getLeftMenu } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Field, reduxForm } from "redux-form";
+import dashboardImg from '../../assests/images/dashboard-img.png'
 
 
-function Dashboard (props) {
+function Dashboard(props) {
   const { handleSubmit, menusData } = props
 
   useEffect(() => {
@@ -16,22 +17,22 @@ function Dashboard (props) {
         props.getLeftMenu(
           menusData[0].ModuleId,
           loggedInUserId(),
-          (res) => {}
+          (res) => { }
         );
       }
     });
   })
-  
-  
 
-  return(
+
+
+  return (
     <>
       <div className="dashboard-top position-relative">
-          <div className="dashboard-text">
-            <h2>Dashboard will come here</h2>
-          </div>
-          <img src={require('../../assests/images/dashboard-img.png')} alt='dashboard-background' />
-       </div>      
+        <div className="dashboard-text">
+          <h2>Dashboard will come here</h2>
+        </div>
+        <img src={dashboardImg} alt='dashboard-background' />
+      </div>
     </>
   )
 }
