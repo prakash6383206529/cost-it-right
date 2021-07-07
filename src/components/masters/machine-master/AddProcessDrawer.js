@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, reset, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
 import { acceptAllExceptSingleSpecialCharacter, required } from '../../../helper/validation'
-import { renderText, renderMultiSelectField, renderDatePicker } from '../../layout/FormInputs'
+import { renderText } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
 import { getPlantSelectList } from '../../../actions/Common'
@@ -13,6 +13,8 @@ import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
 import moment from 'moment'
 import LoaderCustom from '../../common/LoaderCustom'
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
@@ -332,7 +334,7 @@ class AddProcessDrawer extends Component {
                     >
                       <div className={'cross-icon'}>
                         <img
-                          src={require('../../../assests/images/times.png')}
+                          src={cancelImg}
                           alt="cancel-icon.jpg"
                         />
                       </div>{' '}
@@ -344,7 +346,7 @@ class AddProcessDrawer extends Component {
                     >
                       <div className={'check-icon'}>
                         <img
-                          src={require('../../../assests/images/check.png')}
+                          src={saveImg}
                           alt="check-icon.jpg"
                         />{' '}
                       </div>
