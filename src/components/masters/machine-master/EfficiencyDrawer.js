@@ -5,6 +5,8 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, checkForNull } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('EfficiencyDrawer');
 
 class EfficiencyDrawer extends Component {
@@ -75,7 +77,7 @@ class EfficiencyDrawer extends Component {
         const { handleSubmit, isEditFlag, } = this.props;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>

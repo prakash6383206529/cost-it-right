@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { alphaNumeric, required, alphabetsOnlyForName, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
@@ -10,6 +10,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddGrade extends Component {
   constructor(props) {
@@ -154,7 +156,7 @@ class AddGrade extends Component {
                       value="CANCEL"
                       className="reset mr15 cancel-btn"
                     >
-                    <div className={"cancel-icon"}></div>
+                      <div className={"cancel-icon"}></div>
                             CANCEL
                           </button>
                     <button

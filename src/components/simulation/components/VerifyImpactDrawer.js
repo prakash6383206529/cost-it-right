@@ -24,11 +24,11 @@ function VerifyImpactDrawer(props) {
   const [shown, setshown] = useState(false)
   const [acc1, setAcc1] = useState(false)
   const [acc2, setAcc2] = useState(false)
-  const [acc3,setAcc3] = useState(false)
+  const [acc3, setAcc3] = useState(false)
 
   const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -503,10 +503,6 @@ function VerifyImpactDrawer(props) {
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button type={'button'} className="reset mr15 cancel-btn" onClick={toggleDrawer}>
                     <div className={"cancel-icon"}></div>{'Cancel'}
-                  </button>
-
-                  <button type="submit" className="submit-button  save-btn" >
-                    <div className={"save-icon"}></div>{'Submit'}
                   </button>
                 </div>
               </Row>

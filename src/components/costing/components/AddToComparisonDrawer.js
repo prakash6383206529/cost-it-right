@@ -20,7 +20,7 @@ function AddToComparisonDrawer(props) {
   const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantCode, destinationPlantName, destinationPlantId } = editObject
 
-  const { register, handleSubmit, control, setValue, errors } = useForm({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {

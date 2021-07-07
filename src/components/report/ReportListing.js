@@ -26,7 +26,7 @@ function ReportListing(props) {
 
     const dispatch = useDispatch()
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -73,96 +73,96 @@ function ReportListing(props) {
 
     // table headings start
     const renderCostingVersion = () => {
-        return <>Costing <br/>Version</>
+        return <>Costing <br />Version</>
     }
     const renderPOPrice = () => {
         return <>PO Price</>
     }
     const renderPartNumber = () => {
-        return <>Part <br/>Number</>
+        return <>Part <br />Number</>
     }
     const renderPartName = () => {
-        return <>Part <br/>Name</>
+        return <>Part <br />Name</>
     }
     const renderRMNameGrade = () => {
-        return <>RM <br/>Name-Grade</>
+        return <>RM <br />Name-Grade</>
     }
     const renderGrossWeight = () => {
-        return <>Gross <br/>Weight</>
+        return <>Gross <br />Weight</>
     }
     const renderFinishWeight = () => {
-        return <>Finish <br/>Weight</>
+        return <>Finish <br />Weight</>
     }
     const renderScrapWeight = () => {
-        return <>Scrap <br/>Weight</>
+        return <>Scrap <br />Weight</>
     }
     const renderNetRMCost = () => {
-        return <>Net <br/>RM Cost</>
+        return <>Net <br />RM Cost</>
     }
     const renderNetBOPCost = () => {
-        return <>Net <br/>BOP Cost</>
+        return <>Net <br />BOP Cost</>
     }
     const renderProcessCost = () => {
-        return <>Process <br/>Cost</>
+        return <>Process <br />Cost</>
     }
     const renderOperationCost = () => {
-        return <>Operation <br/>Cost</>
+        return <>Operation <br />Cost</>
     }
     const renderSurfaceTreatment = () => {
-        return <>Surface <br/>Treatment</>
+        return <>Surface <br />Treatment</>
     }
     const renderTransportationCost = () => {
-        return <>Transportation <br/>Cost</>
+        return <>Transportation <br />Cost</>
     }
     const renderNetConversionCost = () => {
-        return <>Net <br/>Conversion Cost</>
+        return <>Net <br />Conversion Cost</>
     }
     const renderModelTypeForOverheadProfit = () => {
-        return <>Model Type For<br/> Overhead/Profit</>
+        return <>Model Type For<br /> Overhead/Profit</>
     }
     const renderPaymentTerms = () => {
-        return <>Payment <br/>Terms</>
+        return <>Payment <br />Terms</>
     }
     const renderNetOverheadProfits = () => {
-        return <>Net Overhead<br/> & Profits</>
+        return <>Net Overhead<br /> & Profits</>
     }
     const renderPackagingCost = () => {
-        return <>Packaging <br/>Cost</>
+        return <>Packaging <br />Cost</>
     }
     const renderNetPackagingFreight = () => {
-        return <>Net Packaging<br/> & Freight</>
+        return <>Net Packaging<br /> & Freight</>
     }
     const renderToolMaintenanceCost = () => {
-        return <>Tool <br/>Maintenance Cost</>
+        return <>Tool <br />Maintenance Cost</>
     }
     const renderToolPrice = () => {
-        return <>Tool<br/> Price</>
+        return <>Tool<br /> Price</>
     }
     const renderAmortizationQuantity = () => {
-        return <>Amortization <br/>Quantity(Tool Life)</>
+        return <>Amortization <br />Quantity(Tool Life)</>
     }
     const renderNetToolCost = () => {
-        return <>Net Tool<br/> Cost</>
+        return <>Net Tool<br /> Cost</>
     }
     const renderTotalCost = () => {
-        return <>Total<br/> Cost</>
+        return <>Total<br /> Cost</>
     }
     const renderHundiOtherDiscount = () => {
-        return <>Hundi/Other<br/> Discount</>
+        return <>Hundi/Other<br /> Discount</>
     }
     const renderAnyOtherCost = () => {
-        return <>Any Other<br/> Cost</>
+        return <>Any Other<br /> Cost</>
     }
     const renderNetPOPrice = () => {
-        return <>Net PO<br/> Price(INR)</>
+        return <>Net PO<br /> Price(INR)</>
     }
     const renderNetPOPrice2 = () => {
-        return <>Net PO<br/> Price (USD)</> 
+        return <>Net PO<br /> Price (USD)</>
     }
 
     // table headings end
 
-    
+
 
     /**
    * @method getTableData
@@ -176,17 +176,17 @@ function ReportListing(props) {
             fromDate: null,
             statusId: 1,
             technologyId: 1,
-            plantCode:"",
-            vendorCode:"",
-            userId:EMPTY_GUID,
-            isSortByOrderAsc:true,
+            plantCode: "",
+            vendorCode: "",
+            userId: EMPTY_GUID,
+            isSortByOrderAsc: true,
         }
-        props.getReportListing(filterData, (res) => {})
+        props.getReportListing(filterData, (res) => { })
     }
 
 
     useEffect(() => {
-        getTableData(); 
+        getTableData();
     }, [])
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -450,7 +450,7 @@ function ReportListing(props) {
 function mapStateToProps({ report, auth }) {
     const { reportDataList, loading } = report;
     const { initialConfiguration } = auth;
-    return { reportDataList, loading, initialConfiguration,}
+    return { reportDataList, loading, initialConfiguration, }
 }
 
 export default connect(mapStateToProps, {

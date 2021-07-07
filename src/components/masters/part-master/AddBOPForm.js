@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, minValue1, positiveAndDecimalNumber, } from "../../../helper/validation";
+import { required, maxLength5, minValue1, positiveAndDecimalNumber, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { } from '../../../actions/Common';
 import { BOUGHTOUTPART } from '../../../config/constants';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddBOPForm extends Component {
   constructor(props) {
@@ -159,7 +160,7 @@ class AddBOPForm extends Component {
           className="form"
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-          >
+        >
           <Row>
             <Col md="6">
               <Field

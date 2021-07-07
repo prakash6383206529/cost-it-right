@@ -11,7 +11,7 @@ import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 
 function AddVendorDrawer(props) {
 
-  const { register, handleSubmit, errors, reset, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset, control } = useForm();
 
   const [vendor, setVendor] = useState([]);
   const [vendorPlant, setVendorPlant] = useState([]);

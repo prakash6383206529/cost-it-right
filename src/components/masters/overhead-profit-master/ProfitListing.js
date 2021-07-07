@@ -8,7 +8,6 @@ import {
     getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
 } from '../actions/OverheadProfit';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
@@ -23,6 +22,7 @@ import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import { ProfitMaster } from '../../../config/constants';
+import cancelImg from '../../../assests/images/times.png'
 
 class ProfitListing extends Component {
     constructor(props) {

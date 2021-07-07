@@ -797,7 +797,7 @@ a:hover {
   @include ag-theme-material((
     font-size:14px,
     font-family: ('Roboto', sans-serif ),
-    material-active-color: #256bd1,
+    // material-active-color: #256bd1,
     row-border-color: #C2CBE8,
     row-hover-color: null,
     row-height: ag-derived(grid-size, $times: 6, $plus: 1),

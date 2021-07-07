@@ -22,7 +22,7 @@ function ApproveRejectDrawer(props) {
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit, setValue, getValues } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })

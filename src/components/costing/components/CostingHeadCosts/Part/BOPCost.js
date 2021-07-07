@@ -16,7 +16,7 @@ let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
 
-  const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
+  const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {

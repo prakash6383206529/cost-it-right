@@ -3,15 +3,15 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { required } from "../../../helper/validation";
-
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 function ManageSOBDrawer(props) {
 
@@ -21,7 +21,7 @@ function ManageSOBDrawer(props) {
     //OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,

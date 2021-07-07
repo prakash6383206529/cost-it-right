@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    required, number, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter,
+    required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter,
     maxLength80, maxLength20, postiveNumber, maxLength10, maxLength3, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, } from "../../layout/FormInputs";
@@ -14,6 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import ClientListing from './ClientListing';
 import $ from 'jquery';
+
 
 class AddClient extends Component {
     constructor(props) {

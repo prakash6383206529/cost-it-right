@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, decimalLengthFour, alphaNumeric, checkWhiteSpaces, excludeOnlySpecialCharacter, acceptAllExceptSingleSpecialCharacter, positiveAndDecimalNumber } from "../../../helper/validation";
-import { renderText, renderNumberInputField } from "../../layout/FormInputs";
+import { required, decimalLengthFour, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, positiveAndDecimalNumber } from "../../../helper/validation";
+import { renderText } from "../../layout/FormInputs";
 import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddMaterialType extends Component {
   constructor(props) {

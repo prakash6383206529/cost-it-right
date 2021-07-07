@@ -21,7 +21,7 @@ import { useHistory } from "react-router-dom";
 
 function TabDiscountOther(props) {
 
-  const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
+  const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });

@@ -10,6 +10,8 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddCategory extends Component {
     constructor(props) {
@@ -164,7 +166,7 @@ class AddCategory extends Component {
                                                 type="submit"
                                                 // disabled={isSubmitted ? true : false}
                                                 className="btn-primary save-btn">
-                                                    <div className={"save-icon"}></div>
+                                                <div className={"save-icon"}></div>
                                                 {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                                             </button>
                                         </div>

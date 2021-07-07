@@ -26,7 +26,7 @@ function Tool(props) {
     NetToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.NetToolCost !== undefined ? ObjectForOverAllApplicability.NetToolCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},

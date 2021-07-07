@@ -36,7 +36,8 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import moment from 'moment';
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import { Fragment } from 'react';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {

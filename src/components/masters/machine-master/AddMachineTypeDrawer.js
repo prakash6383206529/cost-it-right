@@ -10,6 +10,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddMachineTypeDrawer extends Component {
   constructor(props) {
@@ -123,7 +125,7 @@ class AddMachineTypeDrawer extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper"}>
@@ -132,7 +134,7 @@ class AddMachineTypeDrawer extends Component {
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                >
+              >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>

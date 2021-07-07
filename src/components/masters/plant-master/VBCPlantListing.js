@@ -17,6 +17,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantVbc } from '../../../config/constants';
+import cancelImg from '../../../assests/images/times.png'
 
 class VBCPlantListing extends Component {
     constructor(props) {

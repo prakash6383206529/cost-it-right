@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
@@ -19,6 +19,10 @@ import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import attachClose from '../../../assests/images/red-cross.png'
+
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
@@ -1002,7 +1006,7 @@ class AddProfit extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={attachClose}
                                     ></img>
                                   </div>
                                 );

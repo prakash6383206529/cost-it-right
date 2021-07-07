@@ -37,7 +37,7 @@ function SimulationApprovalListing(props) {
     const { simualtionApprovalList } = useSelector(state => state.simulation)
     const userList = useSelector(state => state.auth.userList)
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
