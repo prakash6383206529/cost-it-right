@@ -1125,6 +1125,35 @@ input.form-control{
   opacity: 1;
   font-size: 0;
 }
+
+.cancel-icon-white{
+  filter: brightness(100);
+  width: 14px;
+  height: 14px;
+  background: transparent url("../../assests/images/times.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.cancel-icon{
+  width: 11px;
+  height: 11px;
+  background: transparent url("../../assests/images/times.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
+.save-icon{
+  width: 18px;
+  height: 12px;
+  background: transparent url("../../assests/images/check.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+}
+
+
+
 .Module-Name {
   text-align: left;
   font-size: 16px;

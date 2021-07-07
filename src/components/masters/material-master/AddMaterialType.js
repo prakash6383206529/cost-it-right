@@ -199,12 +199,7 @@ class AddMaterialType extends Component {
                         value="CANCEL"
                         className="mr15 cancel-btn"
                       >
-                        <div className={"cross-icon"}>
-                          <img
-                            src={require("../../../assests/images/times.png")}
-                            alt="cancel-icon.jpg"
-                          />
-                        </div>
+                        <div className={"cancel-icon"}></div>
                             CANCEL
                           </button>
                       <button
@@ -213,12 +208,7 @@ class AddMaterialType extends Component {
                         className="user-btn save-btn"
                       >
                         {" "}
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../assests/images/check.png")}
-                            alt="check-icon.jpg"
-                          />
-                        </div>
+                        <div className={"save-icon"}></div>
                         {this.state.isEditFlag ? "UPDATE" : "SAVE"}
                       </button>
                     </div>
