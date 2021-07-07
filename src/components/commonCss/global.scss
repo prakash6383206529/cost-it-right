@@ -2684,10 +2684,10 @@ body {
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
-      .ag-grid-wrapper{
-        min-height: 100vh;
-        height: 100vh !important;
-      }
+      // .ag-grid-wrapper{
+      //   min-height: 100vh;
+      //   height: 100vh !important;
+      // }
       .search-user-block{
         padding-right: 15px !important;
       }      
