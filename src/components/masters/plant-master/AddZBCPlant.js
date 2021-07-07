@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -14,6 +14,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -546,7 +548,7 @@ class AddZBCPlant extends Component {
                     >
                       <div className={"cross-icon"}>
                         <img
-                          src={require("../../../assests/images/times.png")}
+                          src={cancelImg}
                           alt="cancel-icon.jpg"
                         />
                       </div>{" "}
@@ -558,7 +560,7 @@ class AddZBCPlant extends Component {
                     >
                       <div className={"check-icon"}>
                         <img
-                          src={require("../../../assests/images/check.png")}
+                          src={saveImg}
                           alt="check-icon.jpg"
                         />
                       </div>{" "}

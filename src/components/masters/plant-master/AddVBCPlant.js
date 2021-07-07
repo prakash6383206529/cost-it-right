@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
 
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
@@ -14,6 +14,8 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddVBCPlant extends Component {
   constructor(props) {
@@ -302,7 +304,7 @@ class AddVBCPlant extends Component {
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                >
+              >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>
@@ -521,7 +523,7 @@ class AddVBCPlant extends Component {
                     >
                       <div className={"cross-icon"}>
                         <img
-                          src={require("../../../assests/images/times.png")}
+                          src={cancelImg}
                           alt="cancel-icon.jpg"
                         />
                       </div>{" "}
@@ -533,7 +535,7 @@ class AddVBCPlant extends Component {
                     >
                       <div className={"check-icon"}>
                         <img
-                          src={require("../../../assests/images/check.png")}
+                          src={saveImg}
                           alt="check-icon.jpg"
                         />
                       </div>{" "}
