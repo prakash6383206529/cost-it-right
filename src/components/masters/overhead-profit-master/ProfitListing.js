@@ -8,7 +8,6 @@ import {
     getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
 } from '../actions/OverheadProfit';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
@@ -23,6 +22,7 @@ import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import { ProfitMaster } from '../../../config/constants';
+import cancelImg from '../../../assests/images/times.png'
 
 class ProfitListing extends Component {
     constructor(props) {
@@ -580,7 +580,7 @@ class ProfitListing extends Component {
                                 <div>
                                     {this.state.shown ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            <img src={cancelImg} alt="cancel-icon.jpg" /></button>
                                     ) : (
                                         <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                                     )}
