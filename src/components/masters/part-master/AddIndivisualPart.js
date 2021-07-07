@@ -15,8 +15,7 @@ import moment from 'moment';
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -256,6 +255,7 @@ class AddIndivisualPart extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -637,24 +637,14 @@ class AddIndivisualPart extends Component {
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
                           >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={cancelImg}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >
-                            <div className={"check-icon"}>
-                              <img
-                                src={saveImg}
-                                alt="check-icon.jpg"
-                              />{" "}
-                            </div>
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
                           </button>
                         </div>

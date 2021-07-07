@@ -160,13 +160,13 @@ class AddCategory extends Component {
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn">
 
-                                                <div className={'cross-icon'}><img src={cancelImg} alt='error-icon' /></div>CANCEL</button>
+                                                <div className={"cancel-icon"}></div>
+                                                CANCEL</button>
                                             <button
                                                 type="submit"
                                                 // disabled={isSubmitted ? true : false}
-                                                className="btn-primary save-btn"
-                                            >	<div className={'check-icon'}><img src={saveImg} alt='check-icon.jpg' />
-                                                </div>
+                                                className="btn-primary save-btn">
+                                                <div className={"save-icon"}></div>
                                                 {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                                             </button>
                                         </div>

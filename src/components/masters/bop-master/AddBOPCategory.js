@@ -120,13 +120,7 @@ class AddBOPCategory extends Component {
                                                 className=" mr15 cancel-btn"
                                                 onClick={this.cancel}
                                             >
-                                                <div className={"cross-icon"}>
-                                                    {" "}
-                                                    <img
-                                                        alt={""}
-                                                        src={cancelImg}
-                                                    ></img>
-                                                </div>{" "}
+                                                <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
 
@@ -134,12 +128,7 @@ class AddBOPCategory extends Component {
                                                 type="submit"
                                                 className="user-btn save-btn"
                                             >
-                                                <div className={"check-icon"}>
-                                                    <img
-                                                        alt={""}
-                                                        src={saveImg}
-                                                    ></img>
-                                                </div>{" "}
+                                                <div className={"save-icon"}></div>
                                                 {isEditFlag ? "Update" : "Save"}
                                             </button>
                                         </div>

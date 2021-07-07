@@ -387,7 +387,7 @@ class SpecificationListing extends Component {
                         <Col md={6} className="text-right mb-3 search-user-block">
                             {this.state.shown ? (
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                    <div className="cancel-icon-white"></div></button>
                             ) : (
                                 <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                             )}

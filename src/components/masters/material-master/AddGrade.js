@@ -156,12 +156,7 @@ class AddGrade extends Component {
                       value="CANCEL"
                       className="reset mr15 cancel-btn"
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={cancelImg}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>
+                      <div className={"cancel-icon"}></div>
                             CANCEL
                           </button>
                     <button
@@ -170,12 +165,7 @@ class AddGrade extends Component {
                       className="user-btn save-btn"
                     >
                       {" "}
-                      <div className={"check-icon"}>
-                        <img
-                          alt={""}
-                          src={saveImg}
-                        ></img>
-                      </div>
+                      <div className={"save-icon"}></div>
                       {this.props.isEditFlag ? "UPDATE" : "SAVE"}
                     </button>
                   </div>

@@ -6,8 +6,7 @@ import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSp
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
+
 
 class AddComponentForm extends Component {
   constructor(props) {
@@ -285,12 +284,7 @@ class AddComponentForm extends Component {
                 className="reset mt-2 mr-2 cancel-btn"
                 onClick={this.cancel}
               >
-                <div className={"cross-icon"}>
-                  <img
-                    src={cancelImg}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>{" "}
+                <div className={"cancel-icon"}></div>
                 {"Cancel"}
               </button>
               <button
@@ -306,12 +300,7 @@ class AddComponentForm extends Component {
                 className="submit-button mt-2 save-btn"
                 onClick={() => this.setState({ isAddMore: false })}
               >
-                <div className={"check-icon"}>
-                  <img
-                    src={saveImg}
-                    alt="check-icon.jpg"
-                  />{" "}
-                </div>
+                <div className={"save-icon"}></div>
                 {isEditFlag ? "Update" : "Save"}
               </button>
             </div>

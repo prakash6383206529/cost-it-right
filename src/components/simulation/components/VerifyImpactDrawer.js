@@ -502,7 +502,7 @@ function VerifyImpactDrawer(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button type={'button'} className="reset mr15 cancel-btn" onClick={toggleDrawer}>
-                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt="cancel-icon.jpg" /></div>{'Cancel'}
+                    <div className={"cancel-icon"}></div>{'Cancel'}
                   </button>
                 </div>
               </Row>

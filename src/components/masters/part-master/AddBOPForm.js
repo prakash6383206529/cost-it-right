@@ -249,12 +249,7 @@ class AddBOPForm extends Component {
                 className="reset mt-2 mr-2 cancel-btn"
                 onClick={this.cancel}
               >
-                <div className={"cross-icon"}>
-                  <img
-                    src={cancelImg}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>{" "}
+                <div className={"cancel-icon"}></div>
                 {"Cancel"}
               </button>
               <button
@@ -270,12 +265,7 @@ class AddBOPForm extends Component {
                 className="submit-button mt-2 save-btn"
                 onClick={() => this.setState({ isAddMore: false })}
               >
-                <div className={"check-icon"}>
-                  <img
-                    src={saveImg}
-                    alt="check-icon.jpg"
-                  />{" "}
-                </div>
+                <div className={"save-icon"}></div>
                 {isEditFlag ? "Update" : "Save"}
               </button>
             </div>
