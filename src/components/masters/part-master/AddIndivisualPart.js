@@ -12,11 +12,11 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import moment from 'moment';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -639,7 +639,7 @@ class AddIndivisualPart extends Component {
                           >
                             <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/times.png")}
+                                src={cancelImg}
                                 alt="cancel-icon.jpg"
                               />
                             </div>{" "}
@@ -651,7 +651,7 @@ class AddIndivisualPart extends Component {
                           >
                             <div className={"check-icon"}>
                               <img
-                                src={require("../../../assests/images/check.png")}
+                                src={saveImg}
                                 alt="check-icon.jpg"
                               />{" "}
                             </div>

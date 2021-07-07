@@ -10,6 +10,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -458,7 +460,7 @@ class BOMViewer extends Component {
                     >
                       <div className={"cross-icon"}>
                         <img
-                          src={require("../../../assests/images/times.png")}
+                          src={cancelImg}
                           alt="cancel-icon.jpg"
                         />
                       </div>{" "}
@@ -471,7 +473,7 @@ class BOMViewer extends Component {
                       >
                         <div className={"check-icon"}>
                           <img
-                            src={require("../../../assests/images/check.png")}
+                            src={saveImg}
                             alt="check-icon.jpg"
                           />{" "}
                         </div>

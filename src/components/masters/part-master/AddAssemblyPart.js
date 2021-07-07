@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -14,16 +14,16 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import moment from 'moment';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -896,7 +896,7 @@ class AddAssemblyPart extends Component {
                         >
                           <div className={"cross-icon"}>
                             <img
-                              src={require("../../../assests/images/times.png")}
+                              src={cancelImg}
                               alt="cancel-icon.jpg"
                             />
                           </div>{" "}
@@ -908,7 +908,7 @@ class AddAssemblyPart extends Component {
                         >
                           <div className={"check-icon"}>
                             <img
-                              src={require("../../../assests/images/check.png")}
+                              src={saveImg}
                               alt="check-icon.jpg"
                             />{" "}
                           </div>

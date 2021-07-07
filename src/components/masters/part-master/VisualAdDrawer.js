@@ -2,9 +2,11 @@ import React from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { yupResolver } from '@hookform/resolvers';
+import { NumberFieldHookForm } from '../../layout/HookFormInputs';
+// import { yupResolver } from '@hookform/resolvers';
 import * as yup from "yup";
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 const schema = yup.object().shape({
     quantity: yup.string().matches(/^[0-9][0-9]*$/, 'Please enter valid number').required('this field is required'),
@@ -105,13 +107,13 @@ export default function VishualAdDrawer(props) {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        <div className={'cross-icon'}><img src={cancelImg} alt='cancel-icon.jpg' /></div> {'Cancel'}
                                     </button>
 
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn">
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                        <div className={'check-icon'}><img src={saveImg} alt='check-icon.jpg' /> </div>
                                         {'Update'}
                                     </button>
                                 </div>
