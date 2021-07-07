@@ -80,5 +80,6 @@
     "url": "http://10.10.1.3:2010/cir/base/cost-it-right-lite.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {}
 }
