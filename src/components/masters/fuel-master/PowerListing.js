@@ -204,14 +204,16 @@ class PowerListing extends Component {
     return <>Sr. <br />No. </>
   }
 
-  costFormatter = (cell, row, enumObject, rowIndex) => {
+  costFormatter = (props) => {
     const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    const cellValue = props?.value;
+    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
-  costFormatterForVBC = (cell, row, enumObject, rowIndex) => {
+  costFormatterForVBC = (props) => {
     const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    const cellValue = props?.value;
+    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
   /**
@@ -368,16 +370,19 @@ class PowerListing extends Component {
   onSubmit = (values) => { }
 
   returnExcelColumn = (data = [], TempData) => {
-    const ExcelFile = ReactExport.ExcelFile;
-    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData.map((item) => {
-      // if (item.CostingHead === true) {
-      //     item.CostingHead = 'Vendor Based'
-      // } else if (item.CostingHead === false) {
-      //     item.CostingHead = 'Zero Based'
-      // }
+      if (item.IsVendor === true) {
+        item.IsVendor = 'VBC'
+      } if (item.IsVendor === false) {
+        item.IsVendor = 'ZBV'
+      } if (item.Plants === '-') {
+        item.Plants = ' '
+      } if (item.Vendor === '-') {
+        item.Vendor = ' '
+      } else {
+        return false
+      }
       return item
     })
 
@@ -386,28 +391,32 @@ class PowerListing extends Component {
       }
     </ExcelSheet>);
   }
-  renderColumn = (fileName) => {
-    let arr = this.props.powerDataList && this.props.powerDataList.length > 0 ? this.props.powerDataList : []
-    // if (arr != []) {
-    //     arr && arr.map(item => {
-    //         let len = Object.keys(item).length
-    //         for (let i = 0; i < len; i++) {
-    //             // let s = Object.keys(item)[i]
-    //             if (item.IsVendor === true) {
-    //                 item.IsVendor = 'VBC'
-    //             } if (item.IsVendor === false) {
-    //                 item.IsVendor = 'ZBV'
-    //             } if (item.Plants === '-') {
-    //                 item.Plants = ' '
-    //             } if (item.Vendor === '-') {
-    //                 item.Vendor = ' '
-    //             } else {
-    //                 return false
-    //             }
-    //         }
-    //     })
-    // }
-    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, arr)
+
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+    params.api.paginationGoToPage(1);
+  };
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
   /**
@@ -611,11 +620,18 @@ class PowerListing extends Component {
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
-                    {DownloadAccessibility &&
-                      <ExcelFile filename={`${PowerMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                        {this.renderColumn(`${PowerMaster}`)}
-                      </ExcelFile>
+                    {
+                      DownloadAccessibility &&
+                      <>
+                        <ExcelFile filename={PowerMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                          {this.onBtExport()}
+                        </ExcelFile>
+                      </>
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                     }
+
+                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                   </>
                 </div>
               </div>
@@ -667,26 +683,13 @@ class PowerListing extends Component {
                 <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>} */}
 
-
-            <div className="example-wrapper">
-              <div className="example-header">
+            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                <div className="paging-container d-inline-block">
-                  <span className="d-inline-block">Page Size:</span>
-                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                    <option value="10" selected={true}>10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
-
               </div>
               <div
                 className="ag-theme-material"
-                style={{
-                  width: '100%'
-                }}
+                style={{ height: '100%', width: '100%' }}
               >
                 {!this.state.IsVendor &&
                   <AgGridReact
@@ -706,7 +709,7 @@ class PowerListing extends Component {
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
-                    <AgGridColumn field="NetPowerCostPerUnit"></AgGridColumn>
+                    <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
@@ -729,10 +732,16 @@ class PowerListing extends Component {
                   >
                     <AgGridColumn field="VendorName"></AgGridColumn>
                     <AgGridColumn field="VendorPlantName"></AgGridColumn>
-                    <AgGridColumn field="NetPowerCostPerUnit"></AgGridColumn>
+                    <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
                     <AgGridColumn field="PowerDetailId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
-
+                <div className="paging-container d-inline-block float-right">
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
               </div>
             </div>
           </Col>
