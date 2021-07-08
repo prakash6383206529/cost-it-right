@@ -22,7 +22,7 @@ function ApproveRejectDrawer(props) {
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit, setValue, getValues } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -583,12 +583,7 @@ function ApproveRejectDrawer(props) {
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
-                    <div className={'cross-icon'}>
-                      <img
-                        src={require('../../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{' '}
+                    <div className={'cancel-icon'}></div>
                     {'Cancel'}
                   </button>
 
@@ -597,12 +592,7 @@ function ApproveRejectDrawer(props) {
                     className="submit-button  save-btn"
                     onClick={onSubmit}
                   >
-                    <div className={'check-icon'}>
-                      <img
-                        src={require('../../../../assests/images/check.png')}
-                        alt="check-icon.jpg"
-                      />{' '}
-                    </div>
+                    <div className={'save-icon'}></div>
                     {'Submit'}
                   </button>
                 </div>

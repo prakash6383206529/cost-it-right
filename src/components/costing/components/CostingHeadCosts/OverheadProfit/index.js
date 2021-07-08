@@ -41,7 +41,7 @@ function OverheadProfit(props) {
     RepaymentPeriodCost: PaymentTermDetail !== null ? PaymentTermDetail.NetCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -2491,7 +2491,7 @@ function OverheadProfit(props) {
                 {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
-                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  <div className={"save-icon"}></div>
                   {'Save'}
                 </button>}
               </div>

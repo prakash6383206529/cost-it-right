@@ -25,7 +25,7 @@ function AddFreight(props) {
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
@@ -515,13 +515,13 @@ function AddFreight(props) {
                       type={'button'}
                       className="reset mr15 cancel-btn"
                       onClick={cancel} >
-                      <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                      <div className={"cancel-icon"}></div> {'Cancel'}
                     </button>
 
                     <button
                       type={'submit'}
                       className="submit-button save-btn">
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                      <div className={"save-icon"}></div>
                       {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>

@@ -458,13 +458,13 @@ class BulkUpload extends Component {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div> {'Cancel'}
+                                        <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
                                     <button
                                         type="submit"
                                         className="submit-button save-btn" >
-                                        <div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img>
-                                        </div> {isEditFlag ? 'Update' : 'Save'}
+                                        <div className={"save-icon"}></div>
+                                         {isEditFlag ? 'Update' : 'Save'}
                                     </button>
                                 </div>
                             </Row>

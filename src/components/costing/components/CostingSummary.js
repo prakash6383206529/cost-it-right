@@ -18,7 +18,7 @@ import { useHistory } from "react-router-dom";
 
 function CostingSummary(props) {
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -316,7 +316,7 @@ function CostingSummary(props) {
           </button> */}
 
           <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+            <div className="add-rounded m-auto"></div>
             <span className="d-block mt-1">ADD BOM</span>
           </button>
         </div>
@@ -514,12 +514,7 @@ function CostingSummary(props) {
                           //disabled={pristine || submitting}
                           onClick={resetData}
                           className="reset-btn"
-                        ><div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
+                        ><div className={'cancel-icon'}></div>
                           {"Clear"}
                         </button>
                       </Col>

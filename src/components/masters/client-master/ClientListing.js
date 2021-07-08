@@ -164,11 +164,10 @@ class ClientListing extends Component {
         )
     };
 
-    
     /**
     * @method hyphenFormatter
     */
-     hyphenFormatter = (props) => {
+    hyphenFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? cellValue : '-';
     }
@@ -334,7 +333,7 @@ class ClientListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter:this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter
         };
 
         return (

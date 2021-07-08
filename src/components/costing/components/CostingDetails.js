@@ -27,10 +27,12 @@ import BOMUpload from '../../massUpload/BOMUpload';
 import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
+import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
+
 export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -74,8 +76,14 @@ function CostingDetails(props) {
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
 
+
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+
+  // client based costing
+  const [clientDrawer, setClientDrawer] = useState(false)
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+  // client based costing
 
   const fieldValues = useWatch({
     control,
@@ -300,6 +308,17 @@ function CostingDetails(props) {
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
   }
+
+  // client based costing start 
+  const toggleCLientCosting = () => {
+    setClientDrawer(true)
+  }
+
+  const closeCLientCostingDrawer = () => {
+    setClientDrawer(false)
+  }
+  // client based costing end
+
 
   /**
    * @method nextToggle
@@ -1304,6 +1323,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
+  // const [isOpenDrawer] = 
 
 
   return (
@@ -1791,24 +1811,21 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
+
+                          {/* client based costing button */}
+                          {/* <button type={"button"} className="reset-btn w-auto px-3 mr5" onClick={toggleCLientCosting} >{"Client based costing"}</button> */}
+                          {/* client based costing button */}
+
+
+
                           <button type={"button"} className="reset-btn" onClick={cancel} >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className="cancel-icon"></div>
                             {"Clear"}
                           </button>
                           {IsShowNextBtn &&
                             <button type="button" className="submit-button save-btn ml15" onClick={nextToggle} >
                               {"Next"}
-                              <div className={"check-icon ml-1"}>
-                                <img
-                                  src={require("../../../assests/images/right-arrow-white.svg")}
-                                  alt="check-icon.jpg"
-                                />{" "}
-                              </div>
+                              <div className={"next-icon"}></div>
                             </button>}
                         </div>
                       </Row>}
@@ -1877,6 +1894,15 @@ function CostingDetails(props) {
         messageLabel={'BOM'}
         anchor={'right'}
       />}
+
+      {clientDrawer && (
+        <Clientbasedcostingdrawer
+          isOpen={clientDrawer}
+          closeDrawer={closeCLientCostingDrawer}
+          isEditFlag={false}
+          anchor={'right'}
+        />
+      )}
     </>
   );
 }

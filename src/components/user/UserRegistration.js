@@ -620,7 +620,7 @@ class UserRegistration extends Component {
 
     tempArray.push(...HeadLevelGrid, {
       Technology: simulationHeads.label,
-      SimulationTechnologyId: simulationHeads.value,
+      TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
     })
@@ -643,7 +643,7 @@ class UserRegistration extends Component {
     let tempData = HeadLevelGrid[simulationLevelEditIndex];
     tempData = {
       Technology: simulationHeads.label,
-      SimulationTechnologyId: simulationHeads.value,
+      TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
     }
@@ -716,11 +716,12 @@ class UserRegistration extends Component {
   editSimulationItemDetails = (index) => {
     const { HeadLevelGrid } = this.state;
     const tempData = HeadLevelGrid[index];
-    this.props.getSimualationLevelByTechnology(tempData.SimulationTechnologyId, res => { })
+    console.log('tempData: ', tempData);
+    this.props.getSimualationLevelByTechnology(tempData.TechnologyId, res => { })
     this.setState({
       simulationLevelEditIndex: index,
       isSimulationEditIndex: true,
-      simulationHeads: { label: tempData.Technology, value: tempData.SimulationTechnologyId },
+      simulationHeads: { label: tempData.Technology, value: tempData.TechnologyId },
       simualtionLevel: { label: tempData.Level, value: tempData.LevelId },
     })
   }
@@ -833,7 +834,7 @@ class UserRegistration extends Component {
 
     HeadLevelGrid && HeadLevelGrid.map((item, index) => {
       tempHeadLevelArray.push({
-        SimulationTechnologyId: item.SimulationTechnologyId,
+        SimulationTechnologyId: item.TechnologyId,
         LevelId: item.LevelId,
         Technology: item.Technology,
         Level: item.Level,
@@ -1503,14 +1504,15 @@ class UserRegistration extends Component {
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn">
-                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
+                        <div className={"cancel-icon"}></div>
                       CANCEL
                       </button>
 
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn">
+                          <div className={"save-icon"}></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>

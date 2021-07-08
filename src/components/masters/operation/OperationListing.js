@@ -678,7 +678,7 @@ class OperationListing extends Component {
                                     <div>
                                         {this.state.shown ?
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" />
+                                                <div className="cancel-icon-white"></div>
                                             </button>
                                             :
                                             <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>

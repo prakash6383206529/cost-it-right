@@ -343,7 +343,7 @@ class SOBListing extends Component {
               <div className="d-flex justify-content-end bd-highlight w100">
                 {this.state.shown ? (
                   <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
-                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                    <div className="cancel-icon-white"></div></button>
                 ) : (
                   <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                 )}

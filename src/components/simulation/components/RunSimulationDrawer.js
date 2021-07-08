@@ -145,7 +145,7 @@ function RunSimulationDrawer(props) {
                                         </button>
                                         <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
                                             <div className={"cross-icon"}>
-                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" />
+                                                <div className="cancel-icon-white"></div>
                                             </div>{" "}
                                             {"Cancel"}
                                         </button>

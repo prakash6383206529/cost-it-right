@@ -41,7 +41,7 @@ function ApprovalListing() {
   const approvalList = useSelector(state => state.approval.approvalList)
   const userList = useSelector(state => state.auth.userList)
 
-  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+  const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -430,15 +430,12 @@ function ApprovalListing() {
                     <div>
                       {(shown) ? (
                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
-                          <img src={require("../../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                          <div className="cancel-icon-white"></div></button>
                       ) : (
                         <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                       )}
                       <button class="user-btn approval-btn" onClick={sendForApproval}>
-                        <img
-                          class="mr-1"
-                          src={require('../../../../assests/images/send-for-approval.svg')}
-                        ></img>{' '}
+                      <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
                     </div>

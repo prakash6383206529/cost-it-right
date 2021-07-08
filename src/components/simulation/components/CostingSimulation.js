@@ -30,7 +30,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
 
-    const { register, control, errors, getValues, setValue } = useForm({
+    const { register, control, formState: { errors }, getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -515,7 +515,7 @@ function CostingSimulation(props) {
                                     <div>
                                         {(shown) ? (
                                             <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
-                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                                <div className="cancel-icon-white"></div></button>
                                         ) : (
                                             <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                         )}
@@ -582,11 +582,7 @@ function CostingSimulation(props) {
                                     onClick={sendForApproval}
                                     disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                 >
-                                    <img
-                                        alt="APPROVAL.jpg"
-                                        class="mr-1"
-                                        src={require('../../../assests/images/send-for-approval.svg')}
-                                    />
+                                    <div className="send-for-approval"></div>
                                     {'Send For Approval'}
                                 </button>
 
@@ -595,17 +591,12 @@ function CostingSimulation(props) {
                                     className="user-btn mr5 save-btn"
                                     disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                     onClick={onSaveSimulation}>
-                                    <div className={"check-icon"}>
-                                        <img
-                                            src={require("../../../assests/images/check.png")}
-                                            alt="check-icon.jpg"
-                                        />
-                                    </div>
+                                    <div className={"save-icon"}></div>
                                     {"Save Simulation"}
                                 </button>
 
                                 <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
-                                    <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
+                                    <div className={"save-icon"}></div>
                                     {"Verify Impact "}
                                 </button>
 

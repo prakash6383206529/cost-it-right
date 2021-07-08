@@ -1081,6 +1081,15 @@ export const MHRMoreZBC = [
 
 ]
 
+export const CLIENT_DOWNLOAD_EXCEl = [
+    { label: "CompanyName", value: "CompanyName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ClientEmailId", value: "ClientEmailId", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
+
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "IsVendor", value: "IsVendor", },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
@@ -1120,15 +1129,6 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "Plant", value: "Plant", },
     { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
     { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
-]
-
-export const CLIENT_DOWNLOAD_EXCEl = [
-    { label: "CompanyName", value: "CompanyName", },
-    { label: "ClientName", value: "ClientName", },
-    { label: "ClientEmailId", value: "ClientEmailId", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
@@ -1366,6 +1366,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "BudgetedQuantity", value: "BudgetedQuantity", },
     { label: "ApprovedQuantity", value: "ApprovedQuantity", },
 ]
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
