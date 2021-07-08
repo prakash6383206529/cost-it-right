@@ -1282,6 +1282,19 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "EffectiveDate", value: "EffectiveDate", },
 ]
 
+export const PROFIT_DOWNLOAD_EXCEl = [
+    { label: "TypeOfHead", value: "TypeOfHead", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ModelType", value: "ModelType", },
+    { label: "ProfitApplicabilityType", value: "ProfitApplicabilityType", },
+    { label: "ProfitPercentage", value: "ProfitPercentage", },
+    { label: "ProfitRMPercentage", value: "ProfitRMPercentage", },
+    { label: "ProfitBOPPercentage", value: "ProfitBOPPercentage", },
+    { label: "ProfitMachiningCCPercentage", value: "ProfitMachiningCCPercentage", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
 export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "BOMNumber", value: "BOMNumber", },
@@ -1309,6 +1322,15 @@ export const VBCPLANT_DOWNLOAD_EXCEl = [
     { label: "VendorName", value: "VendorName", },
     { label: "PlantName", value: "PlantName", },
     { label: "PlantCode", value: "PlantCode", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
+
+export const ZBCPLANT_DOWNLOAD_EXCEl = [
+    { label: "PlantName", value: "PlantName", },
+    { label: "PlantCode", value: "PlantCode", },
+    { label: "CompanyName", value: "CompanyName", },
     { label: "CountryName", value: "CountryName", },
     { label: "StateName", value: "StateName", },
     { label: "CityName", value: "CityName", },
