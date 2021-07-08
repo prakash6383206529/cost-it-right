@@ -208,18 +208,23 @@ class SpecificationListing extends Component {
     }
 
     /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+* @method buttonFormatter
+* @description Renders buttons
+*/
+    buttonFormatter = (props) => {
+
+        const cellValue = props?.value;
+        const rowData = props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
+
 
     /**
     * @method indexFormatter
@@ -307,45 +312,13 @@ class SpecificationListing extends Component {
     onSubmit(values) {
     }
 
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData.map((item) => {
-            // if (item.ClientName === null) {
-            //   item.ClientName = ' '
-            // }
-            return item
-        })
-
-        return (<ExcelSheet data={temp} name={`${RmSpecification}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
-    }
-    renderColumn = (fileName) => {
-        let arr = this.props.rmSpecificationList && this.props.rmSpecificationList.length > 0 ? this.props.rmSpecificationList : []
-        // if (arr != []) {
-        //     arr && arr.map(item => {
-        //         let len = Object.keys(item).length
-        //         for (let i = 0; i < len; i++) {
-        //             // let s = Object.keys(item)[i]
-        //             if (item.RMName === '-') {
-        //                 item.RMName = ' '
-        //             } else if (item.RMGrade === '-') {
-        //                 item.RMGrade = ' '
-        //             } else {
-        //                 return false
-        //             }
-        //         }
-        //     })
-        // }
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, arr)
-    }
-
     onGridReady = (params) => {
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
+        this.gridApi = params.api;
+        this.gridApi.sizeColumnsToFit();
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi });
         params.api.paginationGoToPage(1);
     };
+
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(value));
@@ -357,17 +330,37 @@ class SpecificationListing extends Component {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
+
         return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.RMName === '-') {
+                item.RMName = ' '
+            } else if (item.RMGrade === '-') {
+                item.RMGrade = ' '
+            } else {
+                return false
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={TempData} name={RmSpecification}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
+
     resetState() {
         gridOptions.columnApi.resetColumnState();
     }
-
 
     /**
     * @method render
@@ -481,14 +474,25 @@ class SpecificationListing extends Component {
                                 <div className={'upload'}></div>Bulk upload</button>}
                             {AddAccessibility && <button
                                 type={'button'}
-                                className={'user-btn'}
+                                className={'user-btn mr5'}
                                 onClick={this.openModel}>
                                 <div className={'plus'}></div>{`ADD`}</button>}
-                            {DownloadAccessibility &&
-                                <ExcelFile filename={`${RmSpecification}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {this.renderColumn(`${RmSpecification}`)}
-                                </ExcelFile>
+                            {
+                                DownloadAccessibility &&
+                                <>
+
+                                    <ExcelFile filename={RmSpecification} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                        {this.onBtExport()}
+                                    </ExcelFile>
+
+                                </>
+
+                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                             }
+                            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                         </Col>
                     </Row>
                 </form>
@@ -515,25 +519,13 @@ class SpecificationListing extends Component {
                             <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>  */}
 
-                        <div className="example-wrapper">
-                            <div className="example-header">
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                                <div className="paging-container d-inline-block">
-                                    <span className="d-inline-block">Page Size:</span>
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{
-                                    width: '100%'
-                                }}
+                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -553,8 +545,15 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </Col>
