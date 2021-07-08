@@ -480,7 +480,7 @@ export function Clientbasedcostingdrawer(props) {
                                     <Field
                                     label={`Remark`}
                                     type="text"
-                                    placeholder={"Auto Calculated"}
+                                    placeholder={"Enter"}
                                     component={renderText}
                                     className=""
                                     customClassName="withBorder"/>
@@ -507,7 +507,7 @@ export function Clientbasedcostingdrawer(props) {
                                             <Field
                                             label={``}
                                             type="text"
-                                            placeholder={"Discount %"}
+                                            placeholder={"Select"}
                                             component={searchableSelect}
                                             className=""
                                             customClassName="withBorder"/>
