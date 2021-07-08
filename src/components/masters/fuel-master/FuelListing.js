@@ -277,16 +277,19 @@ class FuelListing extends Component {
     onSubmit = (values) => { }
 
     returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
         let temp = []
         temp = TempData.map((item) => {
-            // if (item.CostingHead === true) {
-            //     item.CostingHead = 'Vendor Based'
-            // } else if (item.CostingHead === false) {
-            //     item.CostingHead = 'Zero Based'
-            // }
+            if (item.IsVendor === true) {
+                item.IsVendor = 'VBC'
+            } if (item.IsVendor === false) {
+                item.IsVendor = 'ZBV'
+            } if (item.Plants === '-') {
+                item.Plants = ' '
+            } if (item.Vendor === '-') {
+                item.Vendor = ' '
+            } else {
+                return false
+            }
             return item
         })
 
@@ -294,29 +297,6 @@ class FuelListing extends Component {
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
-    }
-    renderColumn = (fileName) => {
-        let arr = this.props.fuelDataList && this.props.fuelDataList.length > 0 ? this.props.fuelDataList : []
-        // if (arr != []) {
-        //     arr && arr.map(item => {
-        //         let len = Object.keys(item).length
-        //         for (let i = 0; i < len; i++) {
-        //             // let s = Object.keys(item)[i]
-        //             if (item.IsVendor === true) {
-        //                 item.IsVendor = 'VBC'
-        //             } if (item.IsVendor === false) {
-        //                 item.IsVendor = 'ZBV'
-        //             } if (item.Plants === '-') {
-        //                 item.Plants = ' '
-        //             } if (item.Vendor === '-') {
-        //                 item.Vendor = ' '
-        //             } else {
-        //                 return false
-        //             }
-        //         }
-        //     })
-        // }
-        return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, arr)
     }
 
     onGridReady = (params) => {
@@ -462,14 +442,21 @@ class FuelListing extends Component {
                                         <div className={'upload'}></div>Bulk Upload</button>}
                                     {AddAccessibility && <button
                                         type="button"
-                                        className={'user-btn'}
+                                        className={'user-btn mr5'}
                                         onClick={this.formToggle}>
                                         <div className={'plus'}></div>ADD</button>}
-                                    {DownloadAccessibility &&
-                                        <ExcelFile filename={`${FuelMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {this.renderColumn(`${FuelMaster}`)}
-                                        </ExcelFile>
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={FuelMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                     }
+
+                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                                 </div>
                             </div>
                         </Col>
@@ -499,26 +486,13 @@ class FuelListing extends Component {
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="left" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable> */}
-
-                        <div className="example-wrapper">
-                            <div className="example-header">
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                                <div className="paging-container d-inline-block">
-                                    <span className="d-inline-block">Page Size:</span>
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{
-                                    width: '100%'
-                                }}
+                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -535,17 +509,23 @@ class FuelListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="FuelName" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="UnitOfMeasurementName"></AgGridColumn>
-                                    <AgGridColumn field="StateName"></AgGridColumn>
-                                    <AgGridColumn field="Rate"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ModifiedDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                                    <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload
