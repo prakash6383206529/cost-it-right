@@ -31,7 +31,7 @@ function VerifySimulation(props) {
     const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -360,7 +360,7 @@ function VerifySimulation(props) {
                                 <div>
                                     {(shown) ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                     )}
@@ -393,11 +393,11 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" dataFormat={renderRM} >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={true} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RawMaterialId" width={100} columnTitle={true} editable={false} hidden ></TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={false} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={false} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RawMaterialId" width={100} columnTitle={false} editable={false} hidden ></TableHeaderColumn>
 
                             </BootstrapTable>
 
@@ -406,10 +406,7 @@ function VerifySimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
-                                <div className={"cross-icon"}>
-                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg"
-                                    />
-                                </div>{" "}
+                                <div className={"cancel-icon"}></div>
                                 {"CANCEL"}
                             </button>
                             <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
@@ -422,12 +419,7 @@ function VerifySimulation(props) {
                         {'Send For Approval'}
                     </button>
                     <button type="submit" className="user-btn mr5 save-btn">
-                        <div className={"check-icon"}>
-                            <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                            />
-                        </div>{" "}
+                        <div className={"save-icon"}></div>{" "}
                         {"Save Simulation"}
                     </button> */}
                         </div>

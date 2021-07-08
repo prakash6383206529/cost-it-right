@@ -5,14 +5,13 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6 } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
-import {
-  fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountry,
-} from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddVendorPlantDrawer extends Component {
   constructor(props) {
@@ -223,10 +222,10 @@ class AddVendorPlantDrawer extends Component {
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
-        e.preventDefault();
+      e.preventDefault();
     }
-};
-  
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -239,7 +238,7 @@ class AddVendorPlantDrawer extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper drawer-700px"}>
@@ -248,7 +247,7 @@ class AddVendorPlantDrawer extends Component {
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                >
+              >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>
@@ -447,24 +446,14 @@ class AddVendorPlantDrawer extends Component {
                       className="reset mr15 cancel-btn"
                       onClick={this.cancel}
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
                     <button
                       type="submit"
                       className="submit-button mr5 save-btn"
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}
                     </button>
                   </div>

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
-    required, upper, email, minLength7, maxLength70, alphaNumeric, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter,
+    required, upper, email, minLength7, maxLength70, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
@@ -16,6 +16,8 @@ import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -728,12 +730,12 @@ class AddVendorDrawer extends Component {
                                             type={'button'}
                                             className=" mr15 cancel-btn"
                                             onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                            <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type="submit"
                                             className="user-btn save-btn">
-                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                            <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
                                         </button>
                                     </div>

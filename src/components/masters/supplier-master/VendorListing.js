@@ -19,7 +19,6 @@ import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { VENDOR, VendorMaster } from '../../../config/constants';
@@ -28,6 +27,8 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -525,7 +526,7 @@ class VendorListing extends Component {
                                 <div>
                                     {this.state.shown ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                                     )}

@@ -1125,6 +1125,80 @@ input.form-control{
   opacity: 1;
   font-size: 0;
 }
+
+.cancel-icon-white{
+  filter: brightness(100);
+  width: 14px;
+  height: 14px;
+  background: transparent url("../../assests/images/times.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.cancel-icon{
+  width: 11px;
+  height: 11px;
+  background: transparent url("../../assests/images/times.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
+.next-icon{
+  width: 16px;
+  height: 11px;
+  background: transparent url("../../assests/images/right-arrow-white.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-left: 5px;
+  background-size: contain;
+}
+
+.back-icon{
+  width: 8px;
+  height: 13px;
+  background: transparent url("../../assests/images/back.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
+.add-rounded{
+  width: 30px;
+  height: 30px;
+  background: transparent url("../../assests/images/add-bom.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.send-for-approval{
+  margin-right: 5px;
+  width: 13px;
+  height: 16px;
+  background: transparent url("../../assests/images/send-for-approval.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.compare-arrows{
+  margin-right: 5px;
+  width: 20px;
+  height: 14px;
+  background: transparent url("../../assests/images/compare.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+
+.save-icon{
+  width: 18px;
+  height: 12px;
+  background: transparent url("../../assests/images/check.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
+
+
 .Module-Name {
   text-align: left;
   font-size: 16px;
@@ -3072,10 +3146,10 @@ button:disabled{pointer-events: none;}
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus,.check-icon,>img{
+  .plus,.check-icon,>img,.save-icon,.send-for-approval{
     filter: brightness(0.8) !important;
   }
-  .cross-icon{
+  .cross-icon,.cancel-icon{
     filter: opacity(0.5);
   }
 }
@@ -3249,6 +3323,8 @@ opacity: 0.5;
     background-color: #fff;
     background-clip: padding-box;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    max-width: 100%;
+    overflow: hidden;
     }
     .green-value{
       background-color: #DBF4E2;
@@ -3837,7 +3913,7 @@ body{
           bottom: 0;
           height: auto;
           width: 15px;
-          background: transparent url(/static/media/caret-down.61c2a710.svg) 0% 0% no-repeat padding-box;
+          background: transparent url("../../assests/images/caret-down.svg") 0% 0% no-repeat padding-box;
           opacity: 1;
           border: none;
           background-position: center;
@@ -4193,6 +4269,15 @@ body{
       }
     }
   }
+  .netRm-row{
+    td{
+      &:nth-child(3),&:nth-child(4){
+        .View{
+          display: none;
+        }
+      }
+    }
+  }
 }
 .table,:not(.table){
   .green-row{
@@ -4308,6 +4393,31 @@ body{
     }
   }
 }
+
+// client based costing drawer
+.two-filled-container{
+  .row{
+    .col-md-6{
+      &:nth-child(1){
+        padding-right: 5px;
+      }
+      &:nth-child(2){
+        padding-left: 5px;
+      }
+    }
+  }
+}
+.blue-header-box{
+  background-color: #E7F2FC;
+  border: 1px solid #C2CBE8;
+  padding: 16px;
+  width: 100%;
+  h5{
+    color: #3D4465;
+    font-size: 18px;
+  }
+}
+// client based costing drawer
 
 // responsive media query start
 @media(max-width:1600px){
@@ -4795,6 +4905,48 @@ body{
           }
         }
       }
+
+      .cancel-icon-white{
+        width: calc(14px * 80 /100);
+        height: calc(14px * 80 /100);
+      }
+      
+      .cancel-icon{
+        width: calc(11px * 80 /100);
+        height: calc(11px * 80 /100);
+      }
+      
+      .next-icon{
+        width: calc(16px * 80 /100);
+        height: calc(11px * 80 /100);
+      }
+      
+      .back-icon{
+        width: calc(8px * 80 /100);
+        height: calc(13px * 80 /100);
+      }
+      
+      .add-rounded{
+        width: calc(30px * 80 /100);
+        height: calc(30px * 80 /100);
+      }
+      
+      .send-for-approval{
+        width: calc(13px * 80 /100);
+        height: calc(16px * 80 /100);
+      }
+      
+      .compare-arrows{
+        width: calc(20px * 80 /100);
+        height: calc(14px * 80 /100);
+      }
+      
+      .save-icon{
+        width: calc(18px * 80 /100);
+        height: calc(12px * 80 /100);
+       
+      }
+      
       
       .download-btn{
          button{width: 100%;}

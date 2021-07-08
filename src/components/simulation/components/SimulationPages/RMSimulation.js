@@ -23,7 +23,7 @@ function RMSimulation(props) {
     const [token, setToken] = useState('')
     const [colorClass, setColorClass] = useState('')
 
-    const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -209,6 +209,7 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (cell, row, enumObject, rowIndex) => {
+        if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
@@ -249,6 +250,7 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (cell, row, enumObject, rowIndex) => {
+        if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
@@ -383,8 +385,8 @@ function RMSimulation(props) {
                                 <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} editable={false} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} editable={false} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
-                                <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
-                                <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
+                                <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
+                                <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
                             </BootstrapTable>
@@ -394,12 +396,7 @@ function RMSimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
-                                <div className={"cross-icon"}>
-                                    <img
-                                        src={require("../../../../assests/images/times.png")}
-                                        alt="cancel-icon.jpg"
-                                    />
-                                </div>{" "}
+                                <div className={"cancel-icon"}></div>
                                 {"CANCEL"}
                             </button>
                             <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">

@@ -6,7 +6,6 @@ import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
-
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, } from '../../../config/constants';

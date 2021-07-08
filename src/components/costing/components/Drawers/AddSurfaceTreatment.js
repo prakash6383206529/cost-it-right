@@ -201,7 +201,7 @@ function AddSurfaceTreatment(props) {
                 type={'button'}
                 className="submit-button mr5 save-btn"
                 onClick={addRow} >
-                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                <div className={'save-icon'}></div>
                 {'SELECT'}
               </button>
 
@@ -209,7 +209,7 @@ function AddSurfaceTreatment(props) {
                 type={'button'}
                 className="reset cancel-btn"
                 onClick={cancel} >
-                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                    <div className={'cancel-icon'}></div> {'Cancel'}
               </button>
             </div>
 

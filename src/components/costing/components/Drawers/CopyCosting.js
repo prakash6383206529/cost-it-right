@@ -79,7 +79,7 @@ function CopyCosting(props) {
     }
   }, [])
 
-  const { register, control, errors, handleSubmit, setValue } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -593,12 +593,7 @@ function CopyCosting(props) {
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
-                    <div className={"cross-icon"}>
-                      <img
-                        src={require("../../../../assests/images/times.png")}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{" "}
+                    <div className={'cancel-icon'}></div>
                     {"Cancel"}
                   </button>
 
@@ -607,12 +602,7 @@ function CopyCosting(props) {
                     className="submit-button save-btn"
                   // onClick={addHandler}
                   >
-                    <div className={"check-icon"}>
-                      <img
-                        src={require("../../../../assests/images/check.png")}
-                        alt="check-icon.jpg"
-                      />{" "}
-                    </div>
+                                        <div className={'save-icon'}></div>
                     {"Save"}
                   </button>
                 </div>

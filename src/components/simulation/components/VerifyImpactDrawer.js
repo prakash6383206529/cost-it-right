@@ -24,11 +24,11 @@ function VerifyImpactDrawer(props) {
   const [shown, setshown] = useState(false)
   const [acc1, setAcc1] = useState(false)
   const [acc2, setAcc2] = useState(false)
-  const [acc3,setAcc3] = useState(false)
+  const [acc3, setAcc3] = useState(false)
 
   const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -502,11 +502,7 @@ function VerifyImpactDrawer(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button type={'button'} className="reset mr15 cancel-btn" onClick={toggleDrawer}>
-                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt="cancel-icon.jpg" /></div>{'Cancel'}
-                  </button>
-
-                  <button type="submit" className="submit-button  save-btn" >
-                    <div className={'check-icon'}> <img src={require('../../../assests/images/check.png')} alt="check-icon.jpg" /></div>{'Submit'}
+                    <div className={"cancel-icon"}></div>{'Cancel'}
                   </button>
                 </div>
               </Row>

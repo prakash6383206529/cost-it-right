@@ -17,7 +17,7 @@ function TransportationCost(props) {
     TransportationCost: data && data.TransportationCost !== undefined ? data.TransportationCost : 0,
   }
 
-  const { register, control, errors, setValue, getValues, handleSubmit } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,

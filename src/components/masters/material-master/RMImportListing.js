@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
   getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
+  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
@@ -49,6 +49,24 @@ class RMImportListing extends Component {
 
   UNSAFE_componentWillMount() {
     this.getInitialRange()
+    const { filteredRMData, isSimulation } = this.props
+    if (this.props.isSimulation) {
+
+      this.setState({
+        costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
+        plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
+        RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
+        RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
+        vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
+        technology: [],
+        value: { min: 0, max: 0 },
+      }, () => {
+        this.getInitialRange()
+        this.getDataList(null)
+
+        this.props.getRawMaterialFilterSelectList(() => { })
+      })
+    }
   }
 
   /**
@@ -57,12 +75,16 @@ class RMImportListing extends Component {
   */
   getInitialRange = () => {
     const { value } = this.state;
+    const { filteredRMData, isSimulation } = this.props
+    // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
+    console.log('filteredRMData: ', filteredRMData);
     const filterData = {
-      costingHead: null,
-      plantId: null,
-      material_id: null,
-      grade_id: null,
-      vendor_id: null,
+      costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
+      plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
+      material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
+      grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
+      vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
+      // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
@@ -99,12 +121,14 @@ class RMImportListing extends Component {
 
   getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
     const { value } = this.state;
+    const { filteredRMData, isSimulation } = this.props
+
     const filterData = {
-      costingHead: costingHead,
-      plantId: plantId,
-      material_id: materialId,
-      grade_id: gradeId,
-      vendor_id: vendorId,
+      costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
+      plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
+      material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : materialId,
+      grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : gradeId,
+      vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : vendorId,
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
@@ -409,7 +433,16 @@ class RMImportListing extends Component {
     const RMGradeid = RMGrade ? RMGrade.value : null;
     const Vendorid = vendorName ? vendorName.value : null;
     const technologyId = technology ? technology.value : 0
-    this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+
+    if (this.props.isSimulation) {
+      this.props.setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plant.label, value: plant.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } })
+      setTimeout(() => {
+
+        this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+      }, 500);
+    } else {
+      this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+    }
   }
 
   /**
@@ -417,6 +450,9 @@ class RMImportListing extends Component {
   * @description Reset user filter
   */
   resetFilter = () => {
+    if (this.props.isSimulation) {
+      this.props.setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' })
+    }
     this.setState({
       costingHead: [],
       plant: [],
@@ -690,7 +726,7 @@ class RMImportListing extends Component {
                   <div>
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                        <div className="cancel-icon-white"></div></button>
                     ) : (
                       <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                     )}
@@ -776,10 +812,10 @@ class RMImportListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, auth }) {
-  const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList } = material;
+  const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList, filteredRMData } = material;
   const { supplierSelectList, plantSelectList, technologySelectList } = comman;
   const { initialConfiguration } = auth;
-  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList, initialConfiguration, plantSelectList, technologySelectList }
+  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList, initialConfiguration, plantSelectList, technologySelectList, filteredRMData }
 }
 
 /**
@@ -803,7 +839,8 @@ export default connect(mapStateToProps, {
   getRawMaterialFilterByVendorSelectList,
   getGradeFilterByVendorSelectList,
   getPlantSelectListByType,
-  getTechnologySelectList
+  getTechnologySelectList,
+  setFilterForRM
 })(reduxForm({
   form: 'RMImportListing',
   enableReinitialize: true,

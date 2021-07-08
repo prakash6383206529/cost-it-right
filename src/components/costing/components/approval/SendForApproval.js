@@ -22,7 +22,7 @@ import PushSection from '../../../common/PushSection'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, setError } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -737,12 +737,7 @@ const SendForApproval = (props) => {
                       onClick={toggleDrawer}
                     // className="reset mr15 cancel-btn"
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
 
@@ -752,12 +747,7 @@ const SendForApproval = (props) => {
                     // className="submit-button save-btn"
                     // onClick={() => handleSubmit(onSubmit)}
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={'save-icon'}></div>
                       {"Submit"}
                     </button>
                   </Col>

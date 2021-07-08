@@ -36,7 +36,8 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import moment from 'moment';
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import { Fragment } from 'react';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -3222,12 +3223,12 @@ class AddMoreDetails extends Component {
                           type={'button'}
                           className=" mr15 cancel-btn"
                           onClick={this.cancel} >
-                          <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                          <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn" >
-                          <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
                         </button>
                       </div>

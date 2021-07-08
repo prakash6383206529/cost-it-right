@@ -588,10 +588,7 @@ const CostingSummaryTable = (props) => {
               <Col md="8" className="text-right">
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                    <img
-                      class="mr-1"
-                      src={require('../../../assests/images/send-for-approval.svg')}
-                    ></img>{' '}
+                    <div className="send-for-approval"></div>
                     {'Send For Approval'}
                   </button>
                 )}
@@ -600,7 +597,7 @@ const CostingSummaryTable = (props) => {
                   className={'user-btn mb-2 comparison-btn'}
                   onClick={addComparisonDrawerToggle}
                 >
-                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
+                  <div className="compare-arrows"></div>
                   Add To Comparison{' '}
                 </button>
                 {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
@@ -756,19 +753,22 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
                               <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewRM(index)}
-                              >
-                              </button>
+                              {
+                                !simulationDrawer &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewRM(index)}
+                                >
+                                </button>
+                              }
                             </td>
                           )
                         })}
@@ -1095,7 +1095,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                      <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
                         <th>Net PO Price(INR)</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {

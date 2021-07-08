@@ -17,6 +17,7 @@ export const TextFieldHooks = (input) => {
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
         <input
+          {...input}
           name={name}
           ref={register}
           className={InputClassName}
@@ -56,7 +57,7 @@ export const TextFieldHookForm = (field) => {
           render={({ onChange, onBlur, value, name }) => {
             return (
               <input
-                // {...field}
+                {...field}
                 register
                 name={name}
                 className={InputClassName}
@@ -64,7 +65,7 @@ export const TextFieldHookForm = (field) => {
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  onChange(e)
+                  // onChange(e)
                 }}
               />
             )
@@ -100,6 +101,7 @@ export const NumberFieldHookForm = (field) => {
           render={({ onChange, onBlur, value, name }) => {
             return (
               <input
+                {...field}
                 type={'number'}
                 register
                 name={name}
@@ -108,7 +110,7 @@ export const NumberFieldHookForm = (field) => {
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  onChange(e)
+                  // onChange(e)
                 }}
               />
             )
@@ -124,7 +126,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading,customClassName } = field;
+    isClearable, control, errors, register, isLoading, customClassName } = field;
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
@@ -136,30 +138,32 @@ export const SearchableSelectHookForm = (field) => {
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
       </label>
       <Controller
+
         name={name}
         control={control}
         rules={rules}
         ref={register}
         defaultValue={defaultValue}
-        render={({ onChange, onBlur, value, name }) => {
-          return (
-            <Select
-              name={name}
-              placeholder={placeholder}
-              isDisabled={isDisable}
-              onChange={(e) => {
-                handleChange(e);
-                onChange(e)
-              }}
-              menuPlacement="auto"
-              options={options}
-              onBlur={onBlur}
-              //selected={value}
-              value={value}
-              isLoading={isLoader}
-            />
-          )
-        }}
+        render={({ onChange, onBlur, value, name }) =>
+
+          <Select
+            {...field}
+            name={name}
+            placeholder={placeholder}
+            isDisabled={isDisable}
+            onChange={(e) => {
+              handleChange(e);
+              // onChange(e)
+            }}
+            menuPlacement="auto"
+            options={options}
+            onBlur={onBlur}
+            //selected={value}
+            value={value}
+            isLoading={isLoader}
+          />
+
+        }
       />
 
       {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
@@ -205,7 +209,7 @@ export const TextAreaHookForm = (field) => {
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  onChange(e)
+                  // onChange(e)
                 }}
               />
             )

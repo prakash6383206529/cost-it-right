@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
-  required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
+  required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
@@ -27,9 +27,11 @@ import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import attachClose from '../../../assests/images/red-cross.png'
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -1435,7 +1437,7 @@ class AddMachineRate extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
+                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={attachClose}></img>
                                   </div>
                                 )
                               })
@@ -1453,12 +1455,12 @@ class AddMachineRate extends Component {
                                 type={'button'}
                                 className=" mr15 cancel-btn"
                                 onClick={this.cancel} >
-                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn" >
-                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}
                               </button>
                             </>
@@ -1466,7 +1468,7 @@ class AddMachineRate extends Component {
                             <button
                               type="submit"
                               className="submit-button mr5 save-btn" >
-                              <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                              <div className={'save-icon'}></div>
                               {'Exit'}
                               {/* Need to change name of button for view flag */}
                             </button>

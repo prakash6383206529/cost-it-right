@@ -9,6 +9,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddBOPCategory extends Component {
     constructor(props) {
@@ -83,7 +85,7 @@ class AddBOPCategory extends Component {
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                                >
+                            >
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
@@ -118,13 +120,7 @@ class AddBOPCategory extends Component {
                                                 className=" mr15 cancel-btn"
                                                 onClick={this.cancel}
                                             >
-                                                <div className={"cross-icon"}>
-                                                    {" "}
-                                                    <img
-                                                        alt={""}
-                                                        src={require("../../../assests/images/times.png")}
-                                                    ></img>
-                                                </div>{" "}
+                                                <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
 
@@ -132,12 +128,7 @@ class AddBOPCategory extends Component {
                                                 type="submit"
                                                 className="user-btn save-btn"
                                             >
-                                                <div className={"check-icon"}>
-                                                    <img
-                                                        alt={""}
-                                                        src={require("../../../assests/images/check.png")}
-                                                    ></img>
-                                                </div>{" "}
+                                                <div className={"save-icon"}></div>
                                                 {isEditFlag ? "Update" : "Save"}
                                             </button>
                                         </div>

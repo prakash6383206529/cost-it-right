@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
+    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
@@ -21,15 +21,19 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, RMDomesticSimulation, RMDomesticZBC } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RmDomestic } from '../../../config/constants'
-
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-
 import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-balham.css';
-import { RowController } from 'ag-grid-community';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import ReactExport from 'react-export-excel';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -50,11 +54,35 @@ class RMDomesticListing extends Component {
             shown: this.props.isSimulation ? true : false,
             technology: [],
             gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
+
         }
     }
 
     UNSAFE_componentWillMount() {
         this.getInitialRange()
+        const { filteredRMData, isSimulation } = this.props
+        if (this.props.isSimulation) {
+
+            this.setState({
+                costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
+                plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
+                RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
+                RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
+                vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
+                technology: [],
+                value: { min: 0, max: 0 },
+            }, () => {
+                this.getInitialRange()
+                this.getDataList(null)
+
+                this.props.getRawMaterialFilterSelectList(() => { })
+            })
+        }
+
     }
 
     /**
@@ -63,13 +91,16 @@ class RMDomesticListing extends Component {
     */
     getInitialRange = () => {
         const { value } = this.state;
+        const { filteredRMData, isSimulation } = this.props
+        // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
+        console.log('filteredRMData: ', filteredRMData);
         const filterData = {
-            costingHead: null,
-            plantId: null,
-            material_id: null,
-            grade_id: null,
-            vendor_id: null,
-            technologyId: null,
+            costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
+            plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
+            material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
+            grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
+            vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
+            // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
             technologyId: this.props.isSimulation ? this.props.technology : 0,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
@@ -87,6 +118,8 @@ class RMDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        const { filteredRMData, isSimulation } = this.props
+
         this.props.getRawMaterialNameChild(() => { })
         this.props.getGradeSelectList(() => { })
         this.props.getVendorListByVendorType(false, () => { })
@@ -112,12 +145,14 @@ class RMDomesticListing extends Component {
     */
     getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
         const { value } = this.state;
+        const { filteredRMData, isSimulation } = this.props
+
         const filterData = {
-            costingHead: costingHead,
-            plantId: plantId,
-            material_id: materialId,
-            grade_id: gradeId,
-            vendor_id: vendorId,
+            costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
+            plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
+            material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : materialId,
+            grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : gradeId,
+            vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : vendorId,
             technologyId: this.props.isSimulation ? this.props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
@@ -214,8 +249,8 @@ class RMDomesticListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -224,8 +259,9 @@ class RMDomesticListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -444,7 +480,16 @@ class RMDomesticListing extends Component {
         const Vendorid = vendorName ? vendorName.value : null;
         const technologyId = technology ? technology.value : 0
 
-        this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+        if (this.props.isSimulation) {
+            this.props.setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plant.label, value: plant.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } })
+            setTimeout(() => {
+
+                this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+            }, 500);
+        } else {
+            this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+
+        }
     }
 
     /**
@@ -452,6 +497,9 @@ class RMDomesticListing extends Component {
     * @description Reset user filter
     */
     resetFilter = () => {
+        if (this.props.isSimulation) {
+            this.props.setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' })
+        }
         this.setState({
             costingHead: [],
             RawMaterial: [],
@@ -463,6 +511,7 @@ class RMDomesticListing extends Component {
         }, () => {
             this.getInitialRange()
             this.getDataList(null)
+
             this.props.getRawMaterialFilterSelectList(() => { })
         })
 
@@ -549,10 +598,57 @@ class RMDomesticListing extends Component {
         );
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+        params.api.paginationGoToPage(1);
+
+
+
+    };
+
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(value));
     };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={temp} name={'RM Domestic'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(RMDomesticZBC, tempArr)
+    };
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
 
     /**
     * @method render
@@ -577,15 +673,20 @@ class RMDomesticListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
+            sortable: true,
         };
+
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
+            costingHeadRenderer: this.costingHeadFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
         };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -737,7 +838,8 @@ class RMDomesticListing extends Component {
                                         <>
                                             {this.state.shown ? (
                                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                                    <div className="cancel-icon-white"></div>
+                                                    </button>
                                             ) : (
                                                 <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                                             )}
@@ -753,12 +855,27 @@ class RMDomesticListing extends Component {
                                             {AddAccessibility && (
                                                 <button
                                                     type="button"
-                                                    className={"user-btn"}
+                                                    className={"user-btn mr5"}
                                                     onClick={this.formToggle}
                                                 >
                                                     <div className={"plus"}></div>ADD
                                                 </button>
                                             )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
+
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+                                            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
                                         </>
                                     </div>
                                 </div>
@@ -804,50 +921,57 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
                         </BootstrapTable> */}
-                        <div className="example-wrapper">
-                            {/* <div className="example-header">
-                                Page Size:
-                                <select onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="100">100</option>
-                                    <option value="500">500</option>
-                                    <option value="1000">1000</option>
-                                </select>
-                            </div> */}
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
                             <div
-                                className="ag-theme-balham"
-                                style={{
-                                    height: '500px',
-                                    width: '100%'
-                                }}
+                                className="ag-theme-material"
+                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
+                                    style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+                                    // columnDefs={c}
                                     rowData={this.props.rmDataList}
                                     pagination={true}
                                     paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn field="CostingHead" pinned="left"></AgGridColumn>
-                                    <AgGridColumn field="RawMaterial" sortable={true} ></AgGridColumn>
-                                    <AgGridColumn field="RMGrade" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="RMSpec" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="MaterialType" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="Category" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="Plant" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="VendorName" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="UOM" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="BasicRate" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" sortable={true}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" sortable={true} cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade"></AgGridColumn>
+                                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="MaterialType"></AgGridColumn>
+                                    <AgGridColumn field="Category"></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName"></AgGridColumn>
+                                    <AgGridColumn field="Plant"></AgGridColumn>
+                                    <AgGridColumn field="VendorName"></AgGridColumn>
+                                    <AgGridColumn field="UOM"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate"></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost"></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost"></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </Col>
@@ -877,11 +1001,11 @@ class RMDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, auth }) {
-    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
+    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, filteredRMData } = material;
     const { initialConfiguration } = auth;
     const { plantSelectList, technologySelectList } = comman;
 
-    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList, technologySelectList }
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList, technologySelectList, filteredRMData }
 
 }
 
@@ -906,6 +1030,7 @@ export default connect(mapStateToProps, {
     getGradeFilterByVendorSelectList,
     getPlantSelectListByType,
     getTechnologySelectList,
+    setFilterForRM
 })(reduxForm({
     form: 'RMDomesticListing',
     enableReinitialize: true,
