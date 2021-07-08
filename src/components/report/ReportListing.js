@@ -14,7 +14,6 @@ import { CONSTANT } from '../../helper/AllConastant'
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { checkForDecimalAndNull } from '../../helper'
 import { getReportListing } from '../report/actions/ReportListing'
-import { EMPTY_GUID } from '../../config/constants';
 
 function ReportListing(props) {
 
@@ -178,7 +177,7 @@ function ReportListing(props) {
             technologyId: 1,
             plantCode:"",
             vendorCode:"",
-            userId:EMPTY_GUID,
+            userId:loggedUser,
             isSortByOrderAsc:true,
         }
         props.getReportListing(filterData, (res) => {})
