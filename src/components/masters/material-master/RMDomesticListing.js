@@ -922,10 +922,10 @@ class RMDomesticListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{height: '100%', width: '100%'}}
+                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
-                                    style={{height: '100%', width: '100%'}}
+                                    style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}
@@ -939,22 +939,22 @@ class RMDomesticListing extends Component {
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="RawMaterial"></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="MaterialType"></AgGridColumn>
-                                    <AgGridColumn field="Category"></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName"></AgGridColumn>
-                                    <AgGridColumn field="Plant"></AgGridColumn>
-                                    <AgGridColumn field="VendorName"></AgGridColumn>
-                                    <AgGridColumn field="UOM"></AgGridColumn>
-                                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate" ></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                    <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
+                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                                    <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer={'costFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
