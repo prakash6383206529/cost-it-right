@@ -702,11 +702,14 @@ a:hover {
 
 // ag-grid-react start
 .ag-theme-material .ag-ltr .ag-has-focus .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-ltr .ag-context-menu-open .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-ltr .ag-has-focus .ag-full-width-row.ag-row-focus .ag-cell-wrapper.ag-row-group, .ag-theme-material .ag-ltr .ag-cell-range-single-cell, .ag-theme-material .ag-ltr .ag-cell-range-single-cell.ag-cell-range-handle, .ag-theme-material .ag-rtl .ag-has-focus .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-rtl .ag-context-menu-open .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-rtl .ag-has-focus .ag-full-width-row.ag-row-focus .ag-cell-wrapper.ag-row-group, .ag-theme-material .ag-rtl .ag-cell-range-single-cell, .ag-theme-material .ag-rtl .ag-cell-range-single-cell.ag-cell-range-handle{
-  border-color:transparent!important;
+  border-color:#C2CBE8!important;
 }
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
+      .ag-grid-header{
+        padding-bottom: 12px;
+      }
       .ag-grid-wrapper{
         min-height: calc(100vh - 317px);
         height: calc(100vh - 317px) !important;
@@ -792,6 +795,7 @@ a:hover {
     }
   }
 }
+
 .ag-theme-material {
   .ag-checkbox-input-wrapper{
     height: 14px !important;
@@ -807,6 +811,7 @@ a:hover {
   @include ag-theme-material((
     font-size:14px,
     font-family: ('Roboto', sans-serif ),
+    border-color:#C2CBE8,
     // material-active-color: #256bd1,
     checkbox-checked-color: #256bd1,
     checkbox-unchecked-color: #8a91ac,
@@ -814,8 +819,13 @@ a:hover {
     row-hover-color: null,
     row-height: ag-derived(grid-size, $times: 6, $plus: 1),
     header-cell-hover-background-color: transparent,
-    cell-horizontal-padding: ag-derived(grid-size, $times: 3),
-    
+    cell-horizontal-padding: ag-derived(grid-size, $times: 2),   
+    cell-horizontal-border: solid #C2CBE8, 
+
+    header-column-separator: true,
+    header-column-separator-color: ag-derived(border-color, $opacity: 1),
+
+
   ));
   .ag-header {
     background-color: white;
