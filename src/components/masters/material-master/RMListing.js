@@ -13,7 +13,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
 import Association from './Association';
-import { RmMaterial } from '../../../config/constants';
+import { RmMaterial, RmSpecification } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -178,19 +178,23 @@ class RMListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     renderDensity = (cell, row, enumObject, rowIndex) => {
 
@@ -203,45 +207,13 @@ class RMListing extends Component {
 
     }
 
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData.map((item) => {
-            // if (item.ClientName === null) {
-            //   item.ClientName = ' '
-            // }
-            return item
-        })
-
-        return (<ExcelSheet data={temp} name={`${RmMaterial}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
-    }
-    renderColumn = (fileName) => {
-        let arr = this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList.length > 0 ? this.props.rawMaterialTypeDataList : []
-        if (arr != []) {
-            arr && arr.map(item => {
-                let len = Object.keys(item).length
-                for (let i = 0; i < len; i++) {
-                    // let s = Object.keys(item)[i]
-                    if (item.RMName === '-') {
-                        item.RMName = ' '
-                    } else if (item.RMGrade === '-') {
-                        item.RMGrade = ' '
-                    } else {
-                        return false
-                    }
-                }
-            })
-        }
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, arr)
-    }
-
     onGridReady = (params) => {
+        this.gridApi = params.api;
+        this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
         params.api.paginationGoToPage(1);
     };
+
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(value));
@@ -250,11 +222,32 @@ class RMListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
         data && data.map((item => {
             tempArr.push(item.data)
         }))
+
         return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
     };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.RMName === '-') {
+                item.RMName = ' '
+            } if (item.RMGrade === '-') {
+                item.RMGrade = ' '
+            } else {
+                return false
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={TempData} name={RmMaterial}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
@@ -263,7 +256,6 @@ class RMListing extends Component {
     resetState() {
         gridOptions.columnApi.resetColumnState();
     }
-
 
     /**
     * @method render
@@ -324,18 +316,25 @@ class RMListing extends Component {
                         {AddAccessibility && (
                             <button
                                 type={"button"}
-                                className={"user-btn"}
+                                className={"user-btn mr5"}
                                 onClick={this.openModel}
                             >
                                 <div className={"plus"}></div>
                                 {`Add`}
                             </button>
                         )}
-                        {DownloadAccessibility &&
-                            <ExcelFile filename={`${RmMaterial}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                {this.renderColumn(`${RmMaterial}`)}
-                            </ExcelFile>
+                        {
+                            DownloadAccessibility &&
+                            <>
+                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {this.onBtExport()}
+                                </ExcelFile>
+                            </> 
+                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                         }
+
+                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                     </Col>
 
                 </Row>
@@ -364,25 +363,13 @@ class RMListing extends Component {
 
                         </BootstrapTable> */}
 
-                        <div className="example-wrapper">
-                            <div className="example-header">
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                                <div className="paging-container d-inline-block">
-                                    <span className="d-inline-block">Page Size:</span>
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{
-                                    width: '100%'
-                                }}
+                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -404,8 +391,15 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </Col>
