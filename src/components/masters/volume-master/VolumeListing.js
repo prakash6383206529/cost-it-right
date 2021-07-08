@@ -25,6 +25,15 @@ import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 const initialTableData = [
   {
@@ -121,6 +130,12 @@ class VolumeListing extends Component {
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
       DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
+
     }
   }
 
@@ -291,30 +306,21 @@ class VolumeListing extends Component {
   }
 
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility, DeleteAccessibility } = this.state
+* @method buttonFormatter
+* @description Renders buttons
+*/
+  buttonFormatter = (props) => {
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && (
-          <button
-            className="Edit mr-2"
-            type={'button'}
-            onClick={() => this.editItemDetails(cell)}
-          />
-        )}
-        {DeleteAccessibility && (
-          <button
-            className="Delete"
-            type={'button'}
-            onClick={() => this.deleteItem(cell)}
-          />
-        )}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   /**
    * @method handleYear
@@ -426,8 +432,9 @@ class VolumeListing extends Component {
    * @method costingHeadFormatter
    * @description Renders Costing head
    */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'Vendor Based' : 'Zero Based'
+  costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? 'Vendor Based' : 'Zero Based'
   }
 
   onExportToCSV = (row) => {
@@ -549,46 +556,60 @@ class VolumeListing extends Component {
    */
   onSubmit(values) { }
 
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(1);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, tempArr)
+  };
+
   returnExcelColumn = (data = [], TempData) => {
-    const ExcelFile = ReactExport.ExcelFile;
-    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
-    temp = TempData.map((item) => {
-      // if (item.ClientName === null) {
-      //   item.ClientName = ' '
-      // } 
+    TempData.map((item) => {
+      if (item.IsVendor === true) {
+        item.IsVendor = 'Vendor Based'
+      } else if (item.IsVendor === false) {
+        item.IsVendor = 'Zero Based'
+      } else if (item.VendorName === '-') {
+        item.VendorName = ' '
+      } else if (item.Plant === '-') {
+        item.Plant = ' '
+      } else {
+        return false
+      }
       return item
     })
+    return (
 
-    return (<ExcelSheet data={temp} name={`${VolumeMaster}`}>
-      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-      }
-    </ExcelSheet>);
+      <ExcelSheet data={TempData} name={VolumeMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
-  renderColumn = (fileName) => {
-    let arr = this.props.reasonDataList && this.props.reasonDataList.length > 0 ? this.props.reasonDataList : []
-    if (arr != []) {
-      arr && arr.map(item => {
-        let len = Object.keys(item).length
-        for (let i = 0; i < len; i++) {
-          // let s = Object.keys(item)[i]
-          if (item.IsVendor === true) {
-            item.IsVendor = 'VBC'
-          } else if (item.IsVendor === false) {
-            item.IsVendor = 'ZBC'
-          } else if (item.VendorName === '-') {
-            item.VendorName = ' '
-          } else if (item.Plant === '-') {
-            item.Plant = ' '
-          } else {
-            return false
-          }
-        }
-      })
-    }
-    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, arr)
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
   }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -622,6 +643,25 @@ class VolumeListing extends Component {
 
     }
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      effectiveDateRenderer: this.effectiveDateFormatter,
+      costingHeadRenderer: this.costingHeadFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      freightCostFormatter: this.freightCostFormatter,
+      shearingCostFormatter: this.shearingCostFormatter,
+      costFormatter: this.costFormatter,
+      indexFormatter: this.indexFormatter
+    };
+
     if (showVolumeForm) {
       return (
         <AddVolume
@@ -635,7 +675,8 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid blue-before-inside">
+        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -806,23 +847,30 @@ class VolumeListing extends Component {
                     {AddAccessibility && (
                       <button
                         type="button"
-                        className={'user-btn'}
+                        className={'user-btn mr5'}
                         onClick={this.formToggle}
                       >
                         <div className={'plus'}></div>ADD
                       </button>
                     )}
-                    {DownloadAccessibility &&
-                      <ExcelFile filename={`${VolumeMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                        {this.renderColumn(`${VolumeMaster}`)}
-                      </ExcelFile>
+                    {
+                      DownloadAccessibility &&
+                      <>
+                        <ExcelFile filename={VolumeMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                          {this.onBtExport()}
+                        </ExcelFile>
+                      </>
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                     }
+
+                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                   </div>
                 </div>
               </Col>
             </Row>
           </form>
-          <BootstrapTable
+          {/* <BootstrapTable
             data={this.props.volumeDataList}
             striped={false}
             hover={false}
@@ -837,7 +885,7 @@ class VolumeListing extends Component {
             tableHeaderClass="my-custom-header"
             pagination
           >
-            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter} >              {this.renderCostingHead()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter} >{this.renderCostingHead()}</TableHeaderColumn>
             <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Year'}</TableHeaderColumn>
             <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Month'}</TableHeaderColumn>
             <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
@@ -847,7 +895,53 @@ class VolumeListing extends Component {
             <TableHeaderColumn dataField="BudgetedQuantity" width={150} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
             <TableHeaderColumn dataField="ApprovedQuantity" width={150} columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-          </BootstrapTable>
+          </BootstrapTable> */}
+
+          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+            </div>
+            <div
+              className="ag-theme-material"
+              style={{ height: '100%', width: '100%' }}
+            >
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                // columnDefs={c}
+                rowData={this.props.volumeDataList}
+                pagination={true}
+                paginationPageSize={10}
+                onGridReady={this.onGridReady}
+                gridOptions={gridOptions}
+                loadingOverlayComponent={'customLoadingOverlay'}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                noRowsOverlayComponentParams={{
+                  title: CONSTANT.EMPTY_DATA,
+                }}
+                frameworkComponents={frameworkComponents}
+              >
+                <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
+                <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
+                <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
+                <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
+                <AgGridColumn field="VolumeId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+              </AgGridReact>
+              <div className="paging-container d-inline-block float-right">
+                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                  <option value="10" selected={true}>10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
           {isActualBulkUpload && (
             <BulkUpload
               isOpen={isActualBulkUpload}
