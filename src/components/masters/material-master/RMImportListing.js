@@ -273,28 +273,11 @@ class RMImportListing extends Component {
     return cellValue != ' ' ? cellValue : '-';
   }
 
-
-  // /**
-  // * @method buttonFormatter
-  // * @description Renders buttons
-  // */
-  // buttonFormatter = (cell, row, enumObject, rowIndex) => {
-  //   const { EditAccessibility, DeleteAccessibility } = this.props;
-  //   return (
-  //     <>
-  //       {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-  //       {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
-  //     </>
-  //   )
-  // }
-
   /**
 * @method buttonFormatter
 * @description Renders buttons
 */
   buttonFormatter = (props) => {
-    console.log(props, 'propssssssssssssssssssssssss')
-
     const cellValue = props?.value;
     const rowData = props?.data;
 
@@ -616,7 +599,6 @@ class RMImportListing extends Component {
     data && data.map((item => {
       tempArr.push(item.data)
     }))
-    console.log(tempArr, 'TempDataTempDataTempDataTempDataTempData')
 
     return this.returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
@@ -626,15 +608,15 @@ class RMImportListing extends Component {
     TempData.map((item) => {
       if (item.RMFreightCost === null) {
         item.RMFreightCost = ' '
-      } else if (item.RMShearingCost === null) {
-        item.RMShearingCost = ' '
-      } else if (item.MaterialType === '-') {
-        item.MaterialType = ' '
-      } else if (item.CostingHead === true) {
+      } if (item.CostingHead === true) {
         item.CostingHead = 'Vendor Based'
-      } else if (item.CostingHead === false) {
+      } if (item.CostingHead === false) {
         item.CostingHead = 'Zero Based'
-      }else {
+      } if (item.RMShearingCost === null) {
+        item.RMShearingCost = ' '
+      } if (item.MaterialType === '-') {
+        item.MaterialType = ' '
+      } else {
         return false
       }
       return item
@@ -650,12 +632,9 @@ class RMImportListing extends Component {
     this.state.gridApi.setQuickFilter(e.target.value);
   }
 
-
   resetState() {
     gridOptions.columnApi.resetColumnState();
   }
-
-
 
   /**
   * @method render
@@ -880,7 +859,7 @@ class RMImportListing extends Component {
                         //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                       }
 
-                      <button type="button" className="user-btn" onClick={() => this.resetState()}>Reset Filter</button>
+                      <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
 
                     </div>
                   </div>
@@ -928,26 +907,13 @@ class RMImportListing extends Component {
 
             </BootstrapTable> */}
 
-
-              <div className="example-wrapper">
-                <div className="example-header">
+              <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                  <div className="paging-container d-inline-block">
-                    <span className="d-inline-block">Page Size:</span>
-                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                      <option value="10" selected={true}>10</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
-
                 </div>
                 <div
                   className="ag-theme-material"
-                  style={{
-                    width: '100%'
-                  }}
+                  style={{ height: '100%', width: '100%' }}
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -964,32 +930,36 @@ class RMImportListing extends Component {
                     }}
                     frameworkComponents={frameworkComponents}
                   >
-                    <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                    <AgGridColumn field="RawMaterial"></AgGridColumn>
-                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                    <AgGridColumn field="RMSpec"></AgGridColumn>
-                    <AgGridColumn field="MaterialType" cellRenderer={'freightCostFormatter'}></AgGridColumn>
-                    <AgGridColumn field="Category"></AgGridColumn>
-                    <AgGridColumn field="TechnologyName"></AgGridColumn>
-                    <AgGridColumn field="Plant"></AgGridColumn>
-                    <AgGridColumn field="VendorName"></AgGridColumn>
-                    <AgGridColumn field="UOM"></AgGridColumn>
-                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
-                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                    <AgGridColumn field="ScrapRate" ></AgGridColumn>
-                    <AgGridColumn field="NetLandedCostConversion" cellRenderer={'costFormatter'} ></AgGridColumn>
-                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                    <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
+                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                    <AgGridColumn field="MaterialType" headerName="Material" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                    <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                    <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                    <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
+                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
+                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                     {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                     {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                   </AgGridReact>
+                  <div className="paging-container d-inline-block float-right">
+                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                      <option value="10" selected={true}>10</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-
-
-
             </Col>
           </Row>
           {isBulkUpload && <BulkUpload
