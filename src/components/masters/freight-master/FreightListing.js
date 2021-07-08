@@ -186,21 +186,21 @@ class FreightListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-     buttonFormatter = (props) => {
-      const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-      const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+  /**
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-      const { EditAccessibility, DeleteAccessibility } = this.props;
-      return (
-          <>
-              {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-              {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
-          </>
-      )
+    const { EditAccessibility, DeleteAccessibility } = this.props;
+    return (
+      <>
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+      </>
+    )
   };
 
   /**
@@ -209,8 +209,11 @@ class FreightListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+    // return cellValue ? 'Vendor Based' : 'Zero Based';
+    return cellValue ? 'Vendor Based' : 'Zero Based';
+
   }
+
 
   /**
   * @method indexFormatter
@@ -233,13 +236,6 @@ class FreightListing extends Component {
     return <>Costing Head </>
   }
 
-  // /**
-  // * @method costingHeadFormatter
-  // * @description Renders Costing head
-  // */
-  // costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-  //   return cell ? 'Vendor Based' : 'Zero Based';
-  // }
 
   /**
   * @method effectiveDateFormatter
@@ -321,6 +317,14 @@ class FreightListing extends Component {
   }
 
   /**
+* @method hyphenFormatter
+*/
+  hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? cellValue : '-';
+  }
+
+  /**
   * @method onSubmit
   * @description Used to Submit the form
   */
@@ -334,10 +338,14 @@ class FreightListing extends Component {
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData.map((item) => {
-      if (item.CostingHead === true) {
-        item.CostingHead = 'Vendor Based'
-      } else if (item.CostingHead === false) {
-        item.CostingHead = 'Zero Based'
+      if (item.IsVendor === true) {
+        item.IsVendor = 'Vendor Based'
+      } else if (item.IsVendor === false) {
+        item.IsVendor = 'Zero Based'
+      } else if (item.VendorName === '-') {
+        item.VendorName = ' '
+      } else {
+        return false
       }
       return item
     })
@@ -346,27 +354,6 @@ class FreightListing extends Component {
       {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
       }
     </ExcelSheet>);
-  }
-  renderColumn = (fileName) => {
-    let arr = this.props.freightDetail && this.props.freightDetail.length > 0 ? this.props.freightDetail : []
-    if (arr != []) {
-      arr && arr.map(item => {
-        let len = Object.keys(item).length
-        for (let i = 0; i < len; i++) {
-          // let s = Object.keys(item)[i]
-          if (item.IsVendor === true) {
-            item.IsVendor = 'Vendor Based'
-          } else if (item.IsVendor === false) {
-            item.IsVendor = 'Zero Based'
-          } else if (item.VendorName === '-') {
-            item.VendorName = ' '
-          } else {
-            return false
-          }
-        }
-      })
-    }
-    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, arr)
   }
 
   onGridReady = (params) => {
@@ -418,20 +405,21 @@ class FreightListing extends Component {
 
     };
 
-    
+
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
 
-  };
+    };
 
-  const frameworkComponents = {
+    const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       costingHeadRenderer: this.costingHeadFormatter,
       customLoadingOverlay: LoaderCustom,
-      customNoRowsOverlay: NoContentFound
-  };
+      customNoRowsOverlay: NoContentFound,
+      hyphenFormatter: this.hyphenFormatter
+    };
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -563,17 +551,24 @@ class FreightListing extends Component {
                   {AddAccessibility && (
                     <button
                       type="button"
-                      className={"user-btn"}
+                      className={"user-btn mr5"}
                       onClick={this.formToggle}
                     >
                       <div className={"plus"}></div>ADD
                     </button>
                   )}
-                  {DownloadAccessibility &&
-                    <ExcelFile filename={`${FreightMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                      {this.renderColumn(`${FreightMaster}`)}
-                    </ExcelFile>
+                  {
+                    DownloadAccessibility &&
+                    <>
+                      <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.onBtExport()}
+                      </ExcelFile>
+                    </>
+                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
+
+                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                 </div>
               </div>
             </Col>
@@ -601,26 +596,13 @@ class FreightListing extends Component {
             <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>  */}
-
-            <div className="example-wrapper">
-              <div className="example-header">
+            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                <div className="paging-container d-inline-block">
-                  <span className="d-inline-block">Page Size:</span>
-                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                    <option value="10" selected={true}>10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
-
               </div>
               <div
                 className="ag-theme-material"
-                style={{
-                  width: '100%'
-                }}
+                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
@@ -637,16 +619,22 @@ class FreightListing extends Component {
                   }}
                   frameworkComponents={frameworkComponents}
                 >
-                  <AgGridColumn field="IsVendor" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                  <AgGridColumn field="Mode"></AgGridColumn>
-                  <AgGridColumn field="VendorName"></AgGridColumn>
-                  <AgGridColumn field="SourceCity"></AgGridColumn>
-                  <AgGridColumn field="DestinationCity"></AgGridColumn>
+                  <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
+                  <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
                   <AgGridColumn field="FreightId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
+                <div className="paging-container d-inline-block float-right">
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
               </div>
             </div>
-
           </Col>
         </Row>
       </div >
