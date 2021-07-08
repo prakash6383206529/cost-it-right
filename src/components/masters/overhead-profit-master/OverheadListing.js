@@ -21,6 +21,15 @@ import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import { OverheadMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class OverheadListing extends Component {
     constructor(props) {
@@ -149,27 +158,16 @@ class OverheadListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let headText = '';
-        if (cell === 'ZBC') {
+        if (cellValue === 'ZBC') {
             headText = 'Zero Based';
-        } else if (cell === 'VBC') {
+        } if (cellValue === 'VBC') {
             headText = 'Vendor Based';
-        } else if (cell === 'CBC') {
+        } if (cellValue === 'CBC') {
             headText = 'Client Based';
         }
-
-
-
-
-
-        // if (!cell && row.VendorName === '-') {
-        //     headText = 'Zero Based';
-        // } else if (cell && row.VendorName !== '-') {
-        //     headText = 'Vendor Based';
-        // } else if ((cell || cell == null) && row.ClientName !== '-') {
-        //     headText = 'Client Based';
-        // }
         return headText;
     }
 
@@ -179,6 +177,14 @@ class OverheadListing extends Component {
     */
     effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
     }
 
     /**
@@ -410,52 +416,70 @@ class OverheadListing extends Component {
         }
     };
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        params.api.paginationGoToPage(1);
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+    };
+
     returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
         let temp = []
-        temp = TempData.map((item) => {
-            // if (item.ClientName === null) {
-            //   item.ClientName = ' '
-            // } 
+        TempData.map((item) => {
+            if (item.ClientName === null) {
+                item.ClientName = ' '
+            } if (item.OverheadPercentage === null) {
+                item.OverheadPercentage = ' '
+            } if (item.OverheadRMPercentage === null) {
+                item.OverheadRMPercentage = ' '
+            } if (item.OverheadBOPPercentage === null) {
+                item.OverheadBOPPercentage = ' '
+            } if (item.OverheadMachiningCCPercentage === null) {
+                item.OverheadMachiningCCPercentage = ' '
+            } if (item.VendorName === '-') {
+                item.VendorName = ' '
+            } if (item.ClientName === '-') {
+                item.ClientName = ' '
+            } if (item.TypeOfHead === 'VBC') {
+                item.TypeOfHead = 'Vendor Based'
+            } if (item.TypeOfHead === 'ZBC') {
+                item.TypeOfHead = 'Zero Based'
+            }  if (item.TypeOfHead === 'CBC') {
+                item.TypeOfHead = 'Client Based'
+            } else {
+                return false
+            }
             return item
         })
+        return (
 
-        return (<ExcelSheet data={temp} name={`${OverheadMaster}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
+            <ExcelSheet data={TempData} name={OverheadMaster}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
-    renderColumn = (fileName) => {
-        let arr = this.props.operationList && this.props.operationList.length > 0 ? this.props.operationList : []
-        if (arr != []) {
-            arr && arr.map(item => {
-                let len = Object.keys(item).length
-                for (let i = 0; i < len; i++) {
-                    // let s = Object.keys(item)[i]
-                    if (item.ClientName === null) {
-                        item.ClientName = ' '
-                    } else if (item.OverheadPercentage === null) {
-                        item.OverheadPercentage = ' '
-                    } else if (item.OverheadRMPercentage === null) {
-                        item.OverheadRMPercentage = ' '
-                    } else if (item.OverheadBOPPercentage === null) {
-                        item.OverheadBOPPercentage = ' '
-                    } else if (item.OverheadMachiningCCPercentage === null) {
-                        item.OverheadMachiningCCPercentage = ' '
-                    } else if (item.VendorName === '-') {
-                        item.VendorName = ' '
-                    } else if (item.ClientName === '-') {
-                        item.ClientName = ' '
-                    } else {
-                        return false
-                    }
-                }
-            })
-        }
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, arr)
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
     }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -478,8 +502,28 @@ class OverheadListing extends Component {
 
         };
 
+
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            costingHeadFormatter: this.costingHeadFormatter,
+            renderPlantFormatter: this.renderPlantFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            statusButtonFormatter: this.statusButtonFormatter,
+            hyphenFormatter: this.hyphenFormatter
+        };
+
+
         return (
-            <div className="">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
@@ -593,17 +637,24 @@ class OverheadListing extends Component {
                                     {AddAccessibility &&
                                         <button
                                             type="button"
-                                            className={"user-btn"}
+                                            className={"user-btn mr5"}
                                             onClick={this.formToggle}
                                         >
                                             <div className={"plus"}></div>ADD
                                         </button>
                                     }
-                                    {DownloadAccessibility &&
-                                        <ExcelFile filename={`${OverheadMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {this.renderColumn(`${OverheadMaster}`)}
-                                        </ExcelFile>
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={OverheadMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                     }
+
+                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                                 </div>
                             </div>
                         </Col>
@@ -611,7 +662,7 @@ class OverheadListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.overheadProfitList}
                             striped={false}
                             hover={false}
@@ -622,9 +673,9 @@ class OverheadListing extends Component {
                             // csvFileName={`${OverheadMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="TypeOfHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            pagination> */}
+                        {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn dataField="TypeOfHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={120} columnTitle={true} dataAlign="left" >{this.renderVendor()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ClientName" width={120} columnTitle={true} dataAlign="left" >{this.renderClient()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="left" >{this.renderModelType()}</TableHeaderColumn>
@@ -633,10 +684,56 @@ class OverheadListing extends Component {
                             <TableHeaderColumn searchable={false} dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        </BootstrapTable> */}
+
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{ height: '100%', width: '100%' }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={this.props.overheadProfitList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                                    <AgGridColumn field="ClientName" headerName="Client Name"></AgGridColumn>
+                                    <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
+                                    <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
+                                    <AgGridColumn field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </Col>
                 </Row>
             </div >
