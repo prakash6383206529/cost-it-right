@@ -29,7 +29,15 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class OperationListing extends Component {
     constructor(props) {
@@ -308,24 +316,28 @@ class OperationListing extends Component {
     * @method statusButtonFormatter
     * @description Renders buttons
     */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
+    statusButtonFormatter = (props) => {
+        console.log(props, 'propspropsprops')
+
+        // const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // return (
+        //     <>
+        //         <label htmlFor="normal-switch">
+        //             {/* <span>Switch with default style</span> */}
+        //             <Switch
+        //                 onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+        //                 checked={cell}
+        //                 background="#ff6600"
+        //                 onColor="#4DC771"
+        //                 onHandleColor="#ffffff"
+        //                 offColor="#FC5774"
+        //                 id="normal-switch"
+        //                 height={24}
+        //             />
+        //         </label>
+        //     </>
+        // )
     }
 
 
@@ -366,16 +378,18 @@ class OperationListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
  * @method effectiveDateFormatter
  * @description Renders buttons
  */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     onExportToCSV = (row) => {
@@ -387,8 +401,9 @@ class OperationListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
-    renderPlantFormatter = (cell, row, enumObject, rowIndex) => {
-        return row.CostingHead ? row.DestinationPlant : row.Plants
+    renderPlantFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return rowData.CostingHead ? rowData.DestinationPlant : rowData.Plants
     }
 
     /**
@@ -455,47 +470,57 @@ class OperationListing extends Component {
     onSubmit(values) {
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        params.api.paginationGoToPage(1);
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
+    };
+
     returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
         let temp = []
-        temp = TempData.map((item) => {
-            // if (item.ClientName === null) {
-            //   item.ClientName = ' '
-            // } 
+        TempData.map((item) => {
+            if (item.Specification === null) {
+                item.Specification = ' '
+            } else if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            } else if (item.Plants === '-') {
+                item.Plants = ' '
+            } else if (item.VendorName === '-') {
+                item.VendorName = ' '
+            } else {
+                return false
+            }
             return item
         })
+        return (
 
-        return (<ExcelSheet data={temp} name={`${OperationMaster}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
+            <ExcelSheet data={TempData} name={OperationMaster}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
-    renderColumn = (fileName) => {
-        let arr = this.props.operationList && this.props.operationList.length > 0 ? this.props.operationList : []
-        if (arr != []) {
-            arr && arr.map(item => {
-                let len = Object.keys(item).length
-                for (let i = 0; i < len; i++) {
-                    // let s = Object.keys(item)[i]
-                    if (item.Specification === null) {
-                        item.Specification = ' '
-                    } else if (item.CostingHead === true) {
-                        item.CostingHead = 'VBC'
-                    } else if (item.CostingHead === false) {
-                        item.CostingHead = 'ZBC'
-                    } else if (item.Plants === '-') {
-                        item.Plants = ' '
-                    } else if (item.VendorName === '-') {
-                        item.VendorName = ' '
-                    } else {
-                        return false
-                    }
-                }
-            })
-        }
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, arr)
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
     }
 
     /**
@@ -531,10 +556,27 @@ class OperationListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            costingHeadFormatter: this.costingHeadFormatter,
+            renderPlantFormatter: this.renderPlantFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            statusButtonFormatter: this.statusButtonFormatter
+        };
+
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <div className="">
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     <form>
                         <Row>
                             <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
@@ -653,23 +695,30 @@ class OperationListing extends Component {
                                         {AddAccessibility && (
                                             <button
                                                 type="button"
-                                                className={"user-btn"}
+                                                className={"user-btn mr5"}
                                                 onClick={this.formToggle}
                                             >
                                                 <div className={"plus"}></div>ADD
                                             </button>
                                         )}
-                                        {DownloadAccessibility &&
-                                            <ExcelFile filename={`${OperationMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn'}><div className="download"></div>DOWNLOAD</button>}>
-                                                {this.renderColumn(`${OperationMaster}`)}
-                                            </ExcelFile>
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
+                                                <ExcelFile filename={OperationMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                         }
+
+                                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                                     </div>
                                 </div>
                             </Col>
                         </Row>
                     </form>
-                    <BootstrapTable
+                    {/* <BootstrapTable
                         data={this.props.operationList}
                         striped={false}
                         hover={false}
@@ -682,9 +731,9 @@ class OperationListing extends Component {
                         ref={'table'}
                         trClassName={'userlisting-row'}
                         tableHeaderClass='my-custom-header'
-                        pagination>
-                        {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                        <TableHeaderColumn searchable={false} dataField="CostingHead" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                        pagination> */}
+                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn searchable={false} dataField="CostingHead" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="Technology" width={150} columnTitle={true} dataAlign="left" >{'Technology'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="OperationName" columnTitle={true} dataAlign="left" >{this.renderOperationName()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="OperationCode" columnTitle={true} dataAlign="left" >{this.renderOperationCode()}</TableHeaderColumn>
@@ -692,10 +741,58 @@ class OperationListing extends Component {
                         <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" >{this.renderVendorName()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="UnitOfMeasurement" columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" >{'Rate'}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={120} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn>
-                        {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                        <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable>
+                        <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={120} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    </BootstrapTable> */}
+
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </div>
+                        <div
+                            className="ag-theme-material"
+                            style={{ height: '100%', width: '100%' }}
+                        >
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                // columnDefs={c}
+                                rowData={this.props.operationList}
+                                pagination={true}
+                                paginationPageSize={10}
+                                onGridReady={this.onGridReady}
+                                gridOptions={gridOptions}
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: CONSTANT.EMPTY_DATA,
+                                }}
+                                frameworkComponents={frameworkComponents}
+                            >
+                                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                                <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
+                                <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                                <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
+                                <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="IsActive" headerName="Status"
+                                // cellRenderer={'statusButtonFormatter'} 
+                                ></AgGridColumn>
+                                <AgGridColumn field="OperationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     {isBulkUpload && <BulkUpload
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
