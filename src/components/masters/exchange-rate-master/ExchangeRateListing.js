@@ -197,15 +197,19 @@ class ExchangeRateListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
+
+        const cellValue = props?.value;
+        const rowData = props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     /**
     * @method handleCurrency
@@ -300,44 +304,57 @@ class ExchangeRateListing extends Component {
     onSubmit(values) {
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+        params.api.paginationGoToPage(1);
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
+    };
+
     returnExcelColumn = (data = [], TempData) => {
-        const ExcelFile = ReactExport.ExcelFile;
-        const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-        const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
         let temp = []
-        temp = TempData.map((item) => {
-            if (item.ClientName === null) {
-                item.ClientName = ' '
+        TempData.map((item) => {
+            if (item.BankRate === null) {
+                item.BankRate = ' '
+            } else if (item.BankCommissionPercentage === null) {
+                item.BankCommissionPercentage = ' '
+            } else if (item.CustomRate === null) {
+                item.CustomRate = ' '
+            } else {
+                return false
             }
             return item
         })
+        return (
 
-        return (<ExcelSheet data={temp} name={`${ExchangeMaster}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
+            <ExcelSheet data={TempData} name={ExchangeMaster}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
-    renderColumn = (fileName) => {
-        let arr = this.props.exchangeRateDataList && this.props.exchangeRateDataList.length > 0 ? this.props.exchangeRateDataList : []
-        if (arr != []) {
-            arr && arr.map(item => {
-                let len = Object.keys(item).length
-                for (let i = 0; i < len; i++) {
-                    // let s = Object.keys(item)[i]
-                    if (item.BankRate === null) {
-                        item.BankRate = ' '
-                    } else if (item.BankCommissionPercentage === null) {
-                        item.BankCommissionPercentage = ' '
-                    } else if (item.CustomRate === null) {
-                        item.CustomRate = ' '
-                    } else {
-                        return false
-                    }
-                }
-            })
-        }
-        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, arr)
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
     }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+
 
     /**
     * @method render
@@ -449,14 +466,21 @@ class ExchangeRateListing extends Component {
                                         )}
                                         {AddAccessibility && <button
                                             type="button"
-                                            className={'user-btn'}
+                                            className={'user-btn mr5'}
                                             onClick={this.formToggle}>
                                             <div className={'plus'}></div>ADD</button>}
-                                        {DownloadAccessibility &&
-                                            <ExcelFile filename={`${ExchangeMaster}`} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                                {this.renderColumn(`${ExchangeMaster}`)}
-                                            </ExcelFile>
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
+                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                         }
+
+                                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                                     </div>
                                 </div>
                             </Col>
@@ -487,25 +511,13 @@ class ExchangeRateListing extends Component {
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable> */}
 
-                    <div className="example-wrapper">
-                        <div className="example-header">
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-
-                            <div className="paging-container d-inline-block">
-                                <span className="d-inline-block">Page Size:</span>
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
-
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{
-                                width: '100%'
-                            }}
+                            style={{ height: '100%', width: '100%' }}
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
@@ -522,15 +534,22 @@ class ExchangeRateListing extends Component {
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="Currency"></AgGridColumn>
-                                <AgGridColumn field="CurrencyExchangeRate"></AgGridColumn>
-                                <AgGridColumn field="BankRate"></AgGridColumn>
-                                <AgGridColumn field="BankCommissionPercentage"></AgGridColumn>
-                                <AgGridColumn field="CustomRate"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                <AgGridColumn field="DateOfModification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
+                                <AgGridColumn field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                <AgGridColumn field="DateOfModification" headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                 <AgGridColumn field="ExchangeRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
