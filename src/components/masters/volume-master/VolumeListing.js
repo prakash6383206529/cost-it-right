@@ -738,7 +738,7 @@ createCustomExportCSVButton = (onClick) => {
                   </div>
                 </Col>)}
 
-              <Col md="7" className="search-user-block mb-3">
+              <Col md="8" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">
                   <div>
                     {this.state.shown ? (
