@@ -82,7 +82,6 @@ class RMDomesticListing extends Component {
                 this.props.getRawMaterialFilterSelectList(() => { })
             })
         }
-
     }
 
     /**
@@ -588,8 +587,7 @@ class RMDomesticListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -668,7 +666,6 @@ class RMDomesticListing extends Component {
             filter: true,
             sortable: true,
         };
-
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
@@ -836,7 +833,7 @@ class RMDomesticListing extends Component {
                                             {this.state.shown ? (
                                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="cancel-icon-white"></div>
-                                                    </button>
+                                                </button>
                                             ) : (
                                                 <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                                             )}
@@ -951,8 +948,8 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="VendorName"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost"></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost"></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
