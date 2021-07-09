@@ -177,7 +177,7 @@ function ReportListing(props) {
             technologyId: 1,
             plantCode: "",
             vendorCode: "",
-            userId: EMPTY_GUID,
+            userId: loggedUser,
             isSortByOrderAsc: true,
         }
         props.getReportListing(filterData, (res) => { })
