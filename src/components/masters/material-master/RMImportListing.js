@@ -171,10 +171,11 @@ class RMImportListing extends Component {
   * @description edit material type
   */
   editItemDetails = (Id, rowData = {}) => {
+    console.log(rowData, 'rowDatarowData')
     let data = {
       isEditFlag: true,
       Id: Id,
-      IsVendor: rowData.CostingHead,
+      IsVendor: rowData.CostingHead == 'Vendor Based' ? true : false,
     }
     this.props.getDetails(data);
   }
@@ -278,8 +279,8 @@ class RMImportListing extends Component {
 * @description Renders buttons
 */
   buttonFormatter = (props) => {
-    const cellValue = props?.value;
-    const rowData = props?.data;
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
@@ -585,7 +586,7 @@ class RMImportListing extends Component {
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
   };
 
   onPageSizeChanged = (newPageSize) => {
