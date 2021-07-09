@@ -711,9 +711,7 @@ function SimulationApprovalSummary(props) {
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => { setRejectDrawer(true) }} >
-                                        <div className={'cross-icon'}>
-                                            <img src={require('../../../assests/images/times.png')} alt="cancel-icon.jpg" />
-                                        </div>{' '}
+                                        <div className={'cancel-icon'}></div>
                                         {'Reject'}
                                     </button>
                                     <button

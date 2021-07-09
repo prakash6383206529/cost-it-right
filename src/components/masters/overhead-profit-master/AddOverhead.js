@@ -20,6 +20,7 @@ import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
+import imgRedcross from '../../../assests/images/red-cross.png'
 
 const selector = formValueSelector('AddOverhead');
 
@@ -1007,7 +1008,7 @@ class AddOverhead extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={imgRedcross}
                                     ></img>
                                   </div>
                                 );

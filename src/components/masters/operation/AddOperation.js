@@ -27,6 +27,8 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
+import imgRedcross from '../../../assests/images/red-cross.png';
+
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -939,7 +941,7 @@ class AddOperation extends Component {
                                     onClick={() =>
                                       this.deleteFile(f.FileId, f.FileName)
                                     }
-                                    src={require("../../../assests/images/red-cross.png")}
+                                    src={imgRedcross}
                                   ></img>
                                 </div>
                               );

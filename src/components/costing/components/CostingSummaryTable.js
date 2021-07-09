@@ -1205,12 +1205,7 @@ const CostingSummaryTable = (props) => {
                                     sendForApprovalData([data.costingId], index)
                                     setShowApproval(true)
                                   }}
-                                >
-                                  {' '}
-                                  <img
-                                    class="mr-1"
-                                    src={require('../../../assests/images/send-for-approval.svg')}
-                                  ></img>
+                                ><div className="send-for-approval"></div>
                                   Send For Approval
                                 </button>
                               }

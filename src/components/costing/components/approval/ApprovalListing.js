@@ -16,6 +16,8 @@ import { checkForDecimalAndNull } from '../../../../helper'
 import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
 import { PENDING } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
+import imgArrowDown from "../../../../assests/images/arrow-down.svg";
+import imgArrowUP from "../../../../assests/images/arrow-up.svg";
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
@@ -175,7 +177,7 @@ function ApprovalListing() {
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" />
+        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
@@ -184,7 +186,7 @@ function ApprovalListing() {
   const oldpriceFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
+        {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
