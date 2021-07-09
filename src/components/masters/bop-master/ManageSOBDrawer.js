@@ -286,7 +286,7 @@ function ManageSOBDrawer(props) {
                               <td className="cr-select-height">
                                 <TextFieldHookForm
                                   label={''}
-                                  name={`${GridFields}[${index}]ShareOfBusinessPercentage`}
+                                  name={`${GridFields}.${index}.ShareOfBusinessPercentage`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
