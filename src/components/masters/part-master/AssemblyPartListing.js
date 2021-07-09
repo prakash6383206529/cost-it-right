@@ -117,14 +117,13 @@ class AssemblyPartListing extends Component {
         });
     }
 
-
-
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -190,7 +189,14 @@ class AssemblyPartListing extends Component {
     */
     hyphenFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? cellValue : '-';
+        let data;
+        if (cellValue === '' || cellValue === null) {
+            data = '-'
+        }
+        else {
+            data = cellValue
+        }
+        return data;
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -279,7 +285,7 @@ class AssemblyPartListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -366,7 +372,8 @@ class AssemblyPartListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            visualAdFormatter: this.visualAdFormatter
+            visualAdFormatter: this.visualAdFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter
         };
 
         return (
