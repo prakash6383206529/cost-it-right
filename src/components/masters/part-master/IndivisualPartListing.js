@@ -223,8 +223,9 @@ class IndivisualPartListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -259,7 +260,7 @@ class IndivisualPartListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -351,6 +352,7 @@ class IndivisualPartListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter
         };
 
         return (
@@ -371,7 +373,7 @@ class IndivisualPartListing extends Component {
                                     <div className={'upload'}></div>Bulk Upload</button>}
                                 {AddAccessibility && <button
                                     type="button"
-                                    className={'user-btn'}
+                                    className={'user-btn mr5'}
                                     onClick={this.formToggle}>
                                     <div className={'plus'}></div>Add</button>}
                                 {
@@ -426,7 +428,7 @@ class IndivisualPartListing extends Component {
                     <div
                         className="ag-theme-material"
                         style={{ height: '100%', width: '100%' }}
-                    > 
+                    >
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             // columnDefs={c}
