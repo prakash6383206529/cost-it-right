@@ -167,14 +167,12 @@ function ApproveRejectDrawer(props) {
 
 
   const onSubmit = () => {
-
-
-
     const remark = getValues('remark')
+    console.log('remark: ', remark);
     const reason = getValues('reason')
+    console.log('reason: ', reason);
     const dept = getValues('dept')
     const approver = getValues('approver')
-
 
     if (type === 'Reject') {
       if (remark) {
@@ -192,7 +190,7 @@ function ApproveRejectDrawer(props) {
         setShowError(true)
         return false
       }
-      if (!reason && !selectedDate) return false
+      if (!reason || !selectedDate) return false
     }
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
