@@ -58,7 +58,7 @@ class DownloadUploadBOMxls extends React.Component {
 
     // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
     return (
-      <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download File</button>}>
+      <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><div class="download"></div> Download File</button>}>
         {fileName ? this.renderSwitch(fileName) : ''}
       </ExcelFile>
     );
