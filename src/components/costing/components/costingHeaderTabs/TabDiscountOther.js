@@ -18,6 +18,7 @@ import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
+import redcrossImg from '../../../../assests/images/red-cross.png'
 
 function TabDiscountOther(props) {
 
@@ -811,7 +812,7 @@ function TabDiscountOther(props) {
                                   alt={""}
                                   className="float-right"
                                   onClick={() => deleteFile(f.FileId, f.FileName)}
-                                  src={require("../../../../assests/images/red-cross.png")}
+                                  src={redcrossImg}
                                 ></img>
                               </div>
                             );

@@ -34,6 +34,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -1167,7 +1168,7 @@ class AddBOPImport extends Component {
                                             f.FileName
                                           )
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={imgRedcross}
                                       ></img>
                                     </div>
                                   );

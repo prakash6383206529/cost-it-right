@@ -38,6 +38,10 @@ import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png'
+
+
+
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -3208,7 +3212,7 @@ class AddMoreDetails extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
+                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>
                                   </div>
                                 )
                               })
