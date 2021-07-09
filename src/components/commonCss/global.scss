@@ -367,9 +367,9 @@ a:hover {
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  img {
-    width: 16px;
-    height: auto;
+  img,.cancel-icon-white{
+    width: 11px;
+    height: 11px;
     object-fit: contain;
   }
   &:hover{
