@@ -209,19 +209,20 @@ export const TextAreaHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value, name } }) => {
             return (
               <textarea
                 {...field}
+                {...register}
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  // onChange(e)
+                  onChange(e)
                 }}
               />
             )
@@ -256,13 +257,14 @@ export const DatePickerHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => (
+          render={({ field: { onChange, onBlur, value, name } }) => (
 
             // return (
             <ReactDatePicker
               {...field}
+              {...register}
               name={name}
               value={selected}
               dateFormat="dd/MM/yyyy"
@@ -276,7 +278,7 @@ export const DatePickerHookForm = (field) => {
               selected={selected}
               className={field.className}
               onChange={(e) => {
-                // onChange(e)
+                onChange(e)
                 handleChange(e)
                 // onselect(e)
               }}
