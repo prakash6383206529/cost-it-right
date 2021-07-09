@@ -1593,7 +1593,7 @@ function CostingDetails(props) {
                                         <td className="cr-select-height w-100px">
                                           <NumberFieldHookForm
                                             label={""}
-                                            name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
+                                            name={`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -1623,7 +1623,7 @@ function CostingDetails(props) {
                                         <td className="cr-select-height w-100px">
                                           <SearchableSelectHookForm
                                             label={""}
-                                            name={`${zbcPlantGridFields}[${index}]CostingVersion`}
+                                            name={`${zbcPlantGridFields}.${index}.CostingVersion`}
                                             placeholder={"Select"}
                                             Controller={Controller}
                                             control={control}
@@ -1732,7 +1732,7 @@ function CostingDetails(props) {
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
-                                          name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
+                                          name={`${vbcGridFields}.${index}.ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
                                           register={register}
@@ -1762,7 +1762,7 @@ function CostingDetails(props) {
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
-                                          name={`${vbcGridFields}[${index}]CostingVersion`}
+                                          name={`${vbcGridFields}.${index}.CostingVersion`}
                                           placeholder={"Select"}
                                           Controller={Controller}
                                           control={control}
