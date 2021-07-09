@@ -271,7 +271,7 @@ function AddBOP(props) {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    this.state.gridApi.setQuickFilter(e.target.value);
+    gridApi.setQuickFilter(e.target.value);
   }
 
   const frameworkComponents = {
