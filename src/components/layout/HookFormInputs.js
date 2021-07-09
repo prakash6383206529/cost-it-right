@@ -36,6 +36,8 @@ export const TextFieldHooks = (input) => {
 
 export const TextFieldHookForm = (field) => {
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  // console.log('register: ', register);
+  // console.log('name: ', name);
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -52,20 +54,22 @@ export const TextFieldHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          // ref={reg}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value } }) => {
+
             return (
               <input
                 {...field}
-                register
+                {...register}
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  // onChange(e)
+                  onChange(e)
                 }}
               />
             )
@@ -80,11 +84,13 @@ export const TextFieldHookForm = (field) => {
 }
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name } = field
+  // console.log('register: ', register);
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+
   return (
     <>
       <div className={className}>
@@ -96,27 +102,30 @@ export const NumberFieldHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value, name } }) => {
             return (
               <input
                 {...field}
+                {...register}
                 type={'number'}
-                register
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
+
                 onChange={(e) => {
                   handleChange(e);
-                  // onChange(e)
+                  onChange(e)
                 }}
               />
             )
           }
           }
         />
+
+
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
           : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
       </div>
@@ -127,6 +136,7 @@ export const NumberFieldHookForm = (field) => {
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register, isLoading, customClassName } = field;
+
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
@@ -142,28 +152,30 @@ export const SearchableSelectHookForm = (field) => {
         name={name}
         control={control}
         rules={rules}
-        ref={register}
+        {...register}
         defaultValue={defaultValue}
-        render={({ onChange, onBlur, value, name }) =>
+        render={({ field: { onChange, onBlur, value, name, } }) => {
+          return (
+            <Select
+              {...field}
+              {...register}
+              name={name}
+              placeholder={placeholder}
+              isDisabled={isDisable}
+              onChange={(e) => {
+                handleChange(e);
+                onChange(e)
+              }}
+              menuPlacement="auto"
+              options={options}
+              onBlur={onBlur}
+              selected={value}
+              value={value}
+              isLoading={isLoader}
+            />
+          )
 
-          <Select
-            {...field}
-            name={name}
-            placeholder={placeholder}
-            isDisabled={isDisable}
-            onChange={(e) => {
-              handleChange(e);
-              // onChange(e)
-            }}
-            menuPlacement="auto"
-            options={options}
-            onBlur={onBlur}
-            //selected={value}
-            value={value}
-            isLoading={isLoader}
-          />
-
-        }
+        }}
       />
 
       {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
@@ -252,7 +264,7 @@ export const DatePickerHookForm = (field) => {
             <ReactDatePicker
               {...field}
               name={name}
-              value={value}
+              value={selected}
               dateFormat="dd/MM/yyyy"
               placeholderText={placeholder}
               //maxDate={new Date()}
@@ -261,10 +273,10 @@ export const DatePickerHookForm = (field) => {
               showYearDropdown
               readonly="readonly"
               onBlur={() => null}
-              selected={value}
+              selected={selected}
               className={field.className}
               onChange={(e) => {
-                onChange(e)
+                // onChange(e)
                 handleChange(e)
                 // onselect(e)
               }}
