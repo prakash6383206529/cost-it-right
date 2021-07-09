@@ -551,18 +551,18 @@ function SimulationApprovalListing(props) {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
-                                    <AgGridColumn field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
-                                    <AgGridColumn field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
-                                    <AgGridColumn field="SimulatedByName" headerName='Simulated By' cellRenderer='requestedByFormatter'></AgGridColumn>
-                                    <AgGridColumn field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn field="RequestedBy" headerName='Requested By' cellRenderer='requestedByFormatter'></AgGridColumn>
-                                    <AgGridColumn field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
-                                    <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
+                                    <AgGridColumn width={100} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
+                                    <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
+                                    <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Simulated By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="RequestedBy" headerName='Requested By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+                                    <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
+                                    <AgGridColumn width={105} field="SimulationId" type="rightAligned" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
