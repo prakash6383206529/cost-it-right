@@ -33,7 +33,7 @@ function AddToComparisonDrawer(props) {
       destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
     },
   })
-  const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
+  // const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
 
   const dispatch = useDispatch()
 

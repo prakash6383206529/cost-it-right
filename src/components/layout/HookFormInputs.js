@@ -330,7 +330,7 @@ export const RadioHookForm = ({
                       name={name}
                       type="radio"
                       value={data[optionsValue]}
-                      ref={register}
+                      {...register}
                       onChange={e =>
                         onChangeSelect(
                           e.target.value
