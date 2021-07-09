@@ -240,7 +240,7 @@ class LabourListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-   buttonFormatter = (props) => {
+  buttonFormatter = (props) => {
 
     const cellValue = props?.value;
     const rowData = props?.data;
@@ -405,11 +405,12 @@ class LabourListing extends Component {
   }
 
   /**
-   * @method effectiveDateFormatter
-   * @description Renders buttons
-   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : ''
+  * @method effectiveDateFormatter
+  * @description Renders buttons
+  */
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
 
   renderEffectiveDate = () => {
@@ -534,7 +535,7 @@ class LabourListing extends Component {
 
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
   };
 
   onPageSizeChanged = (newPageSize) => {
@@ -628,7 +629,8 @@ class LabourListing extends Component {
       totalValueRenderer: this.buttonFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      costingHeadFormatter: this.costingHeadFormatter
+      costingHeadFormatter: this.costingHeadFormatter,
+      effectiveDateRenderer: this.effectiveDateFormatter
     };
 
     return (
