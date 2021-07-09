@@ -35,6 +35,9 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
+import imgRedcross from '../../../assests/images/red-cross.png'
+
+
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -1661,7 +1664,7 @@ class AddRMDomestic extends Component {
                                         onClick={() =>
                                           this.deleteFile(f.FileId, f.FileName)
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={imgRedcross}
                                       ></img>
                                     </div>
                                   );

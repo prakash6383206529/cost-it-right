@@ -812,6 +812,7 @@ a:hover {
     font-size:14px,
     font-family: ('Roboto', sans-serif ),
     border-color:#C2CBE8,
+    material-primary-color:#256bd1,
     // material-active-color: #256bd1,
     checkbox-checked-color: #256bd1,
     checkbox-unchecked-color: #8a91ac,
@@ -819,13 +820,12 @@ a:hover {
     row-hover-color: null,
     row-height: ag-derived(grid-size, $times: 6, $plus: 1),
     header-cell-hover-background-color: transparent,
-    cell-horizontal-padding: ag-derived(grid-size, $times: 2),   
-    cell-horizontal-border: solid #C2CBE8, 
+    cell-horizontal-padding: ag-derived(grid-size, $times: 2),
+    
+    // cell-horizontal-border: solid #C2CBE8, 
 
-    header-column-separator: true,
-    header-column-separator-color: ag-derived(border-color, $opacity: 1),
-
-
+    // header-column-separator: true,
+    // header-column-separator-color: ag-derived(border-color, $opacity: 1),
   ));
   .ag-header {
     background-color: white;
@@ -836,6 +836,9 @@ a:hover {
     }
   }
 }
+// .ag-root-wrapper-body.ag-layout-normal{
+//   border: 1px solid #C2CBE8;
+// }
 // ag-grid-react end
 
 .react-bs-table-search-form {

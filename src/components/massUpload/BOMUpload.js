@@ -9,6 +9,7 @@ import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls from './DownloadUploadBOMxls';
+import cloudImg from '../../assests/images/uploadcloud.png';
 
 class BOMUpload extends Component {
   constructor(props) {
@@ -195,7 +196,7 @@ class BOMUpload extends Component {
 
                 <div className="input-group mt25 col-md-12 input-withouticon " >
                   <div className="file-uploadsection">
-                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../assests/images/uploadcloud.png')} ></img> </label>
+                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
                     <input
                       type="file"
                       name="File"

@@ -248,7 +248,7 @@ function CostingHeaderTabs(props) {
                 type="button"
                 onClick={() => setIsOpenViewHirarchy(true)}
                 class="btn-primary btn btn-lg mt-2">
-                <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" />
+                <div className="hirarchy-icon"></div>
                 <span>View BOM</span>
               </button>
             </Col>}

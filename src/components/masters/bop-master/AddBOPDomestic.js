@@ -28,6 +28,11 @@ import moment from 'moment';
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+
+
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -1074,7 +1079,7 @@ class AddBOPDomestic extends Component {
                                             f.FileName
                                           )
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={imgRedcross}
                                       ></img>
                                     </div>
                                   );

@@ -11,6 +11,7 @@ import { FILE_URL } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import { ViewCostingContext } from './CostingDetails';
+import redCross from "../../../assests/images/red-cross.png"
 
 export function Clientbasedcostingdrawer(props) {
     const toggleDrawer = () => {
@@ -598,7 +599,7 @@ export function Clientbasedcostingdrawer(props) {
                                                 alt={""}
                                                 className="float-right"
                                                 onClick={() => deleteFile(f.FileId, f.FileName)}
-                                                src={require("../../../assests/images/red-cross.png")}
+                                                src={redCross}
                                                 ></img>
                                             </div>
                                             );

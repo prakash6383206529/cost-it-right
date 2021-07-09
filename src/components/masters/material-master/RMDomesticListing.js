@@ -901,20 +901,20 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn width={151} field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn width={151} field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn width={121} field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn width={151} field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn width={121} field="RMSpec"></AgGridColumn>
                                     <AgGridColumn width={151} field="MaterialType"></AgGridColumn>
-                                    <AgGridColumn width={151} field="Category"></AgGridColumn>
-                                    <AgGridColumn width={151} field="TechnologyName"></AgGridColumn>
+                                    <AgGridColumn width={121} field="Category"></AgGridColumn>
+                                    <AgGridColumn width={171} field="TechnologyName"></AgGridColumn>
                                     <AgGridColumn width={151} field="Plant"></AgGridColumn>
                                     <AgGridColumn width={151} field="VendorName"></AgGridColumn>
-                                    <AgGridColumn width={151} field="UOM"></AgGridColumn>
-                                    <AgGridColumn width={151} field="BasicRate"></AgGridColumn>
+                                    <AgGridColumn width={121} field="UOM"></AgGridColumn>
+                                    <AgGridColumn width={121} field="BasicRate"></AgGridColumn>
                                     <AgGridColumn width={151} field="RMFreightCost"></AgGridColumn>
-                                    <AgGridColumn width={151} field="RMShearingCost"></AgGridColumn>
-                                    <AgGridColumn width={151} field="ScrapRate"></AgGridColumn>
+                                    <AgGridColumn width={161} field="RMShearingCost"></AgGridColumn>
+                                    <AgGridColumn width={121} field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn width={171} field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn width={151} field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn width={151} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn width={120} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {/* {this.props.isSimulation && <AgGridColumn width={151} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn width={151} field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn width={151} field="TechnologyId" hide={true}></AgGridColumn>
