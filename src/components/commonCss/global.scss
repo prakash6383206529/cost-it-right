@@ -828,6 +828,11 @@ a:hover {
     // header-column-separator-color: ag-derived(border-color, $opacity: 1),
   ));
   .ag-header {
+    .justify-content-center{
+      .ag-header-cell-label{
+        justify-content: center;
+      }
+    }
     background-color: white;
     color: #3D4465;
     .ag-header-cell-text{
@@ -2473,7 +2478,7 @@ input:disabled,
     }
   }
 }
-td {
+td,.ag-cell{
   .Error,
   .Pushed,
   .Draft,
