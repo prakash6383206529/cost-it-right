@@ -35,6 +35,7 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
+  console.log('first field: ', field);
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
   // console.log('register: ', register);
   // console.log('name: ', name);
@@ -58,6 +59,7 @@ export const TextFieldHookForm = (field) => {
           {...register}
           defaultValue={defaultValue}
           render={({ field: { onChange, onBlur, value } }) => {
+            console.log('field: ', field);
 
             return (
               <input
