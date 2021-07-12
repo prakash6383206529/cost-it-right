@@ -13,9 +13,13 @@ import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { getPlantSelectListByType } from '../../../actions/Common';
-import { EMPTY_GUID, ZBC } from '../../../config/constants';
+import { ZBC } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
-
+import LoaderCustom from '../../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+const gridOptions = {};
 
 function VerifySimulation(props) {
     const { cancelVerifyPage } = props
@@ -30,6 +34,9 @@ function VerifySimulation(props) {
     const [costingPage, setSimulationCostingPage] = useState(false)
     const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [rowData, setRowData] = useState(null);
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -122,51 +129,68 @@ function VerifySimulation(props) {
             </>
         )
     }
-    const newBRFormatter = (cell, row, enumObject, rowIndex) => {
+    const newBRFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value form-control' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
-    const newSRFormatter = (cell, row, enumObject, rowIndex) => {
+    const newSRFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
-    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
+    const descriptionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
-    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+    const ecnFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
-    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+    const revisionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
-    const renderPlant = (cell, row, enumObject, rowIndex) => {
-        // return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+    const renderPlant = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}` : '-'
 
     }
 
-    const renderVendor = (cell, row, enumObject, rowIndex) => {
+    const renderVendor = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
-    const renderRM = (cell, row, enumObject, rowIndex) => {
+    const renderRM = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
     }
 
-    const onRowSelect = (row, isSelected, e) => {
-        if (isSelected) {
-            let tempArr = [...selectedRowData, row]
-            setSelectedRowData(tempArr)
-        } else {
-            const CostingId = row.CostingId;
-            let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-            setSelectedRowData(tempArr)
-        }
+    const onRowSelect = () => {
+        var selectedRows = gridApi.getSelectedRows();
+        setSelectedRowData(selectedRows)
+        // if (isSelected) {
+        //     let tempArr = [...selectedRowData, row]
+        //     setSelectedRowData(tempArr)
+        // } else {
+        //     const CostingId = row.CostingId;
+        //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
+        //     setSelectedRowData(tempArr)
+        // }
     }
 
     const onSelectAll = (isSelected, rows) => {
@@ -267,6 +291,52 @@ function VerifySimulation(props) {
         verifyCostingList('', '')
     }
 
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        return thisIsFirstColumn;
+    }
+
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
+    };
+
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+        params.api.paginationGoToPage(1);
+
+    };
+
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
+
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
+
+    const frameworkComponents = {
+        descriptionFormatter: descriptionFormatter,
+        ecnFormatter: ecnFormatter,
+        revisionFormatter: revisionFormatter,
+        renderVendor: renderVendor,
+        renderPlant: renderPlant,
+        renderRM: renderRM,
+        buttonFormatter: buttonFormatter,
+        newBRFormatter: newBRFormatter,
+        newSRFormatter: newSRFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+    };
+
     return (
         <>
             {
@@ -278,128 +348,77 @@ function VerifySimulation(props) {
                         </Col>
                     </Row>
                     <Row className="filter-row-large pt-4 blue-before">
-                        {shown &&
-                            <Col lg="8" md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
 
-                                    {/* <div className="flex-fill filled-small hide-label">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'partNo'}
-                                        placeholder={'Part No.'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                        options={renderDropdownListing('PartList')}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        errors={errors.partNo}
-                                    />
-                                </div> */}
-                                    <div className="flex-fill  hide-label">
-                                        <SearchableSelectHookForm
-                                            label={''}
-                                            name={'plantCode'}
-                                            placeholder={'Plant Code'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: false }}
-                                            register={register}
-                                            // defaultValue={plant.length !== 0 ? plant : ''}
-                                            options={renderDropdownListing('plant')}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            errors={errors.plantCode}
-                                        />
-                                    </div>
-                                    <div className="flex-fill  hide-label">
-                                        <SearchableSelectHookForm
-                                            label={''}
-                                            name={'material'}
-                                            placeholder={'Raw Material'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: false }}
-                                            register={register}
-                                            // defaultValue={plant.length !== 0 ? plant : ''}
-                                            options={renderDropdownListing('material')}
-                                            mandatory={false}
-                                            handleChange={handleMaterial}
-                                            errors={errors.material}
-                                        />
-                                    </div>
-
-                                    <div className="flex-fill  hide-label">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={filterList}
-                                            className="apply mr5"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        }
                         <Col md="2" lg="2" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {(shown) ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                    )}
+
                                 </div>
                             </div>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                            <BootstrapTable
-                                data={verifyList}
-                                striped={false}
-                                bordered={false}
-                                hover={false}
-                                options={options}
-                                search
-                                // cellEdit={cellEditProp}
-                                // exportCSV
-                                //ignoreSinglePage
-                                selectRow={selectRowProp}
-                                className="add-volume-table verify-simulation-table"
-                                pagination>
-                                <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{renderCostingNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataFormat={renderVendor} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} editable={false} dataFormat={renderPlant} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={descriptionFormatter} >{renderDescription()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={ecnFormatter} >{renderECN()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" dataFormat={renderRM} >{RMName()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={false} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={false} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RawMaterialId" width={100} columnTitle={false} editable={false} hidden ></TableHeaderColumn>
+                            <Col>
+                                <div className={`ag-grid-react`}>
+                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                        <div className="ag-grid-header">
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        </div>
+                                        <div
+                                            className="ag-theme-material"
+                                            style={{ height: '100%', width: '100%' }}
+                                        >
+                                            <AgGridReact
+                                                style={{ height: '100%', width: '100%' }}
+                                                defaultColDef={defaultColDef}
+                                                // columnDefs={c}
+                                                rowData={verifyList}
+                                                pagination={true}
+                                                paginationPageSize={10}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                loadingOverlayComponent={'customLoadingOverlay'}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: CONSTANT.EMPTY_DATA,
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                suppressRowClickSelection={true}
+                                                rowSelection={'multiple'}
+                                                // frameworkComponents={frameworkComponents}
+                                                onSelectionChanged={onRowSelect}
+                                            >
+                                                <AgGridColumn field="CostingId" hide ></AgGridColumn>
+                                                <AgGridColumn field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                                <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
+                                                <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
+                                                <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
+                                                <AgGridColumn field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
+                                                <AgGridColumn field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
+                                                <AgGridColumn field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                                <AgGridColumn field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
+                                                <AgGridColumn field="POPrice" headerName="PO Price Old"></AgGridColumn>
+                                                <AgGridColumn field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                <AgGridColumn field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                <AgGridColumn field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
+                                                <AgGridColumn field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
+                                                <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
 
-                            </BootstrapTable>
+                                            </AgGridReact>
+
+                                            <div className="paging-container d-inline-block float-right">
+                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                    <option value="10" selected={true}>10</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Col>
+
 
                         </Col>
                     </Row>
