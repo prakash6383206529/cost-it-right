@@ -186,7 +186,9 @@ function CostingSimulation(props) {
                 return false
             } else {
                 if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-                var selected = gridApi.getSelectedNodes()
+                selectedRows && selectedRows.map(item => {
+                    item.IsChecked = true
+                })
                 setSelectedRowData(selectedRows)
             }
         })
