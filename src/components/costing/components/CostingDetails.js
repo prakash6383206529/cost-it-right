@@ -325,9 +325,7 @@ function CostingDetails(props) {
    * @description DISPLAY FORM ONCLICK NEXT BUTTON
    */
   const nextToggle = () => {
-    console.log("Coming here");
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
-      console.log("Coming here1");
       dispatch(getZBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
@@ -337,7 +335,6 @@ function CostingDetails(props) {
       }))
 
       dispatch(getVBCExistingCosting(part.value, (res) => {
-        console.log("Coming here2");
         if (res.data.Result) {
           let Data = res.data.DataList
           setVBCVendorGrid(Data)

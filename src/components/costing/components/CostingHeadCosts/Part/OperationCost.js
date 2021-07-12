@@ -270,7 +270,7 @@ function OperationCost(props) {
                               {
                                 <NumberFieldHookForm
                                   label=""
-                                  name={`${OperationGridFields}[${index}]Quantity`}
+                                  name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -305,7 +305,7 @@ function OperationCost(props) {
                                   item.IsLabourRateExist ?
                                     <NumberFieldHookForm
                                       label=""
-                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}
