@@ -4,7 +4,6 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
-import { getSelectedCostingList } from '../../../components/costing/actions/Approval'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
@@ -16,6 +15,11 @@ import { EMPTY_GUID } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import LoaderCustom from '../../common/LoaderCustom'
+const gridOptions = {};
 
 function SimulationApprovalListing(props) {
     const loggedUser = loggedInUserId()
@@ -28,6 +32,9 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [rowData, setRowData] = useState(null);
 
     const dispatch = useDispatch()
 
@@ -123,24 +130,28 @@ function SimulationApprovalListing(props) {
      * @method linkableFormatter
      * @description Renders Name link
      */
-    const linkableFormatter = (cell, row, enumObject, rowIndex) => {
+    const linkableFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
                 <div
-                    onClick={() => viewDetails(row)}
+                    onClick={() => viewDetails(rowData)}
                     className={'link'}
                 >
-                    {cell}
+                    {cellValue}
                 </div>
             </Fragment>
         )
     }
 
-    const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+    const createdOnFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '-';
     }
 
-    const priceFormatter = (cell, row, enumObject, rowIndex) => {
+    const priceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
@@ -149,7 +160,8 @@ function SimulationApprovalListing(props) {
         )
     }
 
-    const oldpriceFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldpriceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
             <>
                 {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
@@ -158,15 +170,20 @@ function SimulationApprovalListing(props) {
         )
     }
 
-    const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
+    const requestedOnFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
-    const statusFormatter = (cell, row, enumObject, rowIndex) => {
+    const statusFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log('cell: ', cell);
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={cell} >{row.DisplayStatus}</div>
     }
 
-    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const buttonFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <button className="View" type={'button'} onClick={() => viewDetails(row)} />
     }
 
@@ -179,11 +196,14 @@ function SimulationApprovalListing(props) {
             setShowApprovalSummary(true)
         }
     }
-    const requestedByFormatter = (cell, row, enumObject, rowIndex) => {
+    const requestedByFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
     }
 
-    const renderVendor = (cell, row, enumObject, rowIndex) => {
+    const renderVendor = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
@@ -214,14 +234,18 @@ function SimulationApprovalListing(props) {
     }
 
     const onRowSelect = (row, isSelected, e) => {
-        if (isSelected) {
-            let tempArr = [...selectedRowData, row]
-            setSelectedRowData(tempArr)
-        } else {
-            const CostingId = row.CostingId;
-            let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-            setSelectedRowData(tempArr)
-        }
+        var selectedRows = gridApi.getSelectedRows();
+        if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+        var selected = gridApi.getSelectedNodes()
+        setSelectedRowData(selectedRows)
+        // if (isSelected) {
+        //     let tempArr = [...selectedRowData, row]
+        //     setSelectedRowData(tempArr)
+        // } else {
+        //     const CostingId = row.CostingId;
+        //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
+        //     setSelectedRowData(tempArr)
+        // }
     }
 
     const onSelectAll = (isSelected, rows) => {
@@ -331,22 +355,60 @@ function SimulationApprovalListing(props) {
         />
     }
 
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+    };
+
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+        params.api.paginationGoToPage(1);
+
+    };
+
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
+
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
+
+    const frameworkComponents = {
+        // totalValueRenderer: this.buttonFormatter,
+        // effectiveDateRenderer: this.effectiveDateFormatter,
+        // costingHeadRenderer: this.costingHeadFormatter,
+        linkableFormatter: linkableFormatter,
+        renderVendor: renderVendor,
+        requestedByFormatter: requestedByFormatter,
+        requestedOnFormatter: requestedOnFormatter,
+        statusFormatter: statusFormatter,
+        buttonFormatter: buttonFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+    };
+
+
     return (
         <Fragment>
             {
                 !showApprovalSumary &&
                 <div className="container-fluid approval-listing-page">
-                    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                        <h1 className="mb-0">Simulation History</h1>
-                        <Row className="pt-4 blue-before">
-                            {shown &&
-                                <Col lg="10" md="10" className="filter-block">
-                                    <div className="d-inline-flex justify-content-start align-items-top w100">
-                                        <div className="flex-fills">
-                                            <h5>{`Filter By:`}</h5>
-                                        </div>
+                    < div className={`ag-grid-react`}>
+                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                            <h1 className="mb-0">Simulation History</h1>
+                            <Row className="pt-4 blue-before">
+                                {shown &&
+                                    <Col lg="10" md="10" className="filter-block">
+                                        <div className="d-inline-flex justify-content-start align-items-top w100">
+                                            <div className="flex-fills">
+                                                <h5>{`Filter By:`}</h5>
+                                            </div>
 
-                                        {/* <div className="flex-fill hide-label">
+                                            {/* <div className="flex-fill hide-label">
                                                 <SearchableSelectHookForm
                                                     label={''}
                                                     name={'partNo'}
@@ -362,93 +424,93 @@ function SimulationApprovalListing(props) {
                                                     errors={errors.partNo}
                                                 />
                                             </div> */}
-                                        <div className="flex-fill  hide-label">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'createdBy'}
-                                                placeholder={'Simulated By'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                                options={renderDropdownListing('users')}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                errors={errors.createdBy}
-                                            />
+                                            <div className="flex-fill  hide-label">
+                                                <SearchableSelectHookForm
+                                                    label={''}
+                                                    name={'createdBy'}
+                                                    placeholder={'Simulated By'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    // defaultValue={plant.length !== 0 ? plant : ''}
+                                                    options={renderDropdownListing('users')}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    errors={errors.createdBy}
+                                                />
+                                            </div>
+                                            <div className="flex-fill  hide-label">
+                                                <SearchableSelectHookForm
+                                                    label={''}
+                                                    name={'requestedBy'}
+                                                    placeholder={'Requested By'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    // defaultValue={plant.length !== 0 ? plant : ''}
+                                                    options={renderDropdownListing('users')}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    errors={errors.requestedBy}
+                                                />
+                                            </div>
+                                            <div className="flex-fill filled-small hide-label">
+                                                <SearchableSelectHookForm
+                                                    label={''}
+                                                    name={'status'}
+                                                    placeholder={'Status'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    // defaultValue={plant.length !== 0 ? plant : ''}
+                                                    options={renderDropdownListing('Status')}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    errors={errors.status}
+                                                />
+                                            </div>
+                                            <div className="flex-fill filled-small hide-label">
+                                                <button
+                                                    type="button"
+                                                    //disabled={pristine || submitting}
+                                                    onClick={resetHandler}
+                                                    className="reset mr10"
+                                                >
+                                                    {'Reset'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    //disabled={pristine || submitting}
+                                                    onClick={onSubmit}
+                                                    className="apply mr5"
+                                                >
+                                                    {'Apply'}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="flex-fill  hide-label">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'requestedBy'}
-                                                placeholder={'Requested By'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                                options={renderDropdownListing('users')}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                errors={errors.requestedBy}
-                                            />
-                                        </div>
-                                        <div className="flex-fill filled-small hide-label">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'status'}
-                                                placeholder={'Status'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                                options={renderDropdownListing('Status')}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                errors={errors.status}
-                                            />
-                                        </div>
-                                        <div className="flex-fill filled-small hide-label">
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={resetHandler}
-                                                className="reset mr10"
-                                            >
-                                                {'Reset'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={onSubmit}
-                                                className="apply mr5"
-                                            >
-                                                {'Apply'}
-                                            </button>
+                                    </Col>
+                                }
+
+                                <Col md="2" lg="2" className="search-user-block mb-3">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div>
+                                            {(shown) ? (
+                                                <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                                    <div className="cancel-icon-white"></div></button>
+                                            ) : (
+                                                <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                            )}
                                         </div>
                                     </div>
                                 </Col>
-                            }
 
-                            <Col md="2" lg="2" className="search-user-block mb-3">
-                                <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        {(shown) ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                                <div className="cancel-icon-white"></div></button>
-                                        ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                        )}
-                                    </div>
-                                </div>
-                            </Col>
+                            </Row>
+                        </form>
 
-                        </Row>
-                    </form>
-
-                    <BootstrapTable
+                        {/* <BootstrapTable
                         data={simualtionApprovalList}
                         striped={false}
                         hover={false}
@@ -463,20 +525,56 @@ function SimulationApprovalListing(props) {
                         tableHeaderClass="my-custom-header"
                         pagination
                     >
-                        <TableHeaderColumn dataField="ApprovalNumber" isKey={true} width={80} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CostingHead" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{renderHead()}</TableHeaderColumn>
-                        {/* <TableHeaderColumn dataField="NumberOfCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'No Of Costing'}</TableHeaderColumn> */}
-                        <TableHeaderColumn dataField="TechnologyName" width={80} columnTitle={true} dataSort={false}>{'Technology'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataAlign="left" dataFormat={renderVendor} dataSort={false}>{'Vendor'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ImpactCosting" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactCost()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ImpactParts" width={80} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactPart()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="SimulatedByName" width={90} columnTitle={true} dataAlign="left" dataFormat={requestedByFormatter} dataSort={false}>{'Simulated By'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="SimulatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}>{'Simulated On'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="RequestedBy" width={90} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedByFormatter}>{'Requested By'} </TableHeaderColumn>
-                        <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
-                        <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable>
+                       
+                    </BootstrapTable> */}
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{ height: '100%', width: '100%' }}
+                            >
+                                <AgGridReact
+                                    style={{ height: '100%', width: '100%' }}
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={simualtionApprovalList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
+                                    <AgGridColumn width={100} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
+                                    <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
+                                    <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Simulated By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="RequestedBy" headerName='Requested By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+                                    <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
+                                    <AgGridColumn width={105} field="SimulationId" type="rightAligned" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 // :
                 // <SimulationApprovalSummary
