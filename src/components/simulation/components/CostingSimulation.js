@@ -179,8 +179,6 @@ function CostingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        console.log('selectedRows: ', selectedRows);
-
         selectedRows && selectedRows.map(item => {
             if (item.IsLockedBySimulation) {
                 setSelectedRowData([])
@@ -469,8 +467,6 @@ function CostingSimulation(props) {
     }, [])
 
     const isFirstColumn = (params) => {
-        console.log('params: ', params);
-
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
 
@@ -518,7 +514,7 @@ function CostingSimulation(props) {
         customNoRowsOverlay: NoContentFound,
     };
 
-    const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
+    // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
     return (
         <>
             {
@@ -744,7 +740,7 @@ function CostingSimulation(props) {
                                                         rowSelection={'multiple'}
                                                         // frameworkComponents={frameworkComponents}
                                                         onSelectionChanged={onRowSelect}
-                                                        isRowSelectable={isRowSelectable}
+                                                    // isRowSelectable={isRowSelectable}
                                                     >
                                                         <AgGridColumn field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                         <AgGridColumn field="CostingHead" headerName='Costing Head'></AgGridColumn>
