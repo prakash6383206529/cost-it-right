@@ -559,7 +559,7 @@ function ProcessCost(props) {
                               {
                                 <NumberFieldHookForm
                                   label=""
-                                  name={`${ProcessGridFields}[${index}]Quantity`}
+                                  name={`${ProcessGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -595,7 +595,7 @@ function ProcessCost(props) {
                             {
                               <TextFieldHookForm
                                 label=""
-                                name={`${ProcessGridFields}[${index}]ProcessCost`}
+                                name={`${ProcessGridFields}.${index}.ProcessCost`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
