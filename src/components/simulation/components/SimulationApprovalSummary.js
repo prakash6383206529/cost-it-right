@@ -632,82 +632,6 @@ function SimulationApprovalSummary(props) {
                         {costingSummary &&
                             <>
                                 <div className={`ag-grid-react`}>
-
-
-                                    <Row className="pt-4 blue-before">
-                                        {shown &&
-                                            <Col lg="10" md="10" className="filter-block">
-                                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                                    <div className="flex-fills">
-                                                        <h5 className="hide-left-border">{`Filter By:`}</h5>
-                                                    </div>
-                                                    <div className="flex-fill hide-label">
-                                                        <SearchableSelectHookForm
-                                                            label={''}
-                                                            name={'plantCode'}
-                                                            placeholder={'Plant Code'}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            rules={{ required: false }}
-                                                            register={register}
-                                                            // defaultValue={plant.length !== 0 ? plant : ''}
-                                                            options={renderDropdownListing('plant')}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            errors={errors.plantCode}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-fill hide-label">
-                                                        <SearchableSelectHookForm
-                                                            label={''}
-                                                            name={'partNo'}
-                                                            placeholder={'Part No.'}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            rules={{ required: false }}
-                                                            register={register}
-                                                            // defaultValue={plant.length !== 0 ? plant : ''}
-                                                            options={renderDropdownListing('PartList')}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            errors={errors.partNo}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-fill hide-label">
-                                                        <button
-                                                            type="button"
-                                                            //disabled={pristine || submitting}
-                                                            onClick={resetHandler}
-                                                            className="reset mr10"
-                                                        >
-                                                            {'Reset'}
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            //disabled={pristine || submitting}
-                                                            onClick={onSubmit}
-                                                            className="apply mr5"
-                                                        >
-                                                            {'Apply'}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                        }
-
-                                        <Col md="2" lg="2" className="search-user-block mb-3">
-                                            <div className="d-flex justify-content-end bd-highlight w100">
-                                                <div>
-                                                    {(shown) ? (
-                                                        <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                                            <div className="cancel-icon-white"></div></button>
-                                                    ) : (
-                                                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    </Row>
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
@@ -736,22 +660,22 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
-                                                                <AgGridColumn field="SimulationCostingId" hide='true'></AgGridColumn>
-                                                                <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
-                                                                <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
-                                                                <AgGridColumn field="VendorName" headerName="Vendor" headerName="Vendor Name"></AgGridColumn>
-                                                                <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
-                                                                <AgGridColumn field="RMName" headerName="Raw Material-Grade" ></AgGridColumn>
-                                                                <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
-                                                                <AgGridColumn field="PartName" headerName='Part Name'></AgGridColumn>
-                                                                <AgGridColumn field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                                <AgGridColumn field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                                <AgGridColumn field="PlantCode" headerName='Plant Code' ></AgGridColumn>
-                                                                <AgGridColumn field="OldPOPrice" cellRenderer='oldPOFormatter' headerName="PO Price Old"></AgGridColumn>
-                                                                <AgGridColumn field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
-                                                                <AgGridColumn field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
-                                                                <AgGridColumn field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
-                                                                <AgGridColumn field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
+                                                                <AgGridColumn width={120} field="SimulationCostingId" hide='true'></AgGridColumn>
+                                                                <AgGridColumn width={140} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="VendorName" headerName="Vendor" headerName="Vendor Name"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="Technology" headerName="Technology"></AgGridColumn>
+                                                                <AgGridColumn width={172} field="RMName" headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                <AgGridColumn width={120} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                                <AgGridColumn width={120} field="PartName" headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn width={120} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={120} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName="PO Price Old"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
+                                                                <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                <AgGridColumn type="rightAligned" width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn> */}
 
