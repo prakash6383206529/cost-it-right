@@ -16,6 +16,7 @@ import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -276,6 +277,7 @@ class AddInterestRate extends Component {
             });
           },
           onCancel: () => { },
+          component:()=> <ConfirmComponent/>
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
