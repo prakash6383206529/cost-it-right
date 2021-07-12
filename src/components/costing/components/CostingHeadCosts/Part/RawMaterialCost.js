@@ -739,7 +739,7 @@ function RawMaterialCost(props) {
                             <td>
                               <NumberFieldHookForm
                                 label=""
-                                name={`${rmGridFields}[${index}]GrossWeight`}
+                                name={`${rmGridFields}.${index}.GrossWeight`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -765,7 +765,7 @@ function RawMaterialCost(props) {
                             <td>
                               <NumberFieldHookForm
                                 label=""
-                                name={`${rmGridFields}[${index}]FinishWeight`}
+                                name={`${rmGridFields}.${index}.FinishWeight`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -848,7 +848,7 @@ function RawMaterialCost(props) {
                       name={"MBName"}
                       Controller={Controller}
                       control={control}
-                      register={register({ required: true, })}
+                      register={register}
                       mandatory={false}
                       rules={{}}
                       handleChange={(e) => { }}
