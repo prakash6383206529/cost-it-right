@@ -486,7 +486,7 @@ function CostingSimulation(props) {
                                         <Col>
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
@@ -532,7 +532,7 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                        <AgGridColumn type="rightAligned" width={130} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                        <AgGridColumn type="rightAligned" width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
 
