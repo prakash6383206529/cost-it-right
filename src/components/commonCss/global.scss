@@ -737,9 +737,15 @@ a:hover {
             }
             .ag-react-container{
               height: 100%;
-              .red-value,.green-value{
+              .red-value,.green-value,.form-control{
                 display: inline-block;
                 vertical-align: baseline;
+              }
+              .form-control{
+                padding: 7px 12px !important;
+                height: auto;
+                min-height: auto;
+                line-height: initial;
               }
             }
             &:not(:nth-child(1)){
@@ -848,15 +854,18 @@ a:hover {
     row-height: ag-derived(grid-size, $times: 6, $plus: 1),
     header-cell-hover-background-color: transparent,
     cell-horizontal-padding: ag-derived(grid-size, $times: 2),
-    
+    selected-row-background-color: ag-derived(background-color, $mix:#E7F2FC 50%),
+  
     // cell-horizontal-border: solid #C2CBE8, 
-
     // header-column-separator: true,
     // header-column-separator-color: ag-derived(border-color, $opacity: 1),
   ));
   .ag-header {
+    .ag-header-group-text{
+      color: #3D4465;
+    }
     .justify-content-center{
-      .ag-header-cell-label{
+      .ag-header-cell-label,.ag-header-group-cell-label{
         justify-content: center;
       }
     }
@@ -871,6 +880,10 @@ a:hover {
 // .ag-root-wrapper-body.ag-layout-normal{
 //   border: 1px solid #C2CBE8;
 // }
+// .ag-cell-focus{
+//   border-width: 0 1px 0 0 !important;
+// }
+
 // ag-grid-react end
 
 .react-bs-table-search-form {

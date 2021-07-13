@@ -491,29 +491,29 @@ function RMSimulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                         >
-                                            <AgGridColumn field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
-                                            <AgGridColumn field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn field="Category" editable='false' headerName="Category"></AgGridColumn>
-                                            <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
-                                            <AgGridColumn field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
-                                            <AgGridColumn field="UOM" editable='false' headerName="UOM"></AgGridColumn>
-                                            <AgGridColumn headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                            <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                            <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
+                                            <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
+                                            <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
+                                            <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
+                                            <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} headerName="Basic Rate (INR)" marryChildren={true} >
+                                                <AgGridColumn width={100} field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={100} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} marryChildren={true} headerName="Scrap Rate (INR)">
+                                                <AgGridColumn width={100} field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                <AgGridColumn width={100} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                            <AgGridColumn field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                            <AgGridColumn headerName="Net Cost (INR)">
-                                                <AgGridColumn field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} headerName="Net Cost (INR)">
+                                                <AgGridColumn width={100} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={100} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                            <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                         </AgGridReact>
