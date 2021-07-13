@@ -106,7 +106,7 @@ function RunSimulationDrawer(props) {
                                             applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                 if (el.Value === '0') return false;
                                                 return (
-                                                    <Col md="12" className="mb-3">
+                                                    <Col md="12" className="mb-3 p-0">
                                                         <div class="custom-check1 d-inline-block">
                                                             <label
                                                                 className="custom-checkbox mb-0"
@@ -145,7 +145,7 @@ function RunSimulationDrawer(props) {
                                         </button>
                                         <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
                                             <div className={"cross-icon"}>
-                                                <div className="cancel-icon-white"></div>
+                                                <div className="cancel-icon"></div>
                                             </div>{" "}
                                             {"Cancel"}
                                         </button>

@@ -803,31 +803,41 @@ class RMDomesticListing extends Component {
                                                     <div className="cancel-icon-white"></div>
                                                 </button>
                                             ) : (
-                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
-                                                >
-                                                    <div className={"upload"}></div>Bulk Upload
-                                                </button>
+                                                <button title="filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="filter mr-0"></div>
+                                                    {/* Show Filter */}
+                                                    </button>
                                             )}
                                             {AddAccessibility && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
                                                     onClick={this.formToggle}
+                                                    title="Add"
                                                 >
-                                                    <div className={"plus"}></div>ADD
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
                                                 </button>
                                             )}
                                             {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
@@ -837,7 +847,9 @@ class RMDomesticListing extends Component {
                                                 //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                             }
-                                            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                            <button type="button" className="user-btn" title="reset grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </>
                                     </div>
                                 </div>
@@ -884,7 +896,7 @@ class RMDomesticListing extends Component {
                         </BootstrapTable> */}
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div
                                 className="ag-theme-material"

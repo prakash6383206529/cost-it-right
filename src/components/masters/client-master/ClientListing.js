@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
@@ -227,13 +227,13 @@ class ClientListing extends Component {
         let products = []
         products = this.props.clientDataList
         return products; // must return the data which you want to be exported
-      }
-    
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      } 
+    }
     /**
     * @method render
     * @description Renders the component
@@ -242,7 +242,7 @@ class ClientListing extends Component {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
 
-        
+
 
         const options = {
             clearSearch: true,
@@ -283,38 +283,60 @@ class ClientListing extends Component {
 
                     </form>
 
-                    <BootstrapTable
-                        data={this.props.clientDataList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        exportCSV
-                        csvFileName={`${Clientmaster}.csv`}
-                        //ignoreSinglePage
-                        ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass='my-custom-header client-table'
-                        className={'client-table'}
-                        pagination>
-                        <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientEmailId" dataAlign="left" >{'Email Id'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CountryName" dataAlign="left" >{'Country'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="StateName" dataAlign="left" >{'State'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CityName" dataAlign="left" >{'City'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientId" dataAlign="right" className="action" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable>
-                    {isOpenVendor && <AddClientDrawer
-                        isOpen={isOpenVendor}
-                        closeDrawer={this.closeVendorDrawer}
-                        isEditFlag={isEditFlag}
-                        ID={this.state.ID}
-                        anchor={'right'}
-                    />}
-                </div>
-            </div>
+
+
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </div>
+                        <div
+                            className="ag-theme-material"
+                            style={{ height: '100%', width: '100%' }}
+                        >
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                // columnDefs={c}
+                                rowData={this.props.clientDataList}
+                                pagination={true}
+                                paginationPageSize={10}
+                                onGridReady={this.onGridReady}
+                                gridOptions={gridOptions}
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: CONSTANT.EMPTY_DATA,
+                                }}
+                                frameworkComponents={frameworkComponents}
+                            >
+                                <AgGridColumn field="CompanyName" headerName="Company"></AgGridColumn>
+                                <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
+                                <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
+                                <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                                <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {
+                        isOpenVendor && <AddClientDrawer
+                            isOpen={isOpenVendor}
+                            closeDrawer={this.closeVendorDrawer}
+                            isEditFlag={isEditFlag}
+                            ID={this.state.ID}
+                            anchor={'right'}
+                        />
+                    }
+                </div >
+            </div >
         );
     }
 }
