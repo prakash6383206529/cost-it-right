@@ -24,6 +24,17 @@ import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class LabourListing extends Component {
   constructor(props) {
@@ -45,6 +56,9 @@ class LabourListing extends Component {
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
       DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
     }
   }
 
@@ -226,30 +240,22 @@ class LabourListing extends Component {
   }
 
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility, DeleteAccessibility } = this.state
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
+  buttonFormatter = (props) => {
+
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && (
-          <button
-            className="Edit mr-2"
-            type={'button'}
-            onClick={() => this.editItemDetails(cell)}
-          />
-        )}
-        {DeleteAccessibility && (
-          <button
-            className="Delete"
-            type={'button'}
-            onClick={() => this.deleteItem(row.LabourDetailsId)}
-          />
-        )}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   handleChange = (cell, row, enumObject, rowIndex) => {
     let data = {
@@ -385,11 +391,12 @@ class LabourListing extends Component {
   }
 
   /**
-   * @method costingHeadFormatter
-   * @description Renders Costing head
-   */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'Contractual' : 'Employed'
+  * @method costingHeadFormatter
+  * @description Renders Costing head
+  */
+  costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? 'Contractual' : 'Employed'
   }
 
   /**
@@ -528,17 +535,57 @@ class LabourListing extends Component {
    */
   onSubmit(values) { }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.labourDataList
-    return products; // must return the data which you want to be exported
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(1);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    TempData.map((item) => {
+      if (item.Specification === null) {
+        item.Specification = ' '
+      } else if (item.IsContractBase === true) {
+        item.IsContractBase = 'Contractual'
+      } else if (item.IsContractBase === false) {
+        item.IsContractBase = 'Employed'
+      } else if (item.Vendor === '-') {
+        item.Vendor = ' '
+      } else if (item.Plant === '-') {
+        item.Plant = ' '
+      } else {
+        return false
+      }
+      return item
+    })
+    return (
+
+      <ExcelSheet data={TempData} name={LabourMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
   /**
@@ -569,13 +616,27 @@ class LabourListing extends Component {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
-
     }
+
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      costingHeadFormatter: this.costingHeadFormatter
+    };
 
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn blue-before-inside" : "container-fluid"}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -717,18 +778,30 @@ class LabourListing extends Component {
                     {AddAccessibility && (
                       <button
                         type="button"
-                        className={"user-btn"}
+                        className={"user-btn mr5"}
                         onClick={this.formToggle}
                       >
                         <div className={"plus"}></div>ADD
                       </button>
                     )}
+                    {
+                      DownloadAccessibility &&
+                      <>
+                        <ExcelFile filename={LabourMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                          {this.onBtExport()}
+                        </ExcelFile>
+                      </>
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                    }
+
+                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                   </div>
                 </div>
               </Col>
             </Row>
           </form>
-          <BootstrapTable
+          {/* <BootstrapTable
             data={this.props.labourDataList}
             striped={false}
             hover={false}
@@ -742,9 +815,9 @@ class LabourListing extends Component {
             trClassName={'userlisting-row'}
             tableHeaderClass="my-custom-header"
             pagination
-          >
-            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            <TableHeaderColumn width={110} dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {this.renderEmploymentTerm()}  </TableHeaderColumn>
+          > */}
+          {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+          {/* <TableHeaderColumn width={110} dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {this.renderEmploymentTerm()}  </TableHeaderColumn>
             <TableHeaderColumn
               dataField="Vendor"
               columnTitle={true}
@@ -817,7 +890,51 @@ class LabourListing extends Component {
             >
               Actions
             </TableHeaderColumn>
-          </BootstrapTable>
+          </BootstrapTable> */}
+
+          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+            </div>
+            <div
+              className="ag-theme-material"
+              style={{ height: '100%', width: '100%' }}
+            >
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                // columnDefs={c}
+                rowData={this.props.labourDataList}
+                pagination={true}
+                paginationPageSize={10}
+                onGridReady={this.onGridReady}
+                gridOptions={gridOptions}
+                loadingOverlayComponent={'customLoadingOverlay'}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                noRowsOverlayComponentParams={{
+                  title: CONSTANT.EMPTY_DATA,
+                }}
+                frameworkComponents={frameworkComponents}
+              >
+                <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn field="Vendor" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="State" headerName="State"></AgGridColumn>
+                <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
+                <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
+                <AgGridColumn field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+              </AgGridReact>
+              <div className="paging-container d-inline-block float-right">
+                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                  <option value="10" selected={true}>10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           {isBulkUpload && (
             <BulkUpload
               isOpen={isBulkUpload}
