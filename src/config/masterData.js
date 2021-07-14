@@ -2517,3 +2517,15 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "ApprovedQuantity", value: "ApprovedQuantity", },
 ]
 
+export const PROFIT_DOWNLOAD_EXCEl = [
+    { label: "TypeOfHead", value: "TypeOfHead", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ModelType", value: "ModelType", },
+    { label: "ProfitApplicabilityType", value: "ProfitApplicabilityType", },
+    { label: "ProfitPercentage", value: "ProfitPercentage", },
+    { label: "ProfitRMPercentage", value: "ProfitRMPercentage", },
+    { label: "ProfitBOPPercentage", value: "ProfitBOPPercentage", },
+    { label: "ProfitMachiningCCPercentage", value: "ProfitMachiningCCPercentage", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
