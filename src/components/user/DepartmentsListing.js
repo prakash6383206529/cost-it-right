@@ -63,7 +63,10 @@ class DepartmentsListing extends Component {
   }
 
   componentDidMount() {
-    this.getDepartmentListData();
+    setTimeout(() => {
+
+      this.getDepartmentListData();
+    }, 500);
     //this.props.onRef(this)
   }
 
@@ -227,10 +230,10 @@ class DepartmentsListing extends Component {
         <>
           {this.state.isLoader && <Loader />}
           <Row className="pt-4 no-filter-row">
-                <Col md="6" className="filter-block"></Col>
-                <Col md="6" className="text-right search-user-block pr-0">
-                  {AddAccessibility && (
-                    <>
+            <Col md="6" className="filter-block"></Col>
+            <Col md="6" className="text-right search-user-block pr-0">
+              {AddAccessibility && (
+                <>
                   <button
                     type={"button"}
                     className={"user-btn mr5"}
@@ -239,10 +242,10 @@ class DepartmentsListing extends Component {
                     <div className={"plus"}></div>
                     {`ADD`}
                   </button>
-              </>
-            )}
-            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
-                </Col>
+                </>
+              )}
+              <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+            </Col>
 
           </Row>
 

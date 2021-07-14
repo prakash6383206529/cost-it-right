@@ -62,7 +62,10 @@ class RolesListing extends Component {
   }
 
   componentDidMount() {
-    this.getRolesListData()
+    setTimeout(() => {
+
+      this.getRolesListData()
+    }, 500);
     //this.props.onRef(this)
   }
 
@@ -208,16 +211,16 @@ class RolesListing extends Component {
             </Col>
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
-              {AddAccessibility && 
-                <div>
-                  <button
-                    type="button"
-                    className={'user-btn mr5'}
-                    onClick={this.formToggle}>
-                    <div className={'plus'}></div>ADD</button>
-                </div>
-              }
-              <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                {AddAccessibility &&
+                  <div>
+                    <button
+                      type="button"
+                      className={'user-btn mr5'}
+                      onClick={this.formToggle}>
+                      <div className={'plus'}></div>ADD</button>
+                  </div>
+                }
+                <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
               </div>
 
 
