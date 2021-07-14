@@ -15,12 +15,22 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
+import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -35,6 +45,11 @@ class BOPImportListing extends Component {
             BOPCategory: [],
             plant: [],
             vendor: [],
+            gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
 
         }
     }
@@ -190,22 +205,26 @@ class BOPImportListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? 'Vendor Based' : 'Zero Based';
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -375,6 +394,75 @@ class BOPImportListing extends Component {
     }
 
     /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let value;
+        if (cellValue === null || cellValue === '') {
+            value = '-';
+        }
+        else {
+            value = cellValue
+        }
+        return value
+    }
+
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        params.api.paginationGoToPage(0);
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.IsVendor === true) {
+                item.IsVendor = 'Vendor Based'
+            } if (item.IsVendor === false) {
+                item.IsVendor = 'Zero Based'
+            } if (item.Plants === '-') {
+                item.Plants = ' '
+            } if (item.Vendor === '-') {
+                item.Vendor = ' '
+            } else {
+                return false
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={TempData} name={BopImport}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+
+
+    /**
     * @method render
     * @description Renders the component
     */
@@ -401,8 +489,24 @@ class BOPImportListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter: this.hyphenFormatter,
+            costingHeadFormatter: this.costingHeadFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter
+        };
+
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -514,9 +618,21 @@ class BOPImportListing extends Component {
                                         <div className={'upload'}></div>Bulk Upload</button>}
                                     {AddAccessibility && <button
                                         type="button"
-                                        className={'user-btn'}
+                                        className={'user-btn mr5'}
                                         onClick={this.formToggle}>
                                         <div className={'plus'}></div>ADD</button>}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={BopImport} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                    }
+
+                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                                 </div>
                             </div>
                         </Col>
@@ -525,7 +641,7 @@ class BOPImportListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.bopImportList}
                             striped={false}
                             hover={false}
@@ -536,14 +652,14 @@ class BOPImportListing extends Component {
                             csvFileName={`${BopImport}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            pagination> */}
+                        {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
-                            <TableHeaderColumn width={110} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
-                            {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" columnTitle={true} dataAlign="left" searchable={false} >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
+                            <TableHeaderColumn width={110} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" columnTitle={true} dataAlign="left" searchable={false} >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
 
                             <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== false} export={getConfigurationKey().IsDestinationPlantConfigure === false} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.renderPlant}>{'Plant'} </TableHeaderColumn>
@@ -554,7 +670,57 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={120} dataField="NetLandedCostConversion" columnTitle={true} searchable={false} dataAlign="left" dataFormat={this.costFormatter} >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataAlign="right" dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
+                        </BootstrapTable> */}
+
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{ height: '100%', width: '100%' }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={this.props.bopImportList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor"></AgGridColumn>
+                                    <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload
