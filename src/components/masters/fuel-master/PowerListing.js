@@ -391,9 +391,10 @@ class PowerListing extends Component {
   }
 
   onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
   };
   onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
@@ -707,7 +708,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="PowerId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
 
