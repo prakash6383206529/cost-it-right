@@ -16,6 +16,17 @@ import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { applySuperScript } from '../../../helper/validation';
+import ReactExport from 'react-export-excel';
+import { UOM_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class UOMMaster extends Component {
   constructor(props) {
@@ -31,6 +42,12 @@ class UOMMaster extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
+
     }
   }
 
@@ -151,11 +168,14 @@ class UOMMaster extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (props) => {
     const { EditAccessibility } = this.state;
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
     return (
       <>
-        {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
         {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
       </>
     )
@@ -169,16 +189,19 @@ class UOMMaster extends Component {
   * @method statusButtonFormatter
   * @description Renders buttons
   */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+  statusButtonFormatter = (props) => {
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
     return (
       <>
         <label htmlFor="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() =>
-              this.handleChange(cell, row, enumObject, rowIndex)
+              this.handleChange(cellValue, rowData, '', '')
             }
-            checked={cell}
+            checked={cellValue}
             background="#ff6600"
             onColor="#4DC771"
             offColor="#FC5774"
@@ -209,11 +232,53 @@ class UOMMaster extends Component {
     })
   }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.dataList
-    return products; // must return the data which you want to be exported
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(1);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    // TempData.map((item) => {
+    //     if (item.RMName === '-') {
+    //         item.RMName = ' '
+    //     } if (item.RMGrade === '-') {
+    //         item.RMGrade = ' '
+    //     } else {
+    //         return false
+    //     }
+    //     return item
+    // })
+    return (
+
+      <ExcelSheet data={TempData} name={UomMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+  }
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
   createCustomExportCSVButton = (onClick) => {
@@ -243,10 +308,22 @@ class UOMMaster extends Component {
 
     };
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      // customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      hyphenFormatter: this.hyphenFormatter,
+    };
 
     return (
       <>
-        <div className={DownloadAccessibility ? "container-fluid show-table-btn" : "container-fluid"}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>
@@ -256,7 +333,7 @@ class UOMMaster extends Component {
           <Row className="no-filter-row pt-4">
             {AddAccessibility && (
               <>
-                <Col md={6} className="text-right filter-block"></Col>
+                <Col md={6} className="text-right filter-block mr5"></Col>
                 {/* <Col md={6} className="text-right search-user-block pr-0">
                   <button
                     type={"button"}
@@ -269,11 +346,22 @@ class UOMMaster extends Component {
                 </Col> */}
               </>
             )}
+            {
+              DownloadAccessibility &&
+              <>
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                  {this.onBtExport()}
+                </ExcelFile>
+              </>
+              //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+            }
+
+            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
           </Row>
 
           <Row>
             <Col>
-              <BootstrapTable
+              {/* <BootstrapTable
                 data={this.state.dataList}
                 striped={false}
                 hover={false}
@@ -290,14 +378,14 @@ class UOMMaster extends Component {
               >
                 <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}> Unit</TableHeaderColumn>
                 <TableHeaderColumn dataField="UnitSymbol" dataAlign="left" dataFormat={this.applySuperScriptFormatter} dataSort={true}>Unit Symbol</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataAlign="left" dataSort={true}>Unit Type</TableHeaderColumn>
-                {/* <TableHeaderColumn
+                <TableHeaderColumn dataField="UnitType" dataAlign="left" dataSort={true}>Unit Type</TableHeaderColumn> */}
+              {/* <TableHeaderColumn
                   dataField="IsActive"
                   dataFormat={this.statusButtonFormatter}
                 >
                   Status
                     </TableHeaderColumn> */}
-                {/* <TableHeaderColumn
+              {/* <TableHeaderColumn
                   width={100}
                   dataField="Id"
                   isKey={true}
@@ -306,7 +394,46 @@ class UOMMaster extends Component {
                 >
                   Actions
                     </TableHeaderColumn> */}
-              </BootstrapTable>
+              {/* </BootstrapTable> */}
+
+              <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-header">
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                </div>
+                <div
+                  className="ag-theme-material"
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    // columnDefs={c}
+                    rowData={this.state.dataList}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={this.onGridReady}
+                    gridOptions={gridOptions}
+                    loadingOverlayComponent={'customLoadingOverlay'}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: CONSTANT.EMPTY_DATA,
+                    }}
+                    frameworkComponents={frameworkComponents}
+                  >
+                    <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
+                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol"></AgGridColumn>
+                    <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
+                  </AgGridReact>
+                  <div className="paging-container d-inline-block float-right">
+                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                      <option value="10" selected={true}>10</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+
             </Col>
           </Row>
           {isOpen && (
@@ -328,7 +455,7 @@ class UOMMaster extends Component {
 * @method mapStateToProps
 * @description return state to component as props
 * @param {*} state
-*/
+        */
 function mapStateToProps({ unitOfMeasrement, auth }) {
   const { unitOfMeasurementList, loading, } = unitOfMeasrement;
   const { leftMenuData } = auth;
