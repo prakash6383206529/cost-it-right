@@ -198,24 +198,25 @@ class OperationListing extends Component {
             }
         });
     }
-
     /**
     * @method buttonFormatter
     * @description Renders buttons
     */
     buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.state;
-        const cellValue = props?.value;
-        const rowData = props?.data;
+
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(rowData)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
-    handleChange = (cell, row, enumObject, rowIndex) => {
+    handleChange = (cell, row) => {
         let data = {
             Id: row.VendorId,
             ModifiedBy: loggedInUserId(),
@@ -311,34 +312,31 @@ class OperationListing extends Component {
         }
     };
 
-
     /**
     * @method statusButtonFormatter
     * @description Renders buttons
     */
     statusButtonFormatter = (props) => {
-
-        // const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        // const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // return (
-        //     <>
-        //         <label htmlFor="normal-switch">
-        //             {/* <span>Switch with default style</span> */}
-        //             <Switch
-        //                 onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-        //                 checked={cell}
-        //                 background="#ff6600"
-        //                 onColor="#4DC771"
-        //                 onHandleColor="#ffffff"
-        //                 offColor="#FC5774"
-        //                 id="normal-switch"
-        //                 height={24}
-        //             />
-        //         </label>
-        //     </>
-        // )
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                <label htmlFor="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cellValue, rowData)}
+                        checked={cellValue}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                    />
+                </label>
+            </>
+        )
     }
-
 
     /**
     * @method indexFormatter
@@ -471,7 +469,7 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -776,9 +774,9 @@ class OperationListing extends Component {
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                <AgGridColumn field="IsActive" headerName="Status"
-                                // cellRenderer={'statusButtonFormatter'} 
-                                ></AgGridColumn>
+                                {/* <AgGridColumn field="IsActive" headerName="Status"
+                                cellRenderer={'statusButtonFormatter'} 
+                                ></AgGridColumn> */}
                                 <AgGridColumn field="OperationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
