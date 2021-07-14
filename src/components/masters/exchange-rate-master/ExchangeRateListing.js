@@ -305,6 +305,8 @@ class ExchangeRateListing extends Component {
     }
 
     onGridReady = (params) => {
+        this.gridApi = params.api;
+        this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
         params.api.paginationGoToPage(0);
@@ -510,7 +512,7 @@ class ExchangeRateListing extends Component {
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div
                             className="ag-theme-material"
@@ -532,12 +534,12 @@ class ExchangeRateListing extends Component {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                <AgGridColumn width={150} field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
-                                <AgGridColumn field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                <AgGridColumn width={152} field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
                                 <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                <AgGridColumn field="DateOfModification" headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                <AgGridColumn width={152} field="DateOfModification" headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                 <AgGridColumn field="ExchangeRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">

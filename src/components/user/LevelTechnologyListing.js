@@ -125,7 +125,7 @@ class LevelTechnologyListing extends Component {
 
 	onGridReady = (params) => {
 		this.gridApi = params.api;
-		this.gridApi.sizeColumnsToFit();
+        this.gridApi.sizeColumnsToFit();
 		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 		params.api.paginationGoToPage(0);
 	};
@@ -184,10 +184,13 @@ class LevelTechnologyListing extends Component {
 		return (
 			<>
 				<Row className="levellisting-page">
-					<Col md="6">
+					<Col md="12">
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
 					</Col>
-					<Col md="6" className="text-right">
+				</Row>
+				<Row className="levellisting-page">
+					<Col md="6" className=""></Col>
+					<Col md="6" className="text-right search-user-block mb-3">
 						{AddAccessibility && <button
 							type="button"
 							className={'user-btn mr5'}
@@ -195,10 +198,10 @@ class LevelTechnologyListing extends Component {
 							<div className={'plus'}></div>
 							{'Add'}</button>}
 						<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
-
 					</Col>
-
-					<Col className="level-table">
+				</Row>
+				<Row className="levellisting-page">
+					<Col className="level-table" md="12">
 						{/* <BootstrapTable
 							data={this.state.tableData}
 							striped={false}
@@ -242,7 +245,7 @@ class LevelTechnologyListing extends Component {
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -259,10 +262,13 @@ class LevelTechnologyListing extends Component {
 				</Row>
 
 				<Row className="levellisting-page mt20">
-					<Col md="6">
+					<Col md="12">
 						<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
 					</Col>
-					<Col md="6" className="text-right">
+				</Row>
+				<Row className="levellisting-page">
+				<Col md="6" className=""></Col>
+					<Col md="6" className="text-right search-user-block mb-3">
 						{/* {AddAccessibility && <button
 							type="button"
 							className={'user-btn'}
@@ -270,10 +276,11 @@ class LevelTechnologyListing extends Component {
 							<div className={'plus'}></div>
 							{'Add'}</button>} */}
 						<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
-
 					</Col>
-
-					<Col className="level-table">
+				</Row>
+				
+				<Row className="levellisting-page">
+					<Col className="level-table" md="12 ">
 						{/* <BootstrapTable
 							data={this.props.simulationLevelDataList}
 							striped={false}
@@ -317,7 +324,7 @@ class LevelTechnologyListing extends Component {
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

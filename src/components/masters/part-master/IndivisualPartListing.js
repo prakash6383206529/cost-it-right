@@ -328,31 +328,52 @@ class IndivisualPartListing extends Component {
                 </Row>
 
 
-                <BootstrapTable
-                    data={this.props.newPartsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    exportCSV
-                    csvFileName={`${ComponentPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
-                    {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
-                    <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
+
+
+
+                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                    </div>
+                    <div
+                        className="ag-theme-material"
+                        style={{ height: '100%', width: '100%' }}
+                    >
+                        <AgGridReact
+                            defaultColDef={defaultColDef}
+                            // columnDefs={c}
+                            rowData={this.props.newPartsListing}
+                            pagination={true}
+                            paginationPageSize={10}
+                            onGridReady={this.onGridReady}
+                            gridOptions={gridOptions}
+                            loadingOverlayComponent={'customLoadingOverlay'}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                                title: CONSTANT.EMPTY_DATA,
+                            }}
+                            frameworkComponents={frameworkComponents}
+                        >
+                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
+                            <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                            <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                        </AgGridReact>
+                        <div className="paging-container d-inline-block float-right">
+                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                <option value="10" selected={true}>10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}

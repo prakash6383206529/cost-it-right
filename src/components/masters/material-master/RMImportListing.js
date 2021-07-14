@@ -848,7 +848,8 @@ class RMImportListing extends Component {
                   <div>
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                        <div className="cancel-icon-white"></div>
+                        </button>
                     ) : (
                       <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                     )}
@@ -925,7 +926,7 @@ class RMImportListing extends Component {
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
