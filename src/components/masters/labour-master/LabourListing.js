@@ -896,7 +896,7 @@ class LabourListing extends Component {
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div
               className="ag-theme-material"
@@ -923,7 +923,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
-                <AgGridColumn field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
+                <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                 <AgGridColumn field="LabourId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
