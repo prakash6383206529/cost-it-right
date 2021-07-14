@@ -294,9 +294,10 @@ class FuelListing extends Component {
     }
 
     onGridReady = (params) => {
+        this.gridApi = params.api;
+        this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
@@ -515,7 +516,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="FuelDetailId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

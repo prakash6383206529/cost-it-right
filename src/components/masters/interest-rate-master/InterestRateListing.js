@@ -59,6 +59,8 @@ class InterestRateListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
 
     }
   }
@@ -350,15 +352,21 @@ class InterestRateListing extends Component {
     return <> Payment Term <br />Interest Rate(%) </>
   }
 
-
-
   /**
   * @method costingHeadFormatter
   * @description Renders Costing head
   */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+  costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? 'Vendor Based' : 'Zero Based';
+  }
 
-    return cell ? 'Vendor Based' : 'Zero Based';
+  /**
+  * @method hyphenFormatter
+  */
+  hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? cellValue : '-';
   }
 
   renderVendorName = () => {
@@ -519,7 +527,9 @@ class InterestRateListing extends Component {
       totalValueRenderer: this.buttonFormatter,
       effectiveDateRenderer: this.effectiveDateFormatter,
       customLoadingOverlay: LoaderCustom,
-      customNoRowsOverlay: NoContentFound
+      customNoRowsOverlay: NoContentFound,
+      costingHeadFormatter: this.costingHeadFormatter,
+      hyphenFormatter: this.hyphenFormatter
     };
     const options = {
       clearSearch: true,
@@ -731,10 +741,10 @@ class InterestRateListing extends Component {
                 <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
-                <AgGridColumn field="ICCPercent" headerName="Annual ICC(%)"></AgGridColumn>
+                <AgGridColumn field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PaymentTermApplicability" headerName="Payment Term Applicability"></AgGridColumn>
                 <AgGridColumn field="RepaymentPeriod" headerName="Repayment Period(Days)"></AgGridColumn>
-                <AgGridColumn field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)"></AgGridColumn>
+                <AgGridColumn field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                 <AgGridColumn field="VendorInterestRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
