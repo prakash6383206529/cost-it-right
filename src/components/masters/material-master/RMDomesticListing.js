@@ -21,7 +21,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs, RMDomesticSimulation, RMDomesticZBC } from '../../../config/masterData';
+import { costingHeadObjs, RMDomesticSimulation, RMDomesticZBC, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RmDomestic } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -611,6 +611,44 @@ class RMDomesticListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(value));
     };
 
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={temp} name={'RM Domestic'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -806,7 +844,7 @@ class RMDomesticListing extends Component {
                                                 <button title="filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
                                                     {/* Show Filter */}
-                                                    </button>
+                                                </button>
                                             )}
                                             {AddAccessibility && (
                                                 <button
@@ -835,9 +873,9 @@ class RMDomesticListing extends Component {
                                                 <>
 
                                                     <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="download"></div>
-                                                    {/* DOWNLOAD */}
-                                                    </button>}>
+                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>}>
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
@@ -910,26 +948,26 @@ class RMDomesticListing extends Component {
                                     paginationPageSize={10}
                                     gridOptions={agGridOptions}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn width={151} field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn width={151} field="RawMaterial" ></AgGridColumn>
-                                    <AgGridColumn width={121} field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn width={121} field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn width={151} field="MaterialType"></AgGridColumn>
-                                    <AgGridColumn width={121} field="Category"></AgGridColumn>
-                                    <AgGridColumn width={171} field="TechnologyName"></AgGridColumn>
-                                    <AgGridColumn width={151} field="Plant"></AgGridColumn>
-                                    <AgGridColumn width={151} field="VendorName"></AgGridColumn>
-                                    <AgGridColumn width={121} field="UOM"></AgGridColumn>
-                                    <AgGridColumn width={121} field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn width={151} field="RMFreightCost"></AgGridColumn>
-                                    <AgGridColumn width={161} field="RMShearingCost"></AgGridColumn>
-                                    <AgGridColumn width={121} field="ScrapRate"></AgGridColumn>
-                                    <AgGridColumn width={171} field="NetLandedCost"></AgGridColumn>
-                                    <AgGridColumn width={151} field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn width={120} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {/* {this.props.isSimulation && <AgGridColumn width={151} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
-                                    <AgGridColumn width={151} field="VendorId" hide={true}></AgGridColumn>
-                                    <AgGridColumn width={151} field="TechnologyId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                    <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
+                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                                    <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer={'costFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
