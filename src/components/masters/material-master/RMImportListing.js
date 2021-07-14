@@ -24,7 +24,19 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { INR, ZBC, RmImport } from '../../../config/constants'
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
+
 
 class RMImportListing extends Component {
   constructor(props) {
@@ -43,7 +55,10 @@ class RMImportListing extends Component {
       maxRange: 0,
       isBulkUpload: false,
       shown: this.props.isSimulation ? true : false,
-      technology: []
+      technology: [],
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
     }
   }
 
@@ -201,45 +216,56 @@ class RMImportListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  costFormatter = (cell, row, enumObject, rowIndex) => {
+  costFormatter = (props) => {
     const { initialConfiguration } = this.props
-    return row.Currency !== INR ? checkForDecimalAndNull(row.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, initialConfiguration.NoOfDecimalForPrice);
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
+
+
 
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
+
 
   /**
   * @method shearingCostFormatter
   * @description Renders buttons
   */
-  shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? cell : '-';
+  shearingCostFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue != ' ' ? cellValue : '-';
   }
 
   /**
   * @method freightCostFormatter
   * @description Renders buttons
   */
-  freightCostFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? cell : '-';
+  freightCostFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue != ' ' ? cellValue : '-';
   }
 
+
   /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+* @method buttonFormatter
+* @description Renders buttons
+*/
+  buttonFormatter = (props) => {
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
     const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   }
@@ -248,9 +274,9 @@ class RMImportListing extends Component {
   * @method costingHeadFormatter
   * @description Renders Costing head
   */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-
-    return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+  costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
   }
 
 
@@ -534,8 +560,52 @@ class RMImportListing extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = (values) => { }
 
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+
+    params.api.paginationGoToPage(1);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    TempData.map((item) => {
+      if (item.RMFreightCost === null) {
+        item.RMFreightCost = ' '
+      } if (item.CostingHead === true) {
+        item.CostingHead = 'Vendor Based'
+      } if (item.CostingHead === false) {
+        item.CostingHead = 'Zero Based'
+      } if (item.RMShearingCost === null) {
+        item.RMShearingCost = ' '
+      } if (item.MaterialType === '-') {
+        item.MaterialType = ' '
+      } else {
+        return false
+      }
+      return item
+    })
+    return (
+
+      <ExcelSheet data={TempData} name={RmImport}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
 
   handleExportCSVButtonClick = (onClick) => {
@@ -545,10 +615,14 @@ class RMImportListing extends Component {
     return products; // must return the data which you want to be exported
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
   /**
@@ -570,9 +644,28 @@ class RMImportListing extends Component {
       lastPage: <span className="last-page-pg"></span>,
 
     };
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      effectiveDateRenderer: this.effectiveDateFormatter,
+      costingHeadRenderer: this.costingHeadFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      freightCostFormatter: this.freightCostFormatter,
+      shearingCostFormatter: this.shearingCostFormatter,
+      costFormatter: this.costFormatter
+    };
+
 
     return (
-      <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 filter-row-large">
@@ -719,7 +812,7 @@ class RMImportListing extends Component {
                 </div>
               </Col>
             )}
-            {
+            {/* {
               !this.props.isSimulation &&
               <Col lg="6" md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
@@ -747,12 +840,52 @@ class RMImportListing extends Component {
                   </div>
                 </div>
               </Col>
-            }
+            } */}
+            {
+              !this.props.isSimulation &&
+              <Col lg="6" md="6" className="search-user-block mb-3">
+                <div className="d-flex justify-content-end bd-highlight w100">
+                  <div>
+                    {this.state.shown ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                    ) : (
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
+                        <div className={"upload"}></div>Bulk Upload
+                      </button>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.formToggle}
+                      >
+                        <div className={"plus"}></div>ADD
+                      </button>
+                    )}
+                    {
+                      DownloadAccessibility &&
+                      <>
+                        <ExcelFile filename={RmImport} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                          {this.onBtExport()}
+                        </ExcelFile>
+                      </>
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                    }
 
+                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                  </div>
+                </div>
+              </Col>
+            }
           </Row>
         </form>
         <Row>
           <Col>
+            {/*
             <BootstrapTable
               data={this.props.rmImportDataList}
               striped={false}
@@ -766,7 +899,7 @@ class RMImportListing extends Component {
               exportCSV={this.props.isSimulation ? false : true}
               csvFileName={`${RmImport}.csv`}
               pagination>
-              {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+         
               <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
               <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
               <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
@@ -788,7 +921,61 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
 
-            </BootstrapTable>
+            </BootstrapTable> */}
+
+            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              </div>
+              <div
+                className="ag-theme-material"
+                style={{ height: '100%', width: '100%' }}
+              >
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  // columnDefs={c}
+                  rowData={this.props.rmImportDataList}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={this.onGridReady}
+                  gridOptions={gridOptions}
+                  loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  noRowsOverlayComponentParams={{
+                    title: CONSTANT.EMPTY_DATA,
+                  }}
+                  frameworkComponents={frameworkComponents}
+                >
+                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                  <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
+                  <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                  <AgGridColumn field="MaterialType" headerName="Material" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                  <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                  <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                  <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
+                  <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                  {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+                  <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                </AgGridReact>
+                <div className="paging-container d-inline-block float-right">
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </Col>
         </Row>
         {isBulkUpload && <BulkUpload
@@ -802,6 +989,7 @@ class RMImportListing extends Component {
           anchor={'right'}
         />}
       </div >
+
     );
   }
 }
