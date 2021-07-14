@@ -849,7 +849,7 @@ class RMDomesticListing extends Component {
                                                     <div className="cancel-icon-white"></div>
                                                     </button>
                                             ) : (
-                                                <button title="filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
                                                     {/* Show Filter */}
                                                     </button>
@@ -881,7 +881,7 @@ class RMDomesticListing extends Component {
                                                 <>
 
                                                     <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="download"></div>
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                     </button>}>
 
@@ -893,7 +893,7 @@ class RMDomesticListing extends Component {
                                                 //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                             }
-                                            <button type="button" className="user-btn" title="reset grid" onClick={() => this.resetState()}>
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </>
