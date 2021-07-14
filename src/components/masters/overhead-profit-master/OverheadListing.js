@@ -144,12 +144,14 @@ class OverheadListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
         const { EditAccessibility, DeleteAccessibility } = this.props;
+        const cellValue = props?.value;
+        const rowData = props?.data;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     }
