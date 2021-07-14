@@ -262,7 +262,7 @@ export const DatePickerHookForm = (field) => {
               {...field}
               {...register}
               name={name}
-              value={selected}
+              value={value}
               dateFormat="dd/MM/yyyy"
               placeholderText={placeholder}
               //maxDate={new Date()}
@@ -271,7 +271,7 @@ export const DatePickerHookForm = (field) => {
               showYearDropdown
               readonly="readonly"
               onBlur={() => null}
-              selected={selected}
+              selected={value}
               className={field.className}
               onChange={(e) => {
                 onChange(e)
