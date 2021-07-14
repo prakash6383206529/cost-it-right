@@ -107,20 +107,22 @@ class ZBCPlantListing extends Component {
     }
 
     /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
+    buttonFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
-
-    handleChange = (cell, row, enumObject, rowIndex) => {
+    };
+    handleChange = (cell, row) => {
         let data = {
             Id: row.PlantId,
             ModifiedBy: loggedInUserId(),
@@ -157,7 +159,10 @@ class ZBCPlantListing extends Component {
     * @method statusButtonFormatter
     * @description Renders buttons
     */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+    statusButtonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        
         const { ActivateAccessibility } = this.props;
         if (ActivateAccessibility) {
             return (
@@ -165,8 +170,8 @@ class ZBCPlantListing extends Component {
                     <label htmlFor="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
-                            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                            checked={cell}
+                            onChange={() => this.handleChange(cellValue, rowData)}
+                            checked={cellValue}
                             background="#ff6600"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -181,7 +186,7 @@ class ZBCPlantListing extends Component {
             return (
                 <>
                     {
-                        cell ?
+                        cellValue ?
                             <div className={'Activated'}> {'Active'}</div>
                             :
                             <div className={'Deactivated'}>{'Deactive'}</div>
@@ -358,7 +363,7 @@ class ZBCPlantListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {
