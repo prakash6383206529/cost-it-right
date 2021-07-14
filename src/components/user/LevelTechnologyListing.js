@@ -27,8 +27,9 @@ class LevelTechnologyListing extends Component {
 			gridColumnApi: null,
 			rowData: null,
 			sideBar: { toolPanels: ['columns'] },
-			showData: false
-
+			showData: false,
+			gridApi1: null,
+			gridColumnApi1: null,
 		}
 	}
 
@@ -102,15 +103,28 @@ class LevelTechnologyListing extends Component {
 		});
 	}
 
+	buttonFormatter = (props) => {
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+		const { EditAccessibility } = this.props;
+		return (
+			<>
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing')} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
+			</>
+		)
+	}
+
+
 	/**
 	* @method simulationButtonFormatter
 	* @description Renders buttons
 	*/
 	simulationButtonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-		const { EditAccessibility, DeleteAccessibility } = this.props;
+
+		const { EditAccessibility } = this.props;
 		return (
 			<>
 				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
@@ -125,7 +139,7 @@ class LevelTechnologyListing extends Component {
 
 	onGridReady = (params) => {
 		this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+		this.gridApi.sizeColumnsToFit();
 		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 		params.api.paginationGoToPage(0);
 	};
@@ -140,6 +154,28 @@ class LevelTechnologyListing extends Component {
 	}
 
 	resetState() {
+		gridOptions.columnApi.resetColumnState();
+	}
+
+	onGridReady1 = (params) => {
+		this.gridApi = params.api;
+		this.gridApi.sizeColumnsToFit();
+		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+		params.api.paginationGoToPage(0);
+	};
+
+	onPageSizeChanged1 = (newPageSize) => {
+		var value = document.getElementById('page-size1').value;
+		this.state.gridApi.paginationSetPageSize(Number(value));
+	};
+
+	onFilterTextBoxChanged1(e) {
+		console.log(this.state.gridApi, "this.state.gridApi");
+		console.log('e: ', e);
+		this.state.gridApi.setQuickFilter(e.target.value);
+	}
+
+	resetState1() {
 		gridOptions.columnApi.resetColumnState();
 	}
 
@@ -267,7 +303,7 @@ class LevelTechnologyListing extends Component {
 					</Col>
 				</Row>
 				<Row className="levellisting-page">
-				<Col md="6" className=""></Col>
+					<Col md="6" className=""></Col>
 					<Col md="6" className="text-right search-user-block mb-3">
 						{/* {AddAccessibility && <button
 							type="button"
@@ -275,10 +311,10 @@ class LevelTechnologyListing extends Component {
 							onClick={this.props.mappingToggler}>
 							<div className={'plus'}></div>
 							{'Add'}</button>} */}
-						<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+						<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState1()}></button>
 					</Col>
 				</Row>
-				
+
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12 ">
 						{/* <BootstrapTable
@@ -300,7 +336,7 @@ class LevelTechnologyListing extends Component {
 
 						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 							<div className="ag-grid-header">
-								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
 							<div
 								className="ag-theme-material"
@@ -312,7 +348,7 @@ class LevelTechnologyListing extends Component {
 									rowData={this.props.simulationLevelDataList}
 									pagination={true}
 									paginationPageSize={10}
-									onGridReady={this.onGridReady}
+									onGridReady={this.onGridReady1}
 									gridOptions={gridOptions}
 									loadingOverlayComponent={'customLoadingOverlay'}
 									noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -327,7 +363,7 @@ class LevelTechnologyListing extends Component {
 									<AgGridColumn field="LevelId" headerName="Action" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
-									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
 										<option value="10" selected={true}>10</option>
 										<option value="50">50</option>
 										<option value="100">100</option>

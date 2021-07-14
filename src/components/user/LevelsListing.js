@@ -338,7 +338,7 @@ class LevelsListing extends Component {
 
 	onGridReady = (params) => {
 		this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+		this.gridApi.sizeColumnsToFit();
 		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 		params.api.paginationGoToPage(0);
 	};
@@ -423,12 +423,12 @@ class LevelsListing extends Component {
 									<Row>
 										<Col md="6" className=""></Col>
 										<Col md="6" className="search-user-block mb-3 text-right">
-										<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+											<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
 										</Col>
 									</Row>
 									<Row>
 										<Col className="mt-0 level-table" md="12">
-											
+
 											{/* <BootstrapTable
 											data={this.props.usersListByTechnologyAndLevel}
 											striped={false}

@@ -47,6 +47,9 @@ class UsersListing extends Component {
 			EditAccessibility: false,
 			DeleteAccessibility: false,
 			ActivateAccessibility: false,
+			gridApi: null,
+			gridColumnApi: null,
+			rowData: null,
 		}
 	}
 
@@ -414,6 +417,26 @@ class UsersListing extends Component {
 	*/
 	onSubmit(values) {
 	}
+
+	onPageSizeChanged = (newPageSize) => {
+		var value = document.getElementById('page-size').value;
+		this.state.gridApi.paginationSetPageSize(Number(value));
+	};
+
+	onFilterTextBoxChanged = (e) => {
+		this.state.gridApi.setQuickFilter(e.target.value);
+	}
+
+
+	resetState = () => {
+		gridOptions.columnApi.resetColumnState();
+	}
+
+	onGridReady = (params) => {
+		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+		params.api.paginationGoToPage(0);
+	};
+
 	/**
 	* @method render
 	* @description Renders the component
