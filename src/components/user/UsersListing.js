@@ -19,6 +19,11 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import ConfirmComponent from "../../helper/ConfirmComponent";
 import LoaderCustom from '../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const gridOptions = {};
 
 function enumFormatter(cell, row, enumObject) {
 	return enumObject[cell];
@@ -215,18 +220,29 @@ class UsersListing extends Component {
 	* @method buttonFormatter
 	* @description Renders buttons
 	*/
-	buttonFormatter = (cell, row, enumObject, rowIndex) => {
+	buttonFormatter = (props) => {
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
 		const { EditAccessibility } = this.state;
-		if (cell === loggedInUserId()) return null;
+		if (cellValue === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />}
+				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
 	}
 
-	handleChange = (cell, row, enumObject, rowIndex) => {
+	/**
+	* @method hyphenFormatter
+	*/
+	hyphenFormatter = (props) => {
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		return cellValue != null ? cellValue : '-';
+	}
+
+	handleChange = (cell, row) => {
 		let data = {
 			Id: row.UserId,
 			ModifiedBy: loggedInUserId(),
@@ -266,17 +282,20 @@ class UsersListing extends Component {
 	* @method statusButtonFormatter
 	* @description Renders buttons
 	*/
-	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+	statusButtonFormatter = (props) => {
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
 		const { ActivateAccessibility } = this.state;
-		if (row.UserId === loggedInUserId()) return null;
+		if (rowData.UserId === loggedInUserId()) return null;
 		if (ActivateAccessibility) {
 			return (
 				<>
 					<label htmlFor="normal-switch">
 						{/* <span>Switch with default style</span> */}
 						<Switch
-							onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-							checked={cell}
+							onChange={() => this.handleChange(cellValue, rowData)}
+							checked={cellValue}
 							background="#ff6600"
 							onColor="#4DC771"
 							onHandleColor="#ffffff"
@@ -291,7 +310,7 @@ class UsersListing extends Component {
 			return (
 				<>
 					{
-						cell ?
+						cellValue ?
 							<div className={'Activated'}> {'Active'}</div>
 							:
 							<div className={'Deactivated'}>{'Deactive'}</div>
@@ -413,92 +432,111 @@ class UsersListing extends Component {
 
 		};
 
-		return (
-			<>
-				{" "}
-				{/* {this.props.loading && <Loader />} */}
-				<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-					<Row className="pt-4">
-						{this.state.shown &&
-							<Col md="8" className="filter-block">
-								<div className="d-inline-flex justify-content-start align-items-top w100">
-									<div className="flex-fills">
-										<h5>{`Filter By:`}</h5>
-									</div>
-									<div className="flex-fill">
-										<Field
-											name="DepartmentId"
-											type="text"
-											component={searchableSelect}
-											placeholder={"Department"}
-											options={this.searchableSelectType("department")}
-											//onKeyUp={(e) => this.changeItemDesc(e)}
-											//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
-											//required={true}
-											handleChangeDescription={this.departmentHandler}
-											valueDescription={this.state.department}
-										/>
-									</div>
-									<div className="flex-fill">
-										<Field
-											name="RoleId"
-											type="text"
-											component={searchableSelect}
-											placeholder={"Role"}
-											options={this.searchableSelectType("role")}
-											//onKeyUp={(e) => this.changeItemDesc(e)}
-											//validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
-											//required={true}
-											handleChangeDescription={this.roleHandler}
-											valueDescription={this.state.role}
-										/>
-									</div>
-									<div className="flex-fill">
-										<button
-											type="button"
-											//disabled={pristine || submitting}
-											onClick={this.resetFilter}
-											className="reset mr10"
-										>
-											{"Reset"}
-										</button>
+		const defaultColDef = {
+			resizable: true,
+			filter: true,
+			sortable: true,
 
-										<button
-											type="button"
-											//disabled={pristine || submitting}
-											onClick={this.filterList}
-											className="user-btn mr5"
-										>
-											{"Apply"}
-										</button>
+		};
+
+		const frameworkComponents = {
+			totalValueRenderer: this.buttonFormatter,
+			customLoadingOverlay: LoaderCustom,
+			customNoRowsOverlay: NoContentFound,
+			statusButtonFormatter: this.statusButtonFormatter,
+			hyphenFormatter: this.hyphenFormatter
+		};
+
+		return (
+			<div className={"ag-grid-react"}>
+				<>
+					{" "}
+					{/* {this.props.loading && <Loader />} */}
+					<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+						<Row className="pt-4">
+							{this.state.shown &&
+								<Col md="8" className="filter-block">
+									<div className="d-inline-flex justify-content-start align-items-top w100">
+										<div className="flex-fills">
+											<h5>{`Filter By:`}</h5>
+										</div>
+										<div className="flex-fill">
+											<Field
+												name="DepartmentId"
+												type="text"
+												component={searchableSelect}
+												placeholder={"Department"}
+												options={this.searchableSelectType("department")}
+												//onKeyUp={(e) => this.changeItemDesc(e)}
+												//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+												//required={true}
+												handleChangeDescription={this.departmentHandler}
+												valueDescription={this.state.department}
+											/>
+										</div>
+										<div className="flex-fill">
+											<Field
+												name="RoleId"
+												type="text"
+												component={searchableSelect}
+												placeholder={"Role"}
+												options={this.searchableSelectType("role")}
+												//onKeyUp={(e) => this.changeItemDesc(e)}
+												//validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+												//required={true}
+												handleChangeDescription={this.roleHandler}
+												valueDescription={this.state.role}
+											/>
+										</div>
+										<div className="flex-fill">
+											<button
+												type="button"
+												//disabled={pristine || submitting}
+												onClick={this.resetFilter}
+												className="reset mr10"
+											>
+												{"Reset"}
+											</button>
+
+											<button
+												type="button"
+												//disabled={pristine || submitting}
+												onClick={this.filterList}
+												className="user-btn mr5"
+											>
+												{"Apply"}
+											</button>
+										</div>
 									</div>
-								</div>
+								</Col>
+							}
+							<Col md="6" className="search-user-block mb-3">
+								{AddAccessibility && (
+									<div className="d-flex justify-content-end bd-highlight w100">
+										<div>
+											{this.state.shown ? (
+												<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+													<div className="cancel-icon-white"></div></button>
+											) : (
+												<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+											)}
+											<button
+												type="button"
+												className={"user-btn"}
+												onClick={this.formToggle}
+											>
+												<div className={"plus"}></div>ADD
+											</button>
+										</div>
+									</div>
+								)}
+
+								<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
 							</Col>
-						}
-						<Col md="6" className="search-user-block mb-3">
-							{AddAccessibility && (
-								<div className="d-flex justify-content-end bd-highlight w100">
-									<div>
-										{this.state.shown ? (
-											<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-												<div className="cancel-icon-white"></div></button>
-										) : (
-											<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-										)}
-										<button
-											type="button"
-											className={"user-btn"}
-											onClick={this.formToggle}
-										>
-											<div className={"plus"}></div>ADD
-                    </button>
-									</div>
-								</div>
-							)}
-						</Col>
-					</Row>
-				</form>
-				<BootstrapTable
+						</Row>
+					</form>
+					{/* <BootstrapTable
 					data={this.props.userDataList}
 					striped={false}
 					bordered={false}
@@ -512,9 +550,9 @@ class UsersListing extends Component {
 					trClassName={"userlisting-row"}
 					tableHeaderClass="my-custom-header"
 					pagination
-				>
+				> */}
 					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-					<TableHeaderColumn dataField="FullName" csvHeader="Full-Name" dataFormat={this.linkableFormatter} dataAlign="left" dataSort={true}>Name</TableHeaderColumn>
+					{/* <TableHeaderColumn dataField="FullName" csvHeader="Full-Name" dataFormat={this.linkableFormatter} dataAlign="left" dataSort={true}>Name</TableHeaderColumn>
 					{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 						<TableHeaderColumn dataField="UserName" width={"150"} dataSort={true}>User name</TableHeaderColumn>
 					) : null}
@@ -523,27 +561,75 @@ class UsersListing extends Component {
 					<TableHeaderColumn dataField="PhoneNumber" width={"110"} dataSort={false}>Phone No.</TableHeaderColumn>
 					<TableHeaderColumn dataField="DepartmentName" dataSort={true}>Purchase Group</TableHeaderColumn>
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
-                                filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
+                                		filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
-					<TableHeaderColumn dataField="RoleName" dataSort={true}>Role</TableHeaderColumn>
+					{/* <TableHeaderColumn dataField="RoleName" dataSort={true}>Role</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
 					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}
-					<TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter} width={80}>Status</TableHeaderColumn>
+					{/* <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter} width={80}>Status</TableHeaderColumn>
 					<TableHeaderColumn width={80} className="action" dataField="UserId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-				</BootstrapTable>
-				{this.state.isOpen && (
-					<ViewUserDetails
-						UserId={this.state.UserId}
-						isOpen={this.state.isOpen}
-						editItemDetails={this.editItemDetails}
-						closeUserDetails={this.closeUserDetails}
-						EditAccessibility={EditAccessibility}
-						anchor={"right"}
-						IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
-					/>
-				)}
-			</>
+				</BootstrapTable> */}
+
+					<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+						<div className="ag-grid-header">
+							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+						</div>
+						<div
+							className="ag-theme-material"
+							style={{ height: '100%', width: '100%' }}
+						>
+							<AgGridReact
+								defaultColDef={defaultColDef}
+								// columnDefs={c}
+								rowData={this.props.userDataList}
+								pagination={true}
+								paginationPageSize={10}
+								onGridReady={this.onGridReady}
+								gridOptions={gridOptions}
+								loadingOverlayComponent={'customLoadingOverlay'}
+								noRowsOverlayComponent={'customNoRowsOverlay'}
+								noRowsOverlayComponentParams={{
+									title: CONSTANT.EMPTY_DATA,
+								}}
+								frameworkComponents={frameworkComponents}
+							>
+								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+								<AgGridColumn field="FullName" headerName="Name"></AgGridColumn>
+								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
+									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
+								) : null}
+								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
+								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+								<AgGridColumn field="DepartmentName" headerName="Purchase Group"></AgGridColumn>
+								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+								<AgGridColumn field="IsActive" headerName="Status" type="rightAligned" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+							</AgGridReact>
+							<div className="paging-container d-inline-block float-right">
+								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+									<option value="10" selected={true}>10</option>
+									<option value="50">50</option>
+									<option value="100">100</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					{this.state.isOpen && (
+						<ViewUserDetails
+							UserId={this.state.UserId}
+							isOpen={this.state.isOpen}
+							editItemDetails={this.editItemDetails}
+							closeUserDetails={this.closeUserDetails}
+							EditAccessibility={EditAccessibility}
+							anchor={"right"}
+							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+						/>
+					)}
+				</>
+			</div>
 		);
 	}
 }
