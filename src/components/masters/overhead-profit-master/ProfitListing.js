@@ -147,17 +147,19 @@ class ProfitListing extends Component {
     * @description Renders buttons
     */
     buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
 
-        const cellValue = props?.value;
-        const rowData = props?.data;
+
         return (
             <>
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     /**
     * @method costingHeadFormatter
@@ -436,7 +438,7 @@ class ProfitListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -749,7 +751,7 @@ class ProfitListing extends Component {
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                                    <AgGridColumn field="ClientName" headerName="Client Name"></AgGridColumn>
+                                    <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability"></AgGridColumn>
                                     <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
