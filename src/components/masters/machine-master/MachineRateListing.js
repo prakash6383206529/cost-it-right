@@ -16,11 +16,21 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import { MachineRate } from '../../../config/constants';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import ReactExport from 'react-export-excel';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -283,26 +293,40 @@ class MachineRateListing extends Component {
     }
 
     /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+* @method buttonFormatter
+* @description Renders buttons
+*/
+    buttonFormatter = (props) => {
+
+        const cellValue = props?.value;
+        const rowData = props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-                <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cell)} />
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        console.log(props?.value, 'props?.valueprops?.valueprops?.value')
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? 'Vendor Based' : 'Zero Based';
+    }
+
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
     }
 
     /**
@@ -439,22 +463,110 @@ class MachineRateListing extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
+    onSubmit = (values) => { }
 
+    // returnExcelColumn = (data = [], TempData) => {
+    //     const ExcelFile = ReactExport.ExcelFile;
+    //     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    //     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    //     let temp = []
+    //     temp = TempData.map((item) => {
+    //         if (item.ClientName === null) {
+    //             item.ClientName = ' '
+    //         }
+    //         return item
+    //     })
+
+    //     return (<ExcelSheet data={temp} name={`${MachineRate}`}>
+    //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+    //         }
+    //     </ExcelSheet>);
+    // }
+    // renderColumn = (fileName) => {
+    //     let arr = this.props.machineDatalist && this.props.machineDatalist.length > 0 ? this.props.machineDatalist : []
+    //     if (arr != []) {
+    //         arr && arr.map(item => {
+    //             let len = Object.keys(item).length
+    //             for (let i = 0; i < len; i++) {
+    //                 // let s = Object.keys(item)[i]
+    //                 if (item.MachineTonnage === null) {
+    //                     item.MachineTonnage = ' '
+    //                 } else if (item.EffectiveDate === null) {
+    //                     item.EffectiveDate = ' '
+    //                 } else if (item.IsVendor === true) {
+    //                     item.IsVendor = 'VBC'
+    //                 } else if (item.IsVendor === false) {
+    //                     item.IsVendor = 'ZBC'
+    //                 } else if (item.Plants === '-') {
+    //                     item.Plants = ' '
+    //                 } else if (item.MachineTypeName === '-') {
+    //                     item.MachineTypeName = ' '
+    //                 } else if (item.VendorName === '-') {
+    //                     item.VendorName = ' '
+    //                 } else {
+    //                     return false
+    //                 }
+    //             }
+    //         })
+    //     }
+    //     return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, arr)
+    // }
+
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.MachineTonnage === null) {
+                item.MachineTonnage = ' '
+            } else if (item.EffectiveDate === null) {
+                item.EffectiveDate = ' '
+            } else if (item.IsVendor === true) {
+                item.IsVendor = 'Vendor Based'
+            } else if (item.IsVendor === false) {
+                item.IsVendor = 'Zero Based'
+            } else if (item.Plants === '-') {
+                item.Plants = ' '
+            } else if (item.MachineTypeName === '-') {
+                item.MachineTypeName = ' '
+            } else if (item.VendorName === '-') {
+                item.VendorName = ' '
+            } else {
+                return false
+            }
+            return item
+        })
+
+        return (<ExcelSheet data={TempData} name={`${MachineRate}`}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            }
+        </ExcelSheet>);
     }
 
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.machineDatalist
-        return products; // must return the data which you want to be exported
+        params.api.paginationGoToPage(0);
+    };
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
     }
 
     /**
@@ -475,9 +587,23 @@ class MachineRateListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            effectiveDateRenderer: this.effectiveDateFormatter,
+            costingHeadRenderer: this.costingHeadFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter: this.hyphenFormatter
+        };
 
         return (
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -623,9 +749,20 @@ class MachineRateListing extends Component {
                                         <div className={'upload'}></div>Bulk Upload</button>}
                                     {AddAccessibility && <button
                                         type="button"
-                                        className={'user-btn'}
+                                        className={'user-btn mr5'}
                                         onClick={this.displayForm}>
                                         <div className={'plus'}></div>ADD</button>}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={MachineRate} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                    }
+
+                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
 
                                 </div>
                             </div>
@@ -636,7 +773,7 @@ class MachineRateListing extends Component {
                 <Row>
                     <Col>
                         {isLoader && <LoaderCustom />}
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.machineDatalist}
                             striped={false}
                             hover={false}
@@ -659,7 +796,54 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
+                        </BootstrapTable> */}
+
+
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{ height: '100%', width: '100%' }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={this.props.machineDatalist}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="MachineNumber" headerName="Machine Number"></AgGridColumn>
+                                    <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
+                                    <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
+                                    <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
+                                    <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MachineId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload

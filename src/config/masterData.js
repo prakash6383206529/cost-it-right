@@ -2261,3 +2261,279 @@ export const CostingSimulationDownload = [
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
+
+export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "UOM", value: "UOM", },
+    { label: "Specification", value: "Specification", },
+    { label: "Plants", value: "Plants", },
+    { label: "Vendor", value: "Vendor", },
+    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "BasicRate", value: "BasicRate", },
+    { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "EffectiveDate", value: "EffectiveDate", }
+]
+
+export const BOP_IMPORT_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "UOM", value: "UOM", },
+    { label: "Specification", value: "Specification", },
+    { label: "Plants", value: "Plants", },
+    { label: "Vendor", value: "Vendor", },
+    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "BasicRate", value: "BasicRate", },
+    { label: "NetLandedCostConversion", value: "NetLandedCostConversion", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "Specification", value: "Specification", },
+    { label: "NoOfVendors", value: "NoOfVendors", },
+    { label: "Plant", value: "Plant", },
+    { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
+    { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
+]
+
+export const EXCHANGERATE_DOWNLOAD_EXCEl = [
+    { label: "Currency", value: "Currency", },
+    { label: "CurrencyExchangeRate", value: "CurrencyExchangeRate", },
+    { label: "BankRate", value: "BankRate", },
+    { label: "BankCommissionPercentage", value: "BankCommissionPercentage", },
+    { label: "CustomRate", value: "CustomRate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "DateOfModification", value: "DateOfModification", },
+]
+
+export const FREIGHT_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "Mode", value: "Mode", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "SourceCity", value: "SourceCity", },
+    { label: "DestinationCity", value: "DestinationCity", },
+]
+
+export const FUELLISTING_DOWNLOAD_EXCEl = [
+    { label: "FuelName", value: "FuelName", },
+    { label: "UnitOfMeasurementName", value: "UnitOfMeasurementName", },
+    { label: "StateName", value: "StateName", },
+    { label: "Rate", value: "Rate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "ModifiedDate", value: "ModifiedDate", },
+]
+
+export const POWERLISTING_DOWNLOAD_EXCEl = [
+    { label: "StateName", value: "StateName", },
+    { label: "PlantName", value: "PlantName", },
+    { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit", }
+]
+
+export const INTERESTRATE_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "ICCApplicability", value: "ICCApplicability", },
+    { label: "ICCPercent", value: "ICCPercent", },
+    { label: "PaymentTermApplicability", value: "PaymentTermApplicability", },
+    { label: "RepaymentPeriod", value: "RepaymentPeriod", },
+    { label: "PaymentTermPercent", value: "PaymentTermPercent", },
+    { label: "EffectiveDate", value: "EffectiveDate", }
+]
+
+export const LABOUR_DOWNLOAD_EXCEl = [
+    { label: "IsContractBase", value: "IsContractBase", },
+    { label: "Vendor", value: "Vendor", },
+    { label: "Plant", value: "Plant", },
+    { label: "State", value: "State", },
+    { label: "MachineType", value: "MachineType", },
+    { label: "LabourType", value: "LabourType", },
+    { label: "LabourRate", value: "LabourRate", },
+    { label: "EffectiveDate", value: "EffectiveDate", }
+]
+
+export const MACHINERATE_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "Technologies", value: "Technologies", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "Plants", value: "Plants", },
+    { label: "MachineNumber", value: "MachineNumber", },
+    { label: "MachineTypeName", value: "MachineTypeName", },
+    { label: "MachineTonnage", value: "MachineTonnage", },
+    { label: "ProcessName", value: "ProcessName", },
+    { label: "MachineRate", value: "MachineRate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const PROCESSLISTING_DOWNLOAD_EXCEl = [
+    { label: "ProcessName", value: "ProcessName", },
+    { label: "ProcessCode", value: "ProcessCode", },
+]
+
+export const RMDOMESTIC_DOWNLOAD_EXCEl = [
+    { label: "CostingHead", value: "CostingHead", },
+    { label: "RawMaterial", value: "RawMaterial", },
+    { label: "RMGrade", value: "RMGrade", },
+    { label: "RMSpec", value: "RMSpec", },
+    { label: "MaterialType", value: "MaterialType", },
+    { label: "Category", value: "Category", },
+    { label: "TechnologyName", value: "TechnologyName", },
+    { label: "Plant", value: "Plant", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UOM", value: "UOM", },
+    { label: "BasicRate", value: "BasicRate", },
+    { label: "RMFreightCost", value: "RMFreightCost", },
+    { label: "RMShearingCost", value: "RMShearingCost", },
+    { label: "ScrapRate", value: "ScrapRate", },
+    { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "ProcessName", value: "ProcessName", },
+    { label: "ProcessName", value: "ProcessName", },
+]
+
+export const RMIMPORT_DOWNLOAD_EXCEl = [
+    { label: "CostingHead", value: "CostingHead", },
+    { label: "RawMaterial", value: "RawMaterial", },
+    { label: "RMGrade", value: "RMGrade", },
+    { label: "RMSpec", value: "RMSpec", },
+    { label: "MaterialType", value: "MaterialType", },
+    { label: "Category", value: "Category", },
+    { label: "TechnologyName", value: "TechnologyName", },
+    { label: "Plant", value: "Plant", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UOM", value: "UOM", },
+    { label: "BasicRate", value: "BasicRate", },
+    { label: "RMFreightCost", value: "RMFreightCost", },
+    { label: "RMShearingCost", value: "RMShearingCost", },
+    { label: "ScrapRate", value: "ScrapRate", },
+    { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const RMLISTING_DOWNLOAD_EXCEl = [
+    { label: "RawMaterial", value: "RawMaterial", },
+    { label: "Density", value: "Density", },
+    { label: "RMName", value: "RMName", },
+    { label: "RMGrade", value: "RMGrade", },
+]
+
+export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
+    { label: "RMName", value: "RMName", },
+    { label: "RMGrade", value: "RMGrade", },
+    { label: "RMSpec", value: "RMSpec", },
+]
+
+export const OPERATION_DOWNLOAD_EXCEl = [
+    { label: "CostingHead", value: "CostingHead", },
+    { label: "Technology", value: "Technology", },
+    { label: "OperationName", value: "OperationName", },
+    { label: "OperationCode", value: "OperationCode", },
+    { label: "Plants", value: "Plants", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UnitOfMeasurement", value: "UnitOfMeasurement", },
+    { label: "Rate", value: "Rate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const OVERHEAD_DOWNLOAD_EXCEl = [
+    { label: "TypeOfHead", value: "TypeOfHead", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ModelType", value: "ModelType", },
+    { label: "OverheadApplicabilityType", value: "OverheadApplicabilityType", },
+    { label: "OverheadPercentage", value: "OverheadPercentage", },
+    { label: "OverheadRMPercentage", value: "OverheadRMPercentage", },
+    { label: "OverheadBOPPercentage", value: "OverheadBOPPercentage", },
+    { label: "OverheadMachiningCCPercentage", value: "OverheadMachiningCCPercentage", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
+    { label: "Technology", value: "Technology", },
+    { label: "BOMNumber", value: "BOMNumber", },
+    { label: "PartNumber", value: "PartNumber", },
+    { label: "PartName", value: "PartName", },
+    { label: "NumberOfParts", value: "NumberOfParts", },
+    { label: "BOMLevelCount", value: "BOMLevelCount", },
+    { label: "ECNNumber", value: "ECNNumber", },
+    { label: "RevisionNumber", value: "RevisionNumber", },
+    { label: "DrawingNumber", value: "DrawingNumber", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
+    { label: "Technology", value: "Technology", },
+    { label: "PartNumber", value: "PartNumber", },
+    { label: "PartName", value: "PartName", },
+    { label: "ECNNumber", value: "ECNNumber", },
+    { label: "RevisionNumber", value: "RevisionNumber", },
+    { label: "DrawingNumber", value: "DrawingNumber", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+
+export const VBCPLANT_DOWNLOAD_EXCEl = [
+    { label: "VendorName", value: "VendorName", },
+    { label: "PlantName", value: "PlantName", },
+    { label: "PlantCode", value: "PlantCode", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
+
+export const REASON_DOWNLOAD_EXCEl = [
+    { label: "Reason", value: "Reason", },
+]
+
+export const VENDOR_DOWNLOAD_EXCEl = [
+    { label: "VendorType", value: "VendorType", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "VendorCode", value: "VendorCode", },
+    { label: "Country", value: "Country", },
+    { label: "State", value: "State", },
+    { label: "City", value: "City", },
+]
+
+export const UOM_DOWNLOAD_EXCEl = [
+    { label: "Unit", value: "Unit", },
+    { label: "UnitSymbol", value: "UnitSymbol", },
+    { label: "UnitType", value: "UnitType", },
+]
+
+export const VOLUME_DOWNLOAD_EXCEl = [
+    { label: "IsVendor", value: "IsVendor", },
+    { label: "Year", value: "Year", },
+    { label: "Month", value: "Month", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "PartNumber", value: "PartNumber", },
+    { label: "PartName", value: "PartName", },
+    { label: "Plant", value: "Plant", },
+    { label: "BudgetedQuantity", value: "BudgetedQuantity", },
+    { label: "ApprovedQuantity", value: "ApprovedQuantity", },
+]
+
+export const PROFIT_DOWNLOAD_EXCEl = [
+    { label: "TypeOfHead", value: "TypeOfHead", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ModelType", value: "ModelType", },
+    { label: "ProfitApplicabilityType", value: "ProfitApplicabilityType", },
+    { label: "ProfitPercentage", value: "ProfitPercentage", },
+    { label: "ProfitRMPercentage", value: "ProfitRMPercentage", },
+    { label: "ProfitBOPPercentage", value: "ProfitBOPPercentage", },
+    { label: "ProfitMachiningCCPercentage", value: "ProfitMachiningCCPercentage", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
+export const ZBCPLANT_DOWNLOAD_EXCEl = [
+    { label: "PlantName", value: "PlantName", },
+    { label: "PlantCode", value: "PlantCode", },
+    { label: "CompanyName", value: "CompanyName", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
