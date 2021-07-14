@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
 import { OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
@@ -20,6 +20,17 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
+import ReactExport from 'react-export-excel';
+import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class ReasonListing extends Component {
   constructor(props) {
@@ -68,7 +79,7 @@ class ReasonListing extends Component {
             DownloadAccessibility:
               permmisionData && permmisionData.Download
                 ? permmisionData.Download
-                : false,                
+                : false,
           })
         }
       }
@@ -135,36 +146,35 @@ class ReasonListing extends Component {
   }
 
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility } = this.state
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && (
-          <button
-            className="Edit"
-            type={'button'}
-            onClick={() => this.editItemDetails(cell)}
-          />
-        )}
-        {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   /**
    * @method statusButtonFormatter
    * @description Renders buttons
    */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+  statusButtonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
         <label htmlFor="normal-switch">
           <Switch
-            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-            checked={cell}
+            onChange={() => this.handleChange(cellValue, rowData, '', '')}
+            checked={cellValue}
             background="#ff6600"
             onColor="#4DC771"
             onHandleColor="#ffffff"
@@ -237,18 +247,61 @@ class ReasonListing extends Component {
     )
   }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.reasonDataList
-    return products; // must return the data which you want to be exported
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
-createCustomExportCSVButton = (onClick) => {
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(1);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    TempData.map((item) => {
+      if (item.ECNNumber === null) {
+        item.ECNNumber = ' '
+      } else if (item.RevisionNumber === null) {
+        item.RevisionNumber = ' '
+      } else if (item.DrawingNumber === null) {
+        item.DrawingNumber = ' '
+      } else if (item.Technology === '-') {
+        item.Technology = ' '
+      } else {
+        return false
+      }
+      return item
+    })
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
-    );
+
+      <ExcelSheet data={TempData} name={Reasonmaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
 
   /**
    * @method render
@@ -270,9 +323,23 @@ createCustomExportCSVButton = (onClick) => {
 
     }
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+    };
+
+    const frameworkComponents = {
+      buttonFormatter: this.buttonFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      statusButtonFormatter: this.statusButtonFormatter
+    };
+
     return (
       <>
-        <div className="container-fluid show-table-btn">
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
@@ -291,11 +358,23 @@ createCustomExportCSVButton = (onClick) => {
                       <div className={'plus'}></div>ADD
                     </button>
                   )}
+                  {
+                    DownloadAccessibility &&
+                    <>
+                      <ExcelFile filename={Reasonmaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                        {this.onBtExport()}
+                      </ExcelFile>
+                    </>
+                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                  }
+
+                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+
                 </div>
               </div>
             </Col>
           </Row>
-          <BootstrapTable
+          {/* <BootstrapTable
             data={this.props.reasonDataList}
             striped={false}
             hover={false}
@@ -309,9 +388,9 @@ createCustomExportCSVButton = (onClick) => {
             trClassName={'userlisting-row'}
             tableHeaderClass="my-custom-header"
             pagination
-          >
-            {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-            <TableHeaderColumn
+          > */}
+          {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+          {/* <TableHeaderColumn
               dataField="Reason"
               dataAlign="left"
               dataSort={true}
@@ -338,8 +417,47 @@ createCustomExportCSVButton = (onClick) => {
               dataFormat={this.buttonFormatter}
             >
               Actions
-          </TableHeaderColumn>
-          </BootstrapTable>
+            </TableHeaderColumn>
+          </BootstrapTable> */}
+
+          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+            </div>
+            <div
+              className="ag-theme-material"
+              style={{ height: '100%', width: '100%' }}
+            >
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                // columnDefs={c}
+                rowData={this.props.reasonDataList}
+                pagination={true}
+                paginationPageSize={10}
+                onGridReady={this.onGridReady}
+                gridOptions={gridOptions}
+                loadingOverlayComponent={'customLoadingOverlay'}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                noRowsOverlayComponentParams={{
+                  title: CONSTANT.EMPTY_DATA,
+                }}
+                frameworkComponents={frameworkComponents}
+              >
+                <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
+                <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" cellRenderer={'buttonFormatter'}></AgGridColumn>
+              </AgGridReact>
+              <div className="paging-container d-inline-block float-right">
+                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                  <option value="10" selected={true}>10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
         </div>
         {isOpenDrawer && (
           <AddReason
