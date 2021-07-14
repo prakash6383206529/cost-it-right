@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
@@ -194,8 +194,9 @@ class IndivisualPartListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -222,19 +223,52 @@ class IndivisualPartListing extends Component {
     formToggle = () => {
         this.props.formToggle()
     }
-    
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.newPartsListing
-        return products; // must return the data which you want to be exported
-      }
-    
-    createCustomExportCSVButton = (onClick) => {
+
+    closeBulkUploadDrawer = () => {
+        this.setState({ isBulkUpload: false }, () => {
+        })
+    }
+
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        params.api.paginationGoToPage(0);
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.ECNNumber === null) {
+                item.ECNNumber = ' '
+            } else if (item.RevisionNumber === null) {
+                item.RevisionNumber = ' '
+            } else if (item.DrawingNumber === null) {
+                item.DrawingNumber = ' '
+            } else if (item.Technology === '-') {
+                item.Technology = ' '
+            } else {
+                return false
+            }
+            return item
+        })
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      }
+    }
 
 
     /**
@@ -342,7 +376,7 @@ function mapStateToProps({ part, auth }) {
     const { newPartsListing } = part
     const { initialConfiguration } = auth;
 
-    return { newPartsListing,initialConfiguration };
+    return { newPartsListing, initialConfiguration };
 }
 
 /**
