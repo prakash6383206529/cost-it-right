@@ -814,7 +814,6 @@ class RMDomesticListing extends Component {
                                             ) : (
                                                 <button title="filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
-                                                    {/* Show Filter */}
                                                 </button>
                                             )}
                                             {AddAccessibility && (
@@ -936,7 +935,7 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn width={160}  field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                                     {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

@@ -384,27 +384,45 @@ class AssemblyPartListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                {BulkUploadAccessibility && <button
-                                    type="button"
-                                    className={'user-btn mr5'}
-                                    onClick={this.bulkToggle}>
-                                    <div className={'upload'}></div>Upload BOM</button>}
-                                {AddAccessibility && <button
-                                    type="button"
-                                    className={'user-btn mr5'}
-                                    onClick={this.displayForm}>
-                                    <div className={'plus'}></div>ADD</button>}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
-                                        <ExcelFile filename={AssemblyPart} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {this.onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                }
+                                {AddAccessibility && (
+                                                 <button
+                                                 type="button"
+                                                 className={'user-btn mr5'}
+                                                 title="Add"
+                                                 onClick={this.displayForm}>
+                                                 <div className={'plus mr-0'}></div></button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
 
-                                <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                             </div>
                         </div>
