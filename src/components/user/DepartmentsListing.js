@@ -238,13 +238,15 @@ class DepartmentsListing extends Component {
                     type={"button"}
                     className={"user-btn mr5"}
                     onClick={this.openModel}
+                    title="Add"
                   >
-                    <div className={"plus"}></div>
-                    {`ADD`}
+                    <div className={"plus mr-0"}></div>
                   </button>
                 </>
               )}
-              <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
             </Col>
 
           </Row>

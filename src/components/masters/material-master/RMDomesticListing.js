@@ -822,8 +822,7 @@ class RMDomesticListing extends Component {
                                             ) : (
                                                 <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
-                                                    {/* Show Filter */}
-                                                    </button>
+                                                </button>
                                             )}
                                             {AddAccessibility && (
                                                 <button
