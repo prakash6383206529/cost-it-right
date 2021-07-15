@@ -544,28 +544,34 @@ class FreightListing extends Component {
                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                       <div className="cancel-icon-white"></div></button>
                   ) : (
-                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <div className="filter mr-0"></div>
+                    </button>
                   )}
                   {AddAccessibility && (
                     <button
                       type="button"
                       className={"user-btn mr5"}
                       onClick={this.formToggle}
+                      title="Add"
                     >
-                      <div className={"plus"}></div>ADD
+                      <div className={"plus mr-0"}></div>
                     </button>
                   )}
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
+                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
                     //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
 
-                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                      <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -622,7 +628,7 @@ class FreightListing extends Component {
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="FreightId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

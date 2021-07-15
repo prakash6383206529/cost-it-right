@@ -770,7 +770,7 @@ class MachineRateListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
                                                     <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                     </button>}>
