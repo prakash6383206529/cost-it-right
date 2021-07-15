@@ -839,6 +839,14 @@ a:hover {
         }
       }  
     }
+    .ag-grid-react{
+      .sm-edit-page{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 320px);
+          height: calc(100vh - 320px) !important;
+        }
+      }  
+    }
     
   }
 }
@@ -2789,6 +2797,14 @@ body {
           height: calc(32px * 80 / 100);
         }
       }
+    }
+    .ag-grid-react{
+      .sm-edit-page{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 260px);
+          height: calc(100vh - 260px) !important;
+        }
+      }  
     }
   }
 }
