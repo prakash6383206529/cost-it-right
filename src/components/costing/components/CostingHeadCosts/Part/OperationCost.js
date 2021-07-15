@@ -160,7 +160,7 @@ function OperationCost(props) {
       setGridData(tempArr)
       toastr.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]Quantity`, 0)
+        setValue(`${OperationGridFields}.${index}.Quantity`, 0)
       }, 200)
     }
   }
@@ -187,7 +187,7 @@ function OperationCost(props) {
       setGridData(tempArr)
       //toastr.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
+        setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
       }, 200)
     }
   }

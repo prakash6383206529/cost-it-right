@@ -151,8 +151,8 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(tempArr2)
       setGridData(tempArray)
-      setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, weightData.UOM === HOUR ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForPrice) : weightData.Quantity)
-      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, weightData.UOM === HOUR ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForPrice) : weightData.Quantity)
+      setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
     }, 100)
   }
 
@@ -268,7 +268,7 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
-        setValue(`${ProcessGridFields}[${i}]ProcessCost`, el.ProcessCost)
+        setValue(`${ProcessGridFields}.${i}.ProcessCost`, el.ProcessCost)
       })
     }, 200)
   }
@@ -373,7 +373,7 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(gridTempArr)
       setGridData(gridTempArr)
-      setValue(`${ProcessGridFields}[${index}]ProcessCost`, netCost)
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, netCost)
     }, 100)
   }
 
@@ -405,7 +405,7 @@ function ProcessCost(props) {
 
       setTabData(tempArr)
       setGridData(gridTempArr)
-      setValue(`${ProcessGridFields}[${index}]ProcessCost`, ProcessCost)
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, ProcessCost)
     } else {
 
       const ProcessCost = tempData.MHR * 0
@@ -432,8 +432,8 @@ function ProcessCost(props) {
       setTabData(tempArr)
       setGridData(gridTempArr)
       setTimeout(() => {
-        setValue(`${ProcessGridFields}[${index}]Quantity`, 0)
-        setValue(`${ProcessGridFields}[${index}]ProcessCost`, 0)
+        setValue(`${ProcessGridFields}.${index}.Quantity`, 0)
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, 0)
       }, 200)
       //toastr.warning('Please enter valid number.')
     }
