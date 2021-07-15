@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { DRAFT, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
@@ -26,7 +26,7 @@ import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -273,6 +273,9 @@ const CostingSummaryTable = (props) => {
         VendorPlantCode: tempData.vendorPlantCode,
         VendorName: tempData.vendorName,
         VendorCode: tempData.vendorCode,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantName : '',
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
@@ -289,8 +292,8 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          setPartInfo(res.data.Data)
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          setPartInfo(res.data.Data)
           showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
         }
       }),
@@ -606,7 +609,7 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row>
+          <Row className={customClass}>
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
@@ -753,7 +756,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData.length > 0 && viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
+                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -1092,7 +1095,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
                         <th>Net PO Price(INR)</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {

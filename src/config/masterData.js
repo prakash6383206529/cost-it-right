@@ -2223,3 +2223,31 @@ export const ENDMILL = 'End Mill'
 
 export const getTechnology = [1, 8, 7, 2, 4]
 export const technologyForDensity = [1, 7]
+
+
+export const CostingSimulationDownload = [
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "Raw Material", value: "RMName" },
+    { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old Basic Rate", value: "OldRMRate" },
+    { label: 'New Basic Rate', value: 'NewRMRate' },
+    { label: "ScrapRate", value: "OldScrapRate" },
+    { label: 'NewScrapRate', value: 'NewScrapRate' },
+    { label: "RM Cost Old", value: "OldRMPrice" },
+    { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "Finish Weight", value: "RawMaterialFinishWeight" },
+    { label: "Gross Weight", value: "RawMaterialGrossWeight" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
