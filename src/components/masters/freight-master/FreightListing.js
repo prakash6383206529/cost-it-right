@@ -43,6 +43,7 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
+      isLoader: true
     }
   }
 
@@ -52,9 +53,12 @@ class FreightListing extends Component {
   */
   componentDidMount() {
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
-    this.props.fetchSupplierCityDataAPI(res => { });
-    this.getDataList()
+    setTimeout(() => {
+
+      this.props.getVendorWithVendorCodeSelectList()
+      this.props.fetchSupplierCityDataAPI(res => { });
+      this.getDataList()
+    }, 500);
   }
 
   /**
@@ -62,6 +66,7 @@ class FreightListing extends Component {
   * @description GET DETAILS OF BOP DOMESTIC
   */
   getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
+    this.setState({ isLoader: true })
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -71,7 +76,7 @@ class FreightListing extends Component {
     this.props.getFreightDataList(filterData, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [] })
       } else {
@@ -417,7 +422,7 @@ class FreightListing extends Component {
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             {this.state.shown && (

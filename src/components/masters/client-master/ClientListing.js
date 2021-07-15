@@ -57,7 +57,7 @@ class ClientListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(null, null)
+
 
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
@@ -77,6 +77,9 @@ class ClientListing extends Component {
                 }
             }
         })
+        setTimeout(() => {
+            this.getTableListData(null, null)
+        }, 500);
     }
 
     // Get updated Supplier's list after any action performed.
@@ -431,7 +434,7 @@ class ClientListing extends Component {
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId"  headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

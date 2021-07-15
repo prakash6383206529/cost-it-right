@@ -42,6 +42,7 @@ class FuelListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
+            isLoader: true
 
         }
     }
@@ -51,8 +52,15 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.getFuelComboData(() => { })
-        this.getDataList(0, 0)
+        setTimeout(() => {
+
+            this.getDataList(0, 0)
+            this.props.getFuelComboData(() => { })
+        }, 500);
+    }
+
+    componentWillUnmount() {
+        this.props.getFuelDetailDataList(false, {}, (res) => { })
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -60,10 +68,10 @@ class FuelListing extends Component {
             fuelName: fuelName,
             stateName: stateName,
         }
-        this.props.getFuelDetailDataList(filterData, (res) => {
+        this.props.getFuelDetailDataList(true, filterData, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data }, () => { this.setState({ isLoader: false }) })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
@@ -363,7 +371,7 @@ class FuelListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
                         {this.state.shown && (

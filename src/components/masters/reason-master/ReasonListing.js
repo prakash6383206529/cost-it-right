@@ -49,54 +49,54 @@ class ReasonListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
-
+      showData: false,
+      isLoader: true,
+      renderState: true
     }
   }
 
-  componentDidMount() {
+
+
+  UNSAFE_componentWillMount() {
     let ModuleId = reactLocalStorage.get('ModuleId')
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { leftMenuData } = this.props
       if (leftMenuData !== undefined) {
         let Data = leftMenuData
         const accessData = Data && Data.find((el) => el.PageName === REASON)
-        const permmisionData =
-          accessData &&
-          accessData.Actions &&
-          checkPermission(accessData.Actions)
+        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
         if (permmisionData !== undefined) {
           this.setState({
-            ViewAccessibility:
-              permmisionData && permmisionData.View
-                ? permmisionData.View
-                : false,
-            AddAccessibility:
-              permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility:
-              permmisionData && permmisionData.Edit
-                ? permmisionData.Edit
-                : false,
-            DeleteAccessibility:
-              permmisionData && permmisionData.Delete
-                ? permmisionData.Delete
-                : false,
-            DownloadAccessibility:
-              permmisionData && permmisionData.Download
-                ? permmisionData.Download
-                : false,
+            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
           })
         }
       }
-    })
 
-    this.getTableListData()
+
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.getAllReasonAPI(false, (res) => { })
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.getTableListData()
+    }, 2000);
   }
 
   // Get updated Supplier's list after any action performed.
   getUpdatedData = () => {
-    this.getTableListData()
+    setTimeout(() => {
+
+      this.getTableListData()
+    }, 500);
   }
 
   /**
@@ -104,12 +104,13 @@ class ReasonListing extends Component {
    * @description Get user list data
    */
   getTableListData = () => {
-    this.props.getAllReasonAPI((res) => {
+    this.setState({ isLoader: true })
+    this.props.getAllReasonAPI(true, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data }, () => this.setState({ isLoader: false, renderState: !this.state.renderState }))
       } else {
         this.setState({ tableData: [] })
       }
@@ -159,7 +160,7 @@ class ReasonListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+    const { EditAccessibility } = this.state;
     return (
       <>
         {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
@@ -334,7 +335,7 @@ class ReasonListing extends Component {
     };
 
     const frameworkComponents = {
-      buttonFormatter: this.buttonFormatter,
+      totalValueRenderer: this.buttonFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       statusButtonFormatter: this.statusButtonFormatter
@@ -342,9 +343,10 @@ class ReasonListing extends Component {
 
     return (
       <>
+
+        {this.state.isLoader && <LoaderCustom />}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
-          {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
@@ -448,8 +450,8 @@ class ReasonListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
-                <AgGridColumn field="IsActive" headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                <AgGridColumn field="ReasonId" headerName="Actions"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

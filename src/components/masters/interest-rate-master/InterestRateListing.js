@@ -60,8 +60,8 @@ class InterestRateListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
-
+      showData: false,
+      isLoader: true,
     }
   }
 
@@ -89,11 +89,19 @@ class InterestRateListing extends Component {
     })
 
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
-    this.props.getICCAppliSelectList(() => { })
-    this.props.getPaymentTermsAppliSelectList(() => { })
-    this.getTableListData()
+    setTimeout(() => {
+
+      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getICCAppliSelectList(() => { })
+      this.props.getPaymentTermsAppliSelectList(() => { })
+      this.getTableListData()
+    }, 500);
   }
+
+  componentWillUnmount() {
+    this.props.getInterestRateDataList(false, {}, (res) => { })
+  }
+
 
   /**
   * @method getTableListData
@@ -105,12 +113,12 @@ class InterestRateListing extends Component {
       icc_applicability: icc_applicability,
       payment_term_applicability: payment_term_applicability,
     }
-    this.props.getInterestRateDataList(filterData, res => {
+    this.props.getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [], })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data, })
+        this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
       } else {
         this.setState({ tableData: [], })
       }
@@ -548,7 +556,7 @@ class InterestRateListing extends Component {
 
     return (
       <>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}

@@ -59,6 +59,7 @@ class LabourListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      isLoader: true
     }
   }
 
@@ -103,12 +104,19 @@ class LabourListing extends Component {
       }
     })
 
-    this.props.getZBCPlantList(() => { })
-    this.props.getStateSelectList(() => { })
-    this.props.getMachineTypeSelectList(() => { })
-    // this.getTableListData()
-    this.filterList()
+    setTimeout(() => {
+      this.props.getZBCPlantList(() => { })
+      this.props.getStateSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => { })
+      // this.getTableListData()
+      this.filterList()
+    }, 500);
   }
+
+  componentWillUnmount() {
+    this.props.getLabourDataList(false, {}, (res) => { })
+  }
+
 
   /**
    * @method getTableListData
@@ -124,14 +132,12 @@ class LabourListing extends Component {
       machine_type: machine_type,
     }
 
-    this.props.getLabourDataList(filterData, (res) => {
+    this.props.getLabourDataList(true, filterData, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({
-          tableData: Data,
-        })
+        this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
       } else {
       }
     })
@@ -636,7 +642,7 @@ class LabourListing extends Component {
 
     return (
       <>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
           <form

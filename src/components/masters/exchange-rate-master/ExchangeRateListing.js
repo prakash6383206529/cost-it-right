@@ -52,11 +52,11 @@ class ExchangeRateListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
+            isLoader: true,
         }
     }
 
-    componentDidMount() {
-
+    UNSAFE_componentWillMount() {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
@@ -73,30 +73,48 @@ class ExchangeRateListing extends Component {
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                         DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                    }, () => {
+                        setTimeout(() => {
+
+                            this.props.getCurrencySelectList(() => { })
+                            this.getTableListData()
+                        }, 500);
                     })
                 }
             }
         })
-        this.props.getCurrencySelectList(() => { })
-        this.getTableListData()
+
     }
+
+    componentDidMount() {
+        setTimeout(() => {
+
+            this.props.getCurrencySelectList(() => { })
+            this.getTableListData()
+        }, 500);
+    }
+
+
+    componentWillUnmount() {
+        this.props.getExchangeRateDataList(false, {}, (res) => { })
+    }
+
 
     /**
     * @method getTableListData
     * @description Get list data
     */
     getTableListData = (currencyId = 0) => {
+        this.setState({ isLoader: true })
         let filterData = {
             currencyId: currencyId,
         }
-        this.props.getExchangeRateDataList(filterData, res => {
+        this.props.getExchangeRateDataList(true, filterData, res => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
             } else {
 
             }
@@ -357,7 +375,12 @@ class ExchangeRateListing extends Component {
         gridOptions.columnApi.resetColumnState();
     }
 
-
+    frameworkComponents = {
+        totalValueRenderer: this.buttonFormatter,
+        effectiveDateRenderer: this.effectiveDateFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound
+    };
 
     /**
     * @method render
@@ -382,12 +405,7 @@ class ExchangeRateListing extends Component {
 
         };
 
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            effectiveDateRenderer: this.effectiveDateFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound
-        };
+
 
         const options = {
             clearSearch: true,
@@ -406,6 +424,7 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
+                {this.state.isLoader && <LoaderCustom />}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -532,16 +551,16 @@ class ExchangeRateListing extends Component {
                                 noRowsOverlayComponentParams={{
                                     title: CONSTANT.EMPTY_DATA,
                                 }}
-                                frameworkComponents={frameworkComponents}
+                                frameworkComponents={this.frameworkComponents}
                             >
                                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                                 <AgGridColumn width={150} field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
                                 <AgGridColumn width={152} field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
                                 <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                <AgGridColumn width={152} field="DateOfModification" headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                <AgGridColumn field="ExchangeRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                <AgGridColumn width={152} field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                <AgGridColumn field="ExchangeRateId" headerName="Action" cellRenderer='totalValueRenderer'></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
