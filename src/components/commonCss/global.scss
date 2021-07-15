@@ -727,10 +727,12 @@ a:hover {
         .ag-paging-row-summary-panel{
           order: 1;
           color: #959cb6;
+          margin-right: 0;
         }
         .ag-paging-page-summary-panel{
           order: 0;
           color: #959cb6;
+          margin-left: 0;
           .ag-paging-description{
             span{
               &:nth-child(2){color: #256bd1;}
@@ -771,6 +773,9 @@ a:hover {
 }
 .ag-theme-material {
   --ag-foreground-color: #8a91ac;
+  .ag-paging-button:hover {
+    color: #256bd1;
+  }
   @include ag-theme-material((
     font-size:14px,
     font-family: ('Roboto', sans-serif ),
