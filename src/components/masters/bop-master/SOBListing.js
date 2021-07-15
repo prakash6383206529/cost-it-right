@@ -523,7 +523,6 @@ class SOBListing extends Component {
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber"  headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
