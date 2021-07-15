@@ -582,19 +582,22 @@ class ProcessListing extends Component {
                   {AddAccessibility && <button
                     type="button"
                     className={'user-btn mr5'}
+                    title="Add"
                     onClick={this.processToggler}>
-                    <div className={'plus'}></div>ADD</button>}
+                    <div className={'plus mr-0'}></div></button>}
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
                     //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
 
-                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                 </div>
               </div>
