@@ -17,12 +17,6 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import { ZBC } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../helper/AllConastant'
-
-const gridOptions = {};
 
 // const initialTableData = [
 //   {
@@ -280,33 +274,26 @@ class AddVolume extends Component {
    * @method buttonFormatter
    * @description Renders buttons
    */
-  buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+  buttonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowData)} />
+        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
       </>
     )
   }
 
-  ActualFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+  ActualFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <span className="form-control" >{cellValue}</span>
+        <span className="form-control" >{cell}</span>
       </>
     )
   }
 
-  budgetFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+  budgetFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <span className="form-control">{cellValue}</span>
+        <span className="form-control">{cell}</span>
       </>
     )
   }
@@ -596,30 +583,6 @@ class AddVolume extends Component {
     }
   };
 
-
-  onGridReady = (params) => {
-    this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-    params.api.paginationGoToPage(0);
-  };
-
-  // onPageSizeChanged = (newPageSize) => {
-  //   var value = document.getElementById('page-size').value;
-  //   this.state.gridApi.paginationSetPageSize(Number(value));
-  // };
-
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
-  }
-
-
-  resetState() {
-    gridOptions.columnApi.resetColumnState();
-  }
-
-
-
   /**
   * @method render
   * @description Renders the component
@@ -635,23 +598,9 @@ class AddVolume extends Component {
       afterSaveCell: this.afterSaveCell
     };
 
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: true,
-    };
-
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
-      ActualFormatter: this.ActualFormatter,
-      budgetFormatter: this.budgetFormatter,
-      simulationButtonFormatter: this.simulationButtonFormatter
-    };
-
     return (
       <>
-        <div className="container-fluid ag-grid-react">
+        <div className="container-fluid">
           {this.state.isLoader && <LoaderCustom />}
           <div className="login-container signup-form">
             <div className="row">
@@ -832,8 +781,8 @@ class AddVolume extends Component {
                           <div className="left-border mb-0">{"Quantity:"}</div>
                         </Col>
                         <Col md="12">
-                          {/* <BootstrapTable
-                            data={this.props.userDataList}
+                          <BootstrapTable
+                            data={this.state.tableData}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -846,51 +795,8 @@ class AddVolume extends Component {
 
                             <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="" VolumeApprovedDetailIdisKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
-                          </BootstrapTable> */}
-
-                          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                            {/* <div className="ag-grid-header">
-                              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div> */}
-                            <div
-                              className="ag-theme-material"
-                              style={{ height: '100%', width: '100%' }}
-                            >
-                              <AgGridReact
-                                defaultColDef={defaultColDef}
-                                // columnDefs={c}
-                                rowData={this.props.userDataList}
-                                // pagination={true}
-                                // paginationPageSize={10}
-                                
-                                onGridReady={this.onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                  title: CONSTANT.EMPTY_DATA,
-                                }}
-                                frameworkComponents={frameworkComponents}
-                              >
-                                <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                                <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity" cellRenderer={'budgetFormatter'}></AgGridColumn>
-                                <AgGridColumn field="ApprovedQuantity" headerName="Actual Quantity" cellRenderer={'ActualFormatter'}></AgGridColumn>
-                                <AgGridColumn field="VolumeApprovedDetailId" hide headerName="Volume Approv Id"></AgGridColumn>
-                                <AgGridColumn field="VolumeBudgetedDetailId" hide headerName="Vol Budget Id" type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
-                                <AgGridColumn field="VolumeApprovedDetailId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                              </AgGridReact>
-                              {/* <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                  <option value="10" selected={true}>10</option>
-                                  <option value="50">50</option>
-                                  <option value="100">100</option>
-                                </select>
-                              </div> */}
-                            </div>
-                          </div>
-
-
+                            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
+                          </BootstrapTable>
                         </Col>
                       </Row>
                     </div>
@@ -901,14 +807,24 @@ class AddVolume extends Component {
                           className="mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cancel-icon"}></div>
+                          <div className={"cross-icon"}>
+                            <img
+                              src={require("../../../assests/images/times.png")}
+                              alt="cancel-icon.jpg"
+                            />
+                          </div>{" "}
                           {"Cancel"}
                         </button>
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                         >
-                          <div className={"save-icon"}></div>
+                          <div className={"check-icon"}>
+                            <img
+                              src={require("../../../assests/images/check.png")}
+                              alt="check-icon.jpg"
+                            />{" "}
+                          </div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>
