@@ -153,7 +153,7 @@ function BOPCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setValue(`${bopGridFields}[${index}]Quantity`, 0)
+        setValue(`${bopGridFields}.${index}.Quantity`, 0)
       }, 200)
       //toastr.warning('Please enter valid number.')
     }
