@@ -563,15 +563,15 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    // rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{ required: type === 'Approve' ? false : true }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
                     customClassName={'withBorder'}
-                    //errors={errors.ECNNumber}
+                    errors={errors.remark}
                     disabled={false}
                   />
-                  {showError && <span className="text-help">This is required field</span>}
+                  {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -588,7 +588,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button  save-btn"
-                    onClick={onSubmit}
+                  // onClick={() => { }}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
