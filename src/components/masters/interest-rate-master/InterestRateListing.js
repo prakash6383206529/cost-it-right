@@ -453,6 +453,9 @@ class InterestRateListing extends Component {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
     params.api.paginationGoToPage(0);
+    //if resolution greater than 1920 table listing fit to 100%
+    window.screen.width >= 1921 && params.api.sizeColumnsToFit()
+    //if resolution greater than 1920 table listing fit to 100%
   };
 
   onPageSizeChanged = (newPageSize) => {
@@ -655,37 +658,52 @@ class InterestRateListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.bulkToggle}
-                      >
-                        <div className={"upload"}></div>Bulk Upload
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                          <div className="filter mr-0"></div>
                       </button>
-                    )}
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.formToggle}
-                      >
-                        <div className={"plus"}></div>ADD
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
-                        <ExcelFile filename={InterestMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                          {this.onBtExport()}
-                        </ExcelFile>
-                      </>
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                    }
+                      )}
+                      {AddAccessibility && (
+                          <button
+                              type="button"
+                              className={"user-btn mr5"}
+                              onClick={this.formToggle}
+                              title="Add"
+                          >
+                              <div className={"plus mr-0"}></div>
+                              {/* ADD */}
+                          </button>
+                      )}
+                      {BulkUploadAccessibility && (
+                          <button
+                              type="button"
+                              className={"user-btn mr5"}
+                              onClick={this.bulkToggle}
+                              title="Bulk Upload"
+                          >
+                              <div className={"upload mr-0"}></div>
+                              {/* Bulk Upload */}
+                          </button>
+                      )}
+                      {
+                          DownloadAccessibility &&
+                          <>
 
-                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                              <ExcelFile filename={'InterestMaster'} fileExtension={'.xls'} element={
+                              <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                              {/* DOWNLOAD */}
+                              </button>}>
+
+                                  {this.onBtExport()}
+                              </ExcelFile>
+
+                          </>
+
+                          //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                      }
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                          <div className="refresh mr-0"></div>
+                      </button>
 
                   </div>
                 </div>
@@ -745,15 +763,15 @@ class InterestRateListing extends Component {
                 }}
                 frameworkComponents={frameworkComponents}
               >
-                <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
-                <AgGridColumn field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="PaymentTermApplicability" headerName="Payment Term Applicability"></AgGridColumn>
-                <AgGridColumn field="RepaymentPeriod" headerName="Repayment Period(Days)"></AgGridColumn>
-                <AgGridColumn field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability"></AgGridColumn>
+                <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)"></AgGridColumn>
+                <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="VendorInterestRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn width={120} field="VendorInterestRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

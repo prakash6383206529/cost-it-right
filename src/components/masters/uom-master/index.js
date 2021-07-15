@@ -349,14 +349,17 @@ class UOMMaster extends Component {
             {
               DownloadAccessibility &&
               <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                  <div className="download mr-0" title="Download"></div></button>}>
                   {this.onBtExport()}
                 </ExcelFile>
               </>
               //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
             }
 
-            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                  <div className="refresh mr-0"></div>
+              </button>
             </Col>
           </Row>
 
