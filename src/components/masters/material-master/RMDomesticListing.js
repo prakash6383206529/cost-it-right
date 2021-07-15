@@ -29,7 +29,11 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 
-import { RowController } from 'ag-grid-community';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -50,6 +54,11 @@ class RMDomesticListing extends Component {
             shown: this.props.isSimulation ? true : false,
             technology: [],
             gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
+
         }
     }
 
@@ -626,7 +635,7 @@ class RMDomesticListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility } = this.props;
         const { isBulkUpload, } = this.state;
 
         const options = {
@@ -656,8 +665,7 @@ class RMDomesticListing extends Component {
         };
 
         return (
-
-            <div className={DownloadAccessibility ? "show-table-btn" : ""}>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -812,7 +820,7 @@ class RMDomesticListing extends Component {
                                                     <div className="cancel-icon-white"></div>
                                                 </button>
                                             ) : (
-                                                <button title="filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
                                                 </button>
                                             )}
@@ -843,7 +851,7 @@ class RMDomesticListing extends Component {
                                                 <>
 
                                                     <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="download"></div>
+                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>}>
 
@@ -855,7 +863,7 @@ class RMDomesticListing extends Component {
                                                 //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                             }
-                                            <button type="button" className="user-btn" title="reset grid" onClick={() => this.resetState()}>
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </>
@@ -876,7 +884,8 @@ class RMDomesticListing extends Component {
                             search
                             multiColumnSearch={true}
                             // exportCSV={true}
-                            //ignoreSinglePage
+                            ignoreSinglePage
+                            // exportCSV={DownloadAccessibility}
                             exportCSV={this.props.isSimulation ? false : true}
                             csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
@@ -913,10 +922,17 @@ class RMDomesticListing extends Component {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+                                    // columnDefs={c}
                                     rowData={this.props.rmDataList}
                                     pagination={true}
                                     paginationPageSize={10}
-                                    gridOptions={agGridOptions}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
                                     frameworkComponents={frameworkComponents}>
                                     <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
@@ -934,8 +950,8 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                                     {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

@@ -245,8 +245,8 @@ class DepartmentsListing extends Component {
                 </>
               )}
               <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                <div className="refresh mr-0"></div>
+              </button>
             </Col>
 
           </Row>
@@ -295,8 +295,8 @@ class DepartmentsListing extends Component {
                     frameworkComponents={frameworkComponents}
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                    <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
-                    {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
+                    <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}></AgGridColumn>
+                    <AgGridColumn field="DepartmentCode" headerName="Purchase Group Code"></AgGridColumn>
                     <AgGridColumn field="DepartmentId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">

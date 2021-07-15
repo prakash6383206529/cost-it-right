@@ -46,6 +46,7 @@ class BOPMaster extends Component {
             EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
             DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
             BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
           })
         }
       }

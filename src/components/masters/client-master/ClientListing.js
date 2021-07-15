@@ -18,6 +18,17 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import ReactExport from 'react-export-excel';
+import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -35,6 +46,13 @@ class ClientListing extends Component {
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
+            DownloadAccessibility: false,
+            gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
+
         }
     }
 
@@ -54,6 +72,7 @@ class ClientListing extends Component {
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
             }
@@ -135,14 +154,26 @@ class ClientListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
+    };
+
+
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
     }
 
     /**
@@ -264,26 +295,30 @@ class ClientListing extends Component {
             </ExcelSheet>);
     }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
     }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
-
-
+        const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
             noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
-            exportCSVBtn: this.createCustomExportCSVButton,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -293,10 +328,26 @@ class ClientListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter: this.hyphenFormatter
+        };
+
         return (
-            <div className="show-table-btn">
+            // <div className="">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
                 {/* {this.props.loading && <Loader />} */}
-                <div className="container-fluid">
+                < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <h1 className="mb-0">Customer Master</h1>
                         <Row className="pt-4 no-filter-row">
@@ -306,7 +357,7 @@ class ClientListing extends Component {
                                     {AddAccessibility && (
                                         <button
                                             type="button"
-                                            className={"user-btn"}
+                                            className={"user-btn mr5"}
                                             onClick={this.formToggle}
                                             title="Add"
                                         >
@@ -333,7 +384,29 @@ class ClientListing extends Component {
 
                     </form>
 
-
+                    {/* <BootstrapTable
+                        data={this.props.clientDataList}
+                        striped={false}
+                        hover={false}
+                        bordered={false}
+                        options={options}
+                        search
+                        // exportCSV={this.state.DownloadAccessibility}
+                        // csvFileName={`${Clientmaster}.csv`}
+                        //ignoreSinglePage
+                        ref={'table'}
+                        trClassName={'userlisting-row'}
+                        tableHeaderClass='my-custom-header client-table'
+                        className={'client-table'}
+                        pagination>
+                        <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ClientEmailId" dataAlign="left" >{'Email Id'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CountryName" dataAlign="left" >{'Country'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="StateName" dataAlign="left" >{'State'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CityName" dataAlign="left" >{'City'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ClientId" dataAlign="right" className="action" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    </BootstrapTable> */}
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">

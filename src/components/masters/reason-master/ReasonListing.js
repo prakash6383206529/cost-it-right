@@ -12,7 +12,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { OperationMaster, REASON } from '../../../config/constants';
+import { OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -313,13 +313,11 @@ class ReasonListing extends Component {
    * @description Renders the component
    */
   render() {
-    const { isEditFlag, isOpenDrawer, AddAccessibility } = this.state
+    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
       exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
@@ -371,13 +369,13 @@ class ReasonListing extends Component {
                     DownloadAccessibility &&
                     <>
 
-                        <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
+                      <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                        {/* DOWNLOAD */}
+                          {/* DOWNLOAD */}
                         </button>}>
 
-                            {this.onBtExport()}
-                        </ExcelFile>
+                        {this.onBtExport()}
+                      </ExcelFile>
 
                     </>
 
@@ -386,8 +384,8 @@ class ReasonListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                    <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -400,8 +398,8 @@ class ReasonListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV
-            csvFileName={`${OperationMaster}.csv`}
+            exportCSV={DownloadAccessibility}
+            csvFileName={`${Reasonmaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}

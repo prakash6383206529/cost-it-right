@@ -346,15 +346,9 @@ class SOBListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
 
-    const onExportToCSV = (row) => {
-      // ...
-      let products = []
-      products = this.props.bopSobList
-      return products; // must return the data which you want to be exported
-    }
 
     const options = {
       clearSearch: true,

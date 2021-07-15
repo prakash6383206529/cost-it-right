@@ -1081,6 +1081,16 @@ export const MHRMoreZBC = [
 
 ]
 
+export const CLIENT_DOWNLOAD_EXCEl = [
+    { label: "CompanyName", value: "CompanyName", },
+    { label: "ClientName", value: "ClientName", },
+    { label: "ClientEmailId", value: "ClientEmailId", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
+
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */

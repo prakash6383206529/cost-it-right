@@ -473,7 +473,7 @@ class ProcessListing extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
 
     const options = {
@@ -596,8 +596,8 @@ class ProcessListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                    <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -614,7 +614,7 @@ class ProcessListing extends Component {
               bordered={false}
               options={options}
               search
-              exportCSV
+              exportCSV={DownloadAccessibility}
               csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
@@ -653,7 +653,7 @@ class ProcessListing extends Component {
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                  <AgGridColumn field="ProcessId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="ProcessId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

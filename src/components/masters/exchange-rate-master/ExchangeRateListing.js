@@ -331,9 +331,9 @@ class ExchangeRateListing extends Component {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-        
-        window.screen.width <= 1366 ?  params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
-        
+
+        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -393,7 +393,7 @@ class ExchangeRateListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { toggleForm, data, AddAccessibility, } = this.state;
+        const { toggleForm, data, AddAccessibility, DownloadAccessibility } = this.state;
 
         if (toggleForm) {
             return (
@@ -487,8 +487,8 @@ class ExchangeRateListing extends Component {
                                                 <div className="cancel-icon-white"></div></button>
                                         ) : (
                                             <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                                <div className="filter mr-0"></div>
+                                            </button>
                                         )}
                                         {AddAccessibility && <button
                                             type="button"
@@ -500,7 +500,7 @@ class ExchangeRateListing extends Component {
                                             DownloadAccessibility &&
                                             <>
                                                 <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                    <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
                                             </>
@@ -524,8 +524,8 @@ class ExchangeRateListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        exportCSV
-                            csvFileName={`${ExchangeMaster}.csv`}
+                        exportCSV={DownloadAccessibility}
+                        csvFileName={`${ExchangeMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
                         trClassName={'userlisting-row'}
@@ -565,13 +565,13 @@ class ExchangeRateListing extends Component {
                                 frameworkComponents={this.frameworkComponents}
                             >
                                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
                                 <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" cellRenderer='totalValueRenderer'></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

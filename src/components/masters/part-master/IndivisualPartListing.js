@@ -17,6 +17,17 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
 import { ComponentPart } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -108,14 +119,32 @@ class IndivisualPartListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
+    };
+
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let value;
+        if (cellValue === null || cellValue === '') {
+            value = '-'
+        }
+        else {
+            value = cellValue
+        }
+        return value;
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -280,8 +309,18 @@ class IndivisualPartListing extends Component {
             return item
         })
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+
+            <ExcelSheet data={TempData} name={ComponentPart}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
     }
 
 
@@ -291,7 +330,7 @@ class IndivisualPartListing extends Component {
     */
     render() {
         const { isBulkUpload } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
         const onExportToCSV = (row) => {
             // ...
@@ -315,8 +354,22 @@ class IndivisualPartListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter: this.hyphenFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter
+        };
+
         return (
-            <div className="show-table-btn">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
 
                 <Row className="pt-4 no-filter-row">
@@ -372,7 +425,31 @@ class IndivisualPartListing extends Component {
                 </Row>
 
 
-
+                {/* <BootstrapTable
+                    data={this.props.newPartsListing}
+                    striped={false}
+                    bordered={false}
+                    hover={false}
+                    options={options}
+                    search
+                    exportCSV={DownloadAccessibility}
+                    csvFileName={`${ComponentPart}.csv`}
+                    //ignoreSinglePage
+                    ref={'table'}
+                    trClassName={'userlisting-row'}
+                    tableHeaderClass='my-custom-header'
+                    pagination>
+                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn> */}
+                {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
+                {/* <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
+                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
+                {/* <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                </BootstrapTable> */}
 
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>

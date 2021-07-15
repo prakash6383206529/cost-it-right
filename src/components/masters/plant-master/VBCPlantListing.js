@@ -409,7 +409,7 @@ class VBCPlantListing extends Component {
         );
     }
     render() {
-        const { handleSubmit, AddAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
 
 
@@ -528,8 +528,8 @@ class VBCPlantListing extends Component {
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -553,7 +553,7 @@ class VBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}

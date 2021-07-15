@@ -162,7 +162,7 @@ class ZBCPlantListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        
+
         const { ActivateAccessibility } = this.props;
         if (ActivateAccessibility) {
             return (
@@ -419,7 +419,7 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration } = this.props;
+        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
@@ -537,8 +537,8 @@ class ZBCPlantListing extends Component {
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -561,8 +561,8 @@ class ZBCPlantListing extends Component {
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -576,7 +576,7 @@ class ZBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantZbc}.csv`}
                     //ignoreSinglePage
                     ref={"table"}

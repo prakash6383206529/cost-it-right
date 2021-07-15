@@ -70,6 +70,7 @@ class UOMMaster extends Component {
             AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
             EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
             DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
           })
         }
       }
@@ -291,7 +292,7 @@ class UOMMaster extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpen, isEditFlag, uomId, AddAccessibility } = this.state;
+    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -346,19 +347,19 @@ class UOMMaster extends Component {
               </>
             )}
             <Col md={6} className="text-right search-user-block pr-0">
-            {
-              DownloadAccessibility &&
-              <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
-                  <div className="download mr-0" title="Download"></div></button>}>
-                  {this.onBtExport()}
-                </ExcelFile>
-              </>
-              //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-            }
+              {
+                DownloadAccessibility &&
+                <>
+                  <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                    <div className="download mr-0" title="Download"></div></button>}>
+                    {this.onBtExport()}
+                  </ExcelFile>
+                </>
+                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+              }
 
               <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                  <div className="refresh mr-0"></div>
+                <div className="refresh mr-0"></div>
               </button>
             </Col>
           </Row>
@@ -372,7 +373,7 @@ class UOMMaster extends Component {
                 bordered={false}
                 options={options}
                 search
-                exportCSV
+                exportCSV={DownloadAccessibility}
                 csvFileName={`${UomMaster}.csv`}
                 //ignoreSinglePage
                 ref={"table"}

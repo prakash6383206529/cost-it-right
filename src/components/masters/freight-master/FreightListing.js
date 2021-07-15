@@ -390,7 +390,7 @@ class FreightListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
     const options = {
       clearSearch: true,
@@ -545,7 +545,7 @@ class FreightListing extends Component {
                       <div className="cancel-icon-white"></div></button>
                   ) : (
                     <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
+                      <div className="filter mr-0"></div>
                     </button>
                   )}
                   {AddAccessibility && (
@@ -562,7 +562,7 @@ class FreightListing extends Component {
                     DownloadAccessibility &&
                     <>
                       <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                        <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -570,7 +570,7 @@ class FreightListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
+                    <div className="refresh mr-0"></div>
                   </button>
 
                 </div>
@@ -587,7 +587,7 @@ class FreightListing extends Component {
               bordered={false}
               options={options}
               search
-              exportCSV
+              exportCSV={DownloadAccessibility}
                 csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
