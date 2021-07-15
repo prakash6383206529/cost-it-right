@@ -29,15 +29,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 
-<<<<<<< HEAD
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
-const gridOptions = {};
-=======
 import { RowController } from 'ag-grid-community';
->>>>>>> 5813ff562 (ag-grid-hover)
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -58,14 +50,6 @@ class RMDomesticListing extends Component {
             shown: this.props.isSimulation ? true : false,
             technology: [],
             gridApi: null,
-<<<<<<< HEAD
-            gridColumnApi: null,
-            rowData: null,
-            sideBar: { toolPanels: ['columns'] },
-            showData: false
-
-=======
->>>>>>> 5813ff562 (ag-grid-hover)
         }
     }
 
