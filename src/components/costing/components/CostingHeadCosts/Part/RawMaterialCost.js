@@ -245,8 +245,8 @@ function RawMaterialCost(props) {
         }
         dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
         setGridData(tempArr)
-        setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
-        setValue(`${rmGridFields}[${index}]FinishWeight`, checkForNull(tempData.FinishWeight))
+        setValue(`${rmGridFields}.${index}.GrossWeight`, event.target.value)
+        setValue(`${rmGridFields}.${index}.FinishWeight`, checkForNull(tempData.FinishWeight))
       } else {
         const GrossWeight = checkForNull(event.target.value)
         const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
@@ -289,8 +289,8 @@ function RawMaterialCost(props) {
         }
         dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
         setGridData(tempArr)
-        setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
-        setValue(`${rmGridFields}[${index}]FinishWeight`, 0)
+        setValue(`${rmGridFields}.${index}.GrossWeight`, event.target.value)
+        setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
         toastr.warning('Gross Weight should not be less than Finish Weight')
       }
 
@@ -346,7 +346,7 @@ function RawMaterialCost(props) {
       }
       dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
       setGridData(tempArr)
-      setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
+      setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
       //toastr.warning('Please enter valid weight.')
 
     } else {
@@ -392,7 +392,7 @@ function RawMaterialCost(props) {
         }
         dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
         setGridData(tempArr)
-        setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
+        setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
 
       } else {
 
@@ -432,7 +432,7 @@ function RawMaterialCost(props) {
         setGridData(tempArr)
         toastr.warning('Finish weight should not be greater then gross weight.')
         setTimeout(() => {
-          setValue(`${rmGridFields}[${index}]FinishWeight`, 0)
+          setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
         }, 200)
 
       }
@@ -473,6 +473,10 @@ function RawMaterialCost(props) {
       const GrossWeight = grossWeight
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
 
+      const scrapWeight = checkForNull(GrossWeight - FinishWeight);
+      const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
+      const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+
       tempData = {
         ...tempData,
         FinishWeight: FinishWeight,
@@ -480,14 +484,15 @@ function RawMaterialCost(props) {
         NetLandedCost: NetLandedCost,
         WeightCalculatorRequest: weightData,
         WeightCalculationId: weightData.WeightCalculationId,
-        IsCalculatedEntry: true
+        IsCalculatedEntry: true,
+        CutOffRMC: CutOffRMC,
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setValue(`${rmGridFields}[${editIndex}]GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${rmGridFields}[${editIndex}]FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING
       }, 500)
@@ -544,8 +549,8 @@ function RawMaterialCost(props) {
       tempData = { ...tempData, NetLandedCost: NetLandedCost, }
       tempArr = Object.assign([...gridData], { [0]: tempData })
       setGridData(tempArr)
-      setValue(`${rmGridFields}[${0}]GrossWeight`, GrossWeight)
-      setValue(`${rmGridFields}[${0}]FinishWeight`, checkForNull(tempData?.FinishWeight))
+      setValue(`${rmGridFields}.${0}.GrossWeight`, GrossWeight)
+      setValue(`${rmGridFields}.${0}.FinishWeight`, checkForNull(tempData?.FinishWeight))
 
       setTimeout(() => {
 

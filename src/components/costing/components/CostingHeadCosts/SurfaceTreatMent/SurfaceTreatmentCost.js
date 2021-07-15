@@ -218,7 +218,7 @@ function SurfaceTreatmentCost(props) {
                               {
                                 <TextFieldHookForm
                                   label=""
-                                  name={`${OperationGridFields}[${index}]SurfaceArea`}
+                                  name={`${OperationGridFields}.${index}.SurfaceArea`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -253,7 +253,7 @@ function SurfaceTreatmentCost(props) {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
                                       label=""
-                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}
