@@ -737,12 +737,7 @@ const SendForApproval = (props) => {
                       onClick={toggleDrawer}
                     // className="reset mr15 cancel-btn"
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
 
@@ -752,12 +747,7 @@ const SendForApproval = (props) => {
                     // className="submit-button save-btn"
                     // onClick={() => handleSubmit(onSubmit)}
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={'save-icon'}></div>
                       {"Submit"}
                     </button>
                   </Col>

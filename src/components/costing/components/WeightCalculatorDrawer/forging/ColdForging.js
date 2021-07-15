@@ -966,12 +966,7 @@ function ColdForging(props) {
               value="CANCEL"
               className="reset mr15 cancel-btn"
             >
-              <div className={'cross-icon'}>
-                <img
-                  src={require('../../../../../assests/images/times.png')}
-                  alt="cancel-icon.jpg"
-                />
-              </div>
+              <div className={'cancel-icon'}></div>
               CANCEL
             </button>
             <button
@@ -980,9 +975,7 @@ function ColdForging(props) {
               onClick={onSave}
               className="btn-primary save-btn"
             >
-              <div className={'check-icon'}>
-                <i class="fa fa-check" aria-hidden="true"></i>
-              </div>
+              <div className={'save-icon'}></div>
               {'SAVE'}
             </button>
           </div>

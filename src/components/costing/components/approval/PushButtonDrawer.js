@@ -223,12 +223,7 @@ function PushButtonDrawer(props) {
                     onClick={toggleDrawer}
                   >
 
-                    <div className={'cross-icon'}>
-                      <img
-                        src={require('../../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{' '}
+                    <div className={'cancel-icon'}></div>
                     {'Cancel'}
                   </button>
 
@@ -237,12 +232,7 @@ function PushButtonDrawer(props) {
                     className="submit-button mr5 save-btn"
                     onClick={onSubmit}
                   >
-                    <div className={'check-icon'}>
-                      <img
-                        src={require('../../../../assests/images/check.png')}
-                        alt="check-icon.jpg"
-                      />{' '}
-                    </div>
+                    <div className={'save-icon'}></div>
                     {'Push'}
                   </button>
                 </div>
