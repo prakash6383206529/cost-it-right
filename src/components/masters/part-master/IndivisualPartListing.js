@@ -229,15 +229,23 @@ class IndivisualPartListing extends Component {
         })
     }
 
-    onGridReady = (params, skipHeader) => {
+
+
+    onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
 
+        // dont remove this
         // var allColumnIds = [];
-        // this.gridColumnApi.getAllColumns().forEach(function (column) {
+        // params.columnApi.getAllColumns().forEach(function (column) {
         //     allColumnIds.push(column.colId);
         // });
-        // this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
+        // params.columnApi.autoSizeColumns(allColumnIds);
+        // dont remove this
+
+        //if resolution greater than 1920 table listing fit to 100%
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+        //if resolution greater than 1920 table listing fit to 100%
     };
 
     onPageSizeChanged = (newPageSize) => {
