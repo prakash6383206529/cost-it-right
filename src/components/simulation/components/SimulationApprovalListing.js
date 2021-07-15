@@ -501,7 +501,9 @@ function SimulationApprovalListing(props) {
                                                 <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
                                                     <div className="cancel-icon-white"></div></button>
                                             ) : (
-                                                <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
                                             )}
                                         </div>
                                     </div>

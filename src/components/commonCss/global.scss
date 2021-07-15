@@ -705,7 +705,7 @@ a:hover {
 
 // ag-grid-react start
 .ag-theme-material .ag-ltr .ag-has-focus .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-ltr .ag-context-menu-open .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-ltr .ag-has-focus .ag-full-width-row.ag-row-focus .ag-cell-wrapper.ag-row-group, .ag-theme-material .ag-ltr .ag-cell-range-single-cell, .ag-theme-material .ag-ltr .ag-cell-range-single-cell.ag-cell-range-handle, .ag-theme-material .ag-rtl .ag-has-focus .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-rtl .ag-context-menu-open .ag-cell-focus:not(.ag-cell-range-selected), .ag-theme-material .ag-rtl .ag-has-focus .ag-full-width-row.ag-row-focus .ag-cell-wrapper.ag-row-group, .ag-theme-material .ag-rtl .ag-cell-range-single-cell, .ag-theme-material .ag-rtl .ag-cell-range-single-cell.ag-cell-range-handle{
-  border-color:#C2CBE8!important;
+  border-color:#e5eaf9!important;
 }
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
@@ -866,19 +866,19 @@ a:hover {
   @include ag-theme-material((
     font-size:14px,
     font-family: ('Roboto', sans-serif ),
-    border-color:#C2CBE8,
+    border-color:#e5eaf9,
     material-primary-color:#256bd1,
     // material-active-color: #256bd1,
     checkbox-checked-color: #256bd1,
     checkbox-unchecked-color: #8a91ac,
-    row-border-color: #C2CBE8,
+    row-border-color: #e5eaf9,
     row-hover-color: null,
     row-height: ag-derived(grid-size, $times: 6, $plus: 1),
     header-cell-hover-background-color: transparent,
     cell-horizontal-padding: ag-derived(grid-size, $times: 2),
     selected-row-background-color: ag-derived(background-color, $mix:#E7F2FC 50%),
   
-    cell-horizontal-border: solid #C2CBE8, 
+    cell-horizontal-border: solid #e5eaf9, 
     header-column-separator: true,
     header-column-separator-color: ag-derived(border-color, $opacity: 1),
   ));
@@ -900,7 +900,7 @@ a:hover {
   }
 }
 .ag-root-wrapper-body.ag-layout-normal{
-  border: 1px solid #C2CBE8;
+  border: 1px solid #e5eaf9;
 }
 .ag-cell-focus{
   border-width: 0 1px 0 0 !important;
@@ -2778,7 +2778,7 @@ body {
     .ag-grid-react{
       .ag-grid-wrapper{
         min-height: calc(100vh - 265px);
-        height: calc(100vh - 265px) !important;
+        height: calc(100vh - 35px) !important;
       }
       .search-user-block{
         padding-right: 15px !important;
