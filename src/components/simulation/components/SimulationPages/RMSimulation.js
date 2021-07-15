@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { data } from 'jquery';
 const gridOptions = {};
 
 
@@ -214,10 +215,14 @@ function RMSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         console.log('value: ', value);
-
+        // costFormatter(props)
+        gridApi && gridApi.redrawRows({ force: true })
         if (value) {
             console.log("Value updated");
-            setUpdate(!update)
+            setTimeout(() => {
+
+                setUpdate(!update)
+            }, 200);
         }
         return (
             <>
@@ -245,6 +250,8 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (props) => {
+        console.log('props from OLd cost: ', props);
+        gridApi && gridOptions.gridApi.redrawRows()
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
@@ -358,7 +365,8 @@ function RMSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        params.api.paginationGoToPage(1);
+
+        params.api.paginationGoToPage(0);
 
     };
 
@@ -528,7 +536,7 @@ function RMSimulation(props) {
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={100} field="NetLandedCost" editable='false' valueFormatter='data.BasicRate+data.RMFreightCost+data.RMShearingCost' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={100} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={100} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
