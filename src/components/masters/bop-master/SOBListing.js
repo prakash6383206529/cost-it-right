@@ -439,16 +439,16 @@ class SOBListing extends Component {
                     <div className="cancel-icon-white"></div></button>
                 ) : (
                   <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                    <div className="filter mr-0"></div>
+                  </button>
                 )}
                 {
                   DownloadAccessibility &&
                   <>
                     <ExcelFile filename={Sob} fileExtension={'.xls'} element={
-                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                    {/* DOWNLOAD */}
-                    </button>}>
+                      <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                        {/* DOWNLOAD */}
+                      </button>}>
                       {this.onBtExport()}
                     </ExcelFile>
                   </>
@@ -456,8 +456,8 @@ class SOBListing extends Component {
                 }
 
                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                  <div className="refresh mr-0"></div>
+                </button>
 
               </div>
             </Col>
@@ -522,7 +522,8 @@ class SOBListing extends Component {
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

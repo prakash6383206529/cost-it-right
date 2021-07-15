@@ -364,7 +364,7 @@ function SimulationApprovalListing(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
 
     };
 
