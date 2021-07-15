@@ -435,6 +435,10 @@ class UsersListing extends Component {
 	onGridReady = (params) => {
 		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 		params.api.paginationGoToPage(0);
+
+		//if resolution greater than 1920 table listing fit to 100%
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+        //if resolution greater than 1920 table listing fit to 100%
 	};
 
 	/**
@@ -632,8 +636,8 @@ class UsersListing extends Component {
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Purchase Group"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn field="IsActive" headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="IsActive" width={120} headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" width={120} headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

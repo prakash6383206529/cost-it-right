@@ -932,7 +932,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
-                <AgGridColumn field="VolumeId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="VolumeId" width={120} headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
