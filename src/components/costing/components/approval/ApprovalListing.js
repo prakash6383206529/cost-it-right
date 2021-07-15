@@ -508,11 +508,12 @@ function ApprovalListing() {
                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
                           <div className="cancel-icon-white"></div></button>
                       ) : (
-                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
+                          <div className="filter mr-0"></div>
+                        </button>
                       )}
-                      <button class="user-btn approval-btn" onClick={sendForApproval}>
-                        <div className="send-for-approval"></div>
-                        {'Send For Approval'}
+                      <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                        <div className="send-for-approval mr-0" ></div>
                       </button>
                     </div>
                   </div>
