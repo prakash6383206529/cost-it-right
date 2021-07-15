@@ -19,7 +19,7 @@ import { getTechnology, technologyForDensity } from '../../../../../config/maste
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
-  const { register, handleSubmit, control, setValue, getValues, errors, reset, setError } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, setError } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {

@@ -41,7 +41,7 @@ function ApprovalListing() {
   const approvalList = useSelector(state => state.approval.approvalList)
   const userList = useSelector(state => state.auth.userList)
 
-  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+  const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })

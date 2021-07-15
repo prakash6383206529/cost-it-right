@@ -31,7 +31,7 @@ function VerifySimulation(props) {
     const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })

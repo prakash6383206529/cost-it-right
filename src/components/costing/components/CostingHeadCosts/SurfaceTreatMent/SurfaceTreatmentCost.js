@@ -12,7 +12,7 @@ import { gridDataAdded } from '../../../actions/Costing';
 
 function SurfaceTreatmentCost(props) {
 
-  const { register, control, errors } = useForm({
+  const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });

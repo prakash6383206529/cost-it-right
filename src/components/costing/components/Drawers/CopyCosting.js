@@ -79,7 +79,7 @@ function CopyCosting(props) {
     }
   }, [])
 
-  const { register, control, errors, handleSubmit, setValue } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {

@@ -12,7 +12,7 @@ import { message } from 'antd';
 
 function AddPlantDrawer(props) {
 
-  const { register, handleSubmit, errors, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, control } = useForm();
 
   const [plant, setPlant] = useState([]);
   const [data, setPlantData] = useState({});
@@ -97,7 +97,7 @@ function AddPlantDrawer(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>

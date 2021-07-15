@@ -23,7 +23,7 @@ let counter = 0;
 function ProcessCost(props) {
   const { data } = props
 
-  const { register, control, errors, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
