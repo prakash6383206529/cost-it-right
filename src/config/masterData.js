@@ -1728,6 +1728,11 @@ export const RMDomesticSimulation = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RawMaterialId", value: "RawMaterialId" },
+    { label: "VendorId", value: "VendorId" },
+    { label: "PlantId", value: "PlantId" },
+
+
 ]
 
 export const RMImportSimulation = [
@@ -1747,6 +1752,10 @@ export const RMImportSimulation = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RawMaterialId", value: "RawMaterialId" },
+    { label: "VendorId", value: "VendorId" },
+    { label: "PlantId", value: "PlantId" },
+
 ]
 
 // Purchasing Group
