@@ -18,6 +18,8 @@ import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -539,25 +541,14 @@ class AddSpecification extends Component {
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cross-icon"}>
-                            {" "}
-                            <img
-                              alt={""}
-                              src={require("../../../assests/images/times.png")}
-                            ></img>
-                          </div>{" "}
+                          <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
                         <button
                           type="submit"
                           className="user-btn save-btn"
                         >
-                          <div className={"check-icon"}>
-                            <img
-                              alt={""}
-                              src={require("../../../assests/images/check.png")}
-                            ></img>
-                          </div>{" "}
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>

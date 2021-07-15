@@ -233,7 +233,7 @@ class Department extends Component {
 													type="button"
 													value="CANCEL"
 													className="mr15 cancel-btn">
-													<div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
+													<div className={"cancel-icon"}></div>CANCEL</button>
 												{/* <input
 													disabled={isSubmitted ? true : false}
 													type="submit"
@@ -244,8 +244,8 @@ class Department extends Component {
 													type="submit"
 													disabled={isSubmitted ? true : false}
 													className="user-btn save-btn"
-												>	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
-													</div>
+												>	
+												<div className={"save-icon"}></div>
 													{isEditFlag ? 'Update' : 'Save'}
 												</button>
 											</div>
