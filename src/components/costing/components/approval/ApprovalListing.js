@@ -579,66 +579,68 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
               <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
             </BootstrapTable> */}
-            <Col>
-              <div className={`ag-grid-react`}>
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                  <div className="ag-grid-header">
-                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                  </div>
-                  <div
-                    className="ag-theme-material"
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <AgGridReact
+            <Row>
+              <Col>
+                <div className={`ag-grid-react`}>
+                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                    </div>
+                    <div
+                      className="ag-theme-material"
                       style={{ height: '100%', width: '100%' }}
-                      defaultColDef={defaultColDef}
-                      // columnDefs={c}
-                      rowData={approvalList}
-                      pagination={true}
-                      paginationPageSize={10}
-                      onGridReady={onGridReady}
-                      gridOptions={gridOptions}
-                      loadingOverlayComponent={'customLoadingOverlay'}
-                      noRowsOverlayComponent={'customNoRowsOverlay'}
-                      noRowsOverlayComponentParams={{
-                        title: CONSTANT.EMPTY_DATA,
-                      }}
-                      frameworkComponents={frameworkComponents}
-                      suppressRowClickSelection={true}
-                      rowSelection={'multiple'}
-                      // frameworkComponents={frameworkComponents}
-                      onSelectionChanged={onRowSelect}
-                      isRowSelectable={isRowSelectable}
                     >
-                      <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                      <AgGridColumn field="ApprovalNumber" dataFormat='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                      <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
-                      <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
-                      <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                      <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
-                      <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
-                      <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                      <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
-                      <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
-                      <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                      <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
-                      <AgGridColumn field="RequestedBy" headerName="Requested By"></AgGridColumn>
-                      <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                      <AgGridColumn field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
+                      <AgGridReact
+                        style={{ height: '100%', width: '100%' }}
+                        defaultColDef={defaultColDef}
+                        // columnDefs={c}
+                        rowData={approvalList}
+                        pagination={true}
+                        paginationPageSize={10}
+                        onGridReady={onGridReady}
+                        gridOptions={gridOptions}
+                        loadingOverlayComponent={'customLoadingOverlay'}
+                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                        noRowsOverlayComponentParams={{
+                          title: CONSTANT.EMPTY_DATA,
+                        }}
+                        frameworkComponents={frameworkComponents}
+                        suppressRowClickSelection={true}
+                        rowSelection={'multiple'}
+                        // frameworkComponents={frameworkComponents}
+                        onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
+                      >
+                        <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                        <AgGridColumn field="ApprovalNumber" dataFormat='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                        <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
+                        <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
+                        <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                        <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
+                        <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                        <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                        <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                        <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
+                        <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
+                        <AgGridColumn field="RequestedBy" headerName="Requested By"></AgGridColumn>
+                        <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                        <AgGridColumn field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
 
-                    </AgGridReact>
+                      </AgGridReact>
 
-                    <div className="paging-container d-inline-block float-right">
-                      <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                        <option value="10" selected={true}>10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                      </select>
+                      <div className="paging-container d-inline-block float-right">
+                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                          <option value="10" selected={true}>10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Col>
+              </Col>
+            </Row>
 
           </div>
           :
