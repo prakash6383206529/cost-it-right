@@ -1,6 +1,7 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect,useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
+import HeaderTitle from '../../common/HeaderTitle';
 import moment from 'moment'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
@@ -14,7 +15,8 @@ import { getPlantSelectListByType, getTechnologySelectList } from '../../../acti
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData,checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { runVerifySimulation } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -23,12 +25,20 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
+import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
+import { toastr } from 'react-redux-toastr';
 
 function SimulationApprovalSummary(props) {
-    const { approvalDetails, approvalData, } = props;
+    // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
+    const { approvalDetails, approvalData,isbulkUpload,list,technology,master } = props;
     const { approvalNumber, approvalId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
+    const [token, setToken] = useState('')
+    const [showverifyPage, setShowVerifyPage] = useState(false)
+    const [showImpactedData,setshowImpactedData] = useState(false)
+
+    const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -44,6 +54,7 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [oldCostingList, setOldCostingList] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -59,11 +70,15 @@ function SimulationApprovalSummary(props) {
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
 
+    
+
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
+    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
+    
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
@@ -76,6 +91,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason } = res.data.Data
             setCostingList(SimulatedCostingList)
+            setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason })
             setIsApprovalDone(IsSent)
@@ -84,7 +100,7 @@ function SimulationApprovalSummary(props) {
             setShowPushButton(IsPushedButtonShow)
             setLoader(false)
         }))
-    }, [])
+    }, [])   
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -160,10 +176,9 @@ function SimulationApprovalSummary(props) {
     */
     const resetHandler = () => {
         setValue('partNo', '')
-        setValue('createdBy', '')
-        setValue('requestedBy', '')
-        setValue('status', '')
-        // getTableData()
+        setValue('plantCode', '')
+        setCostingList(oldCostingList)
+
     }
 
     const DisplayCompareCosting = (el, data) => {
@@ -186,12 +201,23 @@ function SimulationApprovalSummary(props) {
     * @description filtering data on Apply button
     */
     const onSubmit = (values) => {
-        // const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
-        // const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
-        // const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
-        // const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
-        // // const type_of_costing = 
-        // getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+        const tempPartNo = getValues('partNo') && getValues('partNo').value
+        const tempPlant = getValues('plantCode') && getValues('plantCode').value
+
+        let temp = []
+        if (tempPartNo && tempPlant) {
+            temp = costingList && costingList.filter(item => item.PartId === tempPartNo && item.PlantId === tempPlant)
+        } else {
+            if (tempPlant) {
+                temp = costingList && costingList.filter(item => item.PlantId === tempPlant)
+
+            } else {
+                temp = costingList && costingList.filter(item => item.PartId === tempPartNo)
+
+            }
+        }
+        setCostingList(temp)
+
     }
 
     const VerifyImpact = () => {
@@ -299,6 +325,73 @@ function SimulationApprovalSummary(props) {
         )
     }
 
+    const renderCostingHead = () => {
+        return <>Costing Head </>
+      }
+    
+      const renderRawMaterial = () => {
+        return <>Raw Material </>
+      }
+    
+      const renderRMGrade = () => {
+        return <>RM Grade </>
+      }
+    
+      const renderRMSpec = () => {
+        return <>RM Spec </>
+      }
+    
+      const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+          <>
+            <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.BasicRate} </span>
+          </>
+        )
+      }
+
+      const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+          <>
+            <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.ScrapRate}</span>
+          </>
+        )
+      }
+      const freightCostFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-';
+      }
+      const shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? cell : '-';
+      }
+    
+      const rendorFreightRate = () => {
+        return <>RM Freight <br /> Cost</>
+      }
+
+      const costFormatter = (cell, row, enumObject, rowIndex) => {
+        const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
+        const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+      }
+
+      const NewcostFormatter = (cell, row, enumObject, rowIndex) => {
+        const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
+        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
+        return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+      }
+
+      const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+      }
+    
+      const renderShearingCost = () => {
+        return <>Shearing <br /> Cost</>
+      }
+    
+      const renderEffectiveDate = () => {
+        return <>Effective <br /> Date</>
+      }
+
     const options = {
         clearSearch: true,
         noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -345,6 +438,55 @@ function SimulationApprovalSummary(props) {
 
                         {/* Code for approval workflow */}
                         <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail.Token} />
+
+                        <Row className="mb-3">
+                            <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
+                            <Col md="6">
+                                <div className={'right-details'}>
+                                    <a onClick={() => setshowImpactedData(!showImpactedData)} className={`${showImpactedData ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                                </div>
+                            </Col>
+                            {showImpactedData &&
+                            <div className="accordian-content w-100">
+                                <Col md="12" className="mb-3">
+                                <BootstrapTable
+                                    data={rmDomesticListing}
+                                    striped={false}
+                                    bordered={true}
+                                    hover={false}
+                                    options={options}
+                                    // exportCSV
+                                    //ignoreSinglePage
+                                    className="add-volume-table sm-headrgroup-table impact-drawer-table"
+                                    pagination>
+                                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                                    {/* <TableHeaderColumn row='0' rowSpan='2' dataField="CostingHead" width={115} columnTitle={true} editable={false} dataAlign="left" dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn> */}
+                                    <TableHeaderColumn row='0' rowSpan='2' dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
+                                    {/* <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn> */}
+                                    <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
+                                    <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
+                                    <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false}  >Scrap Rate (INR)</TableHeaderColumn>
+                                    <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
+                                    <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
+                                    <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
+                                    <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
+                                    <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
+                                </BootstrapTable>
+
+                                </Col>
+                            </div>
+                            }
+                        </Row>
 
                         <Row>
                             <Col md="10"><div className="left-border">{'Amendment Details:'}</div></Col>
@@ -522,7 +664,7 @@ function SimulationApprovalSummary(props) {
                                                     <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                                    {/* <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn> */}
+                                                    <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                                     <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>

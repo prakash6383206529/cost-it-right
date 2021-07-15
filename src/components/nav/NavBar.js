@@ -370,11 +370,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/report-analytics",
+                  pathname: "/costing-detail-report",
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Reports & Analytics",
-                    PageURL: "/report-analytics",
+                    PageName: "costing-detail-report",
+                    PageURL: "/costing-detail-report",
                   },
                 }}
               >

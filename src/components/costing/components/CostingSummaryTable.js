@@ -762,13 +762,16 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewRM(index)}
-                              >
-                              </button>
+                              <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              {
+                                !simulationDrawer &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewRM(index)}
+                                >
+                                </button>
+                              }
                             </td>
                           )
                         })}
