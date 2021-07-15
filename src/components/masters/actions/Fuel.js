@@ -81,21 +81,28 @@ export function updateFuelDetail(data, callback) {
  * @method getFuelDetailDataList
  * @description create fuel detail list
  */
-export function getFuelDetailDataList(data, callback) {
+export function getFuelDetailDataList(isAPICall, data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}`, headers);
-        request.then((response) => {
-            if (response && response.data.Result === true) {
-                dispatch({
-                    type: GET_FUEL_DATALIST_SUCCESS,
-                    payload: response.data.DataList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: GET_FUEL_FAILURE });
-            callback(error);
-        });
+        if (isAPICall) {
+            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}`, headers);
+            request.then((response) => {
+                if (response && response.data.Result === true) {
+                    dispatch({
+                        type: GET_FUEL_DATALIST_SUCCESS,
+                        payload: response.data.DataList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: GET_FUEL_FAILURE });
+                callback(error);
+            });
+        } else {
+            dispatch({
+                type: GET_FUEL_DATALIST_SUCCESS,
+                payload: [],
+            });
+        }
     };
 }
 

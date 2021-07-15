@@ -36,23 +36,30 @@ export function createInterestRate(data, callback) {
  * @method getInterestRateDataList
  * @description GET INTEREST RATE DATALIST
  */
-export function getInterestRateDataList(data, callback) {
+export function getInterestRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}`
-        axios.get(`${API.getInterestRateDataList}?${queryParams}`, headers)
-            .then((response) => {
-                if (response.data.Result || response.status === 204)
-                    dispatch({
-                        type: GET_INTEREST_RATE_DATA_LIST,
-                        payload: response.status === 204 ? [] : response.data.DataList
-                    })
-                callback(response);
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+        if (isAPICall) {
+            dispatch({ type: API_REQUEST });
+            let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}`
+            axios.get(`${API.getInterestRateDataList}?${queryParams}`, headers)
+                .then((response) => {
+                    if (response.data.Result || response.status === 204)
+                        dispatch({
+                            type: GET_INTEREST_RATE_DATA_LIST,
+                            payload: response.status === 204 ? [] : response.data.DataList
+                        })
+                    callback(response);
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_INTEREST_RATE_DATA_LIST,
+                payload: []
+            })
+        }
     };
 }
 
