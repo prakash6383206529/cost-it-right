@@ -37,7 +37,7 @@ import {
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -1552,4 +1552,13 @@ export function checkAndGetRawMaterialCode(code, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function setFilterForRM(filteredValue) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_FILTERED_RM_DATA,
+            payload: filteredValue,
+        });
+    }
 }
