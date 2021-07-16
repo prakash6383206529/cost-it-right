@@ -15,6 +15,7 @@ export const config = {
 }
 
 
+
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
