@@ -227,22 +227,22 @@ class DepartmentsListing extends Component {
         <>
           {this.state.isLoader && <Loader />}
           <Row className="pt-4 no-filter-row">
-            {AddAccessibility && (
-              <>
                 <Col md="6" className="filter-block"></Col>
                 <Col md="6" className="text-right search-user-block pr-0">
+                  {AddAccessibility && (
+                    <>
                   <button
                     type={"button"}
-                    className={"user-btn"}
+                    className={"user-btn mr5"}
                     onClick={this.openModel}
                   >
                     <div className={"plus"}></div>
                     {`ADD`}
                   </button>
-                </Col>
               </>
             )}
             <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                </Col>
 
           </Row>
 
@@ -268,7 +268,7 @@ class DepartmentsListing extends Component {
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div
                   className="ag-theme-material"

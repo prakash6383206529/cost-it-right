@@ -511,8 +511,8 @@ class UsersListing extends Component {
 								</Col>
 							}
 							<Col md="6" className="search-user-block mb-3">
-								{AddAccessibility && (
 									<div className="d-flex justify-content-end bd-highlight w100">
+								{AddAccessibility && (
 										<div>
 											{this.state.shown ? (
 												<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
@@ -522,16 +522,16 @@ class UsersListing extends Component {
 											)}
 											<button
 												type="button"
-												className={"user-btn"}
+												className={"user-btn mr5"}
 												onClick={this.formToggle}
 											>
 												<div className={"plus"}></div>ADD
 											</button>
 										</div>
-									</div>
 								)}
-
 								<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+									</div>
+
 
 							</Col>
 						</Row>
@@ -573,7 +573,7 @@ class UsersListing extends Component {
 
 					<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 						<div className="ag-grid-header">
-							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
 						<div
 							className="ag-theme-material"
@@ -604,8 +604,8 @@ class UsersListing extends Component {
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn field="IsActive" headerName="Status" type="rightAligned" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="IsActive" headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

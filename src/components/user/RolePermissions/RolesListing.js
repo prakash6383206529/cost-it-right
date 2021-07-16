@@ -206,18 +206,20 @@ class RolesListing extends Component {
             <Col md="8" className="mb-2">
 
             </Col>
-            <Col md="4" >
-              {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
+            <Col md="6" className="search-user-block mb-3">
+              <div className="d-flex justify-content-end bd-highlight w100">
+              {AddAccessibility && 
                 <div>
                   <button
                     type="button"
-                    className={'user-btn '}
+                    className={'user-btn mr5'}
                     onClick={this.formToggle}>
                     <div className={'plus'}></div>ADD</button>
                 </div>
-              </div>}
-
+              }
               <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+              </div>
+
 
             </Col>
           </Row>
@@ -241,7 +243,7 @@ class RolesListing extends Component {
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div
                   className="ag-theme-material"

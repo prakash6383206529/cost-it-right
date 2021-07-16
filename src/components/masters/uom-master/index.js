@@ -345,6 +345,7 @@ class UOMMaster extends Component {
                 </Col> */}
               </>
             )}
+            <Col md={6} className="text-right search-user-block pr-0">
             {
               DownloadAccessibility &&
               <>
@@ -356,6 +357,7 @@ class UOMMaster extends Component {
             }
 
             <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+            </Col>
           </Row>
 
           <Row>
@@ -397,7 +399,7 @@ class UOMMaster extends Component {
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div
                   className="ag-theme-material"

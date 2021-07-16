@@ -125,7 +125,7 @@ class SOBListing extends Component {
     const { EditAccessibility, } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />}
       </>
     )
   }
@@ -435,7 +435,7 @@ class SOBListing extends Component {
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 {this.state.shown ? (
-                  <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
+                  <button type="button" className="user-btn filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <div className="cancel-icon-white"></div></button>
                 ) : (
                   <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
@@ -485,7 +485,7 @@ class SOBListing extends Component {
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
@@ -514,8 +514,9 @@ class SOBListing extends Component {
                   <AgGridColumn field="NoOfVendors" headerName="No of Vendors"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
-                  <AgGridColumn field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber"  headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
