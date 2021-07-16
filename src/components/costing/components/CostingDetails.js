@@ -1819,12 +1819,7 @@ function CostingDetails(props) {
 
                           
                           <button type={"button"} className="reset-btn" onClick={cancel} >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                          <div className="cancel-icon"></div>
                             {"Clear"}
                           </button>
                           {IsShowNextBtn &&

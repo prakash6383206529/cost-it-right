@@ -397,12 +397,7 @@ function RMSimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
-                                <div className={"cross-icon"}>
-                                    <img
-                                        src={require("../../../../assests/images/times.png")}
-                                        alt="cancel-icon.jpg"
-                                    />
-                                </div>{" "}
+                                <div className={"cancel-icon"}></div>
                                 {"CANCEL"}
                             </button>
                             <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">

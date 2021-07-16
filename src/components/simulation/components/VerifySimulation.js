@@ -360,7 +360,7 @@ function VerifySimulation(props) {
                                 <div>
                                     {(shown) ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                     )}
@@ -406,10 +406,7 @@ function VerifySimulation(props) {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
-                                <div className={"cross-icon"}>
-                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg"
-                                    />
-                                </div>{" "}
+                                <div className={"cancel-icon"}></div>
                                 {"CANCEL"}
                             </button>
                             <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >

@@ -8,6 +8,8 @@ import { required } from '../../../helper';
 import { getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class Association extends Component {
     constructor(props) {
@@ -231,7 +233,7 @@ class Association extends Component {
                                                         {" "}
                                                         <img
                                                             alt={""}
-                                                            src={require("../../../assests/images/times.png")}
+                                                            src={cancelImg}
                                                         ></img>
                                                     </div>{" "}
                                                     {"Cancel"}
@@ -243,7 +245,7 @@ class Association extends Component {
                                                     <div className={"check-icon"}>
                                                         <img
                                                             alt={""}
-                                                            src={require("../../../assests/images/check.png")}
+                                                            src={saveImg}
                                                         ></img>
                                                     </div>{" "}
                                                     {"Save"}

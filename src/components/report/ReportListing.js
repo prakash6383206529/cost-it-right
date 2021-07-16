@@ -375,7 +375,8 @@ function ReportListing(props) {
                             <div>
                                 {(shown) ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                        <img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                        <div className="cancel-icon-white"></div>
+                                    </button>
                                 ) : (
                                     <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                 )}

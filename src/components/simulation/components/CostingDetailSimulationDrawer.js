@@ -159,12 +159,7 @@ function CostingDetailSimulationDrawer(props) {
                                             {"Save Simulation"}
                                         </button> */}
                                         <button type={"button"} className="cancel-btn" onClick={cancel}>
-                                            <div className={"cross-icon"}>
-                                                <img
-                                                    src={require("../../../assests/images/times.png")}
-                                                    alt="cancel-icon.jpg"
-                                                />
-                                            </div>{" "}
+                                            <div className={"cancel-icon"}></div>{" "}
                                             {"CANCEL"}
                                         </button>
                                     </div>

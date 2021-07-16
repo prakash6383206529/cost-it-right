@@ -1504,14 +1504,15 @@ class UserRegistration extends Component {
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn">
-                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
+                        <div className={"cancel-icon"}></div>
                       CANCEL
                       </button>
 
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn">
+                          <div className={"save-icon"}></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>
