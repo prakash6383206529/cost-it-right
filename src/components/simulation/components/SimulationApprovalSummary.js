@@ -24,6 +24,7 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import {Errorbox} from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
@@ -494,6 +495,7 @@ function SimulationApprovalSummary(props) {
                 <>
                     {loader && <LoaderCustom />}
                     <div className="container-fluid approval-summary-page smh-approval-summary-page">
+                        <Errorbox customClass="d-none" errorText="There is some error in your page"/>
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
                             <Col md="8">
