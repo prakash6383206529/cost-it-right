@@ -473,7 +473,7 @@ class ProcessListing extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
 
     const options = {
@@ -582,19 +582,22 @@ class ProcessListing extends Component {
                   {AddAccessibility && <button
                     type="button"
                     className={'user-btn mr5'}
+                    title="Add"
                     onClick={this.processToggler}>
-                    <div className={'plus'}></div>ADD</button>}
+                    <div className={'plus mr-0'}></div></button>}
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
                     //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
 
-                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                    <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -611,7 +614,7 @@ class ProcessListing extends Component {
               bordered={false}
               options={options}
               search
-              exportCSV
+              exportCSV={DownloadAccessibility}
               csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
@@ -650,7 +653,7 @@ class ProcessListing extends Component {
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                  <AgGridColumn field="ProcessId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="ProcessId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

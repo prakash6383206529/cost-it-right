@@ -530,7 +530,7 @@ const SendForApproval = (props) => {
                                     :
 
                                     <DatePickerHookForm
-                                      name={`${dateField}EffectiveDate[${index}]`}
+                                      name={`${dateField}EffectiveDate.${index}`}
                                       label={'Effective Date'}
                                       selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                       handleChange={(date) => {

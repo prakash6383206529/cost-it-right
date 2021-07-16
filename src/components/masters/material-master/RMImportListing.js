@@ -630,7 +630,7 @@ class RMImportListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
     const { isBulkUpload, } = this.state;
 
     const options = {
@@ -849,13 +849,10 @@ class RMImportListing extends Component {
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div>
-                        </button>
+                      </button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
-                        <div className={"upload"}></div>Bulk Upload
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <div className="filter mr-0"></div>
                       </button>
                     )}
                     {AddAccessibility && (
@@ -863,18 +860,39 @@ class RMImportListing extends Component {
                         type="button"
                         className={"user-btn mr5"}
                         onClick={this.formToggle}
+                        title="Add"
                       >
-                        <div className={"plus"}></div>ADD
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.bulkToggle}
+                        title="Bulk Upload"
+                      >
+                        <div className={"upload mr-0"}></div>
+                        {/* Bulk Upload */}
                       </button>
                     )}
                     {
                       DownloadAccessibility &&
                       <>
-                        <ExcelFile filename={RmImport} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                        <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
+
                           {this.onBtExport()}
                         </ExcelFile>
+
                       </>
+
                       //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                     }
 
                     <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
@@ -894,9 +912,9 @@ class RMImportListing extends Component {
               hover={false}
               options={options}
               search
-              // exportCSV
               //ignoreSinglePage
               ref={'table'}
+              // exportCSV={DownloadAccessibility}
               exportCSV={this.props.isSimulation ? false : true}
               csvFileName={`${RmImport}.csv`}
               pagination>
@@ -963,8 +981,8 @@ class RMImportListing extends Component {
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                  {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

@@ -247,7 +247,7 @@ class RMListing extends Component {
     */
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
-        const { AddAccessibility, } = this.props;
+        const { AddAccessibility, DownloadAccessibility } = this.props;
 
         const options = {
             clearSearch: true,
@@ -282,9 +282,9 @@ class RMListing extends Component {
                                 type={"button"}
                                 className={"user-btn mr5"}
                                 onClick={this.openAssociationModel}
+                                title="Association"
                             >
-                                <div className={"plus"}></div>
-                                {`Association`}
+                                <div className={"plus mr-0"}></div>
                             </button>
                         )}
                         {AddAccessibility && (
@@ -292,22 +292,25 @@ class RMListing extends Component {
                                 type={"button"}
                                 className={"user-btn mr5"}
                                 onClick={this.openModel}
+                                title="Add"
                             >
-                                <div className={"plus"}></div>
-                                {`Add`}
+                                <div className={"plus mr-0"}></div>
                             </button>
                         )}
                         {
                             DownloadAccessibility &&
                             <>
-                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={
+                                    <button title={"Download"} type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                     {this.onBtExport()}
                                 </ExcelFile>
                             </>
                             //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                         }
 
-                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                            <div className="refresh mr-0"></div>
+                        </button>
 
                     </Col>
 
@@ -323,7 +326,7 @@ class RMListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${RmMaterial}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
@@ -366,7 +369,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

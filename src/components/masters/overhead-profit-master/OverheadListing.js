@@ -6,7 +6,6 @@ import { required } from "../../../helper/validation";
 import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI, getVendorWithVendorCodeSelectList, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
@@ -489,7 +488,7 @@ class OverheadListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, } = this.state;
 
         const options = {
@@ -634,28 +633,42 @@ class OverheadListing extends Component {
                                             <div className="cancel-icon-white"></div>
                                         </button>
                                         :
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     }
-                                    {AddAccessibility &&
+                                    {AddAccessibility && (
                                         <button
                                             type="button"
                                             className={"user-btn mr5"}
                                             onClick={this.formToggle}
+                                            title="Add"
                                         >
-                                            <div className={"plus"}></div>ADD
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
                                         </button>
-                                    }
+                                    )}
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={OverheadMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                            <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+
                                                 {this.onBtExport()}
                                             </ExcelFile>
+
                                         </>
+
                                         //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                                     }
 
-                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -671,7 +684,7 @@ class OverheadListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${OverheadMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
@@ -724,7 +737,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="OverheadId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

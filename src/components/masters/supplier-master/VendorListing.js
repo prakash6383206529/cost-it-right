@@ -19,7 +19,6 @@ import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { VENDOR, VendorMaster } from '../../../config/constants';
@@ -491,7 +490,7 @@ class VendorListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
+        const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
 
         const options = {
             clearSearch: true,
@@ -613,15 +612,8 @@ class VendorListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.bulkToggle}
-                                        >
-                                            <div className={"upload"}></div>Bulk Upload
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
                                         </button>
                                     )}
                                     {AddAccessibility && (
@@ -629,21 +621,43 @@ class VendorListing extends Component {
                                             type="button"
                                             className={"user-btn mr5"}
                                             onClick={this.formToggle}
+                                            title="Add"
                                         >
-                                            <div className={"plus"}></div>ADD
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
                                         </button>
                                     )}
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={VendorMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                            <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+
                                                 {this.onBtExport()}
                                             </ExcelFile>
-                                        </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                    }
 
-                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                        </>
+
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -657,7 +671,7 @@ class VendorListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${VendorMaster}.csv`}
                     //ignoreSinglePage
                     ref={"table"}

@@ -479,9 +479,9 @@ class BOPDomesticListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
-
+        const a = getConfigurationKey().IsDestinationPlantConfigure;
         const options = {
             clearSearch: true,
             noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -622,29 +622,52 @@ class BOPDomesticListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.formToggle}
+                                            title="Add"
+                                        >
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
+                                        </button>
+                                    )}
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={BopDomestic} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                            <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+
                                                 {this.onBtExport()}
                                             </ExcelFile>
-                                        </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                    }
 
-                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                        </>
+
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -661,7 +684,7 @@ class BOPDomesticListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${BopDomestic}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
@@ -722,7 +745,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

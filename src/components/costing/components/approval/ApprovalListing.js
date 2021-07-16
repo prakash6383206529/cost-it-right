@@ -365,7 +365,7 @@ function ApprovalListing() {
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
 
   };
 
@@ -388,9 +388,10 @@ function ApprovalListing() {
     statusFormatter: statusFormatter,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
+    linkableFormatter: linkableFormatter
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? selectedIds.includes(rowNode.data.CostingId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === PENDING : false
 
   return (
     <Fragment>
@@ -610,7 +611,7 @@ function ApprovalListing() {
                       isRowSelectable={isRowSelectable}
                     >
                       <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                      <AgGridColumn field="ApprovalNumber" dataFormat='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                      <AgGridColumn field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                       <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                       <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                       <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>

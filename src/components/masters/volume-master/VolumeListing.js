@@ -171,6 +171,10 @@ class VolumeListing extends Component {
               permmisionData && permmisionData.BulkUpload
                 ? permmisionData.BulkUpload
                 : false,
+            DownloadAccessibility:
+              permmisionData && permmisionData.Download
+                ? permmisionData.Download
+                : false,
           })
         }
       }
@@ -617,6 +621,7 @@ class VolumeListing extends Component {
       isBudgetedBulkUpload,
       AddAccessibility,
       BulkUploadAccessibility,
+      DownloadAccessibility
     } = this.state
     const options = {
       clearSearch: true,
@@ -802,53 +807,70 @@ class VolumeListing extends Component {
                   </div>
                 </Col>)}
 
-              <Col md="7" className="search-user-block mb-3">
+              <Col md="8" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">
                   <div>
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.actualBulkToggle}
-                      >
-                        <div className={'upload'}></div>Actual Upload
-                      </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.budgetedBulkToggle}
-                      >
-                        <div className={'upload'}></div>Budgeted Upload
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <div className="filter mr-0"></div>
                       </button>
                     )}
                     {AddAccessibility && (
                       <button
                         type="button"
-                        className={'user-btn mr5'}
+                        className={"user-btn mr5"}
                         onClick={this.formToggle}
+                        title="Add"
                       >
-                        <div className={'plus'}></div>ADD
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.actualBulkToggle}
+                        title="Actual Upload"
+                      >
+                        <div className={"upload mr-0"}></div>
+                        {/* Actual Upload */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.budgetedBulkToggle}
+                        title="Budgeted Bulk Upload"
+                      >
+                        <div className={"upload mr-0"}></div>
+                        {/* Budgeted Bulk Upload */}
                       </button>
                     )}
                     {
                       DownloadAccessibility &&
                       <>
-                        <ExcelFile filename={VolumeMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                        <ExcelFile filename={'VolumeMaster'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
+
                           {this.onBtExport()}
                         </ExcelFile>
-                      </>
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                    }
 
-                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                      </>
+
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                    }
+                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                      <div className="refresh mr-0"></div>
+                    </button>
 
                   </div>
                 </div>
@@ -862,8 +884,8 @@ class VolumeListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV
-                            csvFileName={`${VolumeMaster}.csv`}
+            exportCSV={DownloadAccessibility}
+            csvFileName={`${VolumeMaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
@@ -906,7 +928,7 @@ class VolumeListing extends Component {
                 }}
                 frameworkComponents={frameworkComponents}
               >
-                <AgGridColumn field="IsVendor" headerName="Costing Head"  cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
@@ -915,7 +937,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
-                <AgGridColumn field="VolumeId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="VolumeId" width={120} headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

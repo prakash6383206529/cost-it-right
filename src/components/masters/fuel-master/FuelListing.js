@@ -42,6 +42,7 @@ class FuelListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
+            isLoader: true
 
         }
     }
@@ -51,8 +52,15 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.getFuelComboData(() => { })
-        this.getDataList(0, 0)
+        setTimeout(() => {
+
+            this.getDataList(0, 0)
+            this.props.getFuelComboData(() => { })
+        }, 500);
+    }
+
+    componentWillUnmount() {
+        this.props.getFuelDetailDataList(false, {}, (res) => { })
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -60,10 +68,10 @@ class FuelListing extends Component {
             fuelName: fuelName,
             stateName: stateName,
         }
-        this.props.getFuelDetailDataList(filterData, (res) => {
+        this.props.getFuelDetailDataList(true, filterData, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data }, () => { this.setState({ isLoader: false }) })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
@@ -333,7 +341,7 @@ class FuelListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
@@ -363,7 +371,7 @@ class FuelListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
                         {this.state.shown && (
@@ -433,29 +441,52 @@ class FuelListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.formToggle}
+                                            title="Add"
+                                        >
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
+                                        </button>
+                                    )}
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={FuelMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                            <ExcelFile filename={'Fuel'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+
                                                 {this.onBtExport()}
                                             </ExcelFile>
-                                        </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                    }
 
-                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                        </>
+
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -473,7 +504,7 @@ class FuelListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            exportCSV
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${FuelMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
@@ -516,7 +547,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="FuelDetailId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

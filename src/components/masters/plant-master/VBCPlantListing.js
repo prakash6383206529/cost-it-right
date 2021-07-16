@@ -409,7 +409,7 @@ class VBCPlantListing extends Component {
         );
     }
     render() {
-        const { handleSubmit, AddAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
 
 
@@ -527,15 +527,18 @@ class VBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
                                             className={"user-btn"}
                                             onClick={this.formToggle}
+                                            title="Add"
                                         >
-                                            <div className={"plus"}></div>ADD
+                                            <div className={"plus mr-0"}></div>
                                         </button>
                                     )}
                                 </div>
@@ -550,7 +553,7 @@ class VBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}

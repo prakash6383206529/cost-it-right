@@ -12,7 +12,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { OperationMaster, REASON } from '../../../config/constants';
+import { OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -49,54 +49,54 @@ class ReasonListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
-
+      showData: false,
+      isLoader: true,
+      renderState: true
     }
   }
 
-  componentDidMount() {
+
+
+  UNSAFE_componentWillMount() {
     let ModuleId = reactLocalStorage.get('ModuleId')
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { leftMenuData } = this.props
       if (leftMenuData !== undefined) {
         let Data = leftMenuData
         const accessData = Data && Data.find((el) => el.PageName === REASON)
-        const permmisionData =
-          accessData &&
-          accessData.Actions &&
-          checkPermission(accessData.Actions)
+        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
         if (permmisionData !== undefined) {
           this.setState({
-            ViewAccessibility:
-              permmisionData && permmisionData.View
-                ? permmisionData.View
-                : false,
-            AddAccessibility:
-              permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility:
-              permmisionData && permmisionData.Edit
-                ? permmisionData.Edit
-                : false,
-            DeleteAccessibility:
-              permmisionData && permmisionData.Delete
-                ? permmisionData.Delete
-                : false,
-            DownloadAccessibility:
-              permmisionData && permmisionData.Download
-                ? permmisionData.Download
-                : false,
+            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
           })
         }
       }
-    })
 
-    this.getTableListData()
+
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.getAllReasonAPI(false, (res) => { })
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.getTableListData()
+    }, 2000);
   }
 
   // Get updated Supplier's list after any action performed.
   getUpdatedData = () => {
-    this.getTableListData()
+    setTimeout(() => {
+
+      this.getTableListData()
+    }, 500);
   }
 
   /**
@@ -104,12 +104,13 @@ class ReasonListing extends Component {
    * @description Get user list data
    */
   getTableListData = () => {
-    this.props.getAllReasonAPI((res) => {
+    this.setState({ isLoader: true })
+    this.props.getAllReasonAPI(true, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data }, () => this.setState({ isLoader: false, renderState: !this.state.renderState }))
       } else {
         this.setState({ tableData: [] })
       }
@@ -159,7 +160,7 @@ class ReasonListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+    const { EditAccessibility } = this.state;
     return (
       <>
         {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
@@ -312,13 +313,11 @@ class ReasonListing extends Component {
    * @description Renders the component
    */
   render() {
-    const { isEditFlag, isOpenDrawer, AddAccessibility } = this.state
+    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
       exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
@@ -336,7 +335,7 @@ class ReasonListing extends Component {
     };
 
     const frameworkComponents = {
-      buttonFormatter: this.buttonFormatter,
+      totalValueRenderer: this.buttonFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       statusButtonFormatter: this.statusButtonFormatter
@@ -344,9 +343,10 @@ class ReasonListing extends Component {
 
     return (
       <>
+
+        {this.state.isLoader && <LoaderCustom />}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
-          {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
@@ -359,22 +359,33 @@ class ReasonListing extends Component {
                     <button
                       type="button"
                       className={'user-btn mr5'}
+                      title="Add"
                       onClick={this.formToggle}
                     >
-                      <div className={'plus'}></div>ADD
+                      <div className={'plus mr-0'}></div>
                     </button>
                   )}
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={Reasonmaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                      <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
+                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                          {/* DOWNLOAD */}
+                        </button>}>
+
                         {this.onBtExport()}
                       </ExcelFile>
+
                     </>
+
                     //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                   }
 
-                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                    <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -387,8 +398,8 @@ class ReasonListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV
-            csvFileName={`${OperationMaster}.csv`}
+            exportCSV={DownloadAccessibility}
+            csvFileName={`${Reasonmaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
@@ -450,8 +461,8 @@ class ReasonListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
-                <AgGridColumn field="IsActive" headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                <AgGridColumn field="ReasonId" headerName="Actions"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -162,7 +162,7 @@ class ZBCPlantListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        
+
         const { ActivateAccessibility } = this.props;
         if (ActivateAccessibility) {
             return (
@@ -419,7 +419,7 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration } = this.props;
+        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
@@ -536,28 +536,33 @@ class ZBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
                                             className={"user-btn mr5"}
                                             onClick={this.formToggle}
+                                            title="Add"
                                         >
-                                            <div className={"plus"}></div>ADD
+                                            <div className={"plus mr-0"}></div>
                                         </button>
                                     )}
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                                                 {this.onBtExport()}
                                             </ExcelFile>
                                         </>
                                         //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                     }
 
-                                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -571,7 +576,7 @@ class ZBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantZbc}.csv`}
                     //ignoreSinglePage
                     ref={"table"}

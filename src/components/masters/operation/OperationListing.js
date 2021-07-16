@@ -59,6 +59,7 @@ class OperationListing extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false,
         }
     }
 
@@ -79,6 +80,7 @@ class OperationListing extends Component {
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
                     })
                 }
             }
@@ -527,7 +529,7 @@ class OperationListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
+        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
 
         if (toggleForm) {
             return (
@@ -677,37 +679,52 @@ class OperationListing extends Component {
                                                 <div className="cancel-icon-white"></div>
                                             </button>
                                             :
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        }
-                                        {BulkUploadAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={this.bulkToggle}
-                                            >
-                                                <div className={"upload"}></div>Bulk Upload
+                                            <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                <div className="filter mr-0"></div>
                                             </button>
-                                        )}
+                                        }
                                         {AddAccessibility && (
                                             <button
                                                 type="button"
                                                 className={"user-btn mr5"}
                                                 onClick={this.formToggle}
+                                                title="Add"
                                             >
-                                                <div className={"plus"}></div>ADD
+                                                <div className={"plus mr-0"}></div>
+                                                {/* ADD */}
+                                            </button>
+                                        )}
+                                        {BulkUploadAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={this.bulkToggle}
+                                                title="Bulk Upload"
+                                            >
+                                                <div className={"upload mr-0"}></div>
+                                                {/* Bulk Upload */}
                                             </button>
                                         )}
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <ExcelFile filename={OperationMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+
+                                                <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>}>
+
                                                     {this.onBtExport()}
                                                 </ExcelFile>
-                                            </>
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                        }
 
-                                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                            </>
+
+                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                        }
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
 
                                     </div>
                                 </div>
@@ -721,7 +738,7 @@ class OperationListing extends Component {
                         bordered={false}
                         options={options}
                         search
-                        exportCSV
+                        exportCSV={DownloadAccessibility}
                         csvFileName={`${OperationMaster}.csv`}
                         //ignoreSinglePage
                         ref={'table'}
@@ -777,7 +794,7 @@ class OperationListing extends Component {
                                 {/* <AgGridColumn field="IsActive" headerName="Status"
                                 cellRenderer={'statusButtonFormatter'} 
                                 ></AgGridColumn> */}
-                                <AgGridColumn field="OperationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="OperationId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
