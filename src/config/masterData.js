@@ -2529,3 +2529,11 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "ProfitMachiningCCPercentage", value: "ProfitMachiningCCPercentage", },
     { label: "EffectiveDate", value: "EffectiveDate", },
 ]
+export const ZBCPLANT_DOWNLOAD_EXCEl = [
+    { label: "PlantName", value: "PlantName", },
+    { label: "PlantCode", value: "PlantCode", },
+    { label: "CompanyName", value: "CompanyName", },
+    { label: "CountryName", value: "CountryName", },
+    { label: "StateName", value: "StateName", },
+    { label: "CityName", value: "CityName", },
+]
