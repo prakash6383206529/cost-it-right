@@ -834,8 +834,8 @@ a:hover {
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 580px) !important;
-          height: calc(100vh - 580px) !important;
+          min-height: 50vh;
+          height: 50vh !important;
         }
       }  
     }

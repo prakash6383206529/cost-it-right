@@ -225,10 +225,13 @@ class LevelTechnologyListing extends Component {
 						{AddAccessibility && <button
 							type="button"
 							className={'user-btn mr5'}
+							title="Add"
 							onClick={this.props.mappingToggler}>
-							<div className={'plus'}></div>
-							{'Add'}</button>}
-						<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+							<div className={'plus mr-0'}></div>
+							</button>}
+							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 					</Col>
 				</Row>
 				<Row className="levellisting-page">
@@ -306,7 +309,9 @@ class LevelTechnologyListing extends Component {
 							onClick={this.props.mappingToggler}>
 							<div className={'plus'}></div>
 							{'Add'}</button>} */}
-						<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState1()}></button>
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 					</Col>
 				</Row>
 

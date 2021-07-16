@@ -216,11 +216,14 @@ class RolesListing extends Component {
                     <button
                       type="button"
                       className={'user-btn mr5'}
+                      title="Add"
                       onClick={this.formToggle}>
-                      <div className={'plus'}></div>ADD</button>
+                      <div className={'plus mr-0'}></div></button>
                   </div>
                 }
-                <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
               </div>
 
 

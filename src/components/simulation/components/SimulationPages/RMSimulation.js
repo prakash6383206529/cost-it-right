@@ -10,7 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,11 +30,14 @@ function RMSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const [update, setUpdate] = useState(true)
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+
 
     const dispatch = useDispatch()
 
@@ -211,12 +214,23 @@ function RMSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
+        console.log('value: ', value);
+
+        if (value) {
+            console.log("Value updated");
+            setUpdate(!update)
+        }
         return (
             <>
                 <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
             </>
         )
     }
+
+
+    useEffect(() => {
+        console.log("Update?");
+    }, [update])
 
     const newScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -277,6 +291,7 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
+        console.log(props, "PROPS IN new cost formatter");
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
@@ -285,6 +300,7 @@ function RMSimulation(props) {
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
+
 
     const runSimulation = () => {
         let basicRateCount = 0
@@ -372,6 +388,8 @@ function RMSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newBasicRateFormatter: newBasicRateFormatter
     };
+
+
 
     return (
 
@@ -511,8 +529,8 @@ function RMSimulation(props) {
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={100} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={100} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={100} field="NetLandedCost" editable='false' valueFormatter='data.BasicRate+data.RMFreightCost+data.RMShearingCost' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={100} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>

@@ -258,23 +258,15 @@ class IndivisualPartListing extends Component {
         })
     }
 
-
-
-    onGridReady = (params) => {
+    onGridReady = (params, skipHeader) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
 
-        // dont remove this
         // var allColumnIds = [];
-        // params.columnApi.getAllColumns().forEach(function (column) {
+        // this.gridColumnApi.getAllColumns().forEach(function (column) {
         //     allColumnIds.push(column.colId);
         // });
-        // params.columnApi.autoSizeColumns(allColumnIds);
-        // dont remove this
-
-        //if resolution greater than 1920 table listing fit to 100%
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
-        //if resolution greater than 1920 table listing fit to 100%
+        // this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -402,7 +394,7 @@ class IndivisualPartListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                 {/* DOWNLOAD */}
                                             </button>}>
