@@ -70,7 +70,7 @@ function ViewPackagingAndFreight(props) {
                     <thead>
                       <tr>
                         <th>{`Packaging Description`}</th>
-                        <th>{`Packaging Type`}</th>
+                        <th>{`Packaging Type/Percentage`}</th>
                         <th className="costing-border-right">{`Cost`}</th>
                       </tr>
                     </thead>
