@@ -608,7 +608,6 @@ class PowerListing extends Component {
                         <div className="cancel-icon-white"></div></button>
                     ) : (
                       <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-<<<<<<< HEAD
                         <div className="filter mr-0"></div>
                       </button>
                     )}
@@ -643,42 +642,6 @@ class PowerListing extends Component {
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                       <div className="refresh mr-0"></div>
                     </button>
-=======
-                                                    <div className="filter mr-0"></div>
-                                                </button>
-                                            )}
-                                            {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
-
-                                                    <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                    </button>}>
-
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
-
-                                                </>
-
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
->>>>>>> dae9ec23d... additional masters listing button only icon
 
                   </>
                 </div>
