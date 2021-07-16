@@ -347,6 +347,7 @@ class UOMMaster extends Component {
               </>
             )}
             <Col md={6} className="text-right search-user-block pr-0">
+<<<<<<< HEAD
               {
                 DownloadAccessibility &&
                 <>
@@ -360,6 +361,21 @@ class UOMMaster extends Component {
 
               <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                 <div className="refresh mr-0"></div>
+=======
+            {
+              DownloadAccessibility &&
+              <>
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                  <div className="download mr-0" title="Download"></div></button>}>
+                  {this.onBtExport()}
+                </ExcelFile>
+              </>
+              //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+            }
+
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                  <div className="refresh mr-0"></div>
+>>>>>>> dae9ec23d... additional masters listing button only icon
               </button>
             </Col>
           </Row>

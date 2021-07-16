@@ -545,7 +545,11 @@ class FreightListing extends Component {
                       <div className="cancel-icon-white"></div></button>
                   ) : (
                     <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+<<<<<<< HEAD
                       <div className="filter mr-0"></div>
+=======
+                        <div className="filter mr-0"></div>
+>>>>>>> dae9ec23d... additional masters listing button only icon
                     </button>
                   )}
                   {AddAccessibility && (
@@ -562,7 +566,11 @@ class FreightListing extends Component {
                     DownloadAccessibility &&
                     <>
                       <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
+<<<<<<< HEAD
                         <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+=======
+                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+>>>>>>> dae9ec23d... additional masters listing button only icon
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -570,7 +578,11 @@ class FreightListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+<<<<<<< HEAD
                     <div className="refresh mr-0"></div>
+=======
+                      <div className="refresh mr-0"></div>
+>>>>>>> dae9ec23d... additional masters listing button only icon
                   </button>
 
                 </div>
