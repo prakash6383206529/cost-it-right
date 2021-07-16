@@ -389,7 +389,7 @@ a:hover {
   &:hover{
     background-color:#fff!important;
     color: #FC5774;
-    img{
+    img,.cancel-icon-white{
       filter: invert(41%) sepia(66%) saturate(1100%) hue-rotate(314deg) brightness(105%) contrast(98%);
     }
   }
