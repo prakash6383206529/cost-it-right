@@ -730,6 +730,25 @@ a:hover {
         .ag-pinned-left-header,.ag-root-wrapper{
           border: none;
         }
+        .ag-row{
+          .ag-cell{
+            button{
+              vertical-align: middle;
+            }
+            .ag-react-container{
+              height: 100%;
+              .red-value,.green-value{
+                display: inline-block;
+                vertical-align: baseline;
+              }
+            }
+            &:not(:nth-child(1)){
+              .ag-selection-checkbox.ag-invisible{
+                display: none;
+              }
+            }
+          }
+        }
       }
       .ag-paging-panel{
         justify-content: space-between;
@@ -792,6 +811,14 @@ a:hover {
           cursor: pointer;
         }
       }
+    }
+    .smh-approval-summary-page{
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: calc(50vh - 240px);
+          height: calc(50vh - 240px) !important;
+        }
+      }  
     }
   }
 }

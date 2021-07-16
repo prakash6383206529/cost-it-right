@@ -4145,12 +4145,18 @@ body{
   border-color: #DBF4E2;
   color: #4DC771;
   line-height: initial;
+  min-width: 100px;
+  padding: 9px 12px !important;
+  height: auto;
 }
 .red-value{
   background-color: #FEDCE2;
   border-color: #FEDCE2;;
   color: #FC5774;
   line-height: initial;
+  min-width: 100px;
+  padding: 9px 12px !important;
+  height: auto;
 }
 .change-version-block{
   min-width: 85px;
