@@ -744,13 +744,16 @@ a:hover {
               height: 100%;
               .red-value,.green-value,.form-control{
                 display: inline-block;
-                vertical-align: baseline;
+                vertical-align: middle;
+                min-width: unset;
               }
               .form-control{
                 padding: 7px 12px !important;
                 height: auto;
                 min-height: auto;
                 line-height: initial;
+                max-width: 100%;
+                overflow: hidden;
               }
             }
             &:not(:nth-child(1)){

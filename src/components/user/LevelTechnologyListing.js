@@ -231,7 +231,7 @@ class LevelTechnologyListing extends Component {
 							onClick={this.props.mappingToggler}>
 							<div className={'plus mr-0'}></div>
 							</button>}
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
 					</Col>
@@ -311,7 +311,7 @@ class LevelTechnologyListing extends Component {
 							onClick={this.props.mappingToggler}>
 							<div className={'plus'}></div>
 							{'Add'}</button>} */}
-						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
 					</Col>

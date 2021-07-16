@@ -379,6 +379,10 @@ class FreightListing extends Component {
     this.state.gridApi.setQuickFilter(e.target.value);
   }
 
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
   createCustomExportCSVButton = (onClick) => {
     // return (
     //   <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
