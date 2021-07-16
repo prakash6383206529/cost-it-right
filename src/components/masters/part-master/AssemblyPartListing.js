@@ -123,8 +123,10 @@ class AssemblyPartListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.data;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -363,7 +365,8 @@ class AssemblyPartListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            visualAdFormatter: this.visualAdFormatter
+            visualAdFormatter: this.visualAdFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter
         };
 
         return (
