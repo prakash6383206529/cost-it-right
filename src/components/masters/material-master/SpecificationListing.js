@@ -315,7 +315,7 @@ class SpecificationListing extends Component {
         this.gridApi = params.api;
         this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi });
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
     };
 
     onPageSizeChanged = (newPageSize) => {

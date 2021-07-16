@@ -44,6 +44,13 @@ class ReasonListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
+
     }
   }
 
@@ -152,11 +159,11 @@ class ReasonListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
         {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />} */}
       </>
     )
   };
@@ -172,7 +179,7 @@ class ReasonListing extends Component {
       <>
         <label htmlFor="normal-switch">
           <Switch
-            onChange={() => this.handleChange(cellValue, rowData, '', '')}
+            onChange={() => this.handleChange(cellValue, rowData)}
             checked={cellValue}
             background="#ff6600"
             onColor="#4DC771"
@@ -186,7 +193,7 @@ class ReasonListing extends Component {
     )
   }
 
-  handleChange = (cell, row, enumObject, rowIndex) => {
+  handleChange = (cell, row) => {
     let data = {
       Id: row.ReasonId,
       LoggedInUserId: loggedInUserId(),
@@ -246,13 +253,11 @@ class ReasonListing extends Component {
     )
   }
 
-  resetState() {
-    gridOptions.columnApi.resetColumnState();
-  }
-
   onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
   };
 
   onPageSizeChanged = (newPageSize) => {
@@ -266,7 +271,6 @@ class ReasonListing extends Component {
     data && data.map((item => {
       tempArr.push(item.data)
     }))
-
     return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -296,6 +300,7 @@ class ReasonListing extends Component {
   onFilterTextBoxChanged(e) {
     this.state.gridApi.setQuickFilter(e.target.value);
   }
+
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
@@ -353,7 +358,7 @@ class ReasonListing extends Component {
                   {AddAccessibility && (
                     <button
                       type="button"
-                      className={'user-btn'}
+                      className={'user-btn mr5'}
                       onClick={this.formToggle}
                     >
                       <div className={'plus'}></div>ADD
@@ -445,8 +450,8 @@ class ReasonListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
-                <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                <AgGridColumn field="ReasonId" headerName="Actions" cellRenderer={'buttonFormatter'}></AgGridColumn>
+                <AgGridColumn field="IsActive" headerName="Status" type="rightAligned" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
