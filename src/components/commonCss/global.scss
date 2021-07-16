@@ -796,7 +796,7 @@ a:hover {
         padding:6px 30px 6px 10px !important;
         display: inline-block;
         margin-right: 20px;
-        border-color: #e5eaf9;
+        border-color: #e5eaf9; 
       }
       .paging-container{
         margin-top: -44px;
@@ -834,14 +834,14 @@ a:hover {
       }
 
     }
-    .smh-approval-summary-page{
-      .ag-grid-react{
-        .ag-grid-wrapper{
-          min-height: 230px;
-          height: 230px !important;
-        }
-      }  
-    }
+    // .smh-approval-summary-page{
+    //   .ag-grid-react{
+    //     .ag-grid-wrapper{
+    //       min-height: 230px;
+    //       height: 230px !important;
+    //     }
+    //   }  
+    // }
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
