@@ -574,7 +574,7 @@ class OperationListing extends Component {
         return (
             <>
                 {/* {this.props.loading && <Loader />} */}
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
                         <Row>
                             <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>

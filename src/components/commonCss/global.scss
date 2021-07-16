@@ -716,8 +716,8 @@ a:hover {
         padding-bottom: 12px;
       }
       .ag-grid-wrapper{
-        min-height: calc(100vh - 345px);
-        height: calc(100vh - 345px) !important;
+        min-height: calc(100vh - 342px);
+        height: calc(100vh - 342px) !important;
       }
       .search-user-block{
         // position: relative;
@@ -744,13 +744,16 @@ a:hover {
               height: 100%;
               .red-value,.green-value,.form-control{
                 display: inline-block;
-                vertical-align: baseline;
+                vertical-align: middle;
+                min-width: unset;
               }
               .form-control{
                 padding: 7px 12px !important;
                 height: auto;
                 min-height: auto;
                 line-height: initial;
+                max-width: 100%;
+                overflow: hidden;
               }
             }
             &:not(:nth-child(1)){
@@ -793,6 +796,7 @@ a:hover {
         padding:6px 30px 6px 10px !important;
         display: inline-block;
         margin-right: 20px;
+        border-color: #e5eaf9;
       }
       .paging-container{
         margin-top: -44px;
@@ -822,6 +826,13 @@ a:hover {
           cursor: pointer;
         }
       }
+      &.no-tab-page{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 295px);
+          height: calc(100vh - 295px) !important;
+        }
+      }
+
     }
     .smh-approval-summary-page{
       .ag-grid-react{
@@ -2777,8 +2788,14 @@ body {
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
       .ag-grid-wrapper{
-        min-height: calc(100vh - 265px);
-        height: calc(100vh - 35px) !important;
+        min-height: calc(100vh - 30px);
+        height: calc(100vh - 30px) !important;
+      }
+      &.no-tab-page{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 38px);
+          height: calc(100vh - 38px) !important;
+        }
       }
       .search-user-block{
         padding-right: 15px !important;
@@ -2805,8 +2822,8 @@ body {
     .ag-grid-react{
       .sm-edit-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 260px);
-          height: calc(100vh - 260px) !important;
+          min-height: calc(100vh - 250px);
+          height: calc(100vh - 250px) !important;
         }
       }  
     }
