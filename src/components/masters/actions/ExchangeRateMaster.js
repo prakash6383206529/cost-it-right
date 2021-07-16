@@ -36,23 +36,30 @@ export function createExchangeRate(data, callback) {
  * @method getExchangeRateDataList
  * @description GET EXCHANGE RATE DATALIST
  */
-export function getExchangeRateDataList(data, callback) {
+export function getExchangeRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, headers)
-            .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: EXCHANGE_RATE_DATALIST,
-                        payload: response.data.DataList,
-                    });
-                    callback(response);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
+        if (isAPICall) {
+            dispatch({ type: API_REQUEST });
+            axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: EXCHANGE_RATE_DATALIST,
+                            payload: response.data.DataList,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: EXCHANGE_RATE_DATALIST,
+                payload: [],
             });
+        }
     };
 }
 

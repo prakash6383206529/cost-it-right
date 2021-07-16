@@ -28,8 +28,7 @@ class LevelTechnologyListing extends Component {
 			rowData: null,
 			sideBar: { toolPanels: ['columns'] },
 			showData: false,
-			gridApi1: null,
-			gridColumnApi1: null,
+
 		}
 	}
 
