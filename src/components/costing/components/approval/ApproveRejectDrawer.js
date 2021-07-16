@@ -22,7 +22,7 @@ function ApproveRejectDrawer(props) {
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, formState: { errors }, handleSubmit, setValue, getValues } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -215,6 +215,7 @@ function ApproveRejectDrawer(props) {
         })
       })
       if (type === 'Approve') {
+        reset()
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
@@ -405,7 +406,8 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}
+            >
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
