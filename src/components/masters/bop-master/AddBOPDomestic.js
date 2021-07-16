@@ -28,6 +28,15 @@ import moment from 'moment';
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
+<<<<<<< HEAD
+=======
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+
+
+>>>>>>> a5aff8368... zoho issues
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -569,6 +578,7 @@ class AddBOPDomestic extends Component {
             })
           },
           onCancel: () => { },
+          component:() => <ConfirmComponent/>,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }

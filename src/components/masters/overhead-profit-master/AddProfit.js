@@ -19,6 +19,11 @@ import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import attachClose from '../../../assests/images/red-cross.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
@@ -589,6 +594,7 @@ class AddProfit extends Component {
             })
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -953,10 +959,10 @@ class AddProfit extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }

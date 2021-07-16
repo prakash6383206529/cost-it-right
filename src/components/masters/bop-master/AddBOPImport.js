@@ -32,6 +32,13 @@ import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
+<<<<<<< HEAD
+=======
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+>>>>>>> a5aff8368... zoho issues
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -628,6 +635,7 @@ class AddBOPImport extends Component {
             })
           },
           onCancel: () => { },
+          component:()=><ConfirmComponent/>
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }

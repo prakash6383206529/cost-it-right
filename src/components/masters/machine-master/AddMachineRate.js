@@ -30,6 +30,13 @@ import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+<<<<<<< HEAD
+=======
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import attachClose from '../../../assests/images/red-cross.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+>>>>>>> a5aff8368... zoho issues
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -854,6 +861,8 @@ class AddMachineRate extends Component {
               })
             },
             onCancel: () => { },
+            component:()=> <ConfirmComponent/>,
+
           }
           return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }

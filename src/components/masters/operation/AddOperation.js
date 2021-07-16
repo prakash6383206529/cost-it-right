@@ -27,6 +27,12 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
+<<<<<<< HEAD
+=======
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+
+>>>>>>> a5aff8368... zoho issues
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -503,6 +509,7 @@ class AddOperation extends Component {
             });
           },
           onCancel: () => { },
+          component:()=><ConfirmComponent/>,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
