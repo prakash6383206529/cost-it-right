@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -82,11 +81,8 @@ function AddBOP(props) {
   const onRowSelect = () => {
 
     var selectedRows = gridApi.getSelectedRows();
-    console.log('selectedRows: ', selectedRows);
-    console.log(JSON.stringify(selectedRows) === JSON.stringify(selectedIds), "sss", selectedRowData, "ii", selectedIds);
     if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
     var selected = gridApi.getSelectedNodes()
-    console.log('selected: ', selected);
     setSelectedRowData(selectedRows)
     // if (isSelected) {
     // } else {
@@ -124,7 +120,6 @@ function AddBOP(props) {
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log('rowData: ', rowData);
     return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
   }
 
@@ -295,12 +290,14 @@ function AddBOP(props) {
 
   }, [tableData])
 
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.BoughtOutPartId) : false;
+
+
 
   /**
   * @method render
   * @description Renders the component
   */
-  console.log(tableData, "tableData")
   return (
     < div>
       <Drawer anchor={props.anchor} open={props.isOpen}
@@ -407,6 +404,7 @@ function AddBOP(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
                         <AgGridColumn field="EntryType" headerName="BOP Type"  ></AgGridColumn>
