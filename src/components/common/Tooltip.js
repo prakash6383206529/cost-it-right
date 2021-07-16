@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Tooltip } from 'reactstrap';
 
 const TooltipCustom = (props) => {
+<<<<<<< HEAD
     const {tooltipText} = props;
+=======
+    const { tooltipText,customClass } = props;
+>>>>>>> b555d384c... simulation upload data tootlip issue
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const toggle = () => setTooltipOpen(!tooltipOpen);
     const [nu_id, setNu_id] = useState("");
@@ -15,7 +19,7 @@ const TooltipCustom = (props) => {
 
     return (
         <>
-            <i class="fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3" id={`A_${nu_id}_A`}></i>
+            <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ${customClass}`} id={`A_${nu_id}_A`}></i>
             <Tooltip placement="top" isOpen={tooltipOpen} target={`A_${nu_id}_A`} toggle={toggle}>{tooltipText}</Tooltip>
         </>
     );

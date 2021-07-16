@@ -9,6 +9,8 @@ import { bulkUploadCosting } from '../../costing/actions/CostWorking'
 import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
+import imgCloud from '../../../assests/images/uploadcloud.png';
+import TooltipCustom from '../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -230,7 +232,10 @@ class SimulationUploadDrawer extends Component {
                                         </ExcelFile>
                                     </Col> */}
                                     <Col md="12">
-                                        <label>Upload</label>
+                                        <label className="d-inline-block w-auto">Upload</label>
+                                        <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                                            <span class="tooltiptext">Please upload the file with data. The file can be downloaded from previous screen.</span>
+                                        </div>
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>

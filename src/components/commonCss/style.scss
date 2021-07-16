@@ -3178,7 +3178,7 @@ opacity: 0.5;
     color: #3D4465;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 5px 10px;
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
@@ -3206,6 +3206,15 @@ opacity: 0.5;
   &:hover{
     .tooltiptext {
       visibility: visible;
+    }
+  }
+  &.tooltip-left{
+    .tooltiptext{
+      left: -50px;
+      &::after{
+        left: 56px;
+        right: unset;
+      }
     }
   }
 }
