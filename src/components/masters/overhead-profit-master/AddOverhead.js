@@ -20,11 +20,8 @@ import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
-<<<<<<< HEAD
-=======
 import imgRedcross from '../../../assests/images/red-cross.png'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
->>>>>>> a5aff8368... zoho issues
 
 const selector = formValueSelector('AddOverhead');
 
@@ -604,7 +601,7 @@ class AddOverhead extends Component {
             })
           },
           onCancel: () => { },
-          component:()=><ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -971,10 +968,10 @@ class AddOverhead extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }

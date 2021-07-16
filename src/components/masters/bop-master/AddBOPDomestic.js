@@ -28,15 +28,12 @@ import moment from 'moment';
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
-<<<<<<< HEAD
-=======
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 
->>>>>>> a5aff8368... zoho issues
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -578,7 +575,7 @@ class AddBOPDomestic extends Component {
             })
           },
           onCancel: () => { },
-          component:() => <ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -681,7 +678,7 @@ class AddBOPDomestic extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1007,7 +1004,7 @@ class AddBOPDomestic extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -1033,10 +1030,10 @@ class AddBOPDomestic extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
