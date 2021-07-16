@@ -27,6 +27,10 @@ import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -60,6 +64,9 @@ function SimulationApprovalSummary(props) {
     const [compareCosting, setCompareCosting] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
 
     const dispatch = useDispatch()
@@ -284,40 +291,56 @@ function SimulationApprovalSummary(props) {
         return cell !== null ? cell : '-'
     }
 
-    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+    const ecnFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell !== null ? cell : '-'
     }
 
-    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+    const revisionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell !== null ? cell : '-'
     }
 
-    const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldPOFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newPOFormatter = (cell, row, enumObject, rowIndex) => {
+    const newPOFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldRMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newRMFormatter = (cell, row, enumObject, rowIndex) => {
+    const newRMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const rmNameFormatter = (cell, row, enumObject, rowIndex) => {
+    const rmNameFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell ? `${cell}-${row.RMGrade}` : '-'
     }
 
 
-    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const buttonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
                 <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
@@ -404,6 +427,43 @@ function SimulationApprovalSummary(props) {
     if (showListing === true) {
         return <Redirect to="/simulation-history" />
     }
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+    };
+
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+        params.api.paginationGoToPage(1);
+
+    };
+
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
+
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
+
+    const frameworkComponents = {
+        // totalValueRenderer: this.buttonFormatter,
+        // effectiveDateRenderer: this.effectiveDateFormatter,
+        // costingHeadRenderer: this.costingHeadFormatter,
+        ecnFormatter: ecnFormatter,
+        revisionFormatter: revisionFormatter,
+        oldPOFormatter: oldPOFormatter,
+        newPOFormatter: newPOFormatter,
+        oldRMFormatter: oldRMFormatter,
+        buttonFormatter: buttonFormatter,
+        newRMFormatter: newRMFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+    };
 
     return (
         <>
@@ -524,7 +584,7 @@ function SimulationApprovalSummary(props) {
                                             className="add-volume-table sm-headrgroup-table impact-drawer-table"
                                             pagination>
                                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                                            {/* <TableHeaderColumn row='0' rowSpan='2' dataField="CostingHead" width={115} columnTitle={true} editable={false} dataAlign="left" dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn> */}
+                                            {/* <TableHeaderColumn row='0' rowSpan='2' dataField="CostingHead" width={115} columnTitle={true} editable={false}  dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn> */}
                                             <TableHeaderColumn row='0' rowSpan='2' dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
@@ -571,118 +631,146 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <Row className="pt-4 blue-before">
-                                    {shown &&
-                                        <Col lg="10" md="10" className="filter-block">
-                                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                                <div className="flex-fills">
-                                                    <h5 className="hide-left-border">{`Filter By:`}</h5>
+                                <div className={`ag-grid-react`}>
+
+
+                                    <Row className="pt-4 blue-before">
+                                        {shown &&
+                                            <Col lg="10" md="10" className="filter-block">
+                                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                                    <div className="flex-fills">
+                                                        <h5 className="hide-left-border">{`Filter By:`}</h5>
+                                                    </div>
+                                                    <div className="flex-fill hide-label">
+                                                        <SearchableSelectHookForm
+                                                            label={''}
+                                                            name={'plantCode'}
+                                                            placeholder={'Plant Code'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            rules={{ required: false }}
+                                                            register={register}
+                                                            // defaultValue={plant.length !== 0 ? plant : ''}
+                                                            options={renderDropdownListing('plant')}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            errors={errors.plantCode}
+                                                        />
+                                                    </div>
+                                                    <div className="flex-fill hide-label">
+                                                        <SearchableSelectHookForm
+                                                            label={''}
+                                                            name={'partNo'}
+                                                            placeholder={'Part No.'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            rules={{ required: false }}
+                                                            register={register}
+                                                            // defaultValue={plant.length !== 0 ? plant : ''}
+                                                            options={renderDropdownListing('PartList')}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            errors={errors.partNo}
+                                                        />
+                                                    </div>
+                                                    <div className="flex-fill hide-label">
+                                                        <button
+                                                            type="button"
+                                                            //disabled={pristine || submitting}
+                                                            onClick={resetHandler}
+                                                            className="reset mr10"
+                                                        >
+                                                            {'Reset'}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            //disabled={pristine || submitting}
+                                                            onClick={onSubmit}
+                                                            className="apply mr5"
+                                                        >
+                                                            {'Apply'}
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'plantCode'}
-                                                        placeholder={'Plant Code'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('plant')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.plantCode}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'partNo'}
-                                                        placeholder={'Part No.'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('PartList')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.partNo}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={resetHandler}
-                                                        className="reset mr10"
-                                                    >
-                                                        {'Reset'}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={onSubmit}
-                                                        className="apply mr5"
-                                                    >
-                                                        {'Apply'}
-                                                    </button>
+                                            </Col>
+                                        }
+
+                                        <Col md="2" lg="2" className="search-user-block mb-3">
+                                            <div className="d-flex justify-content-end bd-highlight w100">
+                                                <div>
+                                                    {(shown) ? (
+                                                        <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                                            <div className="cancel-icon-white"></div></button>
+                                                    ) : (
+                                                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                                    )}
                                                 </div>
                                             </div>
                                         </Col>
-                                    }
+                                    </Row>
+                                    <Row className="pb-2">
+                                        <Col md="12">
+                                            <Row>
+                                                <Col>
+                                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                        <div className="ag-grid-header">
+                                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                        </div>
+                                                        <div
+                                                            className="ag-theme-material"
+                                                            style={{ height: '100%', width: '100%' }}
+                                                        >
+                                                            <AgGridReact
+                                                                style={{ height: '100%', width: '100%' }}
+                                                                defaultColDef={defaultColDef}
+                                                                // columnDefs={c}
+                                                                rowData={costingList}
+                                                                pagination={true}
+                                                                paginationPageSize={10}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                loadingOverlayComponent={'customLoadingOverlay'}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: CONSTANT.EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            >
+                                                                <AgGridColumn field="SimulationCostingId" hide='true'></AgGridColumn>
+                                                                <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
+                                                                <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                                                <AgGridColumn field="VendorName" headerName="Vendor" headerName="Vendor Name"></AgGridColumn>
+                                                                <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                                                                <AgGridColumn field="RMName" headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
+                                                                <AgGridColumn field="PartName" headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                                <AgGridColumn field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                                <AgGridColumn field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                <AgGridColumn field="OldPOPrice" cellRenderer='oldPOFormatter' headerName="PO Price Old"></AgGridColumn>
+                                                                <AgGridColumn field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
+                                                                <AgGridColumn field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
+                                                                <AgGridColumn field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                <AgGridColumn field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
+                                                                {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
+                                                                <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn> */}
 
-                                    <Col md="2" lg="2" className="search-user-block mb-3">
-                                        <div className="d-flex justify-content-end bd-highlight w100">
-                                            <div>
-                                                {(shown) ? (
-                                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                                        <div className="cancel-icon-white"></div></button>
-                                                ) : (
-                                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row className="pb-2">
-                                    <Col md="12">
-                                        <Row>
-                                            <Col>
-                                                <BootstrapTable
-                                                    data={costingList}
-                                                    striped={false}
-                                                    bordered={false}
-                                                    hover={false}
-                                                    options={options}
-                                                    search
-                                                    className="add-volume-table mb-3"
-                                                    pagination
-                                                >
-                                                    <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={rmNameFormatter} >{renderRMName()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                                    {/* <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn> */}
-                                                    <TableHeaderColumn dataField="SimulationCostingId" dataAlign="right" export={false} width={80} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
-                                                </BootstrapTable>
+                                                            </AgGridReact>
+                                                            <div className="paging-container d-inline-block float-right">
+                                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                                    <option value="10" selected={true}>10</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
 
-                                            </Col>
-                                        </Row>
-
-                                    </Col>
-                                </Row>
+                                        </Col>
+                                    </Row>
+                                </div>
                             </>
                         }
 

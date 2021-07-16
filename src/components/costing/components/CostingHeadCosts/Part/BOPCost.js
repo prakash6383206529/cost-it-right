@@ -306,7 +306,7 @@ function BOPCost(props) {
                                 {
                                   <NumberFieldHookForm
                                     label=""
-                                    name={`${bopGridFields}[${index}]Quantity`}
+                                    name={`${bopGridFields}.${index}.Quantity`}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -392,7 +392,7 @@ function BOPCost(props) {
                     name={"BOPHandlingPercentage"}
                     Controller={Controller}
                     control={control}
-                    register={register({ required: true, })}
+                    register={register}
                     mandatory={false}
                     rules={{
                       required: true,

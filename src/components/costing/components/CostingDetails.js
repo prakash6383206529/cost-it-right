@@ -325,9 +325,7 @@ function CostingDetails(props) {
    * @description DISPLAY FORM ONCLICK NEXT BUTTON
    */
   const nextToggle = () => {
-
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
-
       dispatch(getZBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList

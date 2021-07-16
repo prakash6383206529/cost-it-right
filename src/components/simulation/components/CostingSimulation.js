@@ -22,6 +22,11 @@ import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { CostingSimulationDownload } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import LoaderCustom from '../../common/LoaderCustom';
+const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,6 +58,11 @@ function CostingSimulation(props) {
     const [pricesDetail, setPricesDetail] = useState({})
     const [isView, setIsView] = useState(false)
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [rowData, setRowData] = useState(null);
+    const [selectedCostingIds, setSelectedCostingIds] = useState();
+    const [loader, setLoader] = useState(true)
 
     const dispatch = useDispatch()
 
@@ -68,9 +78,15 @@ function CostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
+                Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
+                    if (item.IsLockedBySimulation) {
+                        setSelectedCostingIds(item.CostingId)
+                    }
+                })
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
                 setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn })
+                setLoader(false)
             }
         }))
     }
@@ -151,36 +167,59 @@ function CostingSimulation(props) {
         }))
     }
 
-    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const buttonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, rowIndex) }} />
+                <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
             </>
         )
     }
 
-    const onRowSelect = (row, isSelected, e, rowIndex) => {
-        if (isSelected) {
-            if (row.IsLockedBySimulation) {
+    const onRowSelect = () => {
+        var selectedRows = gridApi.getSelectedRows();
+        console.log('selectedRows: ', selectedRows);
+
+        selectedRows && selectedRows.map(item => {
+            if (item.IsLockedBySimulation) {
                 setSelectedRowData([])
                 toastr.warning('This costing is already sent for approval through another token number.')
                 return false
+            } else {
+                if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+                var selected = gridApi.getSelectedNodes()
+                setSelectedRowData(selectedRows)
             }
-            let temp = costingArr[rowIndex]
-            temp = { ...temp, IsChecked: true }
-            let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
-            setCostingArr(Arr)
-            let tempArr = [...selectedRowData, row]
-            setSelectedRowData(tempArr)
-        } else {
-            const CostingId = row.CostingId;
-            let temp = costingArr[rowIndex]
-            temp = { ...temp, IsChecked: false }
-            let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
-            setCostingArr(Arr)
-            let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-            setSelectedRowData(tempArr)
-        }
+        })
+
+
+        // if (row.IsLockedBySimulation) {
+        //             setSelectedRowData([])
+        //             toastr.warning('This costing is already sent for approval through another token number.')
+        //             return false
+        //         }
+        // if (isSelected) {
+        //     if (row.IsLockedBySimulation) {
+        //         setSelectedRowData([])
+        //         toastr.warning('This costing is already sent for approval through another token number.')
+        //         return false
+        //     }
+        //     let temp = costingArr[rowIndex]
+        //     temp = { ...temp, IsChecked: true }
+        //     let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+        //     setCostingArr(Arr)
+        //     let tempArr = [...selectedRowData, row]
+        //     setSelectedRowData(tempArr)
+        // } else {
+        //     const CostingId = row.CostingId;
+        //     let temp = costingArr[rowIndex]
+        //     temp = { ...temp, IsChecked: false }
+        //     let Arr = Object.assign([...costingArr], { [rowIndex]: temp })
+        //     setCostingArr(Arr)
+        //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
+        //     setSelectedRowData(tempArr)
+        // }
 
     }
 
@@ -337,7 +376,8 @@ function CostingSimulation(props) {
         }
     }
 
-    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
+    const descriptionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell && cell !== null ? cell : '-'
     }
 
@@ -345,30 +385,40 @@ function CostingSimulation(props) {
         return cell !== null ? cell : '-'
     }
 
-    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+    const ecnFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
     }
 
-    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+    const revisionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
     }
 
-    const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldPOFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newPOFormatter = (cell, row, enumObject, rowIndex) => {
+    const newPOFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldRMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newRMFormatter = (cell, row, enumObject, rowIndex) => {
+    const newRMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
@@ -418,28 +468,83 @@ function CostingSimulation(props) {
         }
     }, [])
 
+    const isFirstColumn = (params) => {
+        console.log('params: ', params);
 
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        return thisIsFirstColumn;
+    }
+
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
+    };
+
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+        params.api.paginationGoToPage(1);
+
+    };
+
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
+
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
+
+    const frameworkComponents = {
+        // totalValueRenderer: this.buttonFormatter,
+        // effectiveDateRenderer: this.effectiveDateFormatter,
+        // costingHeadRenderer: this.costingHeadFormatter,
+        descriptionFormatter: descriptionFormatter,
+        ecnFormatter: ecnFormatter,
+        revisionFormatter: revisionFormatter,
+        oldPOFormatter: oldPOFormatter,
+        newPOFormatter: newPOFormatter,
+        oldRMFormatter: oldRMFormatter,
+        buttonFormatter: buttonFormatter,
+        newRMFormatter: newRMFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+    };
+
+    const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
     return (
         <>
             {
-                !showApprovalHistory &&
+                loader ? <LoaderCustom /> :
 
-                <div className="costing-simulation-page blue-before-inside">
-                    <div className="container-fluid">
-                        <Row>
-                            <Col sm="12">
-                                <h1 class="mb-0">Token No:{tokenNo}</h1>
-                            </Col>
-                        </Row>
-                        <Row className="filter-row-large pt-4 blue-before">
-                            {shown &&
-                                <Col lg="8" md="8" className="filter-block">
-                                    <div className="d-inline-flex justify-content-start align-items-top w100">
-                                        <div className="flex-fills">
-                                            <h5>{`Filter By:`}</h5>
-                                        </div>
+                    !showApprovalHistory &&
 
-                                        {/* <div className="flex-fill hide-label">
+                    <div className="costing-simulation-page blue-before-inside">
+                        <div className="container-fluid">
+                            <div className={`ag-grid-react`}>
+
+
+                                <Row>
+                                    <Col sm="12">
+                                        <h1 class="mb-0">Token No:{tokenNo}</h1>
+                                    </Col>
+                                </Row>
+                                <Row className="filter-row-large pt-4 blue-before">
+                                    {shown &&
+                                        <Col lg="8" md="8" className="filter-block">
+                                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                                                <div className="flex-fills">
+                                                    <h5>{`Filter By:`}</h5>
+                                                </div>
+
+                                                {/* <div className="flex-fill hide-label">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'partNo'}
@@ -455,81 +560,81 @@ function CostingSimulation(props) {
                                         errors={errors.partNo}
                                     />
                                 </div> */}
-                                        <div className="flex-fill hide-label">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'plantCode'}
-                                                placeholder={'Plant Code'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                                options={renderDropdownListing('plant')}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                errors={errors.plantCode}
-                                            />
-                                        </div>
-                                        <div className="flex-fill hide-label">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'rawMaterial'}
-                                                placeholder={'Raw Material'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                                options={renderDropdownListing('material')}
-                                                mandatory={false}
-                                                handleChange={handleMaterial}
-                                                errors={errors.rawMaterial}
-                                            />
-                                        </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'plantCode'}
+                                                        placeholder={'Plant Code'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('plant')}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        errors={errors.plantCode}
+                                                    />
+                                                </div>
+                                                <div className="flex-fill hide-label">
+                                                    <SearchableSelectHookForm
+                                                        label={''}
+                                                        name={'rawMaterial'}
+                                                        placeholder={'Raw Material'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                                        options={renderDropdownListing('material')}
+                                                        mandatory={false}
+                                                        handleChange={handleMaterial}
+                                                        errors={errors.rawMaterial}
+                                                    />
+                                                </div>
 
-                                        <div className="flex-fill hide-label">
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={resetFilter}
-                                                className="reset mr10"
-                                            >
-                                                {'Reset'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={filterList}
-                                                className="apply mr5"
-                                            >
-                                                {'Apply'}
-                                            </button>
+                                                <div className="flex-fill hide-label">
+                                                    <button
+                                                        type="button"
+                                                        //disabled={pristine || submitting}
+                                                        onClick={resetFilter}
+                                                        className="reset mr10"
+                                                    >
+                                                        {'Reset'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        //disabled={pristine || submitting}
+                                                        onClick={filterList}
+                                                        className="apply mr5"
+                                                    >
+                                                        {'Apply'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    }
+
+                                    <Col md="3" lg="3" className="search-user-block mb-3">
+                                        <div className="d-flex justify-content-end bd-highlight w100">
+                                            <div>
+                                                {(shown) ? (
+                                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
+                                                        <div className="cancel-icon-white"></div></button>
+                                                ) : (
+                                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                                                )}
+                                            </div>
+                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {renderColumn()}
+                                            </ExcelFile>
                                         </div>
-                                    </div>
-                                </Col>
-                            }
+                                    </Col>
 
-                            <Col md="3" lg="3" className="search-user-block mb-3">
-                                <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        {(shown) ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
-                                                <div className="cancel-icon-white"></div></button>
-                                        ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                        )}
-                                    </div>
-                                    <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                        {renderColumn()}
-                                    </ExcelFile>
-                                </div>
-                            </Col>
-
-                        </Row>
-                        <Row>
-                            <Col>
-                                <BootstrapTable
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        {/* <BootstrapTable
                                     data={costingList}
                                     striped={false}
                                     bordered={false}
@@ -569,66 +674,174 @@ function CostingSimulation(props) {
                                     <TableHeaderColumn dataField="RawMaterialFinishWeight" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{'Finish Weight'}</TableHeaderColumn>
                                     <TableHeaderColumn dataField="RawMaterialGrossWeight" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{'Gross Weight'}</TableHeaderColumn>
 
-                                </BootstrapTable>
+                                </BootstrapTable> */}
+                                        {/* <AgGridReact
+                                    style={{ height: '100%', width: '100%' }}
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={costingList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >                                
+                                    <AgGridColumn field="CostingNumber" headerName='Costing ID'  ></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName='Costing Head' ></AgGridColumn>
+                                    <AgGridColumn field="VendorName"   cellRenderer='vendorFormatter' headerName='Plant Name'></AgGridColumn>
+                                    <AgGridColumn field="PlantCode" headerName='Plant Name'   ></AgGridColumn>
+                                    <AgGridColumn field="RMName" hide ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" hide ></AgGridColumn>
+                                    <AgGridColumn field="PartNo"  headerName= 'Part No.'></AgGridColumn>
+                                    <AgGridColumn field="PartName"  headerName='Part Name'   cellRenderer='descriptionFormatter'  ></AgGridColumn>
+                                    <AgGridColumn field="Technology" headerName='Technology'  ></AgGridColumn>
+                                    <AgGridColumn field="ECNNumber" headerName='ECN No.'  cellRenderer='ecnFormatter'></AgGridColumn>
+                                    <AgGridColumn field="RevisionNumber" headerName='Revision No.'   cellRenderer='revisionFormatter'  >''</AgGridColumn>
+                                    <AgGridColumn field="OldPOPrice" headerName='PO Price Old'    cellRenderer='oldPOFormatter' >''</AgGridColumn>
+                                    <AgGridColumn field="NewPOPrice" headerName='PO Price New'     cellRenderer='newPOFormatter' ></AgGridColumn>
+                                    <AgGridColumn field="OldRMPrice" headerName='RM Cost Old'   cellRenderer='oldRMFormatter'   >''</AgGridColumn>
+                                    <AgGridColumn field="NewRMPrice" headerName='RM Cost New'   cellRenderer='newRMFormatter'   ></AgGridColumn>
+                                    <AgGridColumn field="OldRMRate" hide   ></AgGridColumn>
+                                    <AgGridColumn field="NewRMRate" hide      ></AgGridColumn>
+                                    <AgGridColumn field="OldScrapRate" hide></AgGridColumn>
+                                    <AgGridColumn field="NewScrapRate" hide></AgGridColumn>
+                                    <AgGridColumn field="CostingId" headerName='Actions'    cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'     ></AgGridColumn>
+                                    <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'     ></AgGridColumn>
 
-                            </Col>
-                        </Row>
+                                </AgGridReact> */}
 
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                            <div className="col-sm-12 text-right bluefooter-butn">
+                                        <Col>
+                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                <div className="ag-grid-header">
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                </div>
+                                                <div
+                                                    className="ag-theme-material"
+                                                    style={{ height: '100%', width: '100%' }}
+                                                >
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        // columnDefs={c}
+                                                        rowData={costingList}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: CONSTANT.EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        suppressRowClickSelection={true}
+                                                        rowSelection={'multiple'}
+                                                        // frameworkComponents={frameworkComponents}
+                                                        onSelectionChanged={onRowSelect}
+                                                        isRowSelectable={isRowSelectable}
+                                                    >
+                                                        <AgGridColumn field="CostingNumber" headerName='Costing ID'></AgGridColumn>
+                                                        <AgGridColumn field="CostingHead" headerName='Costing Head'></AgGridColumn>
+                                                        <AgGridColumn field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                        <AgGridColumn field="PlantCode" headerName='Plant Code'></AgGridColumn>
+                                                        <AgGridColumn field="RMName" hide ></AgGridColumn>
+                                                        <AgGridColumn field="RMGrade" hide ></AgGridColumn>
+                                                        <AgGridColumn field="PartNo" headerName='Part No.'></AgGridColumn>
+                                                        <AgGridColumn field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="Technology" headerName='Technology'></AgGridColumn>
+                                                        <AgGridColumn field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="OldRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn field="NewRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn field="OldScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn field="NewScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
 
-                                <button
-                                    class="user-btn approval-btn mr5"
-                                    onClick={sendForApproval}
-                                    disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
-                                >
-                                    <div className="send-for-approval"></div>
-                                    {'Send For Approval'}
-                                </button>
+                                                    </AgGridReact>
 
-                                <button
-                                    type="button"
-                                    className="user-btn mr5 save-btn"
-                                    disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
-                                    onClick={onSaveSimulation}>
-                                    <div className={"save-icon"}></div>
-                                    {"Save Simulation"}
-                                </button>
+                                                    <div className="paging-container d-inline-block float-right">
+                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                            <option value="10" selected={true}>10</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Col>
 
-                                <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
-                                    <div className={"save-icon"}></div>
-                                    {"Verify Impact "}
-                                </button>
-
+                                    </Col>
+                                </Row>
                             </div>
-                        </Row>
-                    </div>
-                    {isApprovalDrawer &&
-                        <ApproveRejectDrawer
-                            isOpen={isApprovalDrawer}
-                            anchor={'right'}
-                            approvalData={[]}
-                            type={'Sender'}
-                            simulationDetail={simulationDetail}
-                            selectedRowData={selectedRowData}
-                            costingArr={costingArr}
-                            master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
-                            closeDrawer={closeDrawer}
-                            isSimulation={true}
-                        // isSaveDone={isSaveDone}
-                        />}
+                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                                <div className="col-sm-12 text-right bluefooter-butn">
 
-                    {isVerifyImpactDrawer &&
-                        <VerifyImpactDrawer
-                            isOpen={isVerifyImpactDrawer}
-                            anchor={'right'}
-                            approvalData={[]}
-                            type={'Approve'}
-                            closeDrawer={verifyImpactDrawer}
-                            isSimulation={true}
-                        />}
-                </div>
+                                    <button
+                                        class="user-btn approval-btn mr5"
+                                        onClick={sendForApproval}
+                                        disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                    >
+                                        <div className="send-for-approval"></div>
+                                        {'Send For Approval'}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="user-btn mr5 save-btn"
+                                        disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
+                                        onClick={onSaveSimulation}>
+                                        <div className={"save-icon"}></div>
+                                        {"Save Simulation"}
+                                    </button>
+
+                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                        <div className={"save-icon"}></div>
+                                        {"Verify Impact "}
+                                    </button>
+
+                                </div>
+                            </Row>
+                        </div>
+                        {isApprovalDrawer &&
+                            <ApproveRejectDrawer
+                                isOpen={isApprovalDrawer}
+                                anchor={'right'}
+                                approvalData={[]}
+                                type={'Sender'}
+                                simulationDetail={simulationDetail}
+                                selectedRowData={selectedRowData}
+                                costingArr={costingArr}
+                                master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
+                                closeDrawer={closeDrawer}
+                                isSimulation={true}
+                            // isSaveDone={isSaveDone}
+                            />}
+
+                        {isVerifyImpactDrawer &&
+                            <VerifyImpactDrawer
+                                isOpen={isVerifyImpactDrawer}
+                                anchor={'right'}
+                                approvalData={[]}
+                                type={'Approve'}
+                                closeDrawer={verifyImpactDrawer}
+                                isSimulation={true}
+                            />}
+                    </div>
+
             }
+
 
             {showApprovalHistory && <Redirect to='/simulation-history' />}
 
