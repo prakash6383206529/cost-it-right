@@ -430,7 +430,7 @@ class ExchangeRateListing extends Component {
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <Row>

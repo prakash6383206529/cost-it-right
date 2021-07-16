@@ -665,7 +665,7 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
