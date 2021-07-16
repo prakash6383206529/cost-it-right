@@ -21,24 +21,10 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
     const { location } = props;
 
-    let options = {}
-
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        dispatch(getSelectListOfMasters(() => { }))
-        dispatch(getCostingTechnologySelectList(() => { }))
-        setShowEditTable(false)
-    }, [])
-
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-    const masterList = useSelector(state => state.simulation.masterSelectList)
-    const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    const rmImportListing = useSelector(state => state.material.rmImportDataList)
-    const technologySelectList = useSelector(state => state.costing.technologySelectList)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -48,6 +34,19 @@ function Simulation(props) {
     const [isbulkUpload, setIsBulkUpload] = useState(false)
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getSelectListOfMasters(() => { }))
+        dispatch(getCostingTechnologySelectList(() => { }))
+        setShowEditTable(false)
+    }, [])
+
+    const masterList = useSelector(state => state.simulation.masterSelectList)
+    const rmDomesticListing = useSelector(state => state.material.rmDataList)
+    const rmImportListing = useSelector(state => state.material.rmImportDataList)
+    const technologySelectList = useSelector(state => state.costing.technologySelectList)
 
     const handleMasterChange = (value) => {
         setMaster(value)

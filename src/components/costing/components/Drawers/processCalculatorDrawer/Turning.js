@@ -90,7 +90,7 @@ function Turning(props) {
     setValue,
     getValues,
     reset,
-    errors,
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -623,7 +623,10 @@ function Turning(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={"save-icon"}></div>
+                <div className={'check-icon'}>
+                  <img src={require("../../../../../assests/images/check.png")}
+                    alt="check-icon.jpg" />
+                </div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>

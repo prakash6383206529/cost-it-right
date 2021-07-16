@@ -2221,7 +2221,7 @@ body {
 }
 .css-yk16xz-control {
   border-color: #c2cbe8 !important;
-  min-height: 38px !important;
+  min-height: 40px !important;
 }
 .form-group {
   margin-bottom: 15px;
@@ -2680,10 +2680,10 @@ body {
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
-      .ag-grid-wrapper{
-        min-height: 100vh;
-        height: 100vh !important;
-      }
+      // .ag-grid-wrapper{
+      //   min-height: 100vh;
+      //   height: 100vh !important;
+      // }
       .search-user-block{
         padding-right: 15px !important;
       }      

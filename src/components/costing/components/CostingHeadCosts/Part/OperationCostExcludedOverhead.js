@@ -14,7 +14,7 @@ import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
 
-  const { register, control, errors, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });

@@ -28,7 +28,7 @@ function VerifyImpactDrawer(props) {
 
   const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
