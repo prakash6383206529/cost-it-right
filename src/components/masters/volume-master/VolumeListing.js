@@ -835,8 +835,8 @@ class VolumeListing extends Component {
                                                     className={"user-btn mr5"}
                                                     onClick={this.actualBulkToggle}
                                                     title="Actual Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
+                                                >{"A"}
+                                                    <div className={"ml5 upload mr-0"}></div>
                                                     {/* Actual Upload */}
                                                 </button>
                                             )}
@@ -846,8 +846,8 @@ class VolumeListing extends Component {
                                                     className={"user-btn mr5"}
                                                     onClick={this.budgetedBulkToggle}
                                                     title="Budgeted Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
+                                                >{"B"}
+                                                    <div className={"ml5 upload mr-0"}></div>
                                                     {/* Budgeted Bulk Upload */}
                                                 </button>
                                             )}
