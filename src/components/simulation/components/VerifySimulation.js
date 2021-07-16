@@ -393,11 +393,11 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={revisionFormatter} >{revisionNumber()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" dataFormat={renderRM} >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={true} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RawMaterialId" width={100} columnTitle={true} editable={false} hidden ></TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={false} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={false} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={false} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={false} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RawMaterialId" width={100} columnTitle={false} editable={false} hidden ></TableHeaderColumn>
 
                             </BootstrapTable>
 

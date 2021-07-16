@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
+    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
@@ -25,13 +25,19 @@ import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RmDomestic } from '../../../config/constants'
 
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+import { RowController } from 'ag-grid-community';
+
 class RMDomesticListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            shown: false,
+            // shown: false,
             tableData: [],
             RawMaterial: [],
             RMGrade: [],
@@ -42,12 +48,32 @@ class RMDomesticListing extends Component {
             maxRange: 0,
             isBulkUpload: false,
             shown: this.props.isSimulation ? true : false,
-            technology: []
+            technology: [],
+            gridApi: null,
         }
     }
 
     UNSAFE_componentWillMount() {
         this.getInitialRange()
+        const { filteredRMData, isSimulation } = this.props
+        if (this.props.isSimulation) {
+
+            this.setState({
+                costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
+                plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
+                RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
+                RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
+                vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
+                technology: [],
+                value: { min: 0, max: 0 },
+            }, () => {
+                this.getInitialRange()
+                this.getDataList(null)
+
+                this.props.getRawMaterialFilterSelectList(() => { })
+            })
+        }
+
     }
 
     /**
@@ -56,13 +82,16 @@ class RMDomesticListing extends Component {
     */
     getInitialRange = () => {
         const { value } = this.state;
+        const { filteredRMData, isSimulation } = this.props
+        // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
+        console.log('filteredRMData: ', filteredRMData);
         const filterData = {
-            costingHead: null,
-            plantId: null,
-            material_id: null,
-            grade_id: null,
-            vendor_id: null,
-            technologyId: null,
+            costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
+            plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
+            material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
+            grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
+            vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
+            // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
             technologyId: this.props.isSimulation ? this.props.technology : 0,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
@@ -80,6 +109,8 @@ class RMDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        const { filteredRMData, isSimulation } = this.props
+
         this.props.getRawMaterialNameChild(() => { })
         this.props.getGradeSelectList(() => { })
         this.props.getVendorListByVendorType(false, () => { })
@@ -105,12 +136,14 @@ class RMDomesticListing extends Component {
     */
     getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
         const { value } = this.state;
+        const { filteredRMData, isSimulation } = this.props
+
         const filterData = {
-            costingHead: costingHead,
-            plantId: plantId,
-            material_id: materialId,
-            grade_id: gradeId,
-            vendor_id: vendorId,
+            costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
+            plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
+            material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : materialId,
+            grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : gradeId,
+            vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : vendorId,
             technologyId: this.props.isSimulation ? this.props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
@@ -135,7 +168,7 @@ class RMDomesticListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    editItemDetails = (Id, rowData = {}) => {
         let data = {
             isEditFlag: true,
             Id: Id,
@@ -186,15 +219,32 @@ class RMDomesticListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    // buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { EditAccessibility, DeleteAccessibility } = this.props;
+    //     return (
+    //         <>
+    //             {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+    //             {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+    //         </>
+    //     )
+    // }
+
+    /**
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
     /**
     * @method costingHeadFormatter
@@ -274,8 +324,9 @@ class RMDomesticListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -419,7 +470,16 @@ class RMDomesticListing extends Component {
         const Vendorid = vendorName ? vendorName.value : null;
         const technologyId = technology ? technology.value : 0
 
-        this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+        if (this.props.isSimulation) {
+            this.props.setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plant.label, value: plant.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } })
+            setTimeout(() => {
+
+                this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+            }, 500);
+        } else {
+            this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+
+        }
     }
 
     /**
@@ -427,6 +487,9 @@ class RMDomesticListing extends Component {
     * @description Reset user filter
     */
     resetFilter = () => {
+        if (this.props.isSimulation) {
+            this.props.setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' })
+        }
         this.setState({
             costingHead: [],
             RawMaterial: [],
@@ -438,6 +501,7 @@ class RMDomesticListing extends Component {
         }, () => {
             this.getInitialRange()
             this.getDataList(null)
+
             this.props.getRawMaterialFilterSelectList(() => { })
         })
 
@@ -471,6 +535,7 @@ class RMDomesticListing extends Component {
         };
         return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
+
     handleHeadChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });
@@ -523,14 +588,17 @@ class RMDomesticListing extends Component {
         );
     }
 
-
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility } = this.props;
         const { isBulkUpload, } = this.state;
 
         const options = {
@@ -545,8 +613,21 @@ class RMDomesticListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+        };
+
+        const agGridOptions = {
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            effectiveDateRenderer: this.effectiveDateFormatter,
+        };
+
         return (
-            <div className="show-table-btn">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* { this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4 ">
@@ -729,7 +810,7 @@ class RMDomesticListing extends Component {
                 </form >
                 <Row>
                     <Col>
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.rmDataList}
                             striped={false}
                             bordered={false}
@@ -743,7 +824,6 @@ class RMDomesticListing extends Component {
                             csvFileName={`${RmDomestic}.csv`}
                             ref={'table'}
                             pagination>
-                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
@@ -764,7 +844,57 @@ class RMDomesticListing extends Component {
                             {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
-                        </BootstrapTable>
+                        </BootstrapTable> */}
+                        <div className="example-wrapper">
+                            <div className="example-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+
+                                <div className="paging-container d-inline-block">
+                                    <span className="d-inline-block">Page Size:</span>
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{
+                                    width: '100%'
+                                }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    rowData={this.props.rmDataList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    gridOptions={agGridOptions}
+                                    frameworkComponents={frameworkComponents}>
+                                    <AgGridColumn field="CostingHead" pinned="left"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" sortable={true} ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="MaterialType" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="Category" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="Plant" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="VendorName" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="UOM" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" sortable={true}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" sortable={true} cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn field="RawMaterialId" headerName="Action" sortable={true} cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                </AgGridReact>
+                            </div>
+                        </div>
                     </Col>
                 </Row>
                 {
@@ -792,11 +922,11 @@ class RMDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, auth }) {
-    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
+    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, filteredRMData } = material;
     const { initialConfiguration } = auth;
     const { plantSelectList, technologySelectList } = comman;
 
-    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList, technologySelectList }
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList, technologySelectList, filteredRMData }
 
 }
 
@@ -821,6 +951,7 @@ export default connect(mapStateToProps, {
     getGradeFilterByVendorSelectList,
     getPlantSelectListByType,
     getTechnologySelectList,
+    setFilterForRM
 })(reduxForm({
     form: 'RMDomesticListing',
     enableReinitialize: true,

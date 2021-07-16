@@ -328,9 +328,6 @@ function CostingSimulation(props) {
             setIsApprovalDrawer(false);
             setCostingDetailDrawer(false)
             setIsVerifyImpactDrawer(false);
-            setOldArr(selectedRowData)
-            setSelectedRowData([])
-            setCostingArr([])
         }
     }
 
@@ -412,12 +409,14 @@ function CostingSimulation(props) {
         </ExcelSheet>);
     }
 
-    const renderColumn = () => returnExcelColumn(CostingSimulationDownload, costingList && costingList.length > 0 ? costingList : [])
+    const renderColumn = () => returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
 
 
-    // useEffect(()=>{
-    //     if()
-    // },[])
+    useEffect(() => {
+        if (userDetails().Role === 'SuperAdmin') {
+            setDisableApprovalButton(true)
+        }
+    }, [])
 
 
     return (
@@ -425,7 +424,7 @@ function CostingSimulation(props) {
             {
                 !showApprovalHistory &&
 
-                <div className="show-table-btn costing-simulation-page blue-before-inside">
+                <div className="costing-simulation-page blue-before-inside">
                     <div className="container-fluid">
                         <Row>
                             <Col sm="12">
@@ -521,6 +520,9 @@ function CostingSimulation(props) {
                                             <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                         )}
                                     </div>
+                                    <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                        {renderColumn()}
+                                    </ExcelFile>
                                 </div>
                             </Col>
 
@@ -540,8 +542,8 @@ function CostingSimulation(props) {
                                     selectRow={selectRowProp}
                                     className="add-volume-table this is"
                                     pagination
-                                    exportCSV
-                                    csvFileName={`${simulationMaster}.csv`}
+                                // exportCSV
+                                // csvFileName={`${simulationMaster}.csv`}
                                 >
                                     <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                     <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
@@ -578,7 +580,7 @@ function CostingSimulation(props) {
                                 <button
                                     class="user-btn approval-btn mr5"
                                     onClick={sendForApproval}
-                                    disabled={selectedRowData && selectedRowData.length === 0 ? true : false}
+                                    disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                 >
                                     <img
                                         alt="APPROVAL.jpg"
@@ -606,9 +608,7 @@ function CostingSimulation(props) {
                                     <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
                                     {"Verify Impact "}
                                 </button>
-                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {renderColumn()}
-                                </ExcelFile>
+
                             </div>
                         </Row>
                     </div>

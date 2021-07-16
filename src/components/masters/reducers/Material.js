@@ -7,7 +7,7 @@ import {
     GET_GRADE_SELECTLIST_BY_RAWMATERIAL, GET_GRADE_SELECTLIST_SUCCESS, GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA, GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
     GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST, GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST, GET_VENDOR_FILTER_BY_GRADE_SELECTLIST, GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST,
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -289,6 +289,12 @@ export default function materialReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 unassociatedMaterialList: action.payload
+            }
+        case SET_FILTERED_RM_DATA:
+            return {
+                ...state,
+                loading: false,
+                filteredRMData: action.payload
             }
         default:
             return state;

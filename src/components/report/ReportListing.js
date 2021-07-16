@@ -268,7 +268,7 @@ function ReportListing(props) {
 
 
     return (
-        <div className="container-fluid approval-listing-page">
+        <div className="container-fluid report-listing-page">
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
