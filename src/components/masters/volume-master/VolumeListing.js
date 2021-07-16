@@ -553,10 +553,8 @@ class VolumeListing extends Component {
   onSubmit(values) { }
 
   onGridReady = (params) => {
-    this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
   };
 
   onPageSizeChanged = (newPageSize) => {
@@ -897,6 +895,7 @@ class VolumeListing extends Component {
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}
+                editable={true}
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
@@ -907,7 +906,7 @@ class VolumeListing extends Component {
                 }}
                 frameworkComponents={frameworkComponents}
               >
-                <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="IsVendor" headerName="Costing Head"  cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
