@@ -363,7 +363,7 @@ function VerifySimulation(props) {
                                 <div className={`ag-grid-react`}>
                                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                         <div className="ag-grid-header">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                         </div>
                                         <div
                                             className="ag-theme-material"
@@ -390,19 +390,19 @@ function VerifySimulation(props) {
                                                 onSelectionChanged={onRowSelect}
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                                <AgGridColumn field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
-                                                <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
-                                                <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
-                                                <AgGridColumn field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                                <AgGridColumn field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
-                                                <AgGridColumn field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                <AgGridColumn field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
-                                                <AgGridColumn field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                <AgGridColumn field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                <AgGridColumn field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                <AgGridColumn field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
-                                                <AgGridColumn field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
+                                                <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                                <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
+                                                <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
+                                                <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
+                                                <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
+                                                <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                                <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
+                                                <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
+                                                <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
+                                                <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
 
                                             </AgGridReact>
