@@ -447,7 +447,7 @@ function RMSimulation(props) {
                             </Row>
                         }
                         <Row>
-                            <Col className="add-min-height mb-3">
+                            <Col className="add-min-height mb-3 sm-edit-page">
                                 {/* <BootstrapTable
                                 data={list}
                                 striped={false}
