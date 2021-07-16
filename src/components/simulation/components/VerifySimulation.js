@@ -419,12 +419,7 @@ function VerifySimulation(props) {
                         {'Send For Approval'}
                     </button>
                     <button type="submit" className="user-btn mr5 save-btn">
-                        <div className={"check-icon"}>
-                            <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                            />
-                        </div>{" "}
+                        <div className={"save-icon"}></div>{" "}
                         {"Save Simulation"}
                     </button> */}
                         </div>

@@ -588,10 +588,7 @@ const CostingSummaryTable = (props) => {
               <Col md="8" className="text-right">
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                    <img
-                      class="mr-1"
-                      src={require('../../../assests/images/send-for-approval.svg')}
-                    ></img>{' '}
+                    <div className="send-for-approval"></div>
                     {'Send For Approval'}
                   </button>
                 )}
@@ -600,7 +597,7 @@ const CostingSummaryTable = (props) => {
                   className={'user-btn mb-2 comparison-btn'}
                   onClick={addComparisonDrawerToggle}
                 >
-                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
+                  <div className="compare-arrows"></div>
                   Add To Comparison{' '}
                 </button>
                 {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}

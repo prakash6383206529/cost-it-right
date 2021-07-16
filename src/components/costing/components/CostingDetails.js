@@ -1825,12 +1825,7 @@ function CostingDetails(props) {
                           {IsShowNextBtn &&
                             <button type="button" className="submit-button save-btn ml15" onClick={nextToggle} >
                               {"Next"}
-                              <div className={"check-icon ml-1"}>
-                                <img
-                                  src={require("../../../assests/images/right-arrow-white.svg")}
-                                  alt="check-icon.jpg"
-                                />{" "}
-                              </div>
+                              <div className={"next-icon"}></div>
                             </button>}
                         </div>
                       </Row>}

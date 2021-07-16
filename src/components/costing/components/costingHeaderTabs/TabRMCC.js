@@ -1170,12 +1170,7 @@ function TabRMCC(props) {
                 {!CostingViewMode &&
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
                     <button
@@ -1184,12 +1179,7 @@ function TabRMCC(props) {
                       onClick={saveCosting}
                       disabled={Object.keys(ComponentItemData).length === 0 ? true : false}
                     >
-                      <div className={'check-icon'}>
-                        <img
-                          src={require('../../../../assests/images/check.png')}
-                          alt="check-icon.jpg"
-                        />{' '}
-                      </div>
+                                          <div className={'save-icon'}></div>
                       {'Save'}
                     </button>
                   </div>}

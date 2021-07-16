@@ -313,7 +313,7 @@ function AddBOP(props) {
                   type={'button'}
                   className="submit-button mr5 save-btn"
                   onClick={addRow} >
-                  <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  <div className={'cancel-icon'}></div>
                   {'SELECT'}
                 </button>
 
@@ -321,7 +321,7 @@ function AddBOP(props) {
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                      <div className={'save-icon'}></div> {'Cancel'}
                 </button>
               </div>
             </Row>

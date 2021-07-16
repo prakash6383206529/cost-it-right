@@ -1466,7 +1466,7 @@ class AddMachineRate extends Component {
                             <button
                               type="submit"
                               className="submit-button mr5 save-btn" >
-                              <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                              <div className={'save-icon'}></div>
                               {'Exit'}
                               {/* Need to change name of button for view flag */}
                             </button>

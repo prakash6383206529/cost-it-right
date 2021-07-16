@@ -422,15 +422,14 @@ function SimulationApprovalSummary(props) {
                             <Col md="4" className="text-right">
                                 <div className="right-border">
                                     <button type={'button'} className="apply mr5" onClick={() => setShowListing(true)}>
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                                        <div className={'back-icon'}></div>
                                         {'Back '}
                                     </button>
                                     <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
                                         View All
                                     </button>
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
-                                        <div className={"check-icon"}> <img src={require("../../../assests/images/check.png")} alt="check-icon.jpg" /></div>
-                                        {"Verify Impact "}
+                                        <div className={"save-icon"}></div>{"Verify Impact "}
                                     </button>
                                 </div>
                             </Col>
@@ -500,9 +499,15 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mb-3">
                             <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
-                            <Col md="6">
+                            <Col md="6" className="text-right">
                                 <div className={'right-details'}>
-                                    <a onClick={() => setshowImpactedData(!showImpactedData)} className={`${showImpactedData ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setshowImpactedData(!showImpactedData) }}>
+                                        {showImpactedData ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}
+                                    </button>
                                 </div>
                             </Col>
                             {showImpactedData &&
@@ -715,24 +720,14 @@ function SimulationApprovalSummary(props) {
                                         type="button"
                                         className="approve-button mr5 approve-hover-btn"
                                         onClick={() => setApproveDrawer(true)}>
-                                        <div className={'check-icon'}>
-                                            <img
-                                                src={require('../../../assests/images/check.png')}
-                                                alt="check-icon.jpg"
-                                            />{' '}
-                                        </div>
+                                        <div className={'save-icon'}></div>
                                         {'Approve'}
                                     </button>
 
                                     {showFinalLevelButtons &&
                                         <button
                                             type="button" className="mr5 user-btn" onClick={() => { }}                    >
-                                            <div className={'check-icon'}>
-                                                <img
-                                                    src={require('../../../assests/images/check.png')}
-                                                    alt="check-icon.jpg"
-                                                />{' '}
-                                            </div>
+                                            <div className={'save-icon'}></div>
                                             {'Approve & Push'}
                                         </button>}
                                 </Fragment>
@@ -746,12 +741,7 @@ function SimulationApprovalSummary(props) {
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
                                     <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
-                                        <div className={"check-icon"}>
-                                            <img
-                                                src={require("../../../assests/images/check.png")}
-                                                alt="check-icon.jpg"
-                                            />
-                                        </div>{" "}
+                                        <div className={"save-icon"}></div>{" "}
                                         {"Push"}
                                     </button>
                                 </Fragment>

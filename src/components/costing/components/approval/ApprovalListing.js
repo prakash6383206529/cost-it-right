@@ -435,10 +435,7 @@ function ApprovalListing() {
                         <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                       )}
                       <button class="user-btn approval-btn" onClick={sendForApproval}>
-                        <img
-                          class="mr-1"
-                          src={require('../../../../assests/images/send-for-approval.svg')}
-                        ></img>{' '}
+                      <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
                     </div>

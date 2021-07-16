@@ -150,12 +150,7 @@ function CostingDetailSimulationDrawer(props) {
                                             {'Send For Approval'}
                                         </button>
                                         <button type="submit" className="user-btn float-none" onClick={onSaveSimulation}>
-                                            <div className={"check-icon"}>
-                                                <img
-                                                    src={require("../../../assests/images/check.png")}
-                                                    alt="check-icon.jpg"
-                                                />
-                                            </div>{" "}
+                                            <div className={"cancel-icon"}></div>{" "}
                                             {"Save Simulation"}
                                         </button> */}
                                         <button type={"button"} className="cancel-btn" onClick={cancel}>
