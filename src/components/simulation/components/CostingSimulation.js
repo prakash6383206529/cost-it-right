@@ -550,7 +550,8 @@ function CostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                            <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                                 {renderColumn()}
                                             </ExcelFile>
                                         </div>

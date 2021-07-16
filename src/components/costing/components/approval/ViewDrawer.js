@@ -110,7 +110,7 @@ function ViewDrawer(props) {
                   className="reset mr15 cancel-btn"
                   onClick={toggleDrawer}
                 >
-                  <div className={'cencel-icon'}></div>{' '}
+                  <div className={'cancel-icon'}></div>{' '}
                   {'Cancel'}
                 </button>
               </div>
