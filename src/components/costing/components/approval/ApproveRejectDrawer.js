@@ -616,7 +616,7 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
       </Drawer>
-      {openPushButton && (
+      {/* {openPushButton && (
         <PushButtonDrawer
           isOpen={openPushButton}
           closeDrawer={closePushButton}
@@ -624,7 +624,7 @@ function ApproveRejectDrawer(props) {
           dataSend={dataSend}
           anchor={'right'}
         />
-      )}
+      )} */}
     </>
   )
 }

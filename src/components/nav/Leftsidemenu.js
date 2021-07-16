@@ -67,7 +67,7 @@ class Leftmenu extends Component {
 													pathname: item.NavigationURL,
 													state: { ModuleId: ModuleId, PageName: item.PageName, PageURL: item.NavigationURL }
 												}}
-											>{item.PageName}</Link>
+											>{item.PageName === 'Client' ? 'Customer' : item.PageName}</Link>
 										</li>
 									)
 								})

@@ -117,7 +117,7 @@ function ApprovalSummary(props) {
         showListing === false ?
           <>
             <div className="container-fluid approval-summary-page">
-              <Errorbox customClass="d-none" errorText="There is some error in your page"/>
+              <Errorbox customClass="d-none" errorText="There is some error in your page" />
               <h2 className="heading-main">Approval Summary</h2>
               <Row>
                 <Col md="8">
@@ -380,20 +380,20 @@ function ApprovalSummary(props) {
                       <div className={'save-icon'}></div>
                       {'Approve'}
                     </button>
-                    {
+                    {/* {
                       showFinalLevelButtons &&
                       <button
                         type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                         <div className={'save-icon'}></div>
                         {'Approve & Push'}
                       </button>
-                    }
+                    } */}
                   </Fragment>
 
                 </div>
               </Row>
             }
-            {
+            {/* {
               showPushButton &&
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
@@ -405,7 +405,7 @@ function ApprovalSummary(props) {
                   </Fragment>
                 </div>
               </Row>
-            }
+            } */}
           </> :
           <ApprovalListing />
       }

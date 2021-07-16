@@ -818,18 +818,18 @@ function SimulationApprovalSummary(props) {
                                         {'Approve'}
                                     </button>
 
-                                    {showFinalLevelButtons &&
+                                    {/* {showFinalLevelButtons &&
                                         <button
                                             type="button" className="mr5 user-btn" onClick={() => { }}                    >
                                             <div className={'save-icon'}></div>
                                             {'Approve & Push'}
-                                        </button>}
+                                        </button>} */}
                                 </Fragment>
                             </div>
                         </Row>
                     }
 
-                    {
+                    {/* {
                         showPushButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
@@ -841,7 +841,7 @@ function SimulationApprovalSummary(props) {
                                 </Fragment>
                             </div>
                         </Row>
-                    }
+                    } */}
                 </>
                 // :
                 // <SimulationApprovalListing />

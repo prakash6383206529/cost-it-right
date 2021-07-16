@@ -362,7 +362,7 @@ class Main extends Component {
 
                     <Route path="/simulation" component={Simulation} />
 
-                    <Route path="/simulation-upload" component={SimulationUpload} />
+                    {/* <Route path="/simulation-upload" component={SimulationUpload} /> */}
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 

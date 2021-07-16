@@ -492,12 +492,12 @@ class SideBar extends Component {
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  pathname: el.LandingPageURL, //COMMENT FOR NOW
+                  pathname: '/simulation', //COMMENT FOR NOW
                   // pathname: '/simulation',
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
-                    PageURL: el.LandingPageURL,
+                    PageURL: "/simulation",
                   },
                 }}
               >
