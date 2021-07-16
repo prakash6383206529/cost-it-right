@@ -35,6 +35,7 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
+  console.log('first field: ', field);
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
@@ -54,7 +55,9 @@ export const TextFieldHookForm = (field) => {
           rules={rules}
           ref={register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value } }) => {
+            console.log('field: ', field);
+
             return (
               <input
                 {...field}
@@ -168,7 +171,7 @@ export const SearchableSelectHookForm = (field) => {
 
       {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
       {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
-      { errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
         : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
 
     </div>
