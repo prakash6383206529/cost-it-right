@@ -622,6 +622,7 @@ export const API = {
   getLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get`,
   getAllLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get-all`,
   updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
+  getSimulationLevelDataList: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get-all`,
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-vendor`,

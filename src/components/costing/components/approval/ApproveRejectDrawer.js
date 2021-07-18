@@ -16,7 +16,7 @@ import PushSection from '../../../common/PushSection'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -477,6 +477,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
+                        disabled={true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -493,6 +494,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.approver}
+                        disabled={true}
                       />
                     </div>
                     {
@@ -607,8 +609,11 @@ function ApproveRejectDrawer(props) {
         <PushButtonDrawer
           isOpen={openPushButton}
           closeDrawer={closePushButton}
-          approvalData={[approvalData]}
-          dataSend={dataSend}
+          approvalData={[approvalData ? approvalData : []]}
+          isSimulation={isSimulation}
+          simulationDetail={simulationDetail}
+          dataSend={dataSend ? dataSend : []}
+          costingList={costingList}
           anchor={'right'}
         />
       )}

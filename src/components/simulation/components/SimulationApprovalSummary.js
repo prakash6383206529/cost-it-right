@@ -26,12 +26,16 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
+<<<<<<< HEAD
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 const gridOptions = {};
+=======
+import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
+>>>>>>> m1-frontend-mahak-production-11-05-2020
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -59,7 +63,11 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+<<<<<<< HEAD
     const [oldCostingList, setOldCostingList] = useState([])
+=======
+    const [showPushDrawer, setShowPushDrawer] = useState(false)
+>>>>>>> m1-frontend-mahak-production-11-05-2020
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -122,6 +130,16 @@ function SimulationApprovalSummary(props) {
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
+        }
+    }
+
+    const closePushButton = (e = '', type) => {
+        if (type === 'submit') {
+            setPushButton(false)
+            setShowListing(true)
+            setRejectDrawer(false)
+        } else {
+            setPushButton(false)
         }
     }
 
@@ -428,6 +446,10 @@ function SimulationApprovalSummary(props) {
 
     const renderEffectiveDate = () => {
         return <>Effective <br /> Date</>
+    }
+    const handleApproveAndPushButton = () => {
+        setShowPushDrawer(true)
+        setApproveDrawer(true)
     }
 
     const options = {
@@ -820,7 +842,7 @@ function SimulationApprovalSummary(props) {
 
                                     {showFinalLevelButtons &&
                                         <button
-                                            type="button" className="mr5 user-btn" onClick={() => { }}                    >
+                                            type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                                             <div className={'save-icon'}></div>
                                             {'Approve & Push'}
                                         </button>}
@@ -856,9 +878,10 @@ function SimulationApprovalSummary(props) {
                 anchor={'right'}
                 isSimulation={true}
                 simulationDetail={simulationDetail}
+                costingList={costingList}
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
-            // IsPushDrawer={showPushDrawer}
+                IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
 
@@ -876,13 +899,17 @@ function SimulationApprovalSummary(props) {
             // dataSend={[approvalDetails, partDetail]}
             />}
 
-            {/* {pushButton && <PushButtonDrawer
+            {pushButton && <PushButtonDrawer
                 isOpen={pushButton}
                 closeDrawer={closePushButton}
-                dataSend={[approvalDetails, partDetail]}
+                approvalData={[approvalData ? approvalData : []]}
+                isSimulation={true}
+                simulationDetail={simulationDetail}
+                // dataSend={dataSend ? dataSend : []}
+                costingList={costingList}
                 anchor={'right'}
-                approvalData={[approvalData]}
-            />} */}
+            // approvalData={[approvalData]}
+            />}
 
             {viewButton && <ViewDrawer
                 approvalLevelStep={approvalLevelStep}

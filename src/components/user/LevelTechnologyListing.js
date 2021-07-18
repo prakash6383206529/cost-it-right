@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-	Container, Row, Col, Button, Table
-} from 'reactstrap';
-import { getAllLevelMappingAPI, deleteUserLevelAPI } from '../../actions/auth/AuthActions';
+import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { CONSTANT } from '../../helper/AllConastant';
@@ -34,6 +32,7 @@ class LevelTechnologyListing extends Component {
 
 	componentDidMount() {
 		this.getLevelsListData();
+		this.getSimulationDataList();
 		this.props.onRef(this);
 	}
 
@@ -52,20 +51,25 @@ class LevelTechnologyListing extends Component {
 		});
 	}
 
+	getSimulationDataList = () => {
+		this.props.getSimulationLevelDataList(res => { })
+	}
+
 	/**
 	* @method getUpdatedData
 	* @description get updated data after updatesuccess
 	*/
 	getUpdatedData = () => {
 		this.getLevelsListData()
+		this.getSimulationDataList()
 	}
 
 	/**
 	 * @method editItemDetails
 	 * @description confirm edit item
 	 */
-	editItemDetails = (Id) => {
-		this.props.getLevelMappingDetail(Id)
+	editItemDetails = (Id, levelType) => {
+		this.props.getLevelMappingDetail(Id, levelType)
 	}
 
 	/**
@@ -189,11 +193,10 @@ class LevelTechnologyListing extends Component {
 			firstPage: <span className="first-page-pg"></span>, // First page button text
 			lastPage: <span className="last-page-pg"></span>,
 			pagination: true,
-			sizePerPageList: [{
-				text: '5', value: 5
-			}, {
-				text: '10', value: 10
-			}],
+			sizePerPageList: [
+				{ text: '5', value: 5 },
+				{ text: '10', value: 10 }
+			],
 			sizePerPage: 5,
 		};
 
@@ -213,7 +216,6 @@ class LevelTechnologyListing extends Component {
 
 		return (
 			<>
-				{/* {this.props.loading && <Loader />} */}
 				<Row className="levellisting-page">
 					<Col md="12">
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
@@ -228,10 +230,10 @@ class LevelTechnologyListing extends Component {
 							title="Add"
 							onClick={this.props.mappingToggler}>
 							<div className={'plus mr-0'}></div>
-							</button>}
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+						</button>}
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+							<div className="refresh mr-0"></div>
+						</button>
 					</Col>
 				</Row>
 				<Row className="levellisting-page">
@@ -310,8 +312,8 @@ class LevelTechnologyListing extends Component {
 							<div className={'plus'}></div>
 							{'Add'}</button>} */}
 						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+							<div className="refresh mr-0"></div>
+						</button>
 					</Col>
 				</Row>
 
@@ -386,9 +388,9 @@ class LevelTechnologyListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { loading, levelMappingList } = auth;
+	const { loading, levelMappingList, simulationLevelDataList } = auth;
 
-	return { loading, levelMappingList };
+	return { loading, levelMappingList, simulationLevelDataList };
 }
 
 
@@ -396,5 +398,6 @@ export default connect(mapStateToProps,
 	{
 		getAllLevelMappingAPI,
 		deleteUserLevelAPI,
+		getSimulationLevelDataList,
 	})(LevelTechnologyListing);
 
