@@ -23,6 +23,7 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
+import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
 
 function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, } = props;
@@ -44,6 +45,7 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [showPushDrawer, setShowPushDrawer] = useState(false)
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -98,6 +100,16 @@ function SimulationApprovalSummary(props) {
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
+        }
+    }
+
+    const closePushButton = (e = '', type) => {
+        if (type === 'submit') {
+            setPushButton(false)
+            setShowListing(true)
+            setRejectDrawer(false)
+        } else {
+            setPushButton(false)
         }
     }
 
@@ -297,6 +309,11 @@ function SimulationApprovalSummary(props) {
                 <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
             </>
         )
+    }
+
+    const handleApproveAndPushButton = () => {
+        setShowPushDrawer(true)
+        setApproveDrawer(true)
     }
 
     const options = {
@@ -584,7 +601,7 @@ function SimulationApprovalSummary(props) {
 
                                     {showFinalLevelButtons &&
                                         <button
-                                            type="button" className="mr5 user-btn" onClick={() => { }}                    >
+                                            type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                                             <div className={'check-icon'}>
                                                 <img
                                                     src={require('../../../assests/images/check.png')}
@@ -630,9 +647,10 @@ function SimulationApprovalSummary(props) {
                 anchor={'right'}
                 isSimulation={true}
                 simulationDetail={simulationDetail}
+                costingList={costingList}
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
-            // IsPushDrawer={showPushDrawer}
+                IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
 
@@ -650,13 +668,17 @@ function SimulationApprovalSummary(props) {
             // dataSend={[approvalDetails, partDetail]}
             />}
 
-            {/* {pushButton && <PushButtonDrawer
+            {pushButton && <PushButtonDrawer
                 isOpen={pushButton}
                 closeDrawer={closePushButton}
-                dataSend={[approvalDetails, partDetail]}
+                approvalData={[approvalData ? approvalData : []]}
+                isSimulation={true}
+                simulationDetail={simulationDetail}
+                // dataSend={dataSend ? dataSend : []}
+                costingList={costingList}
                 anchor={'right'}
-                approvalData={[approvalData]}
-            />} */}
+            // approvalData={[approvalData]}
+            />}
 
             {viewButton && <ViewDrawer
                 approvalLevelStep={approvalLevelStep}
