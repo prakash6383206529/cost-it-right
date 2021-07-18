@@ -26,16 +26,13 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
-<<<<<<< HEAD
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-const gridOptions = {};
-=======
 import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
->>>>>>> m1-frontend-mahak-production-11-05-2020
+const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
