@@ -60,11 +60,8 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
-<<<<<<< HEAD
     const [oldCostingList, setOldCostingList] = useState([])
-=======
     const [showPushDrawer, setShowPushDrawer] = useState(false)
->>>>>>> m1-frontend-mahak-production-11-05-2020
 
 
     const [compareCosting, setCompareCosting] = useState(false)
