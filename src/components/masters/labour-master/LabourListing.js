@@ -643,7 +643,7 @@ class LabourListing extends Component {
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}

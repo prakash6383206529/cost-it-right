@@ -180,7 +180,7 @@ function AddProcess(props) {
     // getDataList()
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
 
   };
 
@@ -210,6 +210,10 @@ function AddProcess(props) {
   }, [tableData])
 
   const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.MachineRateId) : false;
+
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+  }
 
   /**
   * @method render
@@ -263,6 +267,9 @@ function AddProcess(props) {
                   <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                        <div className="refresh mr-0"></div>
+                      </button>
                     </div>
                     <div
                       className="ag-theme-material"
