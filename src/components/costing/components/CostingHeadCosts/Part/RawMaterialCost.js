@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -45,6 +45,8 @@ function RawMaterialCost(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+
+  const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
 
   const dispatch = useDispatch()
 
@@ -216,7 +218,7 @@ function RawMaterialCost(props) {
         tempData = {
           ...tempData,
           GrossWeight: GrossWeight,
-          NetLandedCost: NetLandedCost,
+          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
@@ -230,12 +232,12 @@ function RawMaterialCost(props) {
           const RMRate = calculatePercentageValue(tempData.RMRate, (100 - getValues('MBPercentage')));
           const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
           const ScrapRate = (tempData.ScrapRate * scrapWeight)
-          const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
+          const NetLandedCost = isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull((RMRatePlusMasterBatch - ScrapRate) / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : (RMRatePlusMasterBatch - ScrapRate);
 
           tempData = {
             ...tempData,
             GrossWeight: GrossWeight,
-            NetLandedCost: NetLandedCost,
+            NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
@@ -261,7 +263,7 @@ function RawMaterialCost(props) {
           ...tempData,
           GrossWeight: GrossWeight,
           FinishWeight: 0,
-          NetLandedCost: NetLandedCost,
+          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
@@ -279,7 +281,7 @@ function RawMaterialCost(props) {
           tempData = {
             ...tempData,
             GrossWeight: GrossWeight,
-            NetLandedCost: NetLandedCost,
+            NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
@@ -318,7 +320,7 @@ function RawMaterialCost(props) {
       tempData = {
         ...tempData,
         FinishWeight: FinishWeight,
-        NetLandedCost: NetLandedCost,
+        NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
         WeightCalculatorRequest: {},
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
@@ -336,7 +338,7 @@ function RawMaterialCost(props) {
         tempData = {
           ...tempData,
           GrossWeight: GrossWeight,
-          NetLandedCost: NetLandedCost,
+          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
@@ -364,7 +366,7 @@ function RawMaterialCost(props) {
         tempData = {
           ...tempData,
           FinishWeight: FinishWeight,
-          NetLandedCost: NetLandedCost,
+          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
@@ -382,7 +384,7 @@ function RawMaterialCost(props) {
           tempData = {
             ...tempData,
             GrossWeight: GrossWeight,
-            NetLandedCost: NetLandedCost,
+            NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
@@ -404,7 +406,7 @@ function RawMaterialCost(props) {
         tempData = {
           ...tempData,
           FinishWeight: 0,
-          NetLandedCost: NetLandedCost,
+          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           CutOffRMC: CutOffRMC,
         }
@@ -420,7 +422,7 @@ function RawMaterialCost(props) {
           tempData = {
             ...tempData,
             GrossWeight: GrossWeight,
-            NetLandedCost: NetLandedCost,
+            NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
@@ -481,7 +483,7 @@ function RawMaterialCost(props) {
         ...tempData,
         FinishWeight: FinishWeight,
         GrossWeight: GrossWeight,
-        NetLandedCost: NetLandedCost,
+        NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
         WeightCalculatorRequest: weightData,
         WeightCalculationId: weightData.WeightCalculationId,
         IsCalculatedEntry: true,
@@ -546,7 +548,7 @@ function RawMaterialCost(props) {
 
       const ApplicableFinishWeight = (checkForNull(tempData?.FinishWeight) !== 0) ? (GrossWeight - FinishWeight) * tempData?.ScrapRate : 0;
       const NetLandedCost = (GrossWeight * tempData?.RMRate) - ApplicableFinishWeight;
-      tempData = { ...tempData, NetLandedCost: NetLandedCost, }
+      tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       tempArr = Object.assign([...gridData], { [0]: tempData })
       setGridData(tempArr)
       setValue(`${rmGridFields}.${0}.GrossWeight`, GrossWeight)
@@ -633,7 +635,7 @@ function RawMaterialCost(props) {
 
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 
-      tempData = { ...tempData, NetLandedCost: NetLandedCost, }
+      tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       let tempArr = Object.assign([...gridData], { [0]: tempData })
       setGridData(tempArr)
 
@@ -659,7 +661,7 @@ function RawMaterialCost(props) {
 
       const ApplicableFinishWeight = (tempData.FinishWeight !== 0) ? (tempData.GrossWeight - tempData.FinishWeight) * tempData.ScrapRate : 0;
       const NetLandedCost = (tempData.GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
-      tempData = { ...tempData, NetLandedCost: NetLandedCost, }
+      tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       let tempArr = Object.assign([...gridData], { [0]: tempData })
       setValue('RMTotal', checkForNull(value))
       setGridData(tempArr)
@@ -744,7 +746,7 @@ function RawMaterialCost(props) {
                       <th style={{ width: "220px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "220px" }}>{`Finish Weight`}</th>
                       <th style={{ width: "220px" }}>{`Scrap Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Net RM Cost`}</th>
+                      <th style={{ width: "220px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>

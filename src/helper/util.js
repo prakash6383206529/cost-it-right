@@ -5,7 +5,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS,
 } from '../config/constants'
 
 /**
@@ -739,4 +739,7 @@ export function getTechnologyPermission(technology) {
   }
 }
 
-
+export function isRMDivisorApplicable(technology) {
+  const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
+  return allowedTechnologyForRMDivisor.includes(technology);
+}
