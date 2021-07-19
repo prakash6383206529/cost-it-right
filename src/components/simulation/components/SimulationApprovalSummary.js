@@ -430,6 +430,12 @@ function SimulationApprovalSummary(props) {
         return <>Effective <br /> Date</>
     }
 
+    const rawMaterailFormat = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return cell != null ? `${cell}- ${row.RMGrade}` : '-';
+    }
+
     const options = {
         clearSearch: true,
         noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -465,6 +471,10 @@ function SimulationApprovalSummary(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+    }
+
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
         // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -485,7 +495,7 @@ function SimulationApprovalSummary(props) {
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
-
+        rawMaterailFormat: rawMaterailFormat
 
     };
 
@@ -723,6 +733,9 @@ function SimulationApprovalSummary(props) {
                                                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                                         <div className="ag-grid-header">
                                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                                <div className="refresh mr-0"></div>
+                                                            </button>
                                                         </div>
                                                         <div
                                                             className="ag-theme-material"
@@ -749,7 +762,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                                                 <AgGridColumn width={140} field="VendorName" headerName="Vendor" headerName="Vendor Name"></AgGridColumn>
                                                                 <AgGridColumn width={130} field="Technology" headerName="Technology"></AgGridColumn>
-                                                                <AgGridColumn width={172} field="RMName" headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                <AgGridColumn width={172} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
                                                                 <AgGridColumn width={120} field="PartNo" headerName="Part No."></AgGridColumn>
                                                                 <AgGridColumn width={120} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={120} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>

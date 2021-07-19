@@ -64,6 +64,7 @@ import {
   CLOSE_OPEN_ACCORDION,
   BOP_DRAWER_LIST,
   SET_CUTOFF_RMC,
+  GET_COSTING_SPECIFIC_TECHNOLOGY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -528,6 +529,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         RMCCutOffObj: action.payload
+      }
+    case GET_COSTING_SPECIFIC_TECHNOLOGY:
+      return {
+        ...state,
+        loading: false,
+        costingSpecifiTechnology: action.payload
       }
     default:
       return state

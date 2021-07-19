@@ -1734,6 +1734,8 @@ export const RMDomesticSimulation = [
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'NewBasicRate', value: 'NewBasicRate' },
+    { label: 'RMFreightCost', value: "RMFreightCost" },
+    { label: "RMShearingCost", value: "RMShearingCost" },
     { label: "ScrapRate", value: "ScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -2257,6 +2259,8 @@ export const CostingSimulationDownload = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Finish Weight", value: "RawMaterialFinishWeight" },
+    { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "Old Basic Rate", value: "OldRMRate" },
@@ -2265,8 +2269,6 @@ export const CostingSimulationDownload = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
-    { label: "Finish Weight", value: "RawMaterialFinishWeight" },
-    { label: "Gross Weight", value: "RawMaterialGrossWeight" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]

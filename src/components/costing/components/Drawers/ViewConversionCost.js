@@ -302,19 +302,20 @@ function ViewConversionCost(props) {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
-                        <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                        <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
-                        <td>{netTransportationCostView && netTransportationCostView.TransportationCost ? checkForDecimalAndNull(netTransportationCostView.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      </tr>
-                      {netTransportationCostView && Object.keys(netTransportationCostView).length === 0 && (
+                      {netTransportationCostView && netTransportationCostView.UOM === null ?
                         <tr>
                           <td colSpan={12}>
                             <NoContentFound title={CONSTANT.EMPTY_DATA} />
                           </td>
+                        </tr> :
+                        <tr>
+                          <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
+                          <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                          <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                          <td>{netTransportationCostView && netTransportationCostView.TransportationCost ? checkForDecimalAndNull(netTransportationCostView.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         </tr>
-                      )}
+                      }
+
                     </tbody>
                   </Table>
                 </Col>

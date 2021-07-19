@@ -18,7 +18,7 @@ import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -98,14 +98,14 @@ function CostingDetails(props) {
     reset()
     InjectRolePermission()
     dispatch(storePartNumber(''))
-    dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
     dispatch(gridDataAdded(false))
   }, [])
 
-  const technologySelectList = useSelector((state) => state.costing.technologySelectList)
+  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)

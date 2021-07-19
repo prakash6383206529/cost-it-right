@@ -423,7 +423,7 @@ function CostingSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
 
     };
 
@@ -435,6 +435,11 @@ function CostingSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+    }
+
 
     const frameworkComponents = {
 
@@ -488,6 +493,9 @@ function CostingSimulation(props) {
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-grid-header">
                                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                        <div className="refresh mr-0"></div>
+                                                    </button>
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
@@ -525,6 +533,8 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                         <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                         <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
@@ -534,8 +544,6 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn type="rightAligned" width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
 
                                                     </AgGridReact>
 
@@ -571,7 +579,7 @@ function CostingSimulation(props) {
                                         disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                         onClick={onSaveSimulation}>
                                         <div className={"save-icon"}></div>
-                                        {"Save Simulation"}
+                                        {"Go to History"}
                                     </button>
 
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>

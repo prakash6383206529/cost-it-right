@@ -96,7 +96,7 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-            
+
             <Row className="mx-0">
               <Col md="12">
                 <hr />
@@ -113,17 +113,20 @@ function ViewBOP(props) {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
-                      <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
-                    </tr>
-                    {/* {Object.keys(bopHandlingPercentage).length === 0 && (
-                      <tr>
-                        <td colSpan={7}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                        </td>
-                      </tr>
-                    )} */}
+                    {
+                      bopHandlingPercentage ?
+                        <tr>
+                          <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
+                          <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        </tr> :
+
+                        <tr>
+                          <td colSpan={7}>
+                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          </td>
+                        </tr>
+                    }
+
                   </tbody>
                 </Table>
               </Col>
