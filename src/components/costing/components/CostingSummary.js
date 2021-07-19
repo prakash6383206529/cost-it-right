@@ -7,11 +7,11 @@ import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
-  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology,
+  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { formViewData } from '../../../helper'
+import { formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
@@ -38,7 +38,7 @@ function CostingSummary(props) {
 
   const costingData = useSelector(state => state.costing.costingData)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
-  const technologySelectList = useSelector(state => state.costing.technologySelectList,)
+  const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology,)
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
 
@@ -60,7 +60,7 @@ function CostingSummary(props) {
 
 
   useEffect(() => {
-    dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))

@@ -18,6 +18,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
 import PushSection from '../../../common/PushSection'
+const _ = require('lodash');
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -257,12 +258,19 @@ const SendForApproval = (props) => {
     )
   }
 
+
+  var debounce_fun = _.debounce(function () {
+    console.log('Function debounced after 1000ms!');
+  }, 2000);
+
+
   /**
    * @method onSubmit
    * @param {*} data
    * @description This method is called on the submission of the form for send for approval
    */
   const onSubmit = (data) => {
+
 
     let count = 0
     viewApprovalData.map((item) => {
@@ -389,14 +397,17 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
 
 
-    dispatch(
-      sendForApprovalBySender(obj, (res) => {
-        toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-        props.closeDrawer('', 'Submit')
-        dispatch(setCostingApprovalData([]))
-        dispatch(setCostingViewData([]))
-      }),
-    )
+    debounce_fun()
+    console.log("After debounce");
+    props.closeDrawer()
+    // dispatch(
+    //   sendForApprovalBySender(obj, (res) => {
+    //     toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+    //     props.closeDrawer('', 'Submit')
+    //     dispatch(setCostingApprovalData([]))
+    //     dispatch(setCostingViewData([]))
+    //   }),
+    // )
   }
 
   const handleApproverChange = (data) => {
