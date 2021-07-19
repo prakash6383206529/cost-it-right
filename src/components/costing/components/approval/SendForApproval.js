@@ -397,17 +397,17 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
 
 
-    debounce_fun()
-    console.log("After debounce");
+    // debounce_fun()
+    // console.log("After debounce");
     props.closeDrawer()
-    // dispatch(
-    //   sendForApprovalBySender(obj, (res) => {
-    //     toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-    //     props.closeDrawer('', 'Submit')
-    //     dispatch(setCostingApprovalData([]))
-    //     dispatch(setCostingViewData([]))
-    //   }),
-    // )
+    dispatch(
+      sendForApprovalBySender(obj, (res) => {
+        toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        props.closeDrawer('', 'Submit')
+        dispatch(setCostingApprovalData([]))
+        dispatch(setCostingViewData([]))
+      }),
+    )
   }
 
   const handleApproverChange = (data) => {
