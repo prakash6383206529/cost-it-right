@@ -170,9 +170,9 @@ function OverheadProfit(props) {
     UpdateForm()
   }, [overheadObj, profitObj])
 
-  const overheadFieldValues = useWatch({
+  const overheadFixedFieldValues = useWatch({
     control,
-    name: ['OverheadFixedPercentage',],
+    name: 'OverheadFixedPercentage',
   });
 
   const interestRateValues = useWatch({
@@ -180,9 +180,9 @@ function OverheadProfit(props) {
     name: ['InterestRatePercentage',],
   });
 
-  const profitFieldValues = useWatch({
+  const profitFixedFieldValues = useWatch({
     control,
-    name: ['ProfitFixedPercentage',],
+    name: 'ProfitFixedPercentage',
   });
 
   const rejectionFieldValues = useWatch({
@@ -355,7 +355,7 @@ function OverheadProfit(props) {
   useEffect(() => {
     calculateOverheadFixedTotalCost()
     calculateProfitFixedTotalCost()
-  }, [overheadFieldValues, profitFieldValues]);
+  }, [overheadFixedFieldValues, profitFixedFieldValues]);
 
   const modelTypes = useSelector(state => state.comman.modelTypes)
   const costingHead = useSelector(state => state.comman.costingHead)
@@ -367,19 +367,17 @@ function OverheadProfit(props) {
   * @description CALCULATE OVERHEAD FIXED TOTAL COST
   */
   const calculateOverheadFixedTotalCost = () => {
-    const { OverheadFixedPercentage } = overheadFieldValues;
-
-    if (headerCosts !== undefined && OverheadFixedPercentage !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
+    if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
+      console.log('OverheadFixedPercentage: IN', overheadFixedFieldValues, overheadObj, overheadObj.IsOverheadFixedApplicable);
       setValue('OverheadFixedCost', '-')
-      setValue('OverheadFixedTotalCost', checkForDecimalAndNull(OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice))
+      setValue('OverheadFixedTotalCost', checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration.NoOfDecimalForPrice))
       setOverheadObj({
         ...overheadObj,
-        OverheadFixedPercentage: OverheadFixedPercentage,
+        OverheadFixedPercentage: overheadFixedFieldValues,
         OverheadFixedCost: '-',
-        OverheadFixedTotalCost: checkForDecimalAndNull(OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice),
+        OverheadFixedTotalCost: checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration.NoOfDecimalForPrice),
       })
     }
-
   }
 
   /**
@@ -485,16 +483,14 @@ function OverheadProfit(props) {
   * @description CALCULATE PROFIT FIXED TOTAL COST
   */
   const calculateProfitFixedTotalCost = () => {
-    const { ProfitFixedPercentage } = profitFieldValues;
-
-    if (headerCosts !== undefined && ProfitFixedPercentage !== undefined && profitObj && profitObj.IsProfitFixedApplicable) {
+    if (headerCosts !== undefined && profitFixedFieldValues !== undefined && profitObj && profitObj.IsProfitFixedApplicable) {
       setValue('ProfitFixedCost', '-')
-      setValue('ProfitFixedTotalCost', checkForDecimalAndNull(ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice))
+      setValue('ProfitFixedTotalCost', checkForDecimalAndNull(profitFixedFieldValues, initialConfiguration.NoOfDecimalForPrice))
       setProfitObj({
         ...profitObj,
-        ProfitFixedPercentage: ProfitFixedPercentage,
+        ProfitFixedPercentage: profitFixedFieldValues,
         ProfitFixedCost: '-',
-        ProfitFixedTotalCost: checkForDecimalAndNull(ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice),
+        ProfitFixedTotalCost: checkForDecimalAndNull(profitFixedFieldValues, initialConfiguration.NoOfDecimalForPrice),
       })
     }
   }
