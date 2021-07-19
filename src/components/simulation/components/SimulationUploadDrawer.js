@@ -140,7 +140,7 @@ class SimulationUploadDrawer extends Component {
                             if (val[10] !== '') {
                                 basicRateCount = basicRateCount + 1
                             }
-                            if (val[10] === '' && val[12] === '') {
+                            if (val[10] === '' && val[14] === '') {
                                 incorrectRowCount = incorrectRowCount + 1
                                 return false
                             }
