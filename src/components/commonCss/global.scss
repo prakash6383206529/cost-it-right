@@ -742,6 +742,8 @@ a:hover {
             }
             .ag-react-container{
               height: 100%;
+              text-overflow: ellipsis;
+              overflow: hidden;
               .red-value,.green-value,.form-control{
                 display: inline-block;
                 vertical-align: middle;
@@ -756,11 +758,11 @@ a:hover {
                 overflow: hidden;
               }
             }
-            &:not(:nth-child(1)){
-              .ag-selection-checkbox.ag-invisible{
-                display: none;
-              }
+            
+            .ag-selection-checkbox.ag-invisible{
+              display: none;
             }
+            
           }
         }
       }
@@ -796,7 +798,7 @@ a:hover {
         padding:6px 30px 6px 10px !important;
         display: inline-block;
         margin-right: 20px;
-        border-color: #e5eaf9;
+        border-color: #e5eaf9; 
       }
       .paging-container{
         margin-top: -44px;
@@ -834,14 +836,14 @@ a:hover {
       }
 
     }
-    .smh-approval-summary-page{
-      .ag-grid-react{
-        .ag-grid-wrapper{
-          min-height: 230px;
-          height: 230px !important;
-        }
-      }  
-    }
+    // .smh-approval-summary-page{
+    //   .ag-grid-react{
+    //     .ag-grid-wrapper{
+    //       min-height: 230px;
+    //       height: 230px !important;
+    //     }
+    //   }  
+    // }
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
