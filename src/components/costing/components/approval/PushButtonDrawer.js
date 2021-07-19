@@ -185,7 +185,7 @@ function PushButtonDrawer(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    // defaultValue={dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''}         // need to do once data started coming
+                    defaultValue={!isSimulation ? dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '' : simulationDetail && costingList[0].DepartmentCode}         // need to do once data started coming
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.CompanyCode}
