@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import $ from "jquery";
+import errImg from "../../assests/images/error_image.svg";
 
 
 class NotFoundPage extends Component {
@@ -41,7 +42,7 @@ class NotFoundPage extends Component {
         {location.pathname !== "/" ? (
               <>
               <div className="col-md-6 ">
-                <img src={require("../../assests/images/error_image.svg")} alt="error-icon" />
+              <img src={errImg} alt="error-icon" />
               </div>
               <div className="col-md-6 d-inline-flex align-items-center">
                 <div className="">

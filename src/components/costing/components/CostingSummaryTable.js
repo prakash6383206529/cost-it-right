@@ -1207,10 +1207,7 @@ const CostingSummaryTable = (props) => {
                                   }}
                                 >
                                   {' '}
-                                  <img
-                                    class="mr-1"
-                                    src={require('../../../assests/images/send-for-approval.svg')}
-                                  ></img>
+                                  <div class="send-for-approval"></div>
                                   Send For Approval
                                 </button>
                               }

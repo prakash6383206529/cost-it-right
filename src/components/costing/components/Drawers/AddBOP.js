@@ -437,7 +437,7 @@ function AddBOP(props) {
                     type={'button'}
                     className="submit-button mr5 save-btn"
                     onClick={addRow} >
-                    <div className={"save-icon"}></div>
+                    <div className={'save-icon'}></div>
                     {'SELECT'}
                   </button>
 

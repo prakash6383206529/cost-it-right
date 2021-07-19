@@ -559,7 +559,7 @@ function CostingSimulation(props) {
 
                                 </Row>
                                 <Row>
-                                    <Col>
+                                    
 
                                         <Col>
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -591,25 +591,25 @@ function CostingSimulation(props) {
                                                         onSelectionChanged={onRowSelect}
                                                     // isRowSelectable={isRowSelectable}
                                                     >
-                                                        <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
-                                                        <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
-                                                        <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={150} type="leftAligned" field="CostingNumber" headerName='Costing ID'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="CostingHead" headerName='Costing Head'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                        <AgGridColumn width={120} type="leftAligned" field="PlantCode" headerName='Plant Code'></AgGridColumn>
+                                                        <AgGridColumn width={110} type="leftAligned" field="RMName" hide ></AgGridColumn>
+                                                        <AgGridColumn width={120} type="leftAligned" field="RMGrade" hide ></AgGridColumn>
+                                                        <AgGridColumn width={110} type="leftAligned" field="PartNo" headerName='Part No.'></AgGridColumn>
+                                                        <AgGridColumn width={120} type="leftAligned" field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={130} type="leftAligned" field="Technology" headerName='Technology'></AgGridColumn>
+                                                        <AgGridColumn width={110} type="leftAligned" field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={130} type="leftAligned" field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="OldRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="NewRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="OldScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} type="leftAligned" field="NewScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn type="rightAligned" width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
@@ -627,7 +627,7 @@ function CostingSimulation(props) {
                                             </div>
                                         </Col>
 
-                                    </Col>
+                                    
                                 </Row>
                             </div>
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
