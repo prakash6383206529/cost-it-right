@@ -31,6 +31,7 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import userPic from '../../assests/images/user-pic.png'
 import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
+import activeReport from '../../assests/images/report-active.svg'
 
 class SideBar extends Component {
   constructor(props) {
@@ -400,7 +401,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/report-active.svg") : reportImg}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeReport : reportImg}
                   alt={module + " icon"}
                 />
                 <span>Report</span>

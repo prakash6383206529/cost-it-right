@@ -323,12 +323,9 @@ class BOMViewer extends Component {
                                 })
                               }
                             >
-                              <div className={"cross-icon"}>
-                                <img
-                                  src={require("../../../assests/images/trash-red.svg")}
-                                  alt="delete-icon.jpg"
-                                />
-                              </div>{" "}
+                              
+                              <div className="trashred-icon"></div>
+                              
                               {"Delete"}
                             </button>
                             <button
