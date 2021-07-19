@@ -4664,7 +4664,7 @@ body{
   }
   .role-permision-page {
     .add-min-height{
-      min-height: calc(100vh - 270px);
+      min-height: calc(100vh - 232px);
     }
   }
 
@@ -5039,10 +5039,13 @@ body{
       }
       
       .trashred-icon{
-        width: 11px;
-        height: 14px;
+        width: calc(11px * 80 / 100);
+        height: calc(14px * 80 / 100);
       }
-      
+      .edit-icon{
+        width: calc(14px * 80 / 100);
+        height: calc(14px * 80 / 100);
+      }
       
       .download-btn{
          button{width: 100%;}
