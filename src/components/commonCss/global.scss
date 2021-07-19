@@ -742,6 +742,8 @@ a:hover {
             }
             .ag-react-container{
               height: 100%;
+              text-overflow: ellipsis;
+              overflow: hidden;
               .red-value,.green-value,.form-control{
                 display: inline-block;
                 vertical-align: middle;
@@ -756,11 +758,11 @@ a:hover {
                 overflow: hidden;
               }
             }
-            &:not(:nth-child(1)){
-              .ag-selection-checkbox.ag-invisible{
-                display: none;
-              }
+            
+            .ag-selection-checkbox.ag-invisible{
+              display: none;
             }
+            
           }
         }
       }

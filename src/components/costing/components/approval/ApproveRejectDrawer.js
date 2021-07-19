@@ -318,7 +318,7 @@ function ApproveRejectDrawer(props) {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(objs, res => {
           if (res.data.Result) {
-            toastr.success('Costing Rejected')
+            toastr.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))

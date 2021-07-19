@@ -656,7 +656,7 @@ function CostingSimulation(props) {
                                         disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                         onClick={onSaveSimulation}>
                                         <div className={"save-icon"}></div>
-                                        {"Save Simulation"}
+                                        {"Go to History"}
                                     </button>
 
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>

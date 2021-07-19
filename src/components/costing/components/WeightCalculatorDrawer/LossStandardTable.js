@@ -222,7 +222,7 @@ function LossStandardTable(props) {
         </Col>
         <Col md="3">
           <TextFieldHookForm
-            label={`Lost(%)`}
+            label={`Loss(%)`}
             name={'LossPercentage'}
             Controller={Controller}
             control={control}

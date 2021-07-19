@@ -298,18 +298,9 @@ export const DatePickerHookForm = (field) => {
 */
 // import Typography from "../typography";
 // import "./radioButtons.less";
-export const RadioHookForm = ({
-  dataArray = [],
-  label = "label",
-  optionsValue = "optionsValue",
-  labelElement = '',
-  className,
-  selectedValue = "",
-  register,
-  name,
-  onChange = null,
-  // disable = false
-}) => {
+export const RadioHookForm = (field) => {
+  const { dataArray = [], label = "label", optionsValue = "optionsValue", labelElement = '', className, selectedValue = "", register, name, onChange = null, defaultValue } = field
+
   const onChangeSelect = (val) => {
     onChange && onChange(val);
   };
@@ -325,10 +316,13 @@ export const RadioHookForm = ({
                 <li className="p-3" key={index}>
                   <label className="radio-button-wrapper radio-box">
                     <input
+                      {...field}
+                      {...register}
                       name={name}
                       type="radio"
                       value={data[optionsValue]}
-                      {...register}
+                      defaultValue={defaultValue}
+                      checked={defaultValue}
                       onChange={e =>
                         onChangeSelect(
                           e.target.value

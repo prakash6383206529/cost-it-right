@@ -282,9 +282,9 @@ class RMListing extends Component {
                                 type={"button"}
                                 className={"user-btn mr5"}
                                 onClick={this.openAssociationModel}
-                                title="Association"
-                            >
-                                <div className={"plus mr-0"}></div>
+                                title="Add Association"
+                            >{"A"}
+                                <div className={"plus mr-0 ml5"}></div>
                             </button>
                         )}
                         {AddAccessibility && (
@@ -292,9 +292,9 @@ class RMListing extends Component {
                                 type={"button"}
                                 className={"user-btn mr5"}
                                 onClick={this.openModel}
-                                title="Add"
-                            >
-                                <div className={"plus mr-0"}></div>
+                                title="Add Material"
+                            >{"M"}
+                                <div className={"plus mr-0 ml5"}></div>
                             </button>
                         )}
                         {

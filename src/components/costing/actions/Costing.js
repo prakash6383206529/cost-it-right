@@ -12,6 +12,7 @@ import {
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE, CLOSE_OPEN_ACCORDION, IS_COSTING_EFFECTIVE_DATE_DISABLED, config, BOP_DRAWER_LIST,
   SET_CUTOFF_RMC,
+  GET_COSTING_SPECIFIC_TECHNOLOGY,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2129,3 +2130,28 @@ export function setRMCutOff(cutOffObj) {
     });
   }
 };
+
+/**
+ * @method getCostingTechnologySelectList
+ * @description GET TECHNOLOGY SELECTLIST
+ */
+export function getCostingSpecificTechnology(loggedInUserId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getCostingSpecificTechnology}/${loggedInUserId}`, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_COSTING_SPECIFIC_TECHNOLOGY,
+            payload: response.data.SelectList,
+          })
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}

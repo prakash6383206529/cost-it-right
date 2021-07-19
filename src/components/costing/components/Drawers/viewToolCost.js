@@ -3,6 +3,8 @@ import { checkForDecimalAndNull } from '../../../../../src/helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux';
+import NoContentFound from '../../../common/NoContentFound';
+import { CONSTANT } from '../../../../helper/AllConastant';
 
 
 function ViewToolCost(props) {
@@ -68,6 +70,13 @@ function ViewToolCost(props) {
                         )
                       })
                     }
+                    {viewToolCost.length === 0 && (
+                      <tr>
+                        <td colSpan={7}>
+                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </Col>

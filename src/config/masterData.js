@@ -1734,6 +1734,8 @@ export const RMDomesticSimulation = [
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'NewBasicRate', value: 'NewBasicRate' },
+    { label: 'RMFreightCost', value: "RMFreightCost" },
+    { label: "RMShearingCost", value: "RMShearingCost" },
     { label: "ScrapRate", value: "ScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
