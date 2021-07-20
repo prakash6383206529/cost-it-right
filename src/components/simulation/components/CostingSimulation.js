@@ -559,26 +559,23 @@ function CostingSimulation(props) {
                                                 <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                                 {renderColumn()}
                                             </ExcelFile>
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
                                     </Col>
 
                                 </Row>
                                 <Row>
 
-
                                     <Col>
                                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                    <div className="refresh mr-0"></div>
-                                                </button>
                                             </div>
-                                            <div
-                                                className="ag-theme-material"
-                                                style={{ height: '100%', width: '100%' }}
-                                            >
+                                            <div>
                                                 <AgGridReact
+                                                    className="ag-theme-material"
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
                                                     // columnDefs={c}
@@ -662,7 +659,7 @@ function CostingSimulation(props) {
                                         {"Verify Impact"}
                                     </button> */}
 
-                                    
+
 
                                 </div>
                             </Row>
