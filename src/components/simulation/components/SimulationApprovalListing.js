@@ -501,7 +501,7 @@ function SimulationApprovalListing(props) {
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
                                             {(shown) ? (
-                                                <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
+                                                <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => setshown(!shown)}>
                                                     <div className="cancel-icon-white"></div></button>
                                             ) : (
                                                 <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
@@ -509,6 +509,9 @@ function SimulationApprovalListing(props) {
                                                 </button>
                                             )}
                                         </div>
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
                                     </div>
                                 </Col>
 
@@ -535,9 +538,6 @@ function SimulationApprovalListing(props) {
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
                             </div>
                             <div
                                 className="ag-theme-material"
