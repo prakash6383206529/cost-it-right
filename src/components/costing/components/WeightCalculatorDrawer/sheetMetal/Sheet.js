@@ -12,6 +12,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -20,7 +21,7 @@ function Sheet(props) {
     const { rmRowData, isEditFlag } = props
 
     const costData = useContext(costingInfoContext)
-
+    const CostingViewMode = useContext(ViewCostingContext);
 
 
     const convert = (FinishWeightOfSheet, dimmension) => {
@@ -694,7 +695,7 @@ function Sheet(props) {
                             </Row>
                         </div>
 
-                        <div className="col-sm-12 text-right px-0 mt-4">
+                        {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
                             <button
                                 type={'button'}
                                 className="reset mr15 cancel-btn"
@@ -707,7 +708,7 @@ function Sheet(props) {
                                 <div className={'save-icon'}></div>
                                 {'Save'}
                             </button>
-                        </div>
+                        </div>}
 
                     </form>
                 </div>
