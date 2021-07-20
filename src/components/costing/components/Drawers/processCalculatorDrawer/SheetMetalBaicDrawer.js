@@ -34,6 +34,8 @@ function SheetMetalBaicDrawer(props) {
     defaultValues: defaultValues,
   })
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
   const dispatch = useDispatch()
 
   const { technology, process, MachineTonnage, calculateMachineTime } = props
@@ -202,7 +204,7 @@ function SheetMetalBaicDrawer(props) {
       const cycleTime = checkForNull(getValues('CycleTime'))
       const efficiency = checkForNull(getValues('Efficiency'))
 
-      const prodPerHrs = checkForNull((cavity * 3600 * efficiency) / (cycleTime * 100))
+      const prodPerHrs = checkForDecimalAndNull((cavity * 3600 * efficiency) / (cycleTime * 100), initialConfiguration.NoOfDecimalForPrice)
 
       setValue('Quantity', prodPerHrs)
       setProdHr(prodPerHrs)
