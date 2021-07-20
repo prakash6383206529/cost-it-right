@@ -648,11 +648,6 @@ function CostingSimulation(props) {
                                         {'Send For Approval'}
                                     </button>
 
-                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
-                                        <div className={"save-icon"}></div>
-                                        {"Verify Impact"}
-                                    </button>
-
                                     <button
                                         type="button"
                                         className="user-btn mr5 save-btn"
@@ -661,6 +656,13 @@ function CostingSimulation(props) {
                                         <div className={"back-icon"}></div>
                                         {"Go to History"}
                                     </button>
+
+                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                        <div className={"save-icon"}></div>
+                                        {"Verify Impact"}
+                                    </button>
+
+                                    
 
                                 </div>
                             </Row>
