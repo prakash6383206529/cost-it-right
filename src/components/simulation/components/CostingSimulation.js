@@ -657,10 +657,10 @@ function CostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
 
-                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
-                                    </button>
+                                    </button> */}
 
                                     
 

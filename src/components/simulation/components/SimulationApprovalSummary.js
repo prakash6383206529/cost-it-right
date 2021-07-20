@@ -539,9 +539,9 @@ function SimulationApprovalSummary(props) {
                                     <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
                                         View All
                                     </button>
-                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>{"Verify Impact "}
-                                    </button>
+                                    </button> */}
                                 </div>
                             </Col>
                         </Row>
