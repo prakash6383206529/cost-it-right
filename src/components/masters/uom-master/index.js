@@ -323,7 +323,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>

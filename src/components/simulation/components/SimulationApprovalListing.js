@@ -177,7 +177,6 @@ function SimulationApprovalListing(props) {
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log('cell: ', cell);
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={cell} >{row.DisplayStatus}</div>
     }
@@ -377,6 +376,10 @@ function SimulationApprovalListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+    }
+
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
         // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -532,6 +535,9 @@ function SimulationApprovalListing(props) {
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
                             </div>
                             <div
                                 className="ag-theme-material"

@@ -20,18 +20,22 @@ function AddToComparisonDrawer(props) {
   const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantCode, destinationPlantName, destinationPlantId } = editObject
 
+
+
+  const defaultValue = {
+    comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
+    // comparisonValue: 'VBC',
+    plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
+    costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
+    vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
+    vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
+    destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
+  }
+
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: {
-      // comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
-      comparisonValue: 'VBC',
-      plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
-      costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
-      vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
-      vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
-      destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
-    },
+    defaultValues: defaultValue
   })
   // const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
 
@@ -255,7 +259,7 @@ function AddToComparisonDrawer(props) {
           // let temp = viewCostingData;
           let dataFromAPI = res.data.Data
           let obj = {}
-          obj.zbc = dataFromAPI.TypeOfCosting
+          obj.zbc = obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
           obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked
           obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
           obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
@@ -556,9 +560,11 @@ function AddToComparisonDrawer(props) {
                 <RadioHookForm
                   className={"filter-from-section"}
                   name={"comparisonValue"}
+                  control={control}
+                  // Controller={Controller}
                   register={register}
                   onChange={handleComparison}
-                  defaultValue={"VBC"}
+                  defaultValue={defaultValue.comparisonValue}
                   dataArray={[
                     // THIS IS FOR MINDA 
                     // { 

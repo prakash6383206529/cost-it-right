@@ -665,7 +665,7 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
@@ -834,9 +834,9 @@ class VolumeListing extends Component {
                         type="button"
                         className={"user-btn mr5"}
                         onClick={this.actualBulkToggle}
-                        title="Actual Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
+                        title="Actual Volume Upload"
+                      >{"A"}
+                        <div className={"ml5 upload mr-0"}></div>
                         {/* Actual Upload */}
                       </button>
                     )}
@@ -845,9 +845,9 @@ class VolumeListing extends Component {
                         type="button"
                         className={"user-btn mr5"}
                         onClick={this.budgetedBulkToggle}
-                        title="Budgeted Bulk Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
+                        title="Budgeted Volume Upload"
+                      >{"B"}
+                        <div className={"ml5 upload mr-0"}></div>
                         {/* Budgeted Bulk Upload */}
                       </button>
                     )}

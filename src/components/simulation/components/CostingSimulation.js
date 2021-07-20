@@ -423,7 +423,7 @@ function CostingSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        params.api.paginationGoToPage(1);
+        params.api.paginationGoToPage(0);
 
     };
 
@@ -435,6 +435,11 @@ function CostingSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+    }
+
 
     const frameworkComponents = {
 
@@ -550,7 +555,8 @@ function CostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                            <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                                 {renderColumn()}
                                             </ExcelFile>
                                         </div>
@@ -564,6 +570,9 @@ function CostingSimulation(props) {
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-grid-header">
                                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                        <div className="refresh mr-0"></div>
+                                                    </button>
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
@@ -647,7 +656,7 @@ function CostingSimulation(props) {
                                         disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                         onClick={onSaveSimulation}>
                                         <div className={"save-icon"}></div>
-                                        {"Save Simulation"}
+                                        {"Go to History"}
                                     </button>
 
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
