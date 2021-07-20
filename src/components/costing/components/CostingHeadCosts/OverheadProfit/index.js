@@ -368,7 +368,6 @@ function OverheadProfit(props) {
   */
   const calculateOverheadFixedTotalCost = () => {
     if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
-      console.log('OverheadFixedPercentage: IN', overheadFixedFieldValues, overheadObj, overheadObj.IsOverheadFixedApplicable);
       setValue('OverheadFixedCost', '-')
       setValue('OverheadFixedTotalCost', checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration.NoOfDecimalForPrice))
       setOverheadObj({
