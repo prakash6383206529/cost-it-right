@@ -463,7 +463,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={"Departments"}
+                        label={"Department"}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}
