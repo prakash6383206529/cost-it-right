@@ -4879,7 +4879,6 @@ body{
 
     // right side .content-page
     body{
-
       .Add,
       .Edit,
       .Balance,
@@ -4902,6 +4901,10 @@ body{
         width: calc(32px * 80 / 100) ;
         height: calc(32px * 80 / 100) ;
         background-size: contain ;
+      }
+
+      h3{
+        font-size: calc(22px * 80 / 100);
       }
 
       // drawer css starts
@@ -6003,6 +6006,19 @@ body{
   font-size: calc(16px * 80 / 100 );
 }
 // error_box 
+
+// dashboard css start
+.graph-box{
+  border: 1px solid rgba(37, 107, 209, 0.1);
+  padding: calc(25px * 80 / 100);
+  margin-bottom: calc(30px * 80 / 100);
+  .graph-container{
+    canvas{
+      max-height: 240px !important;
+    }
+  }
+}
+// dashboard css end
 
 }// ==================================1366 END
 

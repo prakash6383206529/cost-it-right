@@ -763,6 +763,11 @@ a:hover {
                 display: none;
               }
             }
+            &.text-center{
+              .ag-cell-wrapper{
+                justify-content: center;
+              }
+            }
           }
         }
       }

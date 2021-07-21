@@ -44,6 +44,8 @@ function SimulationApprovalListing(props) {
     const { simualtionApprovalList } = useSelector(state => state.simulation)
     const userList = useSelector(state => state.auth.userList)
 
+    const isSmApprovalListing = props.isSmApprovalListing;
+
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -365,6 +367,10 @@ function SimulationApprovalListing(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
+        //if resolution greater than 1920 table listing fit to 100%
+        window.screen.width > 1920 && params.api.sizeColumnsToFit()
+        //if resolution greater than 1920 table listing fit to 100%
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -402,7 +408,7 @@ function SimulationApprovalListing(props) {
                 <div className="container-fluid approval-listing-page">
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                            <h1 className="mb-0">Simulation History</h1>
+                            {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             <Row className="pt-4 blue-before">
                                 {shown &&
                                     <Col lg="10" md="10" className="filter-block">
@@ -560,17 +566,18 @@ function SimulationApprovalListing(props) {
                                     frameworkComponents={frameworkComponents}
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={100} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
+                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Simulated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     <AgGridColumn width={142} field="RequestedBy" headerName='Requested By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
-                                    <AgGridColumn width={105} field="SimulationId" type="rightAligned" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                    {!isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    <AgGridColumn width={105} field="SimulationId"  headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
