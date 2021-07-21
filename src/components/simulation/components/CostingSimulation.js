@@ -483,8 +483,8 @@ function CostingSimulation(props) {
                                                 {renderColumn()}
                                             </ExcelFile>
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                        <div className="refresh mr-0"></div>
-                                                    </button>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
                                     </Col>
 
@@ -587,7 +587,7 @@ function CostingSimulation(props) {
                                         {"Verify Impact"}
                                     </button>
 
-                                    
+
 
                                 </div>
                             </Row>
@@ -633,7 +633,7 @@ function CostingSimulation(props) {
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
-                    closeDrawer={closeDrawer}
+                    // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />}
         </>
