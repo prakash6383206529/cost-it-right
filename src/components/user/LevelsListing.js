@@ -475,15 +475,15 @@ class LevelsListing extends Component {
 														frameworkComponents={frameworkComponents}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
-														<AgGridColumn field="Level" headerName="Level"></AgGridColumn>
+														<AgGridColumn width="180" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads"></AgGridColumn>
+														<AgGridColumn width="100" field="Level"  suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
 													<div className="paging-container d-inline-block float-right">
 														<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-															<option value="10" selected={true}>10</option>
+															<option value="5" selected={true}>5</option>
+															<option value="20">20</option>
 															<option value="50">50</option>
-															<option value="100">100</option>
 														</select>
 													</div>
 												</div>

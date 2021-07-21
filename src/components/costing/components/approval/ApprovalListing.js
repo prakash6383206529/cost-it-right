@@ -614,7 +614,7 @@ function ApprovalListing() {
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                        <AgGridColumn field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                         <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
