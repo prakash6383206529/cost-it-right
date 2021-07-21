@@ -401,7 +401,7 @@ function ApprovalListing(props) {
     <Fragment>
       {
         !showApprovalSumary ?
-          <div className="container-fluid approval-listing-page">
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
               {!isApproval && <h1 className="mb-0">Costing Approval</h1>}

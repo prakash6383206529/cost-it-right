@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config,DASHBOARDWITHGRAPH_PATH,SIMULATION_APPROVAL_SUMMARY_PATH,DASHBOARDWITHGRAPH} from '../config/constants'
+  config,DASHBOARDWITHGRAPH_PATH,SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND} from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -225,14 +225,15 @@ class Main extends Component {
         location.pathname === COSTING_BULK_UPLOAD ||
         location.pathname === COSTING_SUMMARY ||
         location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
-        location.pathname === DASHBOARDWITHGRAPH_PATH
-         ? 'w-100' : ''
+        location.pathname === DASHBOARD_PATH ||
+        location.pathname === DASHBOARD_PATH_SECOND ||
+        location.pathname === DASHBOARDWITHGRAPH_PATH ? 'w-100' : '' 
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
-    const DashboardPage =
-         location.pathname === DASHBOARDWITHGRAPH_PATH
-          ? 'Dashboard-page' : ''
+    const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
+    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
+
 
 
     return (
@@ -278,11 +279,13 @@ class Main extends Component {
                 location.pathname !== COSTING_SUMMARY &&
                 location.pathname !== DASHBOARDWITHGRAPH_PATH &&
                 location.pathname !== SIMULATION_APPROVAL_SUMMARY_PATH &&
+                location.pathname !== DASHBOARD_PATH &&
+                location.pathname !== DASHBOARD_PATH_SECOND &&
                 (
                   <LeftMenu {...this.props} />
                 )}
 
-              <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage}` : ''}>
+              <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
                   <Switch>
 
