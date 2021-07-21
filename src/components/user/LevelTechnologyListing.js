@@ -268,7 +268,7 @@ class LevelTechnologyListing extends Component {
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}
-									paginationPageSize={10}
+									paginationPageSize={5}
 									onGridReady={this.onGridReady}
 									gridOptions={gridOptions}
 									loadingOverlayComponent={'customLoadingOverlay'}
@@ -285,9 +285,9 @@ class LevelTechnologyListing extends Component {
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-										<option value="10" selected={true}>10</option>
+										<option value="5" selected={true}>5</option>
+										<option value="20">20</option>
 										<option value="50">50</option>
-										<option value="100">100</option>
 									</select>
 								</div>
 							</div>
@@ -349,7 +349,7 @@ class LevelTechnologyListing extends Component {
 									// columnDefs={c}
 									rowData={this.props.simulationLevelDataList}
 									pagination={true}
-									paginationPageSize={10}
+									paginationPageSize={5}
 									onGridReady={this.onGridReady1}
 									gridOptions={gridOptions}
 									loadingOverlayComponent={'customLoadingOverlay'}
@@ -366,9 +366,9 @@ class LevelTechnologyListing extends Component {
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
-										<option value="10" selected={true}>10</option>
+										<option value="5" selected={true}>5</option>
+										<option value="20">20</option>
 										<option value="50">50</option>
-										<option value="100">100</option>
 									</select>
 								</div>
 							</div>
