@@ -102,7 +102,7 @@ function AddVendorDrawer(props) {
   const handleVendorChange = (newValue) => {
     if (newValue && newValue !== '') {
       setVendor(newValue)
-      reset({ VendorPlant: '' })
+      //reset({ VendorPlant: '' }) //COMMENTED FOR ISSUE I1550
       setVendorPlant([])
       setData({})
 
