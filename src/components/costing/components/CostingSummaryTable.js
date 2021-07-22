@@ -730,6 +730,8 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">RM Name-Grade</span>
+                        <span class="d-block small-grey-text">RM Rate</span>
+                        <span class="d-block small-grey-text">Scrap Rate</span>
                         <span class="d-block small-grey-text">Gross Weight</span>
                         <span class="d-block small-grey-text">Finish Weight</span>
                         <span class="d-block small-grey-text">Scrap Weight</span>
@@ -739,6 +741,12 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.rm : ''}</span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                              </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
@@ -800,6 +808,8 @@ const CostingSummaryTable = (props) => {
                       <td>
                         <span class="d-block small-grey-text">Process Cost</span>
                         <span class="d-block small-grey-text">Operation Cost</span>
+                        <span class="d-block small-grey-text">Other Operation Cost</span>
+
                         <span class="d-block small-grey-text">
                           Surface Treatment
                         </span>
@@ -816,6 +826,9 @@ const CostingSummaryTable = (props) => {
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}

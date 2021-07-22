@@ -645,6 +645,9 @@ export function formViewData(costingSummary) {
   obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
   obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
   obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
+  obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
+  console.log('obj: ', obj);
+
 
   // temp = [...temp, obj]
   temp.push(obj)

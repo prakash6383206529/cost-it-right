@@ -3163,8 +3163,8 @@ button:disabled{pointer-events: none;}
     filter: opacity(0.5);
   }
 }
-.Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled{
-border: none;
+.CalculatorIcon:disabled,.Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled{
+border: none !important;
 opacity: 0.5;
 }
 // ============issues fixing end=============
@@ -4242,6 +4242,11 @@ body{
   border-top-color: rgb(59, 59, 59);
 }
 // simulation page
+.costing-simulation-page{
+  .red-value,.green-value{
+    min-width: 94px !important;
+  }
+}
 .container-fluid{
   .container-fluid{
     padding: 0;

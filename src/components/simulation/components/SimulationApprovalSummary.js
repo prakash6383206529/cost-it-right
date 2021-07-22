@@ -625,7 +625,7 @@ function SimulationApprovalSummary(props) {
                         {/* } */}
 
                         <Row className="mb-3">
-                            <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
+                            {/* <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
                                     <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setshowImpactedData(!showImpactedData) }}>
@@ -643,36 +643,6 @@ function SimulationApprovalSummary(props) {
 
 
                                         <Col md="12" className="mb-3">
-                                            {/* <BootstrapTable
-                                            data={rmDomesticListing}
-                                            striped={false}
-                                            bordered={true}
-                                            hover={false}
-                                            options={options}
-                                            // exportCSV
-                                            //ignoreSinglePage
-                                            className="add-volume-table sm-headrgroup-table impact-drawer-table"
-                                            pagination>
-                                            
-                                            <TableHeaderColumn row='0' rowSpan='2' dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
-                                            <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
-                                            <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false}  >Scrap Rate (INR)</TableHeaderColumn>
-                                            <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
-                                            <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
-                                            <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
-                                            <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
-                                            <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
-                                        </BootstrapTable> */}
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-grid-header">
                                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -735,17 +705,17 @@ function SimulationApprovalSummary(props) {
                                         </Col>
                                     </div>
                                 </div>
-                            }
+                            } */}
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        <Row >
+                        {/* <Row >
                             <Col md="12">
                                  <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
-                        </Row>
+                        </Row> */}
 
-                        <Row className="mb-3">
+                        {/* <Row className="mb-3">
                             <Col md="12">
                                 <div className="table-responsive">
                                     <table className="table cr-brdr-main accordian-table-with-arrow">
@@ -847,7 +817,7 @@ function SimulationApprovalSummary(props) {
                                     </table>
                                 </div>
                             </Col>
-                        </Row>
+                        </Row> */}
                         {/* FG wise Impact section end */}
 
                         <Row>
@@ -958,7 +928,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* Costing Summary page here */}
 
-                        <Row className="mb-4">
+                        {/* <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6">
                                 <div className={'right-details'}>
@@ -966,73 +936,73 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                             {acc3 &&
-                            <div className="accordian-content w-100">
-                                <div className={`ag-grid-react`}>
-                                    <Col md="12" className="mb-3">
-                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                            <div className="ag-grid-header">
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            </div>
-                                            <div
-                                                className="ag-theme-material"
-                                                style={{ height: '100%', width: '100%' }}
-                                            >
-                                                <AgGridReact
+                                <div className="accordian-content w-100">
+                                    <div className={`ag-grid-react`}>
+                                        <Col md="12" className="mb-3">
+                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                <div className="ag-grid-header">
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                </div>
+                                                <div
+                                                    className="ag-theme-material"
                                                     style={{ height: '100%', width: '100%' }}
-                                                    defaultColDef={defaultColDef}
-                                                    // columnDefs={c}
-                                                    rowData={rmDomesticListing}
-                                                    pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    loadingOverlayComponent={'customLoadingOverlay'}
-                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    stopEditingWhenCellsLoseFocus={true}
                                                 >
-                                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-                                                    <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
-                                                        <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                        <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
-                                                        <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                        <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
-                                                        <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                        <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                                    <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        // columnDefs={c}
+                                                        rowData={rmDomesticListing}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: CONSTANT.EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        stopEditingWhenCellsLoseFocus={true}
+                                                    >
+                                                        <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                        <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                        <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                                        <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                            <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                            <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                            <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                            <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                            <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                            <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
-                                                </AgGridReact>
+                                                    </AgGridReact>
 
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
+                                                    <div className="paging-container d-inline-block float-right">
+                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                            <option value="10" selected={true}>10</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                    </Col>
+                                        </Col>
+                                    </div>
                                 </div>
-                            </div>
                             }
-                        </Row>
+                        </Row> */}
 
                     </div>
 
