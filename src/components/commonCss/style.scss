@@ -4271,6 +4271,11 @@ body{
   border-top-color: rgb(59, 59, 59);
 }
 // simulation page
+.costing-simulation-page{
+  .red-value,.green-value{
+    min-width: 94px !important;
+  }
+}
 .container-fluid{
   .container-fluid{
     padding: 0;
