@@ -175,10 +175,6 @@ class PowerListing extends Component {
       </>
     )
   };
-<<<<<<< HEAD
-=======
-
->>>>>>> m1-frontend
 
   /**
   * @method costingHeadFormatter
