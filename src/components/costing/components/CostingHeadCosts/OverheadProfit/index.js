@@ -982,7 +982,7 @@ function OverheadProfit(props) {
 
       const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
       const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + (headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal);
+      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
       const InterestRatePercentage = getValues('InterestRatePercentage')
 
       switch (Text) {
