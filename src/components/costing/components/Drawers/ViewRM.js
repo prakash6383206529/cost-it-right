@@ -98,7 +98,7 @@ function ViewRM(props) {
               <Row className="pl-3">
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextFieldHookForm
-                    label="RM Name"
+                    label="RM Name -Grade"
                     name={"rmName"}
                     Controller={Controller}
                     control={control}
@@ -123,6 +123,22 @@ function ViewRM(props) {
                     mandatory={false}
                     handleChange={() => { }}
                     defaultValue={viewRM && viewRM.RMRate !== undefined ? viewRM.RMRate : '-'}
+                    className=""
+                    customClassName={"withBorder"}
+                    //errors={errors.ECNNumber}
+                    disabled={true}
+                  />
+                </div>
+                <div className="input-group form-group col-md-12 input-withouticon">
+                  <TextFieldHookForm
+                    label="Scrap Rate"
+                    name={"scrapRate"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={viewRM && viewRM.ScrapRate !== undefined ? viewRM.ScrapRate : '-'}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
