@@ -27,7 +27,6 @@ import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
 import saveImg from '../../../assests/images/check.png'
