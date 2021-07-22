@@ -35,7 +35,7 @@ function Simulation(props) {
     const [isbulkUpload, setIsBulkUpload] = useState(false)
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
-    const [editWarning,setEditWarning] = useState(false)
+    const [editWarning, setEditWarning] = useState(true)
 
     const dispatch = useDispatch()
 
@@ -77,6 +77,11 @@ function Simulation(props) {
             return item
         })
 
+        // if (rmDomesticListing && rmDomesticListing.length > 0 || rmImportListing && rmImportListing.length > 0) {
+        //     const edit = editTable()
+
+        // }
+
         return (<ExcelSheet data={temp} name={master.label}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
@@ -85,9 +90,9 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.label) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -149,6 +154,7 @@ function Simulation(props) {
     }
 
     const editTable = () => {
+        // alert('Hello')
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
@@ -160,19 +166,19 @@ function Simulation(props) {
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
-                            toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            //     toastr.warning('Please select either ZBC or VBC costing head at a time.')
                             setEditWarning(true);
                             flag = false
                             return false
                         }
                         if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-                            toastr.warning('Please select one vendor at a time.')
+                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                             return false
                         }
                         if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
-                            toastr.warning('Please select one Plant at a time.')
+                            // toastr.warning('Please select one Plant at a time.')
                             setEditWarning(true);
                             plantFlag = false
                             return false
@@ -180,7 +186,7 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setShowEditTable(true)
+                    // setShowEditTable(true)
                     setEditWarning(false)
                 }
                 break;
@@ -189,19 +195,19 @@ function Simulation(props) {
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmImportListing[index - 1].CostingHead) {
-                            toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            // toastr.warning('Please select either ZBC or VBC costing head at a time.')
                             setEditWarning(true);
                             flag = false
                             return false
                         }
                         if (element.VendorName !== rmImportListing[index - 1].VendorName) {
-                            toastr.warning('Please select one vendor at a time.')
+                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                             return false
                         }
-                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
-                            toastr.warning('Please select one Plant at a time.')
+                        if (element.PlantId !== rmImportListing[index - 1].PlantId) {
+                            // toastr.warning('Please select one Plant at a time.')
                             setEditWarning(true);
                             plantFlag = false
                             return false
@@ -209,7 +215,7 @@ function Simulation(props) {
                     }
                 })
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setShowEditTable(true)
+                    // setShowEditTable(true)
                     setEditWarning(false);
                 }
                 break;
@@ -219,6 +225,11 @@ function Simulation(props) {
         }
 
     }
+
+    const openEditPage = () => {
+        setShowEditTable(true)
+    }
+
 
     const editMasterPage = (page) => {
         switch (page) {
@@ -307,20 +318,21 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
                                     {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant and Vendor from the filters before editing'} />}
-                                    <button type="button" className={"user-btn mt2 mr5"} onClick={editTable} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false}>
+                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                    <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                        {renderColumn(master.label)}
+                                    <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                        {/* {true ? '' : renderColumn(master.label)} */}
+                                        {!editWarning ? renderColumn(master.label) : ''}
                                     </ExcelFile>
                                     <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
-                                    
-                                    
+
+
                                 </div>
                             </div>
                         </Row>
                     }
-                        
+
 
                     {showUploadDrawer &&
                         <SimulationUploadDrawer
