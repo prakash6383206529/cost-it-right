@@ -246,6 +246,7 @@ class RMImportListing extends Component {
   }
 
 
+
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
@@ -290,7 +291,7 @@ class RMImportListing extends Component {
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  };
+  }
 
   /**
   * @method costingHeadFormatter
@@ -630,8 +631,11 @@ class RMImportListing extends Component {
       </ExcelSheet>);
   }
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.rmImportDataList
+    return products; // must return the data which you want to be exported
   }
 
   onFilterTextBoxChanged(e) {
@@ -656,8 +660,7 @@ class RMImportListing extends Component {
       clearSearch: true,
       noDataText: (this.props.rmImportDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
+      exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -684,16 +687,6 @@ class RMImportListing extends Component {
     };
 
 
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      effectiveDateRenderer: this.effectiveDateFormatter,
-      costingHeadRenderer: this.costingHeadFormatter,
-      customLoadingOverlay: LoaderCustom,
-      customNoRowsOverlay: NoContentFound,
-      freightCostFormatter: this.freightCostFormatter,
-      shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
-    };
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {/* {this.props.loading && <Loader />} */}
@@ -741,118 +734,84 @@ class RMImportListing extends Component {
                     !this.props.isSimulation &&
                     <div className="flex-fill">
                       <Field
-                        name="CostingHead"
+                        name="Technology"
                         type="text"
                         label=""
                         component={searchableSelect}
-                        placeholder={'Costing Head'}
+                        placeholder={'Technology'}
                         isClearable={false}
-                        options={this.renderListing('costingHead')}
+                        options={this.renderListing('technology')}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                        validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
                         required={true}
-                        handleChangeDescription={this.handleHeadChange}
-                        valueDescription={this.state.costingHead}
+                        handleChangeDescription={this.handleTechnologyChange}
+                        valueDescription={this.state.technology}
                       />
                     </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="Plant"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={'Plant'}
-                        isClearable={false}
-                        options={this.renderListing('plant')}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
-                        required={true}
-                        handleChangeDescription={this.handlePlantChange}
-                        valueDescription={this.state.plant}
-                      />
-                    </div>
-                    {
-                      !this.props.isSimulation &&
-                      <div className="flex-fill">
-                        <Field
-                          name="Technology"
-                          type="text"
-                          label=""
-                          component={searchableSelect}
-                          placeholder={'Technology'}
-                          isClearable={false}
-                          options={this.renderListing('technology')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
-                          required={true}
-                          handleChangeDescription={this.handleTechnologyChange}
-                          valueDescription={this.state.technology}
-                        />
-                      </div>
-                    }
-                    <div className="flex-fill">
-                      <Field
-                        name="RawMaterialId"
-                        type="text"
-                        label={""}
-                        component={searchableSelect}
-                        placeholder={"Raw Material"}
-                        isClearable={false}
-                        options={this.renderListing("material")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.RawMaterial == null ||
-                            this.state.RawMaterial.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleRMChange}
-                        valueDescription={this.state.RawMaterial}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="RawMaterialGradeId"
-                        type="text"
-                        label={""}
-                        component={searchableSelect}
-                        placeholder={"RM Grade"}
-                        isClearable={false}
-                        options={this.renderListing("grade")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                        required={true}
-                        handleChangeDescription={this.handleGradeChange}
-                        valueDescription={this.state.RMGrade}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="VendorId"
-                        type="text"
-                        label={""}
-                        component={searchableSelect}
-                        placeholder={"Vendor"}
-                        isClearable={false}
-                        options={this.renderListing("VendorNameList")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                        required={true}
-                        handleChangeDescription={this.handleVendorName}
-                        valueDescription={this.state.vendorName}
-                      />
-                    </div>
-                    <div className="flex-fill sliderange">
-                      <InputRange
-                        maxValue={this.state.maxRange}
-                        minValue={0}
-                        value={this.state.value}
-                        onChange={(value) => this.setState({ value })}
-                      />
-                    </div>
+                  }
+                  <div className="flex-fill">
+                    <Field
+                      name="RawMaterialId"
+                      type="text"
+                      label={""}
+                      component={searchableSelect}
+                      placeholder={"Raw Material"}
+                      isClearable={false}
+                      options={this.renderListing("material")}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={
+                        this.state.RawMaterial == null ||
+                          this.state.RawMaterial.length === 0
+                          ? [required]
+                          : []
+                      }
+                      required={true}
+                      handleChangeDescription={this.handleRMChange}
+                      valueDescription={this.state.RawMaterial}
+                    />
+                  </div>
+                  <div className="flex-fill">
+                    <Field
+                      name="RawMaterialGradeId"
+                      type="text"
+                      label={""}
+                      component={searchableSelect}
+                      placeholder={"RM Grade"}
+                      isClearable={false}
+                      options={this.renderListing("grade")}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={
+                        this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handleGradeChange}
+                      valueDescription={this.state.RMGrade}
+                    />
+                  </div>
+                  <div className="flex-fill">
+                    <Field
+                      name="VendorId"
+                      type="text"
+                      label={""}
+                      component={searchableSelect}
+                      placeholder={"Vendor"}
+                      isClearable={false}
+                      options={this.renderListing("VendorNameList")}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={
+                        this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handleVendorName}
+                      valueDescription={this.state.vendorName}
+                    />
+                  </div>
+                  <div className="flex-fill sliderange">
+                    <InputRange
+                      maxValue={this.state.maxRange}
+                      minValue={0}
+                      value={this.state.value}
+                      onChange={(value) => this.setState({ value })}
+                    />
+                  </div>
 
                   <div className="flex-fill">
                     <button
@@ -891,16 +850,16 @@ class RMImportListing extends Component {
                       <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
                         <div className={"upload"}></div>Bulk Upload
                       </button>
-
+                    )}
+                    {AddAccessibility && (
                       <button
                         type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.filterList}
-                        className="user-btn"
+                        className={"user-btn"}
+                        onClick={this.formToggle}
                       >
-                        {"Apply"}
+                        <div className={"plus"}></div>ADD
                       </button>
-                    </div>
+                    )}
                   </div>
                 </div>
               </Col>
