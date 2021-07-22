@@ -247,31 +247,31 @@ function CostingSimulation(props) {
 
     const onSaveSimulation = () => {
 
-        const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
+        // const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
 
-        switch (selectedMasterForSimulation.label) {
-            case RMDOMESTIC:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation saved successfully.')
-                        setShowApprovalHistory(true)
-                    }
-                }))
-                break;
-            case RMIMPORT:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation saved successfully.')
-                        setShowApprovalHistory(true)
-                    }
-                }))
-                break;
+        // switch (selectedMasterForSimulation.label) {
+        //     case RMDOMESTIC:
+        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
+        //             if (res.data.Result) {
+        //                 toastr.success('Simulation saved successfully.')
+        //                 setShowApprovalHistory(true)
+        //             }
+        //         }))
+        //         break;
+        //     case RMIMPORT:
+        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
+        //             if (res.data.Result) {
+        //                 toastr.success('Simulation saved successfully.')
+        //                 setShowApprovalHistory(true)
+        //             }
+        //         }))
+        //         break;
 
-            default:
-                break;
-        }
-        // setShowApprovalHistory(true)
+        //     default:
+        //         break;
+        // }
+        setShowApprovalHistory(true)
     }
 
 
@@ -645,19 +645,21 @@ function CostingSimulation(props) {
                                         {'Send For Approval'}
                                     </button>
 
+                                    <button
+                                        type="button"
+                                        className="user-btn mr5 save-btn"
+                                        // disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
+                                        onClick={onSaveSimulation}>
+                                        <div className={"back-icon"}></div>
+                                        {"Go to History"}
+                                    </button>
+
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
                                     </button>
 
-                                    <button
-                                        type="button"
-                                        className="user-btn mr5 save-btn"
-                                        disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
-                                        onClick={onSaveSimulation}>
-                                        <div className={"back-icon"}></div>
-                                        {"Go to History"}
-                                    </button>
+                                    
 
                                 </div>
                             </Row>
