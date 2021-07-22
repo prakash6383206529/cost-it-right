@@ -72,6 +72,7 @@ class ClientListing extends Component {
                         AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false
                     })
                 }
             }
@@ -374,8 +375,8 @@ class ClientListing extends Component {
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </Col>

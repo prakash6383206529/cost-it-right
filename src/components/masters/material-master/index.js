@@ -202,6 +202,7 @@ class RowMaterialMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
                                     </TabPane>}
 
@@ -215,6 +216,8 @@ class RowMaterialMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+
                                         />
                                     </TabPane>}
 
@@ -228,6 +231,7 @@ class RowMaterialMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             AddAccessibilityRMANDGRADE={this.state.AddAccessibilityRMANDGRADE}
                                             EditAccessibilityRMANDGRADE={this.state.EditAccessibilityRMANDGRADE}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
                                     </TabPane>}
 
@@ -237,6 +241,7 @@ class RowMaterialMaster extends Component {
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
                                     </TabPane>}
 

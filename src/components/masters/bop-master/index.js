@@ -184,6 +184,7 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>
                 )}
@@ -197,6 +198,7 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>
                 )}
@@ -210,6 +212,7 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>}
 

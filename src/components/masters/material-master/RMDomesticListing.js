@@ -508,6 +508,8 @@ class RMDomesticListing extends Component {
             setTimeout(() => {
 
                 this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+                // this.props.apply()
+
             }, 500);
         } else {
             this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)

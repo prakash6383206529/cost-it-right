@@ -28,6 +28,7 @@ class FuelMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false
         }
     }
 
@@ -47,6 +48,7 @@ class FuelMaster extends Component {
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false
                     })
                 }
             }
@@ -108,62 +110,64 @@ class FuelMaster extends Component {
 
         return (
             <>
-            <div className="container-fluid">
-                {/* {this.props.loading && <Loader/>} */}
-                <Row>
-                    <Col sm="4">
-                        <h1>{`Fuel & Power Master`}</h1>
-                    </Col>
-                </Row>
+                <div className="container-fluid">
+                    {/* {this.props.loading && <Loader/>} */}
+                    <Row>
+                        <Col sm="4">
+                            <h1>{`Fuel & Power Master`}</h1>
+                        </Col>
+                    </Row>
 
-                <Row>
-                    <Col>
-                        <div>
-                            <Nav tabs className="subtabs mt-0">
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                        Manage Fuel
+                    <Row>
+                        <Col>
+                            <div>
+                                <Nav tabs className="subtabs mt-0">
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                            Manage Fuel
                                 </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Manage Power
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                            Manage Power
                                 </NavLink>
-                                </NavItem>
+                                    </NavItem>
 
-                            </Nav>
+                                </Nav>
 
-                            <TabContent activeTab={this.state.activeTab}>
+                                <TabContent activeTab={this.state.activeTab}>
 
-                                {this.state.activeTab == 1 &&
-                                    <TabPane tabId="1">
-                                        <FuelListing
-                                            formToggle={this.displayFuelForm}
-                                            getDetails={this.getDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                        />
-                                    </TabPane>}
+                                    {this.state.activeTab == 1 &&
+                                        <TabPane tabId="1">
+                                            <FuelListing
+                                                formToggle={this.displayFuelForm}
+                                                getDetails={this.getDetails}
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
+                                            />
+                                        </TabPane>}
 
-                                {this.state.activeTab == 2 &&
-                                    <TabPane tabId="2">
-                                        <PowerListing
-                                            formToggle={this.displayPowerForm}
-                                            getDetails={this.getDetailsPower}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                        />
-                                    </TabPane>}
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
+                                            <PowerListing
+                                                formToggle={this.displayPowerForm}
+                                                getDetails={this.getDetailsPower}
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
+                                            />
+                                        </TabPane>}
 
-                            </TabContent>
-                        </div>
-                    </Col>
-                </Row>
-            </div>
+                                </TabContent>
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
             </ >
         );
     }
