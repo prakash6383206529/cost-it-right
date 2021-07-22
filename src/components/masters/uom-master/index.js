@@ -281,6 +281,10 @@ class UOMMaster extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
     // TempData.map((item) => {

@@ -365,6 +365,20 @@ class FuelListing extends Component {
             sortable: true,
 
         };
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            effectiveDateRenderer: this.effectiveDateFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+        };
+
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,

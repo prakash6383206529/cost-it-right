@@ -522,6 +522,14 @@ class OperationListing extends Component {
         gridOptions.columnApi.resetColumnState();
     }
 
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
     resetState() {
         gridOptions.columnApi.resetColumnState();
     }
