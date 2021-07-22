@@ -615,7 +615,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} type="leftAligned" field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} type="leftAligned" field="OldScrapRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} type="leftAligned" field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn type="rightAligned" width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
 
@@ -659,7 +659,7 @@ function CostingSimulation(props) {
                                         {"Verify Impact"}
                                     </button>
 
-                                    
+
 
                                 </div>
                             </Row>
@@ -705,7 +705,7 @@ function CostingSimulation(props) {
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
-                    closeDrawer={closeDrawer}
+                    // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />}
         </>

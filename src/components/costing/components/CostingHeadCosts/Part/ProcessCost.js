@@ -637,12 +637,12 @@ function ProcessCost(props) {
             IsAssemblyCalculation={false}
           />
 
-          {/* <OperationCostExcludedOverhead
+          <OperationCostExcludedOverhead
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}
             item={props.item}
             IsAssemblyCalculation={false}
-          /> */}
+          />
 
           {isOpen && <ToolCost
             data={props.data && props.data.CostingToolsCostResponse}
