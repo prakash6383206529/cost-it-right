@@ -37,8 +37,6 @@ class RMListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            sideBar: { toolPanels: ['columns'] },
-            showData: false
 
         }
     }
@@ -296,9 +294,19 @@ class RMListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+        };
+
 
         return (
-            // <div className="">
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <Row className="pt-4 no-filter-row">
@@ -308,9 +316,9 @@ class RMListing extends Component {
                                 type={"button"}
                                 className={"user-btn mr5"}
                                 onClick={this.openAssociationModel}
-                            >
-                                <div className={"plus"}></div>
-                                {`Association`}
+                                title="Add Association"
+                            >{"A"}
+                                <div className={"plus mr-0 ml5"}></div>
                             </button>
                         )}
                         {AddAccessibility && (
@@ -318,22 +326,25 @@ class RMListing extends Component {
                                 type={"button"}
                                 className={"user-btn mr5"}
                                 onClick={this.openModel}
-                            >
-                                <div className={"plus"}></div>
-                                {`Add`}
+                                title="Add Material"
+                            >{"M"}
+                                <div className={"plus mr-0 ml5"}></div>
                             </button>
                         )}
                         {
                             DownloadAccessibility &&
                             <>
-                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={
+                                <button title={"Download"} type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                     {this.onBtExport()}
                                 </ExcelFile>
-                            </> 
+                            </>
                             //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                         }
 
-                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                     </Col>
 
@@ -341,7 +352,8 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        {/* <BootstrapTable
+                        {/*
+                        <BootstrapTable
                             data={this.props.rawMaterialTypeDataList}
                             striped={false}
                             bordered={false}
@@ -353,9 +365,9 @@ class RMListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}
-                            pagination> */}
-                        {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
+                            pagination>
+                            
+                            <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>{this.renderDensity()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>{'Raw Material'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" dataSort={true}>{'Grade'}</TableHeaderColumn>
@@ -365,7 +377,7 @@ class RMListing extends Component {
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div
                                 className="ag-theme-material"
@@ -391,7 +403,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -568,8 +568,7 @@ class VolumeListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
+    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
     data && data.map((item => {
       tempArr.push(item.data)
     }))
@@ -650,13 +649,9 @@ class VolumeListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      effectiveDateRenderer: this.effectiveDateFormatter,
       costingHeadRenderer: this.costingHeadFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      freightCostFormatter: this.freightCostFormatter,
-      shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter,
       indexFormatter: this.indexFormatter
     };
 
@@ -673,7 +668,7 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
@@ -815,53 +810,70 @@ class VolumeListing extends Component {
                   </div>
                 </Col>)}
 
-              <Col md="7" className="search-user-block mb-3">
+              <Col md="8" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">
                   <div>
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.actualBulkToggle}
-                      >
-                        <div className={'upload'}></div>Actual Upload
-                      </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.budgetedBulkToggle}
-                      >
-                        <div className={'upload'}></div>Budgeted Upload
-                      </button>
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
                     )}
                     {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.formToggle}
-                      >
-                        <div className={'plus'}></div>ADD
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
-                        <ExcelFile filename={VolumeMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                          {this.onBtExport()}
-                        </ExcelFile>
-                      </>
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                    }
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.actualBulkToggle}
+                                                    title="Actual Volume Upload"
+                                                >{"A"}
+                                                    <div className={"ml5 upload mr-0"}></div>
+                                                    {/* Actual Upload */}
+                                                </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.budgetedBulkToggle}
+                                                    title="Budgeted Volume Upload"
+                                                >{"B"}
+                                                    <div className={"ml5 upload mr-0"}></div>
+                                                    {/* Budgeted Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
 
-                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                                    <ExcelFile filename={'VolumeMaster'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                   </div>
                 </div>
@@ -897,7 +909,7 @@ class VolumeListing extends Component {
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div
               className="ag-theme-material"
@@ -928,7 +940,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
-                <AgGridColumn field="VolumeId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="VolumeId" width={120} headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

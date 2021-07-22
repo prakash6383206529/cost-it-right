@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -82,11 +81,8 @@ function AddBOP(props) {
   const onRowSelect = () => {
 
     var selectedRows = gridApi.getSelectedRows();
-    console.log('selectedRows: ', selectedRows);
-    console.log(JSON.stringify(selectedRows) === JSON.stringify(selectedIds), "sss", selectedRowData, "ii", selectedIds);
     if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
     var selected = gridApi.getSelectedNodes()
-    console.log('selected: ', selected);
     setSelectedRowData(selectedRows)
     // if (isSelected) {
     // } else {
@@ -124,7 +120,6 @@ function AddBOP(props) {
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log('rowData: ', rowData);
     return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
   }
 
@@ -266,7 +261,7 @@ function AddBOP(props) {
     // getDataList()
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
-    params.api.paginationGoToPage(1);
+    params.api.paginationGoToPage(0);
 
   };
 
@@ -276,7 +271,7 @@ function AddBOP(props) {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    this.state.gridApi.setQuickFilter(e.target.value);
+    gridApi.setQuickFilter(e.target.value);
   }
 
   const frameworkComponents = {
@@ -295,12 +290,17 @@ function AddBOP(props) {
 
   }, [tableData])
 
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.BoughtOutPartId) : false;
+
+
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+  }
 
   /**
   * @method render
   * @description Renders the component
   */
-  console.log(tableData, "tableData")
   return (
     < div>
       <Drawer anchor={props.anchor} open={props.isOpen}
@@ -383,7 +383,10 @@ function AddBOP(props) {
                 </BootstrapTable> */}
                   <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                        <div className="refresh mr-0"></div>
+                      </button>
                     </div>
                     <div
                       className="ag-theme-material"
@@ -407,6 +410,7 @@ function AddBOP(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
                         <AgGridColumn field="EntryType" headerName="BOP Type"  ></AgGridColumn>

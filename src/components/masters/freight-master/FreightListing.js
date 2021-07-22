@@ -19,6 +19,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
+import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -29,7 +30,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
 class FreightListing extends Component {
   constructor(props) {
     super(props);
@@ -43,12 +43,7 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
-      gridApi: null,
-      gridColumnApi: null,
-      rowData: null,
-      sideBar: { toolPanels: ['columns'] },
-      showData: false
-
+      isLoader: true
     }
   }
 
@@ -58,9 +53,12 @@ class FreightListing extends Component {
   */
   componentDidMount() {
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
-    this.props.fetchSupplierCityDataAPI(res => { });
-    this.getDataList()
+    setTimeout(() => {
+
+      this.props.getVendorWithVendorCodeSelectList()
+      this.props.fetchSupplierCityDataAPI(res => { });
+      this.getDataList()
+    }, 500);
   }
 
   /**
@@ -68,6 +66,7 @@ class FreightListing extends Component {
   * @description GET DETAILS OF BOP DOMESTIC
   */
   getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
+    this.setState({ isLoader: true })
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -77,7 +76,7 @@ class FreightListing extends Component {
     this.props.getFreightDataList(filterData, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [] })
       } else {
@@ -384,6 +383,12 @@ class FreightListing extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
+  createCustomExportCSVButton = (onClick) => {
+    // return (
+    //   <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+    // );
+  }
+
 
   /**
   * @method render
@@ -398,7 +403,6 @@ class FreightListing extends Component {
       noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -424,8 +428,7 @@ class FreightListing extends Component {
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             {this.state.shown && (
@@ -547,28 +550,34 @@ class FreightListing extends Component {
                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                       <div className="cancel-icon-white"></div></button>
                   ) : (
-                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <div className="filter mr-0"></div>
+                    </button>
                   )}
                   {AddAccessibility && (
                     <button
                       type="button"
                       className={"user-btn mr5"}
                       onClick={this.formToggle}
+                      title="Add"
                     >
-                      <div className={"plus"}></div>ADD
+                      <div className={"plus mr-0"}></div>
                     </button>
                   )}
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                      <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
+                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
                     //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
 
-                  <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                      <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -588,7 +597,7 @@ class FreightListing extends Component {
               // csvFileName={`${FreightMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
-              pagination> */}
+              pagination>  */}
             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
             {/* <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
             <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
@@ -599,7 +608,7 @@ class FreightListing extends Component {
             </BootstrapTable>  */}
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
@@ -625,7 +634,7 @@ class FreightListing extends Component {
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="FreightId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

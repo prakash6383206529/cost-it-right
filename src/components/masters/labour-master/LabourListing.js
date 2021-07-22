@@ -56,6 +56,10 @@ class LabourListing extends Component {
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
       DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      isLoader: true
     }
   }
 
@@ -100,12 +104,19 @@ class LabourListing extends Component {
       }
     })
 
-    this.props.getZBCPlantList(() => { })
-    this.props.getStateSelectList(() => { })
-    this.props.getMachineTypeSelectList(() => { })
-    // this.getTableListData()
-    this.filterList()
+    setTimeout(() => {
+      this.props.getZBCPlantList(() => { })
+      this.props.getStateSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => { })
+      // this.getTableListData()
+      this.filterList()
+    }, 500);
   }
+
+  componentWillUnmount() {
+    this.props.getLabourDataList(false, {}, (res) => { })
+  }
+
 
   /**
    * @method getTableListData
@@ -121,14 +132,12 @@ class LabourListing extends Component {
       machine_type: machine_type,
     }
 
-    this.props.getLabourDataList(filterData, (res) => {
+    this.props.getLabourDataList(true, filterData, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({
-          tableData: Data,
-        })
+        this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
       } else {
       }
     })
@@ -545,7 +554,7 @@ class LabourListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
     data && data.map((item => {
       tempArr.push(item.data)
     }))
@@ -635,8 +644,8 @@ class LabourListing extends Component {
 
     return (
       <>
-        {/* {this.props.loading && <Loader />} */}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        {this.state.isLoader && <LoaderCustom />}
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -765,37 +774,52 @@ class LabourListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.bulkToggle}
-                      >
-                        <div className={"upload"}></div>Bulk Upload
-                      </button>
-                    )}
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.formToggle}
-                      >
-                        <div className={"plus"}></div>ADD
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
-                        <ExcelFile filename={LabourMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                          {this.onBtExport()}
-                        </ExcelFile>
-                      </>
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                    }
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
+                                            )}
+                                            {AddAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
 
-                    <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                                    <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                   </div>
                 </div>
@@ -895,7 +919,7 @@ class LabourListing extends Component {
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div
               className="ag-theme-material"
@@ -922,9 +946,9 @@ class LabourListing extends Component {
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
-                <AgGridColumn field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
+                <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="LabourId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

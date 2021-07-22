@@ -168,11 +168,14 @@ class UOMMaster extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (props) => {
     const { EditAccessibility } = this.state;
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
     return (
       <>
-        {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
         {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
       </>
     )
@@ -186,16 +189,19 @@ class UOMMaster extends Component {
   * @method statusButtonFormatter
   * @description Renders buttons
   */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+  statusButtonFormatter = (props) => {
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
     return (
       <>
         <label htmlFor="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() =>
-              this.handleChange(cell, row, enumObject, rowIndex)
+              this.handleChange(cellValue, rowData, '', '')
             }
-            checked={cell}
+            checked={cellValue}
             background="#ff6600"
             onColor="#4DC771"
             offColor="#FC5774"
@@ -241,13 +247,39 @@ class UOMMaster extends Component {
   onBtExport = () => {
     let tempArr = []
     const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
     data && data.map((item => {
       tempArr.push(item.data)
     }))
 
     return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    // TempData.map((item) => {
+    //     if (item.RMName === '-') {
+    //         item.RMName = ' '
+    //     } if (item.RMGrade === '-') {
+    //         item.RMGrade = ' '
+    //     } else {
+    //         return false
+    //     }
+    //     return item
+    // })
+    return (
+
+      <ExcelSheet data={TempData} name={UomMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+  }
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
@@ -316,7 +348,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>
@@ -339,17 +371,22 @@ class UOMMaster extends Component {
                 </Col> */}
               </>
             )}
+            <Col md={6} className="text-right search-user-block pr-0">
             {
               DownloadAccessibility &&
               <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                  <div className="download mr-0" title="Download"></div></button>}>
                   {this.onBtExport()}
                 </ExcelFile>
               </>
               //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
             }
 
-            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                  <div className="refresh mr-0"></div>
+              </button>
+            </Col>
           </Row>
 
           <Row>
@@ -391,7 +428,7 @@ class UOMMaster extends Component {
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div
                   className="ag-theme-material"

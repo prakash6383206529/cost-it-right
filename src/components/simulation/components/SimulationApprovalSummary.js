@@ -24,9 +24,14 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
+import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { toastr } from 'react-redux-toastr';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -60,6 +65,9 @@ function SimulationApprovalSummary(props) {
     const [compareCosting, setCompareCosting] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
 
     const dispatch = useDispatch()
@@ -69,6 +77,10 @@ function SimulationApprovalSummary(props) {
     const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
+
+    const [acc1, setAcc1] = useState(false)
+    const [acc2, setAcc2] = useState(false)
+    const [acc3, setAcc3] = useState(false)
 
 
 
@@ -284,40 +296,56 @@ function SimulationApprovalSummary(props) {
         return cell !== null ? cell : '-'
     }
 
-    const ecnFormatter = (cell, row, enumObject, rowIndex) => {
+    const ecnFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell !== null ? cell : '-'
     }
 
-    const revisionFormatter = (cell, row, enumObject, rowIndex) => {
+    const revisionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell !== null ? cell : '-'
     }
 
-    const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldPOFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newPOFormatter = (cell, row, enumObject, rowIndex) => {
+    const newPOFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
+    const oldRMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newRMFormatter = (cell, row, enumObject, rowIndex) => {
+    const newRMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const rmNameFormatter = (cell, row, enumObject, rowIndex) => {
+    const rmNameFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell ? `${cell}-${row.RMGrade}` : '-'
     }
 
 
-    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const buttonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
                 <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
@@ -341,7 +369,9 @@ function SimulationApprovalSummary(props) {
         return <>RM Spec </>
     }
 
-    const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
+    const newBasicRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
                 <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.BasicRate} </span>
@@ -349,17 +379,23 @@ function SimulationApprovalSummary(props) {
         )
     }
 
-    const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
+    const newScrapRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
                 <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.ScrapRate}</span>
             </>
         )
     }
-    const freightCostFormatter = (cell, row, enumObject, rowIndex) => {
+    const freightCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
-    const shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
+    const shearingCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
 
@@ -367,20 +403,26 @@ function SimulationApprovalSummary(props) {
         return <>RM Freight <br /> Cost</>
     }
 
-    const costFormatter = (cell, row, enumObject, rowIndex) => {
+    const costFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const NewcostFormatter = (cell, row, enumObject, rowIndex) => {
+    const NewcostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
-    const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+    const effectiveDateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
@@ -390,6 +432,12 @@ function SimulationApprovalSummary(props) {
 
     const renderEffectiveDate = () => {
         return <>Effective <br /> Date</>
+    }
+
+    const rawMaterailFormat = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return cell != null ? `${cell}- ${row.RMGrade}` : '-';
     }
 
     const options = {
@@ -405,12 +453,63 @@ function SimulationApprovalSummary(props) {
         return <Redirect to="/simulation-history" />
     }
 
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+    };
+
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+        params.api.paginationGoToPage(0);
+
+    };
+
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
+
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
+
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+    const frameworkComponents = {
+        // totalValueRenderer: this.buttonFormatter,
+        // effectiveDateRenderer: this.effectiveDateFormatter,
+        // costingHeadRenderer: this.costingHeadFormatter,
+        ecnFormatter: ecnFormatter,
+        revisionFormatter: revisionFormatter,
+        oldPOFormatter: oldPOFormatter,
+        newPOFormatter: newPOFormatter,
+        oldRMFormatter: oldRMFormatter,
+        buttonFormatter: buttonFormatter,
+        newRMFormatter: newRMFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+        newBasicRateFormatter: newBasicRateFormatter,
+        newScrapRateFormatter: newScrapRateFormatter,
+        shearingCostFormatter: shearingCostFormatter,
+        freightCostFormatter: freightCostFormatter,
+        NewcostFormatter: NewcostFormatter,
+        costFormatter: costFormatter,
+        effectiveDateFormatter: effectiveDateFormatter,
+        rawMaterailFormat: rawMaterailFormat
+
+    };
+
     return (
         <>
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid approval-summary-page smh-approval-summary-page">
+                    <div className="container-fluid  smh-approval-summary-page">
+                        <Errorbox customClass="d-none" errorText="There is some error in your page" />
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
                             <Col md="8">
@@ -458,35 +557,47 @@ function SimulationApprovalSummary(props) {
                                 <Table responsive className="table cr-brdr-main" size="sm">
                                     <thead>
                                         <tr>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Technology:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Costing Head:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].CostingHead}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
                                                 <span className="d-block">{simulationDetail.NumberOfCostings}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Reason:`}</span>
                                                 <span className="d-block">{simulationDetail.SenderReason}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Token No.:`}</span>
                                                 <span className="d-block">{simulationDetail.Token}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Masters:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].SimulationTechnology}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
+                                                <span className="d-block">{'120'}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
+                                                <span className="d-block">{'12001'}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
+                                                <span className="d-block">{'121'}</span>
+                                            </th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
                                                 <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
@@ -512,8 +623,11 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             {showImpactedData &&
                                 <div className="accordian-content w-100">
-                                    <Col md="12" className="mb-3">
-                                        <BootstrapTable
+                                    <div className={`ag-grid-react`}>
+
+
+                                        <Col md="12" className="mb-3">
+                                            {/* <BootstrapTable
                                             data={rmDomesticListing}
                                             striped={false}
                                             bordered={true}
@@ -523,14 +637,11 @@ function SimulationApprovalSummary(props) {
                                             //ignoreSinglePage
                                             className="add-volume-table sm-headrgroup-table impact-drawer-table"
                                             pagination>
-                                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                                            {/* <TableHeaderColumn row='0' rowSpan='2' dataField="CostingHead" width={115} columnTitle={true} editable={false} dataAlign="left" dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn> */}
+                                            
                                             <TableHeaderColumn row='0' rowSpan='2' dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
-                                            {/* <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
-                                    <TableHeaderColumn row='0' rowSpan='2' width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn> */}
                                             <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
                                             <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
                                             <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
@@ -545,12 +656,183 @@ function SimulationApprovalSummary(props) {
                                             <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                                             <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
-                                        </BootstrapTable>
+                                        </BootstrapTable> */}
+                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                <div className="ag-grid-header">
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                </div>
+                                                <div
+                                                    className="ag-theme-material"
+                                                    style={{ height: '100%', width: '100%' }}
+                                                >
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        // columnDefs={c}
+                                                        rowData={rmDomesticListing}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: CONSTANT.EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        stopEditingWhenCellsLoseFocus={true}
+                                                    >
+                                                        <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                        <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                        <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                                        <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                            <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                            <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                            <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                            <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                            <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                            <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
-                                    </Col>
+                                                    </AgGridReact>
+
+                                                    <div className="paging-container d-inline-block float-right">
+                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                            <option value="10" selected={true}>10</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </Col>
+                                    </div>
                                 </div>
                             }
                         </Row>
+
+                        {/* FG wise Impact section start */}
+                        <Row >
+                            <Col md="12">
+                                 <div className="left-border">{'FG wise Impact:'}</div>
+                            </Col>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Col md="12">
+                                <div className="table-responsive">
+                                    <table className="table cr-brdr-main accordian-table-with-arrow">
+                                    <thead>
+                                        <tr>
+                                        <th><span>Part Number</span></th>
+                                        <th><span>Rev Number/ECN Number</span></th>
+                                        <th><span>Part Name</span></th>
+                                        <th><span>Old Cost/Pc</span></th>
+                                        <th><span>New Cost/pc</span></th>
+                                        <th><span>Impact/Pc</span></th>
+                                        <th><span>Volume</span></th>
+                                        <th><span>Impact/Month</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="accordian-with-arrow">
+                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
+                                        <td><span>1</span></td>
+                                        <td><span>This is A model</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>24(INR)</span></td>
+                                        <td><span>2000</span></td>
+                                        <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                        </tr>
+                                        {acc1 &&
+                                        <>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 1</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 2</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 3</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                        </>
+                                        }
+                                    </tbody>
+
+                                    <tbody>
+                                        <tr className="accordian-with-arrow">
+                                        <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
+                                        <td><span>1</span></td>
+                                        <td><span>This is A model</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>24(INR)</span></td>
+                                        <td><span>2000</span></td>
+                                        <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                        </tr>
+                                        {acc2 &&
+                                        <>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 1</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 2</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                        </>
+                                        }
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </Col>
+                        </Row>
+                        {/* FG wise Impact section end */}
 
                         <Row>
                             <Col md="10">
@@ -571,122 +853,77 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <Row className="pt-4 blue-before">
-                                    {shown &&
-                                        <Col lg="10" md="10" className="filter-block">
-                                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                                <div className="flex-fills">
-                                                    <h5 className="hide-left-border">{`Filter By:`}</h5>
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'plantCode'}
-                                                        placeholder={'Plant Code'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('plant')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.plantCode}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'partNo'}
-                                                        placeholder={'Part No.'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('PartList')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.partNo}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={resetHandler}
-                                                        className="reset mr10"
-                                                    >
-                                                        {'Reset'}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={onSubmit}
-                                                        className="apply mr5"
-                                                    >
-                                                        {'Apply'}
-                                                    </button>
-                                                </div>
-                                            </div>
+                                <div className={`ag-grid-react`}>
+                                    <Row className="pb-2">
+                                        <Col md="12">
+                                            <Row>
+                                                <Col>
+                                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                        <div className="ag-grid-header">
+                                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                                <div className="refresh mr-0"></div>
+                                                            </button>
+                                                        </div>
+                                                        <div
+                                                            className="ag-theme-material"
+                                                            style={{ height: '100%', width: '100%' }}
+                                                        >
+                                                            <AgGridReact
+                                                                style={{ height: '100%', width: '100%' }}
+                                                                defaultColDef={defaultColDef}
+                                                                // columnDefs={c}
+                                                                rowData={costingList}
+                                                                pagination={true}
+                                                                paginationPageSize={10}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                loadingOverlayComponent={'customLoadingOverlay'}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: CONSTANT.EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            >
+                                                                <AgGridColumn width={120} field="SimulationCostingId" hide='true'></AgGridColumn>
+                                                                <AgGridColumn width={140} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="VendorName" headerName="Vendor" headerName="Vendor Name"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="Technology" headerName="Technology"></AgGridColumn>
+                                                                <AgGridColumn width={172} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                <AgGridColumn width={120} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                                <AgGridColumn width={120} field="PartName" headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn width={120} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={120} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName="PO Price Old"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
+                                                                <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
+                                                                {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
+                                                                <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn> */}
+
+                                                            </AgGridReact>
+                                                            <div className="paging-container d-inline-block float-right">
+                                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                                    <option value="10" selected={true}>10</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+
                                         </Col>
-                                    }
-
-                                    <Col md="2" lg="2" className="search-user-block mb-3">
-                                        <div className="d-flex justify-content-end bd-highlight w100">
-                                            <div>
-                                                {(shown) ? (
-                                                    <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                                        <div className="cancel-icon-white"></div></button>
-                                                ) : (
-                                                    <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row className="pb-2">
-                                    <Col md="12">
-                                        <Row>
-                                            <Col>
-                                                <BootstrapTable
-                                                    data={costingList}
-                                                    striped={false}
-                                                    bordered={false}
-                                                    hover={false}
-                                                    options={options}
-                                                    search
-                                                    className="add-volume-table mb-3"
-                                                    pagination
-                                                >
-                                                    <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="CostingNumber" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="CostingHead" width={100} export columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing Head'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="VendorName" width={100} export columnTitle={true} dataFormat={vendorFormatter} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} editable={false} dataAlign="left">{'Technology'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="RMName" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={rmNameFormatter} >{renderRMName()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} editable={false} dataFormat={descriptionFormatter} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataFormat={ecnFormatter} dataAlign="left" >{renderECN()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataFormat={revisionFormatter} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={false} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="OldRMPrice" width={100} columnTitle={false} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                                                    <TableHeaderColumn dataField="NewRMPrice" width={100} columnTitle={false} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                                                    {/* <TableHeaderColumn dataField="RMGrade" width={100} columnTitle={false} hidden export={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn> */}
-                                                    <TableHeaderColumn dataField="SimulationCostingId" dataAlign="right" export={false} width={80} columnTitle={false} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
-                                                </BootstrapTable>
-
-                                            </Col>
-                                        </Row>
-
-                                    </Col>
-                                </Row>
+                                    </Row>
+                                </div>
                             </>
                         }
 
-                        <Row>
+                        <Row className="mt-3">
                             <Col md="10">
                                 <div className="left-border">{'Compare Costing:'}</div>
                             </Col>
@@ -704,6 +941,83 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
+
+                        <Row className="mb-4">
+                            <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
+                            <Col md="6">
+                                <div className={'right-details'}>
+                                    <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                                </div>
+                            </Col>
+                            {acc3 &&
+                            <div className="accordian-content w-100">
+                                <div className={`ag-grid-react`}>
+                                    <Col md="12" className="mb-3">
+                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                            <div className="ag-grid-header">
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            </div>
+                                            <div
+                                                className="ag-theme-material"
+                                                style={{ height: '100%', width: '100%' }}
+                                            >
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    // columnDefs={c}
+                                                    rowData={rmDomesticListing}
+                                                    pagination={true}
+                                                    paginationPageSize={10}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: CONSTANT.EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    stopEditingWhenCellsLoseFocus={true}
+                                                >
+                                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                    <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                        <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                        <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                        <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                        <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                        <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                        <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                    <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+
+                                                </AgGridReact>
+
+                                                <div className="paging-container d-inline-block float-right">
+                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                        <option value="10" selected={true}>10</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </Col>
+                                </div>
+                            </div>
+                            }
+                        </Row>
+
                     </div>
 
                     {!isApprovalDone &&
@@ -711,9 +1025,7 @@ function SimulationApprovalSummary(props) {
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => { setRejectDrawer(true) }} >
-                                        <div className={'cross-icon'}>
-                                            <img src={require('../../../assests/images/times.png')} alt="cancel-icon.jpg" />
-                                        </div>{' '}
+                                        <div className={'cancel-icon-white mr5'}></div>
                                         {'Reject'}
                                     </button>
                                     <button

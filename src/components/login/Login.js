@@ -15,6 +15,7 @@ import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.svg'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
+
 class Login extends Component {
   constructor(props) {
     super(props);

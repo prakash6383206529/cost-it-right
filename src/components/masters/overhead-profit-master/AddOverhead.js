@@ -20,6 +20,8 @@ import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
+import imgRedcross from '../../../assests/images/red-cross.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -599,6 +601,7 @@ class AddOverhead extends Component {
             })
           },
           onCancel: () => { },
+          component:()=><ConfirmComponent/>,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -1007,7 +1010,7 @@ class AddOverhead extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={imgRedcross}
                                     ></img>
                                   </div>
                                 );

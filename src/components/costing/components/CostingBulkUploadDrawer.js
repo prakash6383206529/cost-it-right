@@ -12,7 +12,6 @@ import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL, SHEET_METAL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';

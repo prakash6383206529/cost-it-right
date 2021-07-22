@@ -52,20 +52,21 @@ export const TextFieldHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          // ref={reg}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value } }) => {
             return (
               <input
                 {...field}
-                register
+                {...register}
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  // onChange(e)
+                  onChange(e)
                 }}
               />
             )
@@ -80,11 +81,12 @@ export const TextFieldHookForm = (field) => {
 }
 
 export const NumberFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+
   return (
     <>
       <div className={className}>
@@ -96,27 +98,30 @@ export const NumberFieldHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value, name } }) => {
             return (
               <input
                 {...field}
+                {...register}
                 type={'number'}
-                register
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
+
                 onChange={(e) => {
                   handleChange(e);
-                  // onChange(e)
+                  onChange(e)
                 }}
               />
             )
           }
           }
         />
+
+
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
           : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
       </div>
@@ -127,6 +132,7 @@ export const NumberFieldHookForm = (field) => {
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register, isLoading, customClassName } = field;
+
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
@@ -142,33 +148,35 @@ export const SearchableSelectHookForm = (field) => {
         name={name}
         control={control}
         rules={rules}
-        ref={register}
+        {...register}
         defaultValue={defaultValue}
-        render={({ onChange, onBlur, value, name }) =>
+        render={({ field: { onChange, onBlur, value, name, } }) => {
+          return (
+            <Select
+              {...field}
+              {...register}
+              name={name}
+              placeholder={placeholder}
+              isDisabled={isDisable}
+              onChange={(e) => {
+                handleChange(e);
+                onChange(e)
+              }}
+              menuPlacement="auto"
+              options={options}
+              onBlur={onBlur}
+              selected={value}
+              value={value}
+              isLoading={isLoader}
+            />
+          )
 
-          <Select
-            {...field}
-            name={name}
-            placeholder={placeholder}
-            isDisabled={isDisable}
-            onChange={(e) => {
-              handleChange(e);
-              // onChange(e)
-            }}
-            menuPlacement="auto"
-            options={options}
-            onBlur={onBlur}
-            //selected={value}
-            value={value}
-            isLoading={isLoader}
-          />
-
-        }
+        }}
       />
 
       {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
       {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
-      { errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
         : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
 
     </div>
@@ -197,19 +205,20 @@ export const TextAreaHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => {
+          render={({ field: { onChange, onBlur, value, name } }) => {
             return (
               <textarea
                 {...field}
+                {...register}
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
                 onChange={(e) => {
                   handleChange(e);
-                  // onChange(e)
+                  onChange(e)
                 }}
               />
             )
@@ -244,13 +253,14 @@ export const DatePickerHookForm = (field) => {
           name={name}
           control={control}
           rules={rules}
-          ref={register}
+          {...register}
           defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => (
+          render={({ field: { onChange, onBlur, value, name } }) => (
 
             // return (
             <ReactDatePicker
               {...field}
+              {...register}
               name={name}
               value={value}
               dateFormat="dd/MM/yyyy"
@@ -288,18 +298,9 @@ export const DatePickerHookForm = (field) => {
 */
 // import Typography from "../typography";
 // import "./radioButtons.less";
-export const RadioHookForm = ({
-  dataArray = [],
-  label = "label",
-  optionsValue = "optionsValue",
-  labelElement = '',
-  className,
-  selectedValue = "",
-  register,
-  name,
-  onChange = null,
-  // disable = false
-}) => {
+export const RadioHookForm = (field) => {
+  const { dataArray = [], label = "label", optionsValue = "optionsValue", labelElement = '', className, selectedValue = "", register, name, onChange = null, defaultValue } = field
+
   const onChangeSelect = (val) => {
     onChange && onChange(val);
   };
@@ -315,10 +316,13 @@ export const RadioHookForm = ({
                 <li className="p-3" key={index}>
                   <label className="radio-button-wrapper radio-box">
                     <input
+                      {...field}
+                      {...register}
                       name={name}
                       type="radio"
                       value={data[optionsValue]}
-                      ref={register}
+                      defaultValue={defaultValue}
+                      checked={defaultValue}
                       onChange={e =>
                         onChangeSelect(
                           e.target.value

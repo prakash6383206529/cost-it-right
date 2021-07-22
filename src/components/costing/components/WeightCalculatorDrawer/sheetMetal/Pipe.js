@@ -15,6 +15,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function Pipe(props) {
 
@@ -46,6 +47,7 @@ function Pipe(props) {
   const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
+  const CostingViewMode = useContext(ViewCostingContext);
 
   const defaultValues = {
 
@@ -966,9 +968,8 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
-            {
-              isEditFlag &&
 
+            {isEditFlag && !CostingViewMode &&
               <div className="col-sm-12 text-right px-0 mt-4">
                 <button
                   type={'button'}
@@ -982,8 +983,7 @@ function Pipe(props) {
                   <div className={'save-icon'}></div>
                   {'Save'}
                 </button>
-              </div>
-            }
+              </div>}
 
           </form>
         </div>

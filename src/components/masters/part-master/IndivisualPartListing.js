@@ -258,9 +258,23 @@ class IndivisualPartListing extends Component {
         })
     }
 
+
+
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
+
+        // dont remove this
+        // var allColumnIds = [];
+        // params.columnApi.getAllColumns().forEach(function (column) {
+        //     allColumnIds.push(column.colId);
+        // });
+        // params.columnApi.autoSizeColumns(allColumnIds);
+        // dont remove this
+
+        //if resolution greater than 1920 table listing fit to 100%
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+        //if resolution greater than 1920 table listing fit to 100%
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -299,6 +313,14 @@ class IndivisualPartListing extends Component {
             <ExcelSheet data={TempData} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
+    }
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
     }
 
     onFilterTextBoxChanged(e) {
@@ -366,27 +388,45 @@ class IndivisualPartListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                {BulkUploadAccessibility && <button
-                                    type="button"
-                                    className={'user-btn mr5'}
-                                    onClick={this.bulkToggle}>
-                                    <div className={'upload'}></div>Bulk Upload</button>}
-                                {AddAccessibility && <button
-                                    type="button"
-                                    className={'user-btn mr5'}
-                                    onClick={this.formToggle}>
-                                    <div className={'plus'}></div>Add</button>}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
-                                        <ExcelFile filename={ComponentPart} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {this.onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                }
+                                {AddAccessibility && (
+                                                 <button
+                                                 type="button"
+                                                 className={'user-btn mr5'}
+                                                 title="Add"
+                                                 onClick={this.formToggle}>
+                                                 <div className={'plus mr-0'}></div></button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
 
-                                <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                             </div>
                         </div>
@@ -423,7 +463,7 @@ class IndivisualPartListing extends Component {
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div
                         className="ag-theme-material"
@@ -451,7 +491,7 @@ class IndivisualPartListing extends Component {
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="Action"   cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

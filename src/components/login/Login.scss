@@ -261,30 +261,35 @@ label{margin-bottom: 0;}
 
 
 .right-sideimg{
-img{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background-color: #eff4fb;
-  object-position: bottom;
-}
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #eff4fb;
+    object-position: bottom;
+  }
 }
 
 @media(max-width:1366px){
+  .login-btn{margin-top: calc(10px * 80 / 100);}
+  .container{
+    max-width: 1024px;
+  }
   .form-section {
-    padding: 35px 70px;
+    padding: calc(50px * 80 / 100) calc(70px * 80 / 100);
     .bottomlogo_con{
       span{
         font-size: calc(15px * 80 / 100);
-        margin-top: 25px;
+        margin-top: calc(25px * 80 / 100);
       }
       .logo-second{
-        max-width: 190px;
+        max-width: calc(190px * 80 / 100);
       }
     }
      img{
        margin-bottom: calc(15px * 80 / 100);
-       max-height: 70px;
+       max-height: calc(70px * 80 / 100);
+       max-width: 260px;
      }
    h3{
     font-size: calc(20px * 80 / 100);

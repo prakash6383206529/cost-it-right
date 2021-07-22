@@ -12,6 +12,7 @@ import { Fragment } from 'react'
 import ApprovalListing from './ApprovalListing'
 import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
+import { Errorbox } from '../../../common/ErrorBox'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props
@@ -116,6 +117,7 @@ function ApprovalSummary(props) {
         showListing === false ?
           <>
             <div className="container-fluid approval-summary-page">
+              <Errorbox customClass="d-none" errorText="There is some error in your page"/>
               <h2 className="heading-main">Approval Summary</h2>
               <Row>
                 <Col md="8">
@@ -367,7 +369,7 @@ function ApprovalSummary(props) {
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
-                      <div className={'cancel-icon'}></div>
+                      <div className={'cancel-icon-white mr5'}></div>
                       {'Reject'}
                     </button>
                     <button

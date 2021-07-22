@@ -63,7 +63,10 @@ class DepartmentsListing extends Component {
   }
 
   componentDidMount() {
-    this.getDepartmentListData();
+    setTimeout(() => {
+
+      this.getDepartmentListData();
+    }, 500);
     //this.props.onRef(this)
   }
 
@@ -227,22 +230,24 @@ class DepartmentsListing extends Component {
         <>
           {this.state.isLoader && <Loader />}
           <Row className="pt-4 no-filter-row">
-            {AddAccessibility && (
-              <>
-                <Col md="6" className="filter-block"></Col>
-                <Col md="6" className="text-right search-user-block pr-0">
+            <Col md="6" className="filter-block"></Col>
+            <Col md="6" className="text-right search-user-block pr-0">
+              {AddAccessibility && (
+                <>
                   <button
                     type={"button"}
-                    className={"user-btn"}
+                    className={"user-btn mr5"}
                     onClick={this.openModel}
+                    title="Add"
                   >
-                    <div className={"plus"}></div>
-                    {`ADD`}
+                    <div className={"plus mr-0"}></div>
                   </button>
-                </Col>
-              </>
-            )}
-            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                </>
+              )}
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
+            </Col>
 
           </Row>
 
@@ -268,7 +273,7 @@ class DepartmentsListing extends Component {
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div
                   className="ag-theme-material"
@@ -292,7 +297,7 @@ class DepartmentsListing extends Component {
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
                     {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
-                    <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="DepartmentId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

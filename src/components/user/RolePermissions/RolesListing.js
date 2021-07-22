@@ -62,7 +62,10 @@ class RolesListing extends Component {
   }
 
   componentDidMount() {
-    this.getRolesListData()
+    setTimeout(() => {
+
+      this.getRolesListData()
+    }, 500);
     //this.props.onRef(this)
   }
 
@@ -206,6 +209,7 @@ class RolesListing extends Component {
             <Col md="8" className="mb-2">
 
             </Col>
+<<<<<<< HEAD
             <Col md="4" >
               {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
@@ -218,6 +222,25 @@ class RolesListing extends Component {
               </div>}
 
               <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+=======
+            <Col md="6" className="search-user-block mb-3">
+              <div className="d-flex justify-content-end bd-highlight w100">
+                {AddAccessibility &&
+                  <div>
+                    <button
+                      type="button"
+                      className={'user-btn mr5'}
+                      title="Add"
+                      onClick={this.formToggle}>
+                      <div className={'plus mr-0'}></div></button>
+                  </div>
+                }
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
+              </div>
+
+>>>>>>> m1-frontend
 
             </Col>
           </Row>
@@ -241,7 +264,11 @@ class RolesListing extends Component {
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
+<<<<<<< HEAD
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+=======
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+>>>>>>> m1-frontend
                 </div>
                 <div
                   className="ag-theme-material"
@@ -264,7 +291,11 @@ class RolesListing extends Component {
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+<<<<<<< HEAD
                     <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+=======
+                    <AgGridColumn field="RoleId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+>>>>>>> m1-frontend
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

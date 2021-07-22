@@ -10,6 +10,15 @@ import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } fro
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import Switch from "react-switch";
 
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: 'PackagingCostPercentage',
+  });
+
+  return values;
+}
+
 function AddPackaging(props) {
 
   const { rowObjData, isEditFlag } = props;
@@ -28,18 +37,12 @@ function AddPackaging(props) {
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
-  const dispatch = useDispatch()
-
   const headCostData = useContext(netHeadCostContext)
 
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
-  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : true);
-  //const [formData, setFormData] = useState({});
+  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
 
-  const fieldValues = useWatch({
-    control,
-    name: ['PackagingCostPercentage'],
-  });
+  const fieldValues = IsolateReRender(control)
 
   useEffect(() => {
     if (applicability && applicability.value !== undefined) {
@@ -48,10 +51,12 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    if (!PackageType) {
-      setValue('PackagingCostPercentage', 'Fixed')
-    } else {
-      setValue('PackagingCostPercentage', '')
+    if (!isEditFlag) {
+      if (!PackageType) {
+        setValue('PackagingCostPercentage', 'Fixed')
+      } else {
+        setValue('PackagingCostPercentage', '')
+      }
     }
   }, [PackageType]);
 
@@ -105,10 +110,8 @@ function AddPackaging(props) {
     switch (Text) {
       case 'RM':
         if (!PackageType) {
-
           setValue('PackagingCost', '')
         } else {
-
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
@@ -250,11 +253,6 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -324,7 +322,6 @@ function AddPackaging(props) {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -349,7 +346,7 @@ function AddPackaging(props) {
                       type={'submit'}
                       className="submit-button  save-btn"
                       onClick={addRow} >
-                                          <div className={'save-icon'}></div>
+                      <div className={'save-icon'}></div>
                       {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>

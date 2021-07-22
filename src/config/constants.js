@@ -508,6 +508,7 @@ export const API = {
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
+  getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1216,6 +1217,7 @@ export const SET_COSTING_EFFECTIVE_DATE = 'SET_COSTING_EFFECTIVE_DATE';
 export const CLOSE_OPEN_ACCORDION = 'CLOSE_OPEN_ACCORDION';
 export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DISABLED';
 export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
+export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1446,6 +1448,8 @@ export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
+export const FASTNERS = 'Fastners';
+export const RIVETS = 'Rivets';
 
 export const USER = 'User'
 export const ROLE = 'Role'
@@ -1471,6 +1475,9 @@ export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
 export const DASHBOARDWITHGRAPH_PATH = '/dashboardWithGraph'
+export const DASHBOARD_PATH = '/'
+export const DASHBOARD_PATH_SECOND = '/dashboard'
+
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"

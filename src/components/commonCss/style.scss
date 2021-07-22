@@ -1188,6 +1188,24 @@ input.form-control{
   background-size: contain;
 }
 
+.hirarchy-icon{
+  width: 18px;
+  height: 12px;
+  background: transparent url("../../assests/images/hirarchy-icon.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
+.trashred-icon{
+  width: 11px;
+  height: 14px;
+  background: transparent url("../../assests/images/trash-red.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
+
 .save-icon{
   width: 18px;
   height: 12px;
@@ -1197,7 +1215,23 @@ input.form-control{
   background-size: contain;
 }
 
+.filter{
+  width: 12px;
+  height: 12px;
+  background: transparent url("../../assests/images/filter.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
 
+.refresh{
+  width: 14px;
+  height: 14px;
+  background: transparent url("../../assests/images/refresh-icon.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  margin-right: 5px;
+  background-size: contain;
+}
 
 .Module-Name {
   text-align: left;
@@ -2570,7 +2604,7 @@ html {
       &:nth-child(2) {
         .input-range__label--value {
           span {
-            top: -12px;
+            top: -6px;
           }
         }
       }
@@ -3070,7 +3104,7 @@ button:disabled{pointer-events: none;}
     }
   }
   .search-user-block{
-    padding-right: 130px !important;
+    padding-right: 131px !important;
   }
 }
 .react-bs-table-csv-btn{
@@ -3146,7 +3180,7 @@ button:disabled{pointer-events: none;}
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus,.check-icon,>img,.save-icon,.send-for-approval{
+  .plus,.check-icon,>img,.save-icon,.send-for-approval,.back-icon{
     filter: brightness(0.8) !important;
   }
   .cross-icon,.cancel-icon{
@@ -3184,7 +3218,7 @@ opacity: 0.5;
     color: #3d4465;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 5px 10px;
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
@@ -3213,6 +3247,15 @@ opacity: 0.5;
   &:hover{
     .tooltiptext {
       visibility: visible;
+    }
+  }
+  &.tooltip-left{
+    .tooltiptext{
+      left: -50px;
+      &::after{
+        left: 56px;
+        right: unset;
+      }
     }
   }
 }
@@ -3323,8 +3366,8 @@ opacity: 0.5;
     background-color: #fff;
     background-clip: padding-box;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    max-width: 100%;
     overflow: hidden;
+    text-overflow: ellipsis;
     }
     .green-value{
       background-color: #DBF4E2;
@@ -3930,6 +3973,27 @@ body{
   }
 }
 
+//fire-fox css
+@-moz-document url-prefix() {
+  .accordian-table-with-arrow,.accordian-table-with-arrow.table.cr-brdr-main{
+    tbody{
+      position: relative;
+      border-bottom: 4px solid #fff;
+      &:before{
+        bottom: -1px;
+      }
+      tr{
+        td{
+          &:first-child{
+            border-left: 2px solid #C2CBE8;
+          }
+        }
+      }
+    }
+  }
+}
+//fire-fox css
+
 // radio-box standard radio buttons
 .radio-box{
   position: relative;
@@ -4173,12 +4237,18 @@ body{
   border-color: #DBF4E2;
   color: #4DC771;
   line-height: initial;
+  min-width: 100px;
+  padding: 9px 12px !important;
+  height: auto;
 }
 .red-value{
   background-color: #FEDCE2;
   border-color: #FEDCE2;;
   color: #FC5774;
   line-height: initial;
+  min-width: 100px;
+  padding: 9px 12px !important;
+  height: auto;
 }
 .change-version-block{
   min-width: 85px;
@@ -4419,6 +4489,22 @@ body{
 }
 // client based costing drawer
 
+// error_box 
+.error_box{
+  background-color: #FEDCE2;
+  border-color: #FEDCE2;
+  color: #FC5774;
+  padding: 10px 20px;
+  text-align: center;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  width: 100%;
+  display: inline-block;
+}
+// error_box 
+
+
 // responsive media query start
 @media(max-width:1600px){
 
@@ -4564,6 +4650,9 @@ body{
       }
     }
   }
+  .weight-calculator-headings{
+    font-size: calc(15px * 80 /100);
+  }
   .notification-dropdown{left: -9rem;}
   .text-warning{font-size: calc(12px * 80 / 100);}
   .warning-row{
@@ -4576,7 +4665,7 @@ body{
   }
   .role-permision-page {
     .add-min-height{
-      min-height: calc(100vh - 270px);
+      min-height: calc(100vh - 232px);
     }
   }
 
@@ -4790,7 +4879,6 @@ body{
 
     // right side .content-page
     body{
-
       .Add,
       .Edit,
       .Balance,
@@ -4813,6 +4901,10 @@ body{
         width: calc(32px * 80 / 100) ;
         height: calc(32px * 80 / 100) ;
         background-size: contain ;
+      }
+
+      h3{
+        font-size: calc(22px * 80 / 100);
       }
 
       // drawer css starts
@@ -4944,9 +5036,20 @@ body{
       .save-icon{
         width: calc(18px * 80 /100);
         height: calc(12px * 80 /100);
-       
+      }
+      .hirarchy-icon{
+        width: calc(18px * 80 / 100);
+        height: calc(12px * 80 / 100);
       }
       
+      .trashred-icon{
+        width: calc(11px * 80 / 100);
+        height: calc(14px * 80 / 100);
+      }
+      .edit-icon{
+        width: calc(14px * 80 / 100);
+        height: calc(14px * 80 / 100);
+      }
       
       .download-btn{
          button{width: 100%;}
@@ -5123,6 +5226,14 @@ body{
         width: calc(13px * 80 /100);
         height: calc(13px * 80 /100);
         background-size: contain;
+      }
+      .refresh{
+        width: calc(13px * 80 /100);
+        height: calc(13px * 80 /100);
+      }
+      .filter{
+        width: calc(12px * 80 /100);
+        height: calc(12px * 80 /100);
       }
       .form-control, .manageuser .css-yk16xz-control{
         font-size: calc(14px * 80 /100) !important;
@@ -5883,7 +5994,31 @@ body{
   .surface-treatment-btn{
     white-space: nowrap;
   }
-  
+  .blue-box{
+   padding: 0 10px 10px; 
+  }
+
+  // error_box 
+.error_box{
+  padding: calc(10px * 80 / 100 ) calc(20px * 80 / 100 );
+  border-radius: calc(10px * 80 / 100 );
+  margin-bottom: calc(15px * 80 / 100 );
+  font-size: calc(16px * 80 / 100 );
+}
+// error_box 
+
+// dashboard css start
+.graph-box{
+  border: 1px solid rgba(37, 107, 209, 0.1);
+  padding: calc(25px * 80 / 100);
+  margin-bottom: calc(30px * 80 / 100);
+  .graph-container{
+    canvas{
+      max-height: 240px !important;
+    }
+  }
+}
+// dashboard css end
 
 }// ==================================1366 END
 

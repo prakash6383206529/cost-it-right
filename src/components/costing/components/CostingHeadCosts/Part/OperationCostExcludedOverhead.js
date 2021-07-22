@@ -222,7 +222,7 @@ function OperationCostExcludedOverhead(props) {
           <Row className="align-items-center">
             <Col md="8">
               <div className="left-border">
-                {'Operation Cost:'}
+                {'Other Operation Cost:'}
               </div>
             </Col>
             <Col md={'4'}>
@@ -230,7 +230,7 @@ function OperationCostExcludedOverhead(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>}
+                <div className={'plus'}></div>ADD OTHER OPERATION</button>}
             </Col>
           </Row>
           <Row>

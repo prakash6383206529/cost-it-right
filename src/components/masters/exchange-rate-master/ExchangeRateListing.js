@@ -32,6 +32,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
+
 class ExchangeRateListing extends Component {
     constructor(props) {
         super(props);
@@ -48,11 +49,14 @@ class ExchangeRateListing extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
+            gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            isLoader: true,
         }
     }
 
-    componentDidMount() {
-
+    UNSAFE_componentWillMount() {
         let ModuleId = reactLocalStorage.get('ModuleId');
         this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
             const { leftMenuData } = this.props;
@@ -69,30 +73,48 @@ class ExchangeRateListing extends Component {
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                         DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                    }, () => {
+                        setTimeout(() => {
+
+                            this.props.getCurrencySelectList(() => { })
+                            this.getTableListData()
+                        }, 500);
                     })
                 }
             }
         })
-        this.props.getCurrencySelectList(() => { })
-        this.getTableListData()
+
     }
+
+    componentDidMount() {
+        setTimeout(() => {
+
+            this.props.getCurrencySelectList(() => { })
+            this.getTableListData()
+        }, 500);
+    }
+
+
+    componentWillUnmount() {
+        this.props.getExchangeRateDataList(false, {}, (res) => { })
+    }
+
 
     /**
     * @method getTableListData
     * @description Get list data
     */
     getTableListData = (currencyId = 0) => {
+        this.setState({ isLoader: true })
         let filterData = {
             currencyId: currencyId,
         }
-        this.props.getExchangeRateDataList(filterData, res => {
+        this.props.getExchangeRateDataList(true, filterData, res => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
             } else {
 
             }
@@ -162,14 +184,12 @@ class ExchangeRateListing extends Component {
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForInputOutput) : '';
     }
-
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -243,9 +263,8 @@ class ExchangeRateListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
     onExportToCSV = (row) => {
@@ -306,8 +325,15 @@ class ExchangeRateListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
         params.api.paginationGoToPage(0);
+
+        var allColumnIds = [];
+        params.columnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
+        
+        window.screen.width <= 1366 ?  params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+        
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -317,7 +343,7 @@ class ExchangeRateListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
         data && data.map((item => {
             tempArr.push(item.data)
         }))
@@ -354,7 +380,12 @@ class ExchangeRateListing extends Component {
         gridOptions.columnApi.resetColumnState();
     }
 
-
+    frameworkComponents = {
+        totalValueRenderer: this.buttonFormatter,
+        effectiveDateRenderer: this.effectiveDateFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound
+    };
 
     /**
     * @method render
@@ -363,7 +394,6 @@ class ExchangeRateListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { toggleForm, data, AddAccessibility, DownloadAccessibility } = this.state;
-        const ExcelFile = ReactExport.ExcelFile;
 
         if (toggleForm) {
             return (
@@ -380,19 +410,14 @@ class ExchangeRateListing extends Component {
 
         };
 
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            effectiveDateRenderer: this.effectiveDateFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound
-        };
+
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            // onExportToCSV: this.handleExportCSVButtonClick,
+            exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -404,9 +429,8 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                {/* <div className=""> */}
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+                {this.state.isLoader && <LoaderCustom />}
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <Row>
@@ -462,24 +486,30 @@ class ExchangeRateListing extends Component {
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                 <div className="cancel-icon-white"></div></button>
                                         ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                            <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
                                         )}
                                         {AddAccessibility && <button
                                             type="button"
                                             className={'user-btn mr5'}
+                                            title="Add"
                                             onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>}
+                                            <div className={'plus mr-0'}></div></button>}
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
                                             </>
                                             //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                                         }
 
-                                        <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
 
                                     </div>
                                 </div>
@@ -487,7 +517,7 @@ class ExchangeRateListing extends Component {
                         </Row>
 
                     </form>
-                    {/* <BootstrapTable
+                    {/*<BootstrapTable
                         data={this.props.exchangeRateDataList}
                         striped={false}
                         hover={false}
@@ -513,7 +543,7 @@ class ExchangeRateListing extends Component {
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div
                             className="ag-theme-material"
@@ -532,16 +562,16 @@ class ExchangeRateListing extends Component {
                                 noRowsOverlayComponentParams={{
                                     title: CONSTANT.EMPTY_DATA,
                                 }}
-                                frameworkComponents={frameworkComponents}
+                                frameworkComponents={this.frameworkComponents}
                             >
                                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                <AgGridColumn field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                <AgGridColumn  suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
-                                <AgGridColumn field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                <AgGridColumn  suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
                                 <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                <AgGridColumn field="DateOfModification" headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                <AgGridColumn field="ExchangeRateId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                <AgGridColumn  suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                <AgGridColumn  suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" cellRenderer='totalValueRenderer'></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

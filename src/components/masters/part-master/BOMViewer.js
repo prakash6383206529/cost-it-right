@@ -325,11 +325,7 @@ class BOMViewer extends Component {
                                 })
                               }
                             >
-                              <div className={"cross-icon"}>
-                                <img
-                                  src={require("../../../assests/images/trash-red.svg")}
-                                  alt="delete-icon.jpg"
-                                />
+                              <div className={"trashred-icon"}>
                               </div>{" "}
                               {"Delete"}
                             </button>
@@ -427,10 +423,7 @@ class BOMViewer extends Component {
                                   <span className="flowpoint-header-delete">
                                     <button
                                       onClick={() => this.deleteLevelOne(i)}
-                                    ><img
-                                        src={require("../../../assests/images/times.png")}
-                                        alt="cancel-icon.jpg"
-                                      />
+                                    ><div className="cancel-icon"></div>
                                     </button>
                                   </span>
                                 )}

@@ -26,7 +26,16 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+<<<<<<< HEAD
 import cancelImg from '../../../assests/images/times.png'
+=======
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
+>>>>>>> m1-frontend
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -147,11 +156,17 @@ class ProfitListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
+<<<<<<< HEAD
      buttonFormatter = (props) => {
+=======
+    buttonFormatter = (props) => {
+>>>>>>> m1-frontend
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility } = this.props;
+
+
         return (
             <>
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
@@ -439,6 +454,7 @@ class ProfitListing extends Component {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
+<<<<<<< HEAD
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
@@ -455,6 +471,24 @@ class ProfitListing extends Component {
         return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
     };
 
+=======
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+>>>>>>> m1-frontend
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         TempData.map((item) => {
@@ -532,7 +566,10 @@ class ProfitListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             costingHeadFormatter: this.costingHeadFormatter,
+<<<<<<< HEAD
             renderPlantFormatter: this.renderPlantFormatter,
+=======
+>>>>>>> m1-frontend
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter
@@ -670,9 +707,12 @@ class ProfitListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
                                     )}
                                     {AddAccessibility && (
+<<<<<<< HEAD
                                         <button
                                             type="button"
                                             className={"user-btn mr5"}
@@ -692,6 +732,39 @@ class ProfitListing extends Component {
                                     }
 
                                     <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+=======
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            )}
+                                    {
+                                                DownloadAccessibility &&
+                                                <>
+
+                                                    <ExcelFile filename={'Profit'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                            }
+
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
+>>>>>>> m1-frontend
 
                                 </div>
                             </div>
@@ -729,7 +802,11 @@ class ProfitListing extends Component {
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
+<<<<<<< HEAD
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+=======
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+>>>>>>> m1-frontend
                             </div>
                             <div
                                 className="ag-theme-material"
@@ -760,7 +837,11 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+<<<<<<< HEAD
                                     <AgGridColumn field="ProfitId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+=======
+                                    <AgGridColumn field="ProfitId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+>>>>>>> m1-frontend
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

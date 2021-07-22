@@ -125,7 +125,7 @@ class SOBListing extends Component {
     const { EditAccessibility, } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />}
       </>
     )
   }
@@ -334,6 +334,11 @@ class SOBListing extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
+  createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+    );
+  }
 
 
   /**
@@ -343,7 +348,6 @@ class SOBListing extends Component {
   render() {
     const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
-    const ExcelFile = ReactExport.ExcelFile;
 
     const onExportToCSV = (row) => {
       // ...
@@ -432,22 +436,29 @@ class SOBListing extends Component {
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 {this.state.shown ? (
-                  <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
+                  <button type="button" className="user-btn filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <div className="cancel-icon-white"></div></button>
                 ) : (
-                  <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                    <div className="filter mr-0"></div>
+                  </button>
                 )}
                 {
                   DownloadAccessibility &&
                   <>
-                    <ExcelFile filename={Sob} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                    <ExcelFile filename={Sob} fileExtension={'.xls'} element={
+                      <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                        {/* DOWNLOAD */}
+                      </button>}>
                       {this.onBtExport()}
                     </ExcelFile>
                   </>
                   //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                 }
 
-                <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                  <div className="refresh mr-0"></div>
+                </button>
 
               </div>
             </Col>
@@ -482,7 +493,7 @@ class SOBListing extends Component {
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
@@ -511,8 +522,8 @@ class SOBListing extends Component {
                   <AgGridColumn field="NoOfVendors" headerName="No of Vendors"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
-                  <AgGridColumn field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

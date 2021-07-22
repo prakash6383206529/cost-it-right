@@ -44,22 +44,31 @@ export function createReasonAPI(data, callback) {
 * @method getAllReasonAPI
 * @description get all Reason list
 */
-export function getAllReasonAPI(callback) {
+export function getAllReasonAPI(isAPICall, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.get(API.getAllReasonAPI, headers)
-            .then((response) => {
-                dispatch({
-                    type: GET_REASON_DATA_SUCCESS,
-                    payload: response.data.DataList,
+        if (isAPICall) {
+
+            dispatch({ type: API_REQUEST });
+            axios.get(API.getAllReasonAPI, headers)
+                .then((response) => {
+                    dispatch({
+                        type: GET_REASON_DATA_SUCCESS,
+                        payload: response.data.DataList,
+                    });
+                    callback(response);
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
                 });
-                callback(response);
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
+        }
+        else {
+            dispatch({
+                type: GET_REASON_DATA_SUCCESS,
+                payload: [],
             });
-    };
+        }
+    }
 }
 
 

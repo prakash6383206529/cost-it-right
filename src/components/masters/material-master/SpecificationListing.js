@@ -32,6 +32,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
+
 class SpecificationListing extends Component {
     constructor(props) {
         super(props);
@@ -47,8 +48,6 @@ class SpecificationListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            sideBar: { toolPanels: ['columns'] },
-            showData: false
 
         }
     }
@@ -370,22 +369,6 @@ class SpecificationListing extends Component {
         const { isOpen, isEditFlag, ID, isBulkUpload, } = this.state;
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: true,
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            // effectiveDateRenderer: this.effectiveDateFormatter,
-            // costingHeadRenderer: this.costingHeadFormatter,
-            // customLoadingOverlay: LoaderCustom,
-            // customNoRowsOverlay: NoContentFound,
-            // freightCostFormatter: this.freightCostFormatter,
-            // shearingCostFormatter: this.shearingCostFormatter,
-            // costFormatter: this.costFormatter
-        };
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -395,11 +378,21 @@ class SpecificationListing extends Component {
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
+        };
+
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
 
         };
 
+
         return (
-            // <div className="">
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -465,23 +458,33 @@ class SpecificationListing extends Component {
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                     <div className="cancel-icon-white"></div></button>
                             ) : (
-                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
                             )}
-                            {BulkUploadAccessibility && <button
-                                type="button"
-                                className={'user-btn mr5 '}
-                                onClick={this.bulkToggle}>
-                                <div className={'upload'}></div>Bulk upload</button>}
                             {AddAccessibility && <button
                                 type={'button'}
                                 className={'user-btn mr5'}
+                                title="Add"
                                 onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD`}</button>}
+                                <div className={'plus mr-0'}></div></button>}
+                                {BulkUploadAccessibility && <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>}
                             {
                                 DownloadAccessibility &&
                                 <>
 
-                                    <ExcelFile filename={RmSpecification} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    <ExcelFile filename={RmSpecification} fileExtension={'.xls'} element={
+                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                    {/* DOWNLOAD */}
+                                    </button>}>
 
                                         {this.onBtExport()}
                                     </ExcelFile>
@@ -491,7 +494,9 @@ class SpecificationListing extends Component {
                                 //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                             }
-                            <button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                         </Col>
                     </Row>
@@ -500,20 +505,20 @@ class SpecificationListing extends Component {
                 <Row>
                     <Col>
                         {/* <hr /> */}
-                        {/* <BootstrapTable
+                        {/*<BootstrapTable
                             data={this.props.rmSpecificationList}
                             striped={false}
                             bordered={false}
                             hover={false}
                             options={options}
                             search
-                            // exportCSV={DownloadAccessibility}
-                            // csvFileName={`${RmSpecification}.csv`}
+                            exportCSV={DownloadAccessibility}
+                            csvFileName={`${RmSpecification}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
-                            pagination>*/}
-                        {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
+                            pagination>
+                         
+                            <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="RMGrade" dataAlign="left" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="left">Specification</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
@@ -521,7 +526,7 @@ class SpecificationListing extends Component {
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div
                                 className="ag-theme-material"
@@ -545,7 +550,7 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

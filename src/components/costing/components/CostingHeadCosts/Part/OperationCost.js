@@ -160,7 +160,7 @@ function OperationCost(props) {
       setGridData(tempArr)
       toastr.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]Quantity`, 0)
+        setValue(`${OperationGridFields}.${index}.Quantity`, 0)
       }, 200)
     }
   }
@@ -187,7 +187,7 @@ function OperationCost(props) {
       setGridData(tempArr)
       //toastr.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
+        setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
       }, 200)
     }
   }
@@ -270,7 +270,7 @@ function OperationCost(props) {
                               {
                                 <NumberFieldHookForm
                                   label=""
-                                  name={`${OperationGridFields}[${index}]Quantity`}
+                                  name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -305,7 +305,7 @@ function OperationCost(props) {
                                   item.IsLabourRateExist ?
                                     <NumberFieldHookForm
                                       label=""
-                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}
