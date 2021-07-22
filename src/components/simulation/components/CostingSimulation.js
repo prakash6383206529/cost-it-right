@@ -474,83 +474,6 @@ function CostingSimulation(props) {
                                     </Col>
                                 </Row>
                                 <Row className="filter-row-large pt-4 blue-before">
-                                    {shown &&
-                                        <Col lg="8" md="8" className="filter-block">
-                                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                                <div className="flex-fills">
-                                                    <h5>{`Filter By:`}</h5>
-                                                </div>
-
-                                                {/* <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'partNo'}
-                                                        placeholder={'Part No.'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('PartList')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.partNo}
-                                                    />
-                                                </div> */}
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'plantCode'}
-                                                        placeholder={'Plant Code'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('plant')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.plantCode}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'rawMaterial'}
-                                                        placeholder={'Raw Material'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('material')}
-                                                        mandatory={false}
-                                                        handleChange={handleMaterial}
-                                                        errors={errors.rawMaterial}
-                                                    />
-                                                </div>
-
-                                                <div className="flex-fill hide-label">
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={resetFilter}
-                                                        className="reset mr10"
-                                                    >
-                                                        {'Reset'}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={filterList}
-                                                        className="apply mr5"
-                                                    >
-                                                        {'Apply'}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    }
 
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
@@ -567,70 +490,75 @@ function CostingSimulation(props) {
 
                                 </Row>
                                 <Row>
-
                                     <Col>
-                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                            <div className="ag-grid-header">
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            </div>
-                                            <div>
-                                                <AgGridReact
+
+                                        <Col>
+                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                <div className="ag-grid-header">
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                </div>
+                                                <div
                                                     className="ag-theme-material"
                                                     style={{ height: '100%', width: '100%' }}
-                                                    defaultColDef={defaultColDef}
-                                                    // columnDefs={c}
-                                                    rowData={costingList}
-                                                    pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    loadingOverlayComponent={'customLoadingOverlay'}
-                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    suppressRowClickSelection={true}
-                                                    rowSelection={'multiple'}
-                                                    // frameworkComponents={frameworkComponents}
-                                                    onSelectionChanged={onRowSelect}
-                                                // isRowSelectable={isRowSelectable}
                                                 >
-                                                    <AgGridColumn width={150} type="leftAligned" field="CostingNumber" headerName='Costing ID'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
-                                                    <AgGridColumn width={120} type="leftAligned" field="PlantCode" headerName='Plant Code'></AgGridColumn>
-                                                    <AgGridColumn width={110} type="leftAligned" field="RMName" hide ></AgGridColumn>
-                                                    <AgGridColumn width={120} type="leftAligned" field="RMGrade" hide ></AgGridColumn>
-                                                    <AgGridColumn width={110} type="leftAligned" field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                    <AgGridColumn width={120} type="leftAligned" field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} type="leftAligned" field="Technology" headerName='Technology'></AgGridColumn>
-                                                    <AgGridColumn width={110} type="leftAligned" field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} type="leftAligned" field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="OldRMRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="NewRMRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="OldScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} type="leftAligned" field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        // columnDefs={c}
+                                                        rowData={costingList}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: CONSTANT.EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        suppressRowClickSelection={true}
+                                                        rowSelection={'multiple'}
+                                                        // frameworkComponents={frameworkComponents}
+                                                        onSelectionChanged={onRowSelect}
+                                                    // isRowSelectable={isRowSelectable}
+                                                    >
+                                                        <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                        <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
+                                                        <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
+                                                        <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                        <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
+                                                        <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
+                                                        <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                                </AgGridReact>
+                                                    </AgGridReact>
 
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
+                                                    <div className="paging-container d-inline-block float-right">
+                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                            <option value="10" selected={true}>10</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Col>
+
                                     </Col>
-
-
                                 </Row>
                             </div>
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
