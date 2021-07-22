@@ -80,6 +80,10 @@ function SimulationApprovalSummary(props) {
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
 
+    const [acc1, setAcc1] = useState(false)
+    const [acc2, setAcc2] = useState(false)
+    const [acc3, setAcc3] = useState(false)
+
 
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -520,7 +524,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid approval-summary-page smh-approval-summary-page">
+                    <div className="container-fluid  smh-approval-summary-page">
                         <Errorbox customClass="d-none" errorText="There is some error in your page" />
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
@@ -569,35 +573,47 @@ function SimulationApprovalSummary(props) {
                                 <Table responsive className="table cr-brdr-main" size="sm">
                                     <thead>
                                         <tr>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Technology:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Costing Head:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].CostingHead}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
                                                 <span className="d-block">{simulationDetail.NumberOfCostings}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Reason:`}</span>
                                                 <span className="d-block">{simulationDetail.SenderReason}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Token No.:`}</span>
                                                 <span className="d-block">{simulationDetail.Token}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Masters:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].SimulationTechnology}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
                                             </th>
-                                            <th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
+                                                <span className="d-block">{'120'}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
+                                                <span className="d-block">{'12001'}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
+                                                <span className="d-block">{'121'}</span>
+                                            </th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
                                                 <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
@@ -687,17 +703,17 @@ function SimulationApprovalSummary(props) {
                                                         <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
                                                         <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
                                                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                                        <AgGridColumn headerName="Basic Rate (INR)" marryChildren={true} >
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
                                                             <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
                                                             <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                                         </AgGridColumn>
-                                                        <AgGridColumn marryChildren={true} headerName="Scrap Rate (INR)">
+                                                        <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
                                                             <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
                                                             <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                                         </AgGridColumn>
                                                         <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                                         <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                                        <AgGridColumn headerName="Net Cost (INR)">
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
                                                             <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                             <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                                         </AgGridColumn>
@@ -721,6 +737,118 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             }
                         </Row>
+
+                        {/* FG wise Impact section start */}
+                        <Row >
+                            <Col md="12">
+                                 <div className="left-border">{'FG wise Impact:'}</div>
+                            </Col>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Col md="12">
+                                <div className="table-responsive">
+                                    <table className="table cr-brdr-main accordian-table-with-arrow">
+                                    <thead>
+                                        <tr>
+                                        <th><span>Part Number</span></th>
+                                        <th><span>Rev Number/ECN Number</span></th>
+                                        <th><span>Part Name</span></th>
+                                        <th><span>Old Cost/Pc</span></th>
+                                        <th><span>New Cost/pc</span></th>
+                                        <th><span>Impact/Pc</span></th>
+                                        <th><span>Volume</span></th>
+                                        <th><span>Impact/Month</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="accordian-with-arrow">
+                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
+                                        <td><span>1</span></td>
+                                        <td><span>This is A model</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>24(INR)</span></td>
+                                        <td><span>2000</span></td>
+                                        <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                        </tr>
+                                        {acc1 &&
+                                        <>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 1</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 2</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 3</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                        </>
+                                        }
+                                    </tbody>
+
+                                    <tbody>
+                                        <tr className="accordian-with-arrow">
+                                        <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
+                                        <td><span>1</span></td>
+                                        <td><span>This is A model</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>0</span></td>
+                                        <td><span>24(INR)</span></td>
+                                        <td><span>2000</span></td>
+                                        <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                        </tr>
+                                        {acc2 &&
+                                        <>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 1</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                            <tr className="accordian-content">
+                                            <td><span>Part 2</span></td>
+                                            <td><span>1</span></td>
+                                            <td><span>Part number</span></td>
+                                            <td><span>24(INR)</span></td>
+                                            <td><span>26(INR)</span></td>
+                                            <td><span>2(INR)</span></td>
+                                            <td><span>1000</span></td>
+                                            <td><span>2000 (INR)</span></td>
+                                            </tr>
+                                        </>
+                                        }
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </Col>
+                        </Row>
+                        {/* FG wise Impact section end */}
 
                         <Row>
                             <Col md="10">
@@ -749,7 +877,7 @@ function SimulationApprovalSummary(props) {
                                                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                                         <div className="ag-grid-header">
                                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                         </div>
@@ -811,7 +939,7 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
 
-                        <Row>
+                        <Row className="mt-3">
                             <Col md="10">
                                 <div className="left-border">{'Compare Costing:'}</div>
                             </Col>
@@ -829,6 +957,83 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
+
+                        <Row className="mb-4">
+                            <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
+                            <Col md="6">
+                                <div className={'right-details'}>
+                                    <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                                </div>
+                            </Col>
+                            {acc3 &&
+                            <div className="accordian-content w-100">
+                                <div className={`ag-grid-react`}>
+                                    <Col md="12" className="mb-3">
+                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                            <div className="ag-grid-header">
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            </div>
+                                            <div
+                                                className="ag-theme-material"
+                                                style={{ height: '100%', width: '100%' }}
+                                            >
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    // columnDefs={c}
+                                                    rowData={rmDomesticListing}
+                                                    pagination={true}
+                                                    paginationPageSize={10}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: CONSTANT.EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    stopEditingWhenCellsLoseFocus={true}
+                                                >
+                                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                    <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                        <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                        <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                        <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                        <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                        <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                        <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                    <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+
+                                                </AgGridReact>
+
+                                                <div className="paging-container d-inline-block float-right">
+                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                        <option value="10" selected={true}>10</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </Col>
+                                </div>
+                            </div>
+                            }
+                        </Row>
+
                     </div>
 
                     {!isApprovalDone &&

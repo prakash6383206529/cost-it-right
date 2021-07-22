@@ -405,7 +405,7 @@ function SimulationApprovalListing(props) {
         <Fragment>
             {
                 !showApprovalSumary &&
-                <div className="container-fluid approval-listing-page">
+                <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`}>
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
