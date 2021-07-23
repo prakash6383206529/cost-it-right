@@ -464,7 +464,10 @@ function SimulationApprovalSummary(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
+        window.screen.width >= 1921 && params.api.sizeColumnsToFit()
     };
+    
+
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
@@ -558,8 +561,20 @@ function SimulationApprovalSummary(props) {
                                     <thead>
                                         <tr>
                                             <th className="align-top">
+                                                <span className="d-block grey-text">{`Token No.:`}</span>
+                                                <span className="d-block">{simulationDetail.Token}</span>
+                                            </th>
+                                            <th className="align-top">
                                                 <span className="d-block grey-text">{`Technology:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
+                                                <span className="d-block">{'121'}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
+                                                <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Costing Head:`}</span>
@@ -573,17 +588,14 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Reason:`}</span>
                                                 <span className="d-block">{simulationDetail.SenderReason}</span>
                                             </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Token No.:`}</span>
-                                                <span className="d-block">{simulationDetail.Token}</span>
-                                            </th>
+                                            
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Masters:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
+                                                <span className="d-block grey-text">{`Effective Date:`}</span>
+                                                <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -592,14 +604,6 @@ function SimulationApprovalSummary(props) {
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
                                                 <span className="d-block">{'12001'}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
-                                                <span className="d-block">{'121'}</span>
-                                            </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                         </tr>
                                     </thead>
@@ -682,27 +686,27 @@ function SimulationApprovalSummary(props) {
                                                         frameworkComponents={frameworkComponents}
                                                         stopEditingWhenCellsLoseFocus={true}
                                                     >
-                                                        <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-                                                        <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                                                        <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                                                        <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                                        <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
-                                                            <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                            <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                        <AgGridColumn width={160} field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn width={144} field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="Category" headerName="Category"></AgGridColumn>
+                                                        <AgGridColumn width={100} field="UOM" headerName="UOM"></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                            <AgGridColumn width={100} field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                            <AgGridColumn width={100}  cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                                         </AgGridColumn>
-                                                        <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
-                                                            <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                            <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                            <AgGridColumn width={100} field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                            <AgGridColumn width={100} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                                         </AgGridColumn>
-                                                        <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                        <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                                        <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
-                                                            <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                            <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                        <AgGridColumn width={160} field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn width={180} field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                            <AgGridColumn width={100} field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                            <AgGridColumn width={100} field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                                         </AgGridColumn>
-                                                        <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+                                                        <AgGridColumn width={160} field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                        <AgGridColumn width={160} field="RawMaterialId" hide></AgGridColumn>
 
                                                     </AgGridReact>
 
@@ -885,17 +889,14 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
-                                                                <AgGridColumn width={120} field="SimulationCostingId" hide='true'></AgGridColumn>
-                                                                <AgGridColumn width={140} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
-                                                                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head"></AgGridColumn>
-                                                                <AgGridColumn width={140} field="VendorName" headerName="Vendor" headerName="Vendor Name"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="Technology" headerName="Technology"></AgGridColumn>
-                                                                <AgGridColumn width={172} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
-                                                                <AgGridColumn width={120} field="PartNo" headerName="Part No."></AgGridColumn>
-                                                                <AgGridColumn width={120} field="PartName" headerName='Part Name'></AgGridColumn>
-                                                                <AgGridColumn width={120} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={120} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
+                                                                <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
+                                                                <AgGridColumn width={192} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                                <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName="PO Price Old"></AgGridColumn>
                                                                 <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
                                                                 <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
@@ -978,27 +979,27 @@ function SimulationApprovalSummary(props) {
                                                     frameworkComponents={frameworkComponents}
                                                     stopEditingWhenCellsLoseFocus={true}
                                                 >
-                                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-                                                    <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
-                                                        <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                        <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
-                                                        <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                        <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
-                                                        <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                        <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                                    <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+                                                    <AgGridColumn width={160} field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn width={144} field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="Category" headerName="Category"></AgGridColumn>
+                                                        <AgGridColumn width={100} field="UOM" headerName="UOM"></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                            <AgGridColumn width={100} field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                            <AgGridColumn width={100}  cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                            <AgGridColumn width={100} field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                            <AgGridColumn width={100} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn width={160} field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn width={180} field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                            <AgGridColumn width={100} field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                            <AgGridColumn width={100} field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn width={160} field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                        <AgGridColumn width={160} field="RawMaterialId" hide></AgGridColumn>
 
                                                 </AgGridReact>
 
