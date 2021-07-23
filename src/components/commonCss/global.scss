@@ -757,12 +757,12 @@ a:hover {
                 max-width: 100%;
                 overflow: hidden;
               }
+            }            
+            &:not(.has-checkbox){
+              .ag-selection-checkbox.ag-invisible{
+                display: none;
+              }
             }
-            
-            .ag-selection-checkbox.ag-invisible{
-              display: none;
-            }
-            
           }
         }
       }
@@ -847,8 +847,8 @@ a:hover {
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: 50vh;
-          height: 50vh !important;
+          min-height: 360px;
+          height: 360px !important;
         }
       }  
     }
@@ -859,6 +859,14 @@ a:hover {
           height: calc(100vh - 320px) !important;
         }
       }  
+    }
+    .dashboard-page{
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: 359px;
+          height: 359px !important;
+        }
+      }
     }
     
   }

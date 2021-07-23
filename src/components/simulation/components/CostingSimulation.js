@@ -556,9 +556,12 @@ function CostingSimulation(props) {
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
                                             <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                            <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                                                <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                                 {renderColumn()}
                                             </ExcelFile>
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
                                     </Col>
 
@@ -664,6 +667,8 @@ function CostingSimulation(props) {
                                         {"Verify Impact"}
                                     </button>
 
+
+
                                 </div>
                             </Row>
                         </div>
@@ -708,7 +713,7 @@ function CostingSimulation(props) {
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
-                    closeDrawer={closeDrawer}
+                    // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />}
         </>
