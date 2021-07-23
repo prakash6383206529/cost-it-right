@@ -178,6 +178,10 @@ class RMImportListing extends Component {
         this.setState({
           tableData: Data,
           maxRange: DynamicData.MaxRange,
+        }, () => {
+          if (isSimulation) {
+            this.props.apply()
+          }
         })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [], maxRange: 0, })
