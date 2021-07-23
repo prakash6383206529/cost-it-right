@@ -695,8 +695,8 @@ function SimulationApprovalSummary(props) {
                                                             <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
                                                             <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                                         </AgGridColumn>
-                                                        <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                        <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        {/* <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn> */}
                                                         <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
                                                             <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                             <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
@@ -991,8 +991,8 @@ function SimulationApprovalSummary(props) {
                                                         <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
                                                         <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                                     </AgGridColumn>
-                                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                    {/* <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn> */}
                                                     <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
                                                         <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                         <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>

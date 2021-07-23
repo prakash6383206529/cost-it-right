@@ -1482,7 +1482,7 @@ class AddRMDomestic extends Component {
                               maxLength="15"
                             />
                           </Col>
-                          <Col md="4">
+                          {/* <Col md="4">
                             <Field
                               label={`RM Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"FrieghtCharge"}
@@ -1511,7 +1511,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                               maxLength="15"
                             />
-                          </Col>
+                          </Col> */}
                           <Col md="4">
                             <Field
                               label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}

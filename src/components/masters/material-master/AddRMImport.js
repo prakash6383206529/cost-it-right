@@ -1498,7 +1498,7 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
+                          {/* <Col md="4">
                             <Field
                               label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
@@ -1525,7 +1525,7 @@ class AddRMImport extends Component {
                               maxLength="15"
                               customClassName=" withBorder"
                             />
-                          </Col>
+                          </Col> */}
                           <Col md="4">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}

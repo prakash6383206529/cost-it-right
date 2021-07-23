@@ -968,8 +968,8 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="VendorName"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                                    {/* <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn> */}
+                                    {/* <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn> */}
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
