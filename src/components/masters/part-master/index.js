@@ -27,6 +27,7 @@ class PartMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false
         }
     }
 
@@ -46,6 +47,7 @@ class PartMaster extends Component {
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false
                     })
                 }
             }
@@ -113,50 +115,52 @@ class PartMaster extends Component {
 
         return (
             <>
-            <div className="container-fluid">
-                <div className="user-page p-0">
-                    {/* {this.props.loading && <Loader/>} */}
-                    <div>
-                        <h1>Part Master</h1>
-                        <Nav tabs className="subtabs mt-0">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Manage Assembly Part
+                <div className="container-fluid">
+                    <div className="user-page p-0">
+                        {/* {this.props.loading && <Loader/>} */}
+                        <div>
+                            <h1>Part Master</h1>
+                            <Nav tabs className="subtabs mt-0">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Manage Assembly Part
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Manage Component/Part
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Manage Component/Part
                                 </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent activeTab={this.state.activeTab}>
-                            {this.state.activeTab === '1' &&
-                                <TabPane tabId="1">
-                                    <AssemblyPartListing
-                                        displayForm={this.displayForm}
-                                        getDetails={this.getDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                    />
-                                </TabPane>}
-                            {this.state.activeTab === '2' &&
-                                <TabPane tabId="2">
-                                    <IndivisualPartListing
-                                        formToggle={this.displayIndividualForm}
-                                        getDetails={this.getIndividualPartDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                    />
-                                </TabPane>}
-                        </TabContent>
-                    </div>
-                </div >
-            </div>
+                                </NavItem>
+                            </Nav>
+                            <TabContent activeTab={this.state.activeTab}>
+                                {this.state.activeTab === '1' &&
+                                    <TabPane tabId="1">
+                                        <AssemblyPartListing
+                                            displayForm={this.displayForm}
+                                            getDetails={this.getDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                                {this.state.activeTab === '2' &&
+                                    <TabPane tabId="2">
+                                        <IndivisualPartListing
+                                            formToggle={this.displayIndividualForm}
+                                            getDetails={this.getIndividualPartDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                            </TabContent>
+                        </div>
+                    </div >
+                </div>
             </ >
         );
     }
