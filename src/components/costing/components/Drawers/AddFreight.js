@@ -177,7 +177,10 @@ function AddFreight(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
+    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
+    const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
+    const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
     const RateAsPercentage = getValues('Rate');
 
     switch (Text) {
@@ -186,15 +189,15 @@ function AddFreight(props) {
         break;
 
       case 'RM + CC':
-        setValue('FreightCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(RateAsPercentage), 2))
+        setValue('FreightCost', checkForDecimalAndNull((RMCC) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       case 'CC':
-        setValue('FreightCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(RateAsPercentage), 2))
+        setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       case 'RM + CC + BOP':
-        setValue('FreightCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(RateAsPercentage), 2))
+        setValue('FreightCost', checkForDecimalAndNull((RMBOPCC) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       case 'RM + BOP':

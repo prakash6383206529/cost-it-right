@@ -9,6 +9,8 @@ import { getPlantBySupplier, } from '../../../../actions/Common';
 import { getCostingSummaryByplantIdPartNo, saveCopyCosting, } from '../../actions/Costing';
 import { VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
+import DatePicker from "react-datepicker";
+import moment from 'moment';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -24,8 +26,10 @@ function CopyCosting(props) {
       fromPlant: type === ZBC ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
       fromVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
+      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
     },
   })
 
@@ -41,13 +45,15 @@ function CopyCosting(props) {
   const [vendorToPlantDropdown, setVendorToPlantDropdown] = useState([])
   const [vendorCostingId, setVendorCostingId] = useState([])
   const [destinationPlant, setDestinationPlant] = useState([])
+  const [effectiveDate, setEffectiveDate] = useState('')
+  const [minDate, setMinDate] = useState('')
 
   const [fromtype, setFromType] = useState(type === ZBC ? false : true)
   const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
-  const [isToZbc, setIsToZbc] = useState(true)
+  const [isToZbc, setIsToZbc] = useState(type === ZBC ? true : false)
   const [isFromVbc, setIsFromVbc] = useState(type === VBC ? true : false)
-  const [isToVbc, setIsToVbc] = useState(false)
-  const [toSwitch, setToSwitch] = useState(false)
+  const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
+  const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
 
   useEffect(() => {
     const ZbcTemp = []
@@ -90,7 +96,11 @@ function CopyCosting(props) {
     } else {
       getVendorPlantDropdown(copyCostingData.VendorId, 'from')
       filterCostingDropDown(copyCostingData.VendorId)
+      getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
+    // const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
+    // console.log('date: ', date);
+    // setMinDate(date)
   }, [])
 
 
@@ -258,7 +268,9 @@ function CopyCosting(props) {
   }
 
 
-
+  const handleEffectiveDateChange = (date) => {
+    setEffectiveDate(date)
+  }
 
 
 
@@ -273,8 +285,8 @@ function CopyCosting(props) {
   const submitForm = (value) => {
     console.log('value: ', value);
 
-    const destination = value.toDestinationPlant.label.split('(')
-    const tovendorCode = value.toVendorName.label.split('(')
+    const destination = value.toDestinationPlant?.label.split('(')
+    const tovendorCode = value.toVendorName?.label.split('(')
 
     let obj = {}
 
@@ -294,31 +306,35 @@ function CopyCosting(props) {
     }
     // COPY TO ZBC
     if (isToZbc) {
+      const plant = value.toPlant?.label.split('(')
       obj.ToPlantId = value.toPlant.value
+      obj.toPlantCode = plant && plant[1].split(')')[0]
       obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY FROM VBC
     if (isFromVbc) {
       const costNo = value.fromVbccostingId.label.split('-')
-      const plantCode = value.fromVendorPlant.label.split('(')
-      const vendorCode = value.fromVendorName.label.split('(')
+      const plantCode = value.fromVendorPlant?.label.split('(')
+      const vendorCode = value.fromVendorName?.label.split('(')
       obj.CostingId = value.fromVbccostingId.value
       obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
       obj.FromVendorId = value.fromVendorName.vendorId
-      obj.FromVendorCode = vendorCode[1].split(')')[0]
+      obj.FromVendorCode = vendorCode && vendorCode[1].split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant.value
-      obj.FromVendorPlantCode = plantCode[1].split(')')[0]
+      obj.FromVendorPlantCode = plantCode && plantCode[1].split(')')[0]
       obj.FromPlantCode = ''
       obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY TO VBC
     if (isToVbc) {
-      obj.ToVendorId = value.toVendorName.vendorId
-      obj.ToVendorname = value.toVendorName.label
-      obj.ToVendorCode = tovendorCode[0].split(')')[0]
+
+      obj.ToVendorId = value.toVendorName?.vendorId
+      obj.ToVendorname = value.toVendorName?.label
+      obj.ToVendorCode = tovendorCode && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant?.value
       obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
+
     }
     obj.PartNumber = partNo.label
     obj.Comments = ''
@@ -336,9 +352,10 @@ function CopyCosting(props) {
 
 
 
-    obj.ToDestinationPlantId = value.toDestinationPlant.value
-    obj.ToDestinationPlantName = value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination[1].split(')')[0]
+    obj.ToDestinationPlantId = value.toDestinationPlant?.value
+    obj.ToDestinationPlantName = value.toDestinationPlant?.label
+    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
+    obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
     dispatch(
@@ -408,6 +425,7 @@ function CopyCosting(props) {
                           checkedIcon={false}
                           height={20}
                           width={46}
+                          disabled={true}
                         />
                         <div className={"right-title"}>VBC</div>
                       </label>
@@ -432,6 +450,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handlePlantChange}
                       errors={errors.fromPlant}
+                      disabled={true}
                     />
                   </div>
                   <div className="input-group form-group col-md-12 input-withouticon">
@@ -448,6 +467,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={() => { }}
                       errors={errors.fromcostingId}
+                      disabled={true}
                     />
                   </div>
                 </Row>
@@ -469,6 +489,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handleFromVendorName}
                       errors={errors.fromVendorName}
+                      disabled={true}
                     />
                   </div>
                   {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
@@ -486,6 +507,7 @@ function CopyCosting(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.fromVendorPlant}
+                        disabled={true}
                       />
                     </div>
                   )}
@@ -504,6 +526,7 @@ function CopyCosting(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.fromDestinationPlant}
+                        disabled={true}
                       />
                     </div>
                   )}
@@ -522,6 +545,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={() => { }}
                       errors={errors.fromVbccostingId}
+                      disabled={true}
                     />
                   </div>
                 </Row>
@@ -550,6 +574,7 @@ function CopyCosting(props) {
                           checkedIcon={false}
                           height={20}
                           width={46}
+                          disabled={true}
                         />
                         <div className={"right-title"}>VBC</div>
                       </label>
@@ -611,6 +636,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handleToVendorName}
                       errors={errors.toVendorName}
+                      disabled={true}
                     />
                   </div>
                   {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
@@ -628,6 +654,7 @@ function CopyCosting(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.toVendorPlant}
+                        disabled={true}
                       />
                     </div>
                   )}
@@ -649,7 +676,30 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
+                  {/* <Col md="auto"> */}
+                  <div className="form-group mb-0 col-md-12">
+                    <label>Costing Effective Date<span className="asterisk-required">*</span></label>
+                    <div className="inputbox date-section">
+                      <DatePicker
+                        name="EffectiveDate"
+                        selected={effectiveDate}
+                        onChange={handleEffectiveDateChange}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="dd/MM/yyyy"
+                        //maxDate={new Date()}
+                        minDate={new Date()}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
 
+                      />
+                    </div>
+                  </div>
+                  {/* </Col> */}
                   {/* <div className="input-group form-group col-md-12 input-withouticon">
                   <SearchableSelectHookForm
                     label={'Costing ID'}
