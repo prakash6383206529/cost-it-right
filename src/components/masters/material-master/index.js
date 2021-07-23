@@ -242,6 +242,7 @@ class RowMaterialMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+
                                         />
                                     </TabPane>}
 
