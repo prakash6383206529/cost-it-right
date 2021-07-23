@@ -149,15 +149,12 @@ function ViewRM(props) {
                   viewRM && viewRM.WeightCalculationId !== '00000000-0000-0000-0000-000000000000' &&
 
                   <div className="input-group form-group col-md-12 input-withouticon">
-                    <h5>
-                      Calculator
-                      <br />
+                      <label>Calculator</label>
                       <button
-                        className="CalculatorIcon cr-cl-icon mt15"
+                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                         type={"button"}
                         onClick={() => { getWeightData() }}
                       />
-                    </h5>
                   </div>
                 }
                 <div className="input-group form-group col-md-12 input-withouticon">
