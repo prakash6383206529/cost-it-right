@@ -424,8 +424,7 @@ class AddZBCPlant extends Component {
                       </Col>
                     </Row>
                   </Col>
-                </Row>
-                <Row className="pl-3">
+                
                   <Col md="6">
                     <Field
                       label="Address 1"
@@ -454,8 +453,7 @@ class AddZBCPlant extends Component {
                       customClassName={"withBorder"}
                     />
                   </Col>
-                </Row>
-                <Row className="pl-3">
+                
                   <Col md="6">
                     <Field
                       name="CountryId"
@@ -498,9 +496,7 @@ class AddZBCPlant extends Component {
                       />
                     </Col>
                   )}
-                </Row>
-
-                <Row className="pl-3">
+                
                   <Col md="6">
                     <Field
                       name="CityId"

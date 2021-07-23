@@ -1557,7 +1557,7 @@ function CostingDetails(props) {
                         <Row>
                           <Col md="12">
                             <Table
-                              className="table cr-brdr-main costing-table-next costing-table-zbc"
+                              className="table cr-brdr-main costing-table-next costing-table-vbc"
                               size="sm"
                             >
                               <thead>
