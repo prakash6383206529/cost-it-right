@@ -273,8 +273,8 @@ function CopyCosting(props) {
   const submitForm = (value) => {
     console.log('value: ', value);
 
-    const destination = value.toDestinationPlant.label.split('(')
-    const tovendorCode = value.toVendorName.label.split('(')
+    const destination = value.toDestinationPlant?.label.split('(')
+    const tovendorCode = value.toVendorName?.label.split('(')
 
     let obj = {}
 
@@ -316,7 +316,7 @@ function CopyCosting(props) {
     if (isToVbc) {
       obj.ToVendorId = value.toVendorName.vendorId
       obj.ToVendorname = value.toVendorName.label
-      obj.ToVendorCode = tovendorCode[0].split(')')[0]
+      obj.ToVendorCode = tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant?.value
       obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
     }
@@ -336,9 +336,9 @@ function CopyCosting(props) {
 
 
 
-    obj.ToDestinationPlantId = value.toDestinationPlant.value
-    obj.ToDestinationPlantName = value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination[1].split(')')[0]
+    obj.ToDestinationPlantId = value.toDestinationPlant?.value
+    obj.ToDestinationPlantName = value.toDestinationPlant?.label
+    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
     // obj.
 
     dispatch(

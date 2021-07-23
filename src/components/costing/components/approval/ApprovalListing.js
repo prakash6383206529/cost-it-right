@@ -25,9 +25,10 @@ import LoaderCustom from '../../../common/LoaderCustom'
 
 const gridOptions = {};
 
-function ApprovalListing() {
+function ApprovalListing(props) {
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
+  const [dShown,setDshown] = useState(false)
 
   const [tableData, setTableData] = useState([])
   const [partNoDropdown, setPartNoDropdown] = useState([])
@@ -51,6 +52,8 @@ function ApprovalListing() {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
   const userList = useSelector(state => state.auth.userList)
+
+  const isApproval = props.isApproval;
 
   const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     mode: 'onBlur',
@@ -398,10 +401,10 @@ function ApprovalListing() {
     <Fragment>
       {
         !showApprovalSumary ?
-          <div className="container-fluid approval-listing-page">
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-              <h1 className="mb-0">Costing Approval</h1>
+              {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
 
               <Row className="pt-4 blue-before">
@@ -615,7 +618,8 @@ function ApprovalListing() {
                       >
                         <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                        <AgGridColumn field="CostingNumber" headerName="Costing Id"></AgGridColumn>
+                        {isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                         <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
@@ -627,7 +631,8 @@ function ApprovalListing() {
                         <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
                         <AgGridColumn field="RequestedBy" headerName="Requested By"></AgGridColumn>
                         <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                        <AgGridColumn field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
+                        {!isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        
 
                       </AgGridReact>
 

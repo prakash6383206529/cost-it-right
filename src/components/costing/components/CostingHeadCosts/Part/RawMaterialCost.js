@@ -12,7 +12,7 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIs
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import { G, KG, MG, PLASTIC } from '../../../../../config/constants'
+import { EMPTY_GUID, G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
 
@@ -738,7 +738,7 @@ function RawMaterialCost(props) {
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
-                                  // disabled={(item.Density === undefined || item.Density === "" || item.Density === null) ? true : false}
+                                  disabled={(CostingViewMode && item.WeightCalculationId === EMPTY_GUID) ? true : false}
                                   onClick={() => toggleWeightCalculator(index)}
                                 />
                               </td>
