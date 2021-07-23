@@ -342,6 +342,11 @@ function SimulationApprovalSummary(props) {
         return cell ? `${cell}-${row.RMGrade}` : '-'
     }
 
+    const varianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(row.OldRMPrice - row.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -499,7 +504,8 @@ function SimulationApprovalSummary(props) {
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
-        rawMaterailFormat: rawMaterailFormat
+        rawMaterailFormat: rawMaterailFormat,
+        varianceFormatter: varianceFormatter,
 
     };
 
@@ -725,7 +731,7 @@ function SimulationApprovalSummary(props) {
                         {/* FG wise Impact section start */}
                         <Row >
                             <Col md="12">
-                                 <div className="left-border">{'FG wise Impact:'}</div>
+                                <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
 
@@ -733,101 +739,101 @@ function SimulationApprovalSummary(props) {
                             <Col md="12">
                                 <div className="table-responsive">
                                     <table className="table cr-brdr-main accordian-table-with-arrow">
-                                    <thead>
-                                        <tr>
-                                        <th><span>Part Number</span></th>
-                                        <th><span>Rev Number/ECN Number</span></th>
-                                        <th><span>Part Name</span></th>
-                                        <th><span>Old Cost/Pc</span></th>
-                                        <th><span>New Cost/pc</span></th>
-                                        <th><span>Impact/Pc</span></th>
-                                        <th><span>Volume</span></th>
-                                        <th><span>Impact/Month</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr className="accordian-with-arrow">
-                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
-                                        <td><span>1</span></td>
-                                        <td><span>This is A model</span></td>
-                                        <td><span>0</span></td>
-                                        <td><span>0</span></td>
-                                        <td><span>24(INR)</span></td>
-                                        <td><span>2000</span></td>
-                                        <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                        </tr>
-                                        {acc1 &&
-                                        <>
-                                            <tr className="accordian-content">
-                                            <td><span>Part 1</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
+                                        <thead>
+                                            <tr>
+                                                <th><span>Part Number</span></th>
+                                                <th><span>Rev Number/ECN Number</span></th>
+                                                <th><span>Part Name</span></th>
+                                                <th><span>Old Cost/Pc</span></th>
+                                                <th><span>New Cost/pc</span></th>
+                                                <th><span>Impact/Pc</span></th>
+                                                <th><span>Volume</span></th>
+                                                <th><span>Impact/Month</span></th>
                                             </tr>
-                                            <tr className="accordian-content">
-                                            <td><span>Part 2</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="accordian-with-arrow">
+                                                <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
+                                                <td><span>1</span></td>
+                                                <td><span>This is A model</span></td>
+                                                <td><span>0</span></td>
+                                                <td><span>0</span></td>
+                                                <td><span>24(INR)</span></td>
+                                                <td><span>2000</span></td>
+                                                <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
                                             </tr>
-                                            <tr className="accordian-content">
-                                            <td><span>Part 3</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                            </tr>
-                                        </>
-                                        }
-                                    </tbody>
+                                            {acc1 &&
+                                                <>
+                                                    <tr className="accordian-content">
+                                                        <td><span>Part 1</span></td>
+                                                        <td><span>1</span></td>
+                                                        <td><span>Part number</span></td>
+                                                        <td><span>24(INR)</span></td>
+                                                        <td><span>26(INR)</span></td>
+                                                        <td><span>2(INR)</span></td>
+                                                        <td><span>1000</span></td>
+                                                        <td><span>2000 (INR)</span></td>
+                                                    </tr>
+                                                    <tr className="accordian-content">
+                                                        <td><span>Part 2</span></td>
+                                                        <td><span>1</span></td>
+                                                        <td><span>Part number</span></td>
+                                                        <td><span>24(INR)</span></td>
+                                                        <td><span>26(INR)</span></td>
+                                                        <td><span>2(INR)</span></td>
+                                                        <td><span>1000</span></td>
+                                                        <td><span>2000 (INR)</span></td>
+                                                    </tr>
+                                                    <tr className="accordian-content">
+                                                        <td><span>Part 3</span></td>
+                                                        <td><span>1</span></td>
+                                                        <td><span>Part number</span></td>
+                                                        <td><span>24(INR)</span></td>
+                                                        <td><span>26(INR)</span></td>
+                                                        <td><span>2(INR)</span></td>
+                                                        <td><span>1000</span></td>
+                                                        <td><span>2000 (INR)</span></td>
+                                                    </tr>
+                                                </>
+                                            }
+                                        </tbody>
 
-                                    <tbody>
-                                        <tr className="accordian-with-arrow">
-                                        <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
-                                        <td><span>1</span></td>
-                                        <td><span>This is A model</span></td>
-                                        <td><span>0</span></td>
-                                        <td><span>0</span></td>
-                                        <td><span>24(INR)</span></td>
-                                        <td><span>2000</span></td>
-                                        <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                        </tr>
-                                        {acc2 &&
-                                        <>
-                                            <tr className="accordian-content">
-                                            <td><span>Part 1</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
+                                        <tbody>
+                                            <tr className="accordian-with-arrow">
+                                                <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
+                                                <td><span>1</span></td>
+                                                <td><span>This is A model</span></td>
+                                                <td><span>0</span></td>
+                                                <td><span>0</span></td>
+                                                <td><span>24(INR)</span></td>
+                                                <td><span>2000</span></td>
+                                                <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
                                             </tr>
-                                            <tr className="accordian-content">
-                                            <td><span>Part 2</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                            </tr>
-                                        </>
-                                        }
-                                    </tbody>
+                                            {acc2 &&
+                                                <>
+                                                    <tr className="accordian-content">
+                                                        <td><span>Part 1</span></td>
+                                                        <td><span>1</span></td>
+                                                        <td><span>Part number</span></td>
+                                                        <td><span>24(INR)</span></td>
+                                                        <td><span>26(INR)</span></td>
+                                                        <td><span>2(INR)</span></td>
+                                                        <td><span>1000</span></td>
+                                                        <td><span>2000 (INR)</span></td>
+                                                    </tr>
+                                                    <tr className="accordian-content">
+                                                        <td><span>Part 2</span></td>
+                                                        <td><span>1</span></td>
+                                                        <td><span>Part number</span></td>
+                                                        <td><span>24(INR)</span></td>
+                                                        <td><span>26(INR)</span></td>
+                                                        <td><span>2(INR)</span></td>
+                                                        <td><span>1000</span></td>
+                                                        <td><span>2000 (INR)</span></td>
+                                                    </tr>
+                                                </>
+                                            }
+                                        </tbody>
                                     </table>
                                 </div>
                             </Col>
@@ -900,6 +906,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
                                                                 <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                <AgGridColumn width={140} field="Variance" cellRenderer="varianceFormatter" headerName="Variance"></AgGridColumn>
                                                                 <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn> */}
@@ -950,71 +957,71 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                             {acc3 &&
-                            <div className="accordian-content w-100">
-                                <div className={`ag-grid-react`}>
-                                    <Col md="12" className="mb-3">
-                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                            <div className="ag-grid-header">
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            </div>
-                                            <div
-                                                className="ag-theme-material"
-                                                style={{ height: '100%', width: '100%' }}
-                                            >
-                                                <AgGridReact
+                                <div className="accordian-content w-100">
+                                    <div className={`ag-grid-react`}>
+                                        <Col md="12" className="mb-3">
+                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                <div className="ag-grid-header">
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                </div>
+                                                <div
+                                                    className="ag-theme-material"
                                                     style={{ height: '100%', width: '100%' }}
-                                                    defaultColDef={defaultColDef}
-                                                    // columnDefs={c}
-                                                    rowData={rmDomesticListing}
-                                                    pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    loadingOverlayComponent={'customLoadingOverlay'}
-                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    stopEditingWhenCellsLoseFocus={true}
                                                 >
-                                                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-                                                    <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                                                    <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
-                                                        <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                        <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
-                                                        <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                        <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                                    <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
-                                                        <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                        <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                                    <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        // columnDefs={c}
+                                                        rowData={rmDomesticListing}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: CONSTANT.EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        stopEditingWhenCellsLoseFocus={true}
+                                                    >
+                                                        <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                        <AgGridColumn field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                        <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
+                                                        <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                            <AgGridColumn field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                            <AgGridColumn cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                            <AgGridColumn field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                            <AgGridColumn cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                            <AgGridColumn field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                            <AgGridColumn field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
-                                                </AgGridReact>
+                                                    </AgGridReact>
 
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
+                                                    <div className="paging-container d-inline-block float-right">
+                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                            <option value="10" selected={true}>10</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                    </Col>
+                                        </Col>
+                                    </div>
                                 </div>
-                            </div>
                             }
                         </Row>
 
