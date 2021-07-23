@@ -48,6 +48,7 @@ function CopyCosting(props) {
   const [destinationPlant, setDestinationPlant] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [minDate, setMinDate] = useState('')
+  console.log('minDate: ', minDate);
 
   const [fromtype, setFromType] = useState(type === ZBC ? false : true)
   const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
@@ -99,9 +100,9 @@ function CopyCosting(props) {
       filterCostingDropDown(copyCostingData.VendorId)
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
-    // const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    // console.log('date: ', date);
-    // setMinDate(date)
+    const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
+    console.log('date: ', date);
+    setMinDate(date[0].EffectiveDate)
   }, [])
 
 
@@ -250,14 +251,7 @@ function CopyCosting(props) {
   const getDestinationPlant = (value, type) => {
     let temp = []
     let vendor = value.vendorId
-    console.log('vendor 1 time: ', vendor);
 
-    // if (type === 'from') {
-    //   vendor = getValues('fromVendorName').vendorId
-    // } else {
-    //   vendor = getValues('toVendorName').vendorId
-    // }
-    console.log(vendor, "VENDOR");
     vbcVendorGrid && vbcVendorGrid.filter(item => {
       if (item.VendorId === vendor) {
         temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
@@ -284,6 +278,7 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
+
 
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
@@ -314,12 +309,12 @@ function CopyCosting(props) {
     }
     //COPY FROM VBC
     if (isFromVbc) {
-      const costNo = value.fromVbccostingId && value.fromVbccostingId.label.split('-')
+      const costNo = value.fromVbccostingId.label.split('-')
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
       const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
-      obj.CostingId = value.fromVbccostingId && value.fromVbccostingId.value
+      obj.CostingId = value.fromVbccostingId.value
       obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
-      obj.FromVendorId = value.fromVendorName.vendorId
+      obj.FromVendorId = value.fromVendorName.value
       obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
       obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1].split(')')[0]
@@ -329,7 +324,7 @@ function CopyCosting(props) {
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
+      obj.ToVendorId = value.toVendorName && value.toVendorName.value
       obj.ToVendorname = value.toVendorName && value.toVendorName.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
@@ -338,7 +333,7 @@ function CopyCosting(props) {
     }
     obj.PartNumber = partNo.label
     obj.Comments = ''
-    obj.IsVendor = isToVbc ? true : false
+    // obj.IsVendor = isToVbc ? true : false
     obj.LoggedInUserId = loggedUserId
     if (isFromZbc && isToZbc) {
       obj.TypeOfCopy = 101
@@ -354,7 +349,7 @@ function CopyCosting(props) {
 
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination && destination[1] && destination[1].split(')')[0]
+    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
     obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
@@ -602,6 +597,28 @@ function CopyCosting(props) {
                       errors={errors.toPlant}
                     />
                   </div>
+                  <div className="form-group mb-0 col-md-12">
+                    <label>Costing Effective Date<span className="asterisk-required">*</span></label>
+                    <div className="inputbox date-section">
+                      <DatePicker
+                        name="EffectiveDate"
+                        selected={effectiveDate}
+                        onChange={handleEffectiveDateChange}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="dd/MM/yyyy"
+                        //maxDate={new Date()}
+                        minDate={new Date(minDate)}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
+
+                      />
+                    </div>
+                  </div>
                   {/* <div className="input-group form-group col-md-12 input-withouticon">
                   <SearchableSelectHookForm
                     label={'Costing ID'}
@@ -689,7 +706,7 @@ function CopyCosting(props) {
                         showYearDropdown
                         dateFormat="dd/MM/yyyy"
                         //maxDate={new Date()}
-                        // minDate={new Date()}
+                        minDate={new Date(minDate)}
                         dropdownMode="select"
                         placeholderText="Select date"
                         className="withBorder"
