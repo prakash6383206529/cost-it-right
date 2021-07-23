@@ -362,7 +362,7 @@ class LevelTechnologyListing extends Component {
 									frameworkComponents={frameworkComponents}
 								>
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+									<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 									<AgGridColumn field="LevelId" headerName="Action" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 								</AgGridReact>
