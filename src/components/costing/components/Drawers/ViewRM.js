@@ -145,7 +145,7 @@ function ViewRM(props) {
                     disabled={true}
                   />
                 </div>
-                {
+                {/* {
                   viewRM && viewRM.WeightCalculationId !== '00000000-0000-0000-0000-000000000000' &&
 
                   <div className="input-group form-group col-md-12 input-withouticon">
@@ -159,7 +159,7 @@ function ViewRM(props) {
                       />
                     </h5>
                   </div>
-                }
+                } */}
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextFieldHookForm
                     label="Gross Weight(Kg)"

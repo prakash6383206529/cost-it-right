@@ -11,6 +11,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
+import { toastr } from 'react-redux-toastr';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -283,21 +284,20 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
-    console.log('value: ', value);
 
-    const destination = value.toDestinationPlant?.label.split('(')
-    const tovendorCode = value.toVendorName?.label.split('(')
+    const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
+    const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
     let obj = {}
 
     //  COPY FROM ZBC
     if (isFromZbc) {
-      const plantCode = value.fromPlant.label.split('(')
+      const plantCode = value.fromPlant && value.fromPlant.label.split('(')
 
-      obj.FromPlantId = value.fromPlant.value
-      obj.FromPlantCode = plantCode[1].split(')')[0]
-      obj.CostingId = value.fromcostingId.value
-      obj.CostingNumber = value.fromcostingId.label
+      obj.FromPlantId = value.fromPlant && value.fromPlant.value
+      obj.FromPlantCode = plantCode[1] && plantCode[1].split(')')[0]
+      obj.CostingId = value.fromcostingId && value.fromcostingId.value
+      obj.CostingNumber = value.fromcostingId && value.fromcostingId.label
       obj.FromVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.FromVendorPlantCode = ''
       obj.FromVendorId = '00000000-0000-0000-0000-000000000000'
@@ -306,33 +306,33 @@ function CopyCosting(props) {
     }
     // COPY TO ZBC
     if (isToZbc) {
-      const plant = value.toPlant?.label.split('(')
-      obj.ToPlantId = value.toPlant.value
-      obj.toPlantCode = plant && plant[1].split(')')[0]
+      const plant = value.toPlant && value.toPlant.label.split('(')
+      obj.ToPlantId = value.toPlant && value.toPlant.value
+      obj.toPlantCode = plant && plant[1] && plant[1].split(')')[0]
       obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY FROM VBC
     if (isFromVbc) {
-      const costNo = value.fromVbccostingId.label.split('-')
-      const plantCode = value.fromVendorPlant?.label.split('(')
-      const vendorCode = value.fromVendorName?.label.split('(')
-      obj.CostingId = value.fromVbccostingId.value
+      const costNo = value.fromVbccostingId && value.fromVbccostingId.label.split('-')
+      const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
+      const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
+      obj.CostingId = value.fromVbccostingId && value.fromVbccostingId.value
       obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
       obj.FromVendorId = value.fromVendorName.vendorId
-      obj.FromVendorCode = vendorCode && vendorCode[1].split(')')[0]
-      obj.FromVendorPlantId = value.fromVendorPlant.value
-      obj.FromVendorPlantCode = plantCode && plantCode[1].split(')')[0]
+      obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
+      obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
+      obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1].split(')')[0]
       obj.FromPlantCode = ''
       obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName?.vendorId
-      obj.ToVendorname = value.toVendorName?.label
-      obj.ToVendorCode = tovendorCode && tovendorCode[1].split(')')[0]
-      obj.ToVendorPlantId = value.toVendorPlant?.value
+      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
+      obj.ToVendorname = value.toVendorName && value.toVendorName.label
+      obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
+      obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
       obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
 
     }
@@ -352,9 +352,9 @@ function CopyCosting(props) {
 
 
 
-    obj.ToDestinationPlantId = value.toDestinationPlant?.value
-    obj.ToDestinationPlantName = value.toDestinationPlant?.label
-    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
+    obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
+    obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
+    obj.ToDestinationPlantCode = destination && destination[1] && destination[1].split(')')[0]
     obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
@@ -362,6 +362,7 @@ function CopyCosting(props) {
       saveCopyCosting(obj, (res) => {
 
         if ((res.status = 200)) {
+          toastr.success("Copy costing done sucessfully!")
           props.closeDrawer('')
         }
       }),
@@ -688,7 +689,7 @@ function CopyCosting(props) {
                         showYearDropdown
                         dateFormat="dd/MM/yyyy"
                         //maxDate={new Date()}
-                        minDate={new Date()}
+                        // minDate={new Date()}
                         dropdownMode="select"
                         placeholderText="Select date"
                         className="withBorder"
@@ -735,7 +736,7 @@ function CopyCosting(props) {
                   // onClick={addHandler}
                   >
                     <div className={'save-icon'}></div>
-                    {"Save"}
+                    {"Copy"}
                   </button>
                 </div>
               </Row>
