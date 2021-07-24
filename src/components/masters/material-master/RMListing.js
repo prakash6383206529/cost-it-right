@@ -262,26 +262,6 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
-
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: true,
-
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            // effectiveDateRenderer: this.effectiveDateFormatter,
-            // costingHeadRenderer: this.costingHeadFormatter,
-            // customLoadingOverlay: LoaderCustom,
-            // customNoRowsOverlay: NoContentFound,
-            // freightCostFormatter: this.freightCostFormatter,
-            // shearingCostFormatter: this.shearingCostFormatter,
-            // costFormatter: this.costFormatter,
-            // indexFormatter: this.indexFormatter
-        };
-
         const options = {
             clearSearch: true,
             noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
