@@ -1371,6 +1371,7 @@ export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
+export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
