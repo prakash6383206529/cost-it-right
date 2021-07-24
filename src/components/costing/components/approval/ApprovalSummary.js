@@ -249,9 +249,9 @@ function ApprovalSummary(props) {
                         <th>{`Variance`}</th>
                         <th>{`Consumption Quantity`}</th>
                         <th>{`Remaining Quantity`}</th>
+                        <th>{`Effective Date`}</th>
                         <th>{`Annual Impact`}</th>
                         <th>{`Impact of The Year`}</th>
-                        <th>{`Effective Date`}</th>
 
                       </tr>
                     </thead>
@@ -293,13 +293,13 @@ function ApprovalSummary(props) {
                           {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
                         </td>
                         <td>
+                          {approvalDetails.EffectiveDate !== null ? moment(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                        </td>
+                        <td>
                           {approvalDetails.AnnualImpact !== null ? approvalDetails.AnnualImpact : '-'}
                         </td>
                         <td>
                           {approvalDetails.ImpactOfTheYear !== null ? approvalDetails.ImpactOfTheYear : '-'}
-                        </td>
-                        <td>
-                          {approvalDetails.EffectiveDate !== null ? moment(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                         </td>
                       </tr>
 

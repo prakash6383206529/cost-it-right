@@ -96,6 +96,12 @@ function CostingSimulation(props) {
 
     const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
+    useEffect(() => {
+        costingList && costingList.map(item => {
+            item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+        })
+    }, [costingList])
+
     const renderVendorName = () => {
         return <>Vendor <br />Name </>
     }
@@ -359,6 +365,12 @@ function CostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
+    const varianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return cell
+    }
+
 
     const filterList = () => {
         const plant = getValues('plantCode').value
@@ -453,6 +465,7 @@ function CostingSimulation(props) {
         newRMFormatter: newRMFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        varianceFormatter: varianceFormatter
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -539,6 +552,7 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
