@@ -19,7 +19,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
-import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+// import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -551,7 +551,7 @@ class FreightListing extends Component {
                       <div className="cancel-icon-white"></div></button>
                   ) : (
                     <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
+                      <div className="filter mr-0"></div>
                     </button>
                   )}
                   {AddAccessibility && (
@@ -568,7 +568,7 @@ class FreightListing extends Component {
                     DownloadAccessibility &&
                     <>
                       <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                        <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -576,7 +576,7 @@ class FreightListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
+                    <div className="refresh mr-0"></div>
                   </button>
 
                 </div>
