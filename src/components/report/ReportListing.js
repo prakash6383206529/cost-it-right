@@ -104,16 +104,18 @@ function ReportListing(props) {
         return value
     }
 
+    const statusFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return <div className={cell}>{row.Status}</div>
+    }
+
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { }} />
             </>
         )
-    }
-
-    const statusFormatter = (cell, row, enumObject, rowIndex) => {
-        return <div className={cell}>{row.DisplayCostingStatus}</div>
     }
 
     // table headings start
@@ -332,7 +334,8 @@ function ReportListing(props) {
         hyphenFormatter: hyphenFormatter,
         simulatedOnFormatter: simulatedOnFormatter,
         customNoRowsOverlay: NoContentFound,
-        dateFormatter: dateFormatter
+        dateFormatter: dateFormatter,
+        statusFormatter: statusFormatter
     };
 
     /**
@@ -628,7 +631,7 @@ function ReportListing(props) {
                         {/* <AgGridColumn field="CreatedDate" headerName="Created Date"  aggFunc={'createDateFormatter'}></AgGridColumn> */}
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn field="Status" headerName="Status" ></AgGridColumn>
+                        <AgGridColumn field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                         <AgGridColumn field="Rev" headerName="Revision Number"></AgGridColumn>
