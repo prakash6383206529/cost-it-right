@@ -279,7 +279,6 @@ function CopyCosting(props) {
    */
   const submitForm = (value) => {
 
-
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
