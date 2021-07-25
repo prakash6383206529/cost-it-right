@@ -162,7 +162,7 @@ function CostingDetails(props) {
         dispatch(
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data
-            setValue('PartName', Data.PartName)
+            setValue("PartName", Data.PartName)
             setValue('Description', Data.Description)
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
@@ -1345,7 +1345,7 @@ function CostingDetails(props) {
             <span className="d-block mt-1">PDF</span>
           </button> */}
 
-          {/* COMMENTED FOR NOW */}
+          {/* COMMENTED FOR NOW 29-06-2021 */}
           {/* {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
             <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
             <span className="d-block mt-1">ADD BOM</span>
@@ -1592,7 +1592,7 @@ function CostingDetails(props) {
                                         <td className="cr-select-height w-100px">
                                           <NumberFieldHookForm
                                             label={""}
-                                            name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
+                                            name={`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -1622,7 +1622,7 @@ function CostingDetails(props) {
                                         <td className="cr-select-height w-100px">
                                           <SearchableSelectHookForm
                                             label={""}
-                                            name={`${zbcPlantGridFields}[${index}]CostingVersion`}
+                                            name={`${zbcPlantGridFields}.${index}.CostingVersion`}
                                             placeholder={"Select"}
                                             Controller={Controller}
                                             control={control}
@@ -1731,7 +1731,7 @@ function CostingDetails(props) {
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
-                                          name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
+                                          name={`${vbcGridFields}.${index}.ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
                                           register={register}
@@ -1761,7 +1761,7 @@ function CostingDetails(props) {
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
-                                          name={`${vbcGridFields}[${index}]CostingVersion`}
+                                          name={`${vbcGridFields}.${index}.CostingVersion`}
                                           placeholder={"Select"}
                                           Controller={Controller}
                                           control={control}
