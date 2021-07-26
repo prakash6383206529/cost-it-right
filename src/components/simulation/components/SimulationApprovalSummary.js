@@ -673,11 +673,11 @@ function SimulationApprovalSummary(props) {
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
-                                                    style={{ height: '100%', width: '100%' }}
                                                 >
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                                         // columnDefs={c}
                                                         rowData={rmDomesticListing}
                                                         pagination={true}
@@ -877,11 +877,12 @@ function SimulationApprovalSummary(props) {
                                                         </div>
                                                         <div
                                                             className="ag-theme-material"
-                                                            style={{ height: '100%', width: '100%' }}
+                                                            
                                                         >
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -958,34 +959,35 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                             {acc3 &&
-                                <div className="accordian-content w-100">
-                                    <div className={`ag-grid-react`}>
-                                        <Col md="12" className="mb-3">
-                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                                <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                </div>
-                                                <div
-                                                    className="ag-theme-material"
+                            <div className="accordian-content w-100">
+                                <div className={`ag-grid-react`}>
+                                    <Col md="12" className="mb-3">
+                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                            <div className="ag-grid-header">
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            </div>
+                                            <div
+                                                className="ag-theme-material"
+                                                
+                                            >
+                                                <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+domLayout='autoHeight'
+                                                    // columnDefs={c}
+                                                    rowData={rmDomesticListing}
+                                                    pagination={true}
+                                                    paginationPageSize={10}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: CONSTANT.EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    stopEditingWhenCellsLoseFocus={true}
                                                 >
-                                                    <AgGridReact
-                                                        style={{ height: '100%', width: '100%' }}
-                                                        defaultColDef={defaultColDef}
-                                                        // columnDefs={c}
-                                                        rowData={rmDomesticListing}
-                                                        pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        loadingOverlayComponent={'customLoadingOverlay'}
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: CONSTANT.EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                        stopEditingWhenCellsLoseFocus={true}
-                                                    >
                                                         <AgGridColumn width={160} field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
                                                         <AgGridColumn width={144} field="RMSpec" headerName="RM Spec"></AgGridColumn>

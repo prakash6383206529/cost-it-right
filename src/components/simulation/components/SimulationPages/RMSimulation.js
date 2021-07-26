@@ -18,7 +18,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
-const gridOptions = {};
+const gridOptions = {
+    
+};
 
 
 function RMSimulation(props) {
@@ -366,7 +368,6 @@ function RMSimulation(props) {
         setGridColumnApi(params.columnApi)
 
         params.api.paginationGoToPage(0);
-
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -497,11 +498,12 @@ function RMSimulation(props) {
                                     </div>
                                     <div
                                         className="ag-theme-material"
-                                        style={{ height: '100%', width: '100%' }}
+                                        
                                     >
                                         <AgGridReact
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
