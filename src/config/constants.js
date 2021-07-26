@@ -1450,7 +1450,7 @@ export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
 export const FASTNERS = 'Fastners';
-export const RIVETS = 'Rivets';
+export const RIVETS = 'Rivet';
 
 export const USER = 'User'
 export const ROLE = 'Role'
