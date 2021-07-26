@@ -379,7 +379,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: effectiveDate,
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     })
 
@@ -437,7 +437,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: effectiveDate,
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     }
 
@@ -551,15 +551,7 @@ class AddLabour extends Component {
    */
   onSubmit = (values) => {
     const {
-      IsEmployeContractual,
-      IsVendor,
-      StateName,
-      selectedPlants,
-      vendorName,
-      LabourId,
-      gridTable,
-      DropdownChanged
-    } = this.state
+      IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
     const userDetail = userDetails()
 
     if (gridTable && gridTable.length === 0) {

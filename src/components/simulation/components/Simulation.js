@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
@@ -13,11 +13,13 @@ import { RMDomesticSimulation, RMImportSimulation } from '../../../config/master
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import CostingSimulation from './CostingSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
+    const { location } = props;
 
     let options = {}
 
@@ -49,6 +51,7 @@ function Simulation(props) {
 
     const handleMasterChange = (value) => {
         setMaster(value)
+        dispatch(setMasterForSimulation(value))
         if (value !== '' && Object.keys(technology).length > 0) {
             setShowMasterList(true)
         }
@@ -56,6 +59,7 @@ function Simulation(props) {
 
     const handleTechnologyChange = (value) => {
         setTechnology(value)
+        dispatch(setTechnologyForSimulation(value))
         if (value !== '' && Object.keys(master).length > 0) {
             setShowMasterList(true)
         }
@@ -84,7 +88,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} />)
             default:
-                break;
+                return <div className="empty-table-paecholder" />;
         }
     }
 
@@ -126,6 +130,8 @@ function Simulation(props) {
         setShowEditTable(false)
         setIsBulkUpload(false)
         setTableData([])
+        setMaster({ label: master.label, value: master.value })
+        setTechnology({ label: technology.label, value: technology.value })
     }
 
     /**
@@ -200,20 +206,23 @@ function Simulation(props) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
-
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />
             default:
                 break;
         }
     }
 
-
+    // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
+    if (location?.state?.isFromApprovalListing === true) {
+        const simulationId = location?.state?.approvalProcessId;
+        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+    }
 
     return (
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <>
+                <div className="simulation-main">
                     <Row>
                         <Col sm="12">
                             <h1>{`Simulation`}</h1>
@@ -222,7 +231,7 @@ function Simulation(props) {
 
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
-                            
+
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">
@@ -234,7 +243,7 @@ function Simulation(props) {
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        defaultValue={master.length !== 0 ? master : ''}
                                         options={renderListing('masters')}
                                         mandatory={false}
                                         handleChange={handleMasterChange}
@@ -254,14 +263,14 @@ function Simulation(props) {
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
-                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        defaultValue={technology.length !== 0 ? technology : ''}
                                         options={renderListing('technology')}
                                         mandatory={false}
                                         handleChange={handleTechnologyChange}
                                         errors={errors.Masters}
                                     />
                                 </div>
-                        </div>
+                            </div>
                         </Col>
                     </Row>
                     {/* <RMDomesticListing isSimulation={true} /> */}
@@ -292,13 +301,12 @@ function Simulation(props) {
                             isOpen={showUploadDrawer}
                             closeDrawer={closeDrawer}
                             anchor={"right"}
-                        />
-                    }
-                </>
+                        />}
+                </div>
             }
-            {
-                showEditTable && editMasterPage(master.label)
-            }
+            <div className="simulation-edit">
+                {showEditTable && editMasterPage(master.label)}
+            </div>
         </div>
     );
 }

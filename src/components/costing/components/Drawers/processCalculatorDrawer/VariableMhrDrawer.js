@@ -13,12 +13,14 @@ import EndMill from './EndMill'
 import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
-import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, FACING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
+import HPDC from '../../WeightCalculatorDrawer/HPDC'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
+  console.log('technology: ', technology);
 
-  const tonnage = calculatorData.MachineTonnage ? calculatorData.MachineTonnage : ''
+  const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
 
@@ -59,19 +61,17 @@ function VariableMhrDrawer(props) {
    * @description TOGGLE DRAWER
    */
   const toggleDrawer = (event, formValue = '0.00', weightData = {}) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
     props.closeDrawer('', formValue, weightData)
   }
-  const getProcessComponent = (process) => {
 
+  const getProcessComponent = (process) => {
     if (technology === MACHINING) {
+
       switch (process) {
-        case 'Facing':
+        case FACING:
           return (
             <Facing
               calculateMachineTime={calculateMachineTime}
@@ -79,7 +79,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Drilling':
+        case DRILLING:
           return (
             <Drilling
               calculateMachineTime={calculateMachineTime}
@@ -87,7 +87,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Turning':
+        case TURNING:
           return (
             <Turning
               calculateMachineTime={calculateMachineTime}
@@ -95,7 +95,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Chamfering':
+        case CHAMFERING:
           return (
             <Chamfering
               calculateMachineTime={calculateMachineTime}
@@ -103,7 +103,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Face Milling':
+        case FACEMILING:
           return (
             <FaceMilling
               calculateMachineTime={calculateMachineTime}
@@ -111,7 +111,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Side face Miling':
+        case SIDEFACEMILING:
           return (
             <SideFaceMiling
               calculateMachineTime={calculateMachineTime}
@@ -119,7 +119,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Slot Cutting':
+        case SLOTCUTTING:
           return (
             <SlotCutting
               calculateMachineTime={calculateMachineTime}
@@ -127,7 +127,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'Chamfering Miller':
+        case CHAMFERINGMILLER:
           return (
             <ChamferingMiller
               calculateMachineTime={calculateMachineTime}
@@ -135,7 +135,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
-        case 'End Mill':
+        case ENDMILL:
           return (
             <EndMill
               calculateMachineTime={calculateMachineTime}
@@ -144,7 +144,14 @@ function VariableMhrDrawer(props) {
             />
           )
         default:
-          break;
+          return (
+            <SheetMetalBaicDrawer
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          )
       }
     } else if (technology === SHEETMETAL) {
       switch (process) {
@@ -169,12 +176,38 @@ function VariableMhrDrawer(props) {
     } else if (technology === PLASTIC) {
       switch (process) {
         case 'Injection Moulding':
-          return (
-            <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
-          )
+        // return (
+        //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
+        // )
         default:
+          return (
+            <SheetMetalBaicDrawer
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          )
           break;
       }
+    } else if (technology === Non_Ferrous_HPDC) {
+      return (
+        <SheetMetalBaicDrawer
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
+    } else {
+      return (
+        <SheetMetalBaicDrawer
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
     }
   }
 
@@ -191,7 +224,7 @@ function VariableMhrDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Calculator'}</h3>
+                  <h3>{'Process Calculator'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -204,12 +237,6 @@ function VariableMhrDrawer(props) {
                 <span className="d-inline-block mr-4 mb-3 pl-3">
                   <span className="cr-tbl-label d-block">Process Name:</span>
                   <span>{calculatorData.ProcessName}</span>
-                </span>
-                <span className="d-inline-block mr-4 mb-3">
-                  <span className="cr-tbl-label d-block">
-                    Process Description:
-                  </span>
-                  <span>{calculatorData.ProcessDescription ? calculatorData.ProcessDescription : '-'}</span>
                 </span>
                 <span className="d-inline-block mr-4 mb-3">
                   <span className="cr-tbl-label d-block">Machine Name:</span>
@@ -225,7 +252,7 @@ function VariableMhrDrawer(props) {
                 </span>
               </Col>
               <div className="w-100 px-3">
-                {getProcessComponent(technology)}
+                {getProcessComponent(calculatorData.ProcessName)}
               </div>
             </Row>
           </div>

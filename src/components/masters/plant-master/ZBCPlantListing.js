@@ -9,13 +9,14 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PlantZbc } from '../../../config/constants';
 
 class ZBCPlantListing extends Component {
     constructor(props) {
@@ -344,6 +345,19 @@ class ZBCPlantListing extends Component {
     onSubmit(values) {
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.plantDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      } 
+
     /**
     * @method render
     * @description Renders the component
@@ -356,7 +370,7 @@ class ZBCPlantListing extends Component {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
+            exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -367,7 +381,7 @@ class ZBCPlantListing extends Component {
         };
 
         return (
-            <>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -475,7 +489,8 @@ class ZBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    // exportCSV
+                    exportCSV
+                    csvFileName={`${PlantZbc}.csv`}
                     //ignoreSinglePage
                     ref={"table"}
                     trClassName={"userlisting-row"}
@@ -483,12 +498,12 @@ class ZBCPlantListing extends Component {
                     pagination
                 >
                     <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
-                    {initialConfiguration && initialConfiguration.IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="CompanyName" dataAlign="center" dataSort={true}>Company</TableHeaderColumn>}
-                    <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataAlign="center" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PlantCode" dataAlign="left" dataSort={true}>Plant Code</TableHeaderColumn>
+                    {initialConfiguration && initialConfiguration.IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="CompanyName" dataAlign="left" dataSort={true}>Company</TableHeaderColumn>}
+                    <TableHeaderColumn dataField="CountryName" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
+                    <TableHeaderColumn dataField="StateName" dataAlign="left" dataSort={true}>State</TableHeaderColumn>
+                    <TableHeaderColumn dataField="CityName" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsActive" dataAlign="left" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" dataSort={false} searchable={false} className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
@@ -501,7 +516,7 @@ class ZBCPlantListing extends Component {
                         anchor={"right"}
                     />
                 )}
-            </>
+            </div>
         );
     }
 }

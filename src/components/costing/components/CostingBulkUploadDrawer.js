@@ -7,13 +7,15 @@ import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting } from '../actions/CostWorking'
-import { CostingBulkUpload, CostingBulkUploadTempData } from '../../../config/masterData'
+import { bulkUploadCosting, plasticBulkUploadCosting } from '../actions/CostWorking'
+import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../config/masterData'
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, SHEET_METAL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
+import { getCostingTechnologySelectList, } from '../actions/Costing'
+import { searchableSelect } from '../../layout/FormInputs';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -25,8 +27,37 @@ class CostingBulkUploadDrawer extends Component {
         this.state = {
             files: [],
             fileData: '',
-            fileName: ''
+            fileName: '',
+            Technology: []
         }
+    }
+
+
+    /**
+ * @method componentWillMount
+ * @description Called before render the component
+ */
+    UNSAFE_componentWillMount() {
+        this.props.getCostingTechnologySelectList(() => { })
+
+    }
+
+
+    renderListing = (label) => {
+        const { technologySelectList } = this.props
+        let tempArr = []
+        if (label === 'Technology') {
+            technologySelectList && technologySelectList.map((item) => {
+                if (item.Value === '0') return false
+                tempArr.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return tempArr
+        }
+    }
+
+    handleTechnologyChange = (value) => {
+        this.setState({ Technology: value })
     }
 
     // specify upload params and url for your files
@@ -82,7 +113,7 @@ class CostingBulkUploadDrawer extends Component {
         //             //         obj = {}
 
         //             //     }
-        //             //     console.log(fileData, "FD");
+        //             //     
         //             //     return null;
         //             // })
 
@@ -173,19 +204,31 @@ class CostingBulkUploadDrawer extends Component {
     }
 
     onSubmit = (value) => {
-        console.log('value: ', value);
+
 
         const { fileData } = this.state
-        console.log(fileData, "fileData");
+
         let data = new FormData()
         data.append('file', fileData)
 
-        this.props.bulkUploadCosting(data, (res) => {
-            let Data = res.data[0]
-            const { files } = this.state
-            files.push(Data)
-        })
-        this.cancel()
+        if (this.state.Technology.label == SHEET_METAL) {
+
+            this.props.bulkUploadCosting(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state
+                files.push(Data)
+            })
+            this.cancel()
+        } if (this.state.Technology.label == 'Plastic') {
+
+            this.props.plasticBulkUploadCosting(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state
+                files.push(Data)
+            })
+            this.cancel()
+        }
+
     }
     render() {
         const { handleSubmit } = this.props
@@ -238,6 +281,25 @@ class CostingBulkUploadDrawer extends Component {
                                         </div>
 
                                     </Col> */}
+
+                                    <Col md="12">
+
+                                        <Field
+                                            name="Technology"
+                                            type="text"
+                                            label="Technology"
+                                            component={searchableSelect}
+                                            placeholder={"Select"}
+                                            options={this.renderListing("Technology")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            //  validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                                            //  required={true}
+                                            handleChangeDescription={this.handleTechnologyChange}
+                                            valueDescription={this.state.Technology}
+                                        // disabled={isEditFlag ? true : false}
+                                        />
+                                    </Col>
+
                                     <Col md="12">
                                         <label>Upload File</label>
                                         {this.state.fileName !== "" ? (
@@ -325,7 +387,9 @@ class CostingBulkUploadDrawer extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-
+    const { costing } = state
+    const { technologySelectList } = costing
+    return { technologySelectList }
 }
 
 /**
@@ -336,7 +400,9 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps,
     {
-        bulkUploadCosting
+        bulkUploadCosting,
+        getCostingTechnologySelectList,
+        plasticBulkUploadCosting
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,

@@ -25,7 +25,6 @@ class Login extends Component {
   }
 
   UNSAFE_componentWillMount() {
-
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
       this.setState({
@@ -34,14 +33,12 @@ class Login extends Component {
     } else {
       reactLocalStorage.setObject('isUserLoggedIn', false);
     }
-
-
-
   }
 
-  forgotConfirm = () => {
-    this.setState({ flag: true })
-  }
+  /**
+   * @method FORGOT CONFIRM
+   */
+  forgotConfirm = () => this.setState({ flag: true })
 
   /**
    * Submit the login form
@@ -54,20 +51,20 @@ class Login extends Component {
       password: values.Password,
       grant_type: 'password',
     }
-    //this.props.loginUserAPI(values, (res) => {
+    // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-        //this.setState({ isRedirect: true })
+        // this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
       }
     })
-    //});
+    // });
   }
 
   render() {
@@ -91,8 +88,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/sipl-logo.jpg")} alt="Systematix" />
-                  </a>
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/logo/company-logo1x.png")} alt="Minda" /></a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
@@ -115,18 +111,19 @@ class Login extends Component {
                       // maxLength={71}
                       />
                       :
-                      <Field
-                        label=""
-                        name={"UserName"}
-                        type="text"
-                        placeholder={'User Name'}
-                        validate={[required, maxLength70]}
-                        component={renderText}
-                        required={true}
-                        onClickCapture={(e) => this.setState({ flag: false })}
-                        // maxLength={26}
-                        customClassName={'withBorder'}
-                      />
+                      <span className="inputbox input-group ">
+                        <Field
+                          label=""
+                          name={"UserName"}
+                          type="text"
+                          placeholder={'User Name'}
+                          validate={[required, maxLength70]}
+                          component={renderText}
+                          required={true}
+                          onClickCapture={(e) => this.setState({ flag: false })}
+                          // maxLength={26}
+                          className={'withBorder'}
+                        /></span>
                     }
                   </div>
                   <div className="input-group phone" onClickCapture={(e) => this.setState({ flag: false })}>
@@ -154,22 +151,22 @@ class Login extends Component {
                     <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
-                    <div className="text-help mb-2">Please contact your IT Administrator</div>
+                    <div className="text-help mb-2 text-center">Please contact your IT Administrator</div>
                   )
                   }
                 </form>
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
-                  <img className="logo-second" src={require("../../assests/images/logo.png")} alt="Cost It Right" />
+                  <img className="logo-second" src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" />
+                </div>
+              </div>
+              <div className="col-md-7 p-0 right-sideimg">
+                <img src={require('../../assests/images/box.png')} alt='error-icon' />
               </div>
             </div>
-            <div className="col-md-7 p-0 right-sideimg">
-              <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
-            </div>
           </div>
-        </div>
+        </div >
       </div>
-      </div >
     );
   }
 }

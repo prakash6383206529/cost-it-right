@@ -42,6 +42,7 @@ function AddProcess(props) {
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -59,9 +60,10 @@ function AddProcess(props) {
       const data = {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
-        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -76,6 +78,7 @@ function AddProcess(props) {
 
     }
   }, []);
+
 
 
   /**
@@ -102,8 +105,8 @@ function AddProcess(props) {
       let tempArr = [...selectedRowData, row]
       setSelectedRowData(tempArr)
     } else {
-      const ProcessId = row.ProcessId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.ProcessId !== ProcessId)
+      const MachineRateId = row.MachineRateId;
+      let tempArr = selectedRowData && selectedRowData.filter(el => el.MachineRateId !== MachineRateId)
       setSelectedRowData(tempArr)
     }
   }
@@ -173,7 +176,7 @@ function AddProcess(props) {
             </Row>
 
             <Row className="mx-0">
-              <Col>
+              <Col className="hidepage-size">
                 <BootstrapTable
                   data={processDrawerList}
                   striped={false}

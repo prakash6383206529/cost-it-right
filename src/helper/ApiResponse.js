@@ -1,3 +1,5 @@
+import { userDetails } from "./auth";
+
 export function formatLoginResult(res) {
     if (res) {
         // const userObj = {
@@ -22,7 +24,10 @@ export function formatLoginResult(res) {
         // };
         const userObj = {
             Token: res.access_token,
+            RefreshToken: res.refresh_token,
             LoggedInUserId: res.LoggedInUserId,
+            LoggedInLevel: res.LoggedInLevel,
+            LoggedInLevelId: res.LoggedInLevelId,
             UserName: res.UserName,
             Name: res.Name,
             Email: res.Email,
@@ -41,8 +46,10 @@ export function formatLoginResult(res) {
             issued: res[".issued"],
             expires_in: res.expires_in,
             token_type: res.token_type,
-            DepartmentId: res.Data.DepartmentId,
-            Department: res.Data.Department,
+            DepartmentId: res.DepartmentId,
+            Department: res.Department,
+            LoggedInSimulationLevel: res.LoggedInSimulationLevel,
+            LoggedInSimulationLevelId: res.LoggedInSimulationLevelId
         };
         return userObj;
     }
@@ -100,4 +107,28 @@ export function formatGetPlanResult(result) {
         planListArray.push(planListYearly);
     }
     return planListArray;
+}
+
+
+export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
+
+    if (simulationDetail && selectedRowData && costingArr) {
+        let temp = []
+        costingArr && costingArr.map(item => {
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
+        })
+
+        const simulationObj = {
+            SimulationId: simulationDetail.SimulationId,
+            Token: simulationDetail.TokenNo,
+            Currency: "",
+            EffectiveDate: "",
+            Remark: "",
+            LoggedInUserId: userDetails().LoggedInUserId,
+            IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
+            SelectedCostings: temp,
+        };
+        return simulationObj;
+    }
+    return null;
 }

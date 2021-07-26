@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { getJsDateFromExcel } from "../../helper/validation";
+import { checkForNull, getJsDateFromExcel } from "../../helper/validation";
 import {
     bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
     bulkfileUploadRM, bulkUploadRMSpecification,
@@ -22,6 +22,7 @@ import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
+import moment from 'moment';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -108,6 +109,7 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
+
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
@@ -123,11 +125,17 @@ class BulkUpload extends Component {
 
                             let obj = {}
                             val.map((el, i) => {
-                                if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+                                if (fileHeads[i] === 'EffectiveDate' && typeof el === 'string') {
+                                    el = moment(Date(el)).format('YYYY-MM-DD HH:mm:ss')
+                                }
+                                if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                                    el = parseInt(el)
+                                    el = parseInt(checkForNull(el))
+                                }
+                                if (fileHeads[i] === 'MachineSpecification') {
+                                    fileHeads[i] = 'Description'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;

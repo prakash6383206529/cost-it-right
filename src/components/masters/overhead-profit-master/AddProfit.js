@@ -523,8 +523,8 @@ class AddProfit extends Component {
     const userDetail = userDetails()
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
+
+
 
       if (values.ProfitBOPPercentage == '') {
         values.ProfitBOPPercentage = null
@@ -543,7 +543,7 @@ class AddProfit extends Component {
         DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
         && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
         && DataToChange.Remark == values.Remark) {
-        console.log('asdf')
+
         this.cancel()
         return false
       }
@@ -574,7 +574,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
@@ -614,7 +614,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD')
       }
 
       this.props.reset()

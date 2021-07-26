@@ -13,12 +13,14 @@ import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import moment from 'moment';
+import { MachineRate } from '../../../config/constants';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -35,6 +37,7 @@ class MachineRateListing extends Component {
             machineType: [],
 
             isBulkUpload: false,
+            isLoader: false
         }
     }
 
@@ -61,6 +64,7 @@ class MachineRateListing extends Component {
             plant_id: plant_id,
         }
         this.props.getMachineDataList(filterData, (res) => {
+            this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -361,6 +365,18 @@ class MachineRateListing extends Component {
         return row.IsVendor ? row.DestinationPlant : row.Plants
     }
 
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date</>
+    }
+
+    /**
+  * @method effectiveDateFormatter
+  * @description Renders buttons
+  */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -378,6 +394,7 @@ class MachineRateListing extends Component {
     */
     filterList = () => {
         const { costingHead, plant, technology, vendorName, processName, machineType } = this.state;
+        this.setState({ isLoader: true })
 
         const costingId = costingHead ? costingHead.value : '';
         const technologyId = technology ? technology.value : 0;
@@ -385,6 +402,7 @@ class MachineRateListing extends Component {
         const machineTypeId = machineType ? machineType.value : 0;
         const processId = processName ? processName.value : '';
         const plantId = plant ? plant.value : '';
+
 
         this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
     }
@@ -401,6 +419,7 @@ class MachineRateListing extends Component {
             vendorName: [],
             processName: [],
             machineType: [],
+            isLoader: true
         }, () => {
             this.props.getTechnologySelectList(() => { })
             this.props.getInitialPlantSelectList(() => { })
@@ -424,17 +443,32 @@ class MachineRateListing extends Component {
 
     }
 
+
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.machineDatalist
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
-        const { isBulkUpload, } = this.state;
+        const { isBulkUpload, isLoader } = this.state;
         const options = {
             clearSearch: true,
             noDataText: (this.props.machineDatalist === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -443,7 +477,7 @@ class MachineRateListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -601,6 +635,7 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
+                        {isLoader && <LoaderCustom />}
                         <BootstrapTable
                             data={this.props.machineDatalist}
                             striped={false}
@@ -608,7 +643,8 @@ class MachineRateListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName={`${MachineRate}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
@@ -621,6 +657,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

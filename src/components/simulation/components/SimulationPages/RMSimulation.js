@@ -13,7 +13,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function RMSimulation(props) {
     const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -28,61 +28,78 @@ function RMSimulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const dispatch = useDispatch()
+
+    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
+    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     useEffect(() => {
         setValue('NoOfCorrectRow', rowCount.correctRow)
         setValue('NoOfInCorrectRow', rowCount.incorrectRow)
     }, [])
-    const dispatch = useDispatch()
 
     const verifySimulation = () => {
         let basicRateCount = 0
         let basicScrapCount = 0
+
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-                console.log("COMING IN IFFFFFFFFFFFFFFFFFFF");
+
                 basicRateCount = basicRateCount + 1
             }
             if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
                 basicScrapCount = basicScrapCount + 1
             }
+            return null;
         })
+
         if (basicRateCount === list.length && basicScrapCount === list.length) {
             toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
+
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.Technology = technology
+        obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.Vendor = list[0].VendorName
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
-
+        obj.VendorId = list[0].VendorId
+        obj.TechnologyId = list[0].TechnologyId
+        obj.VendorId = list[0].VendorId
         let tempArr = []
         list && list.map(item => {
-            let tempObj = {}
-            tempObj.CostingHead = item.CostingHead
-            tempObj.RawMaterialName = item.RawMaterial
-            tempObj.MaterialType = item.MaterialType
-            tempObj.RawMaterialGrade = item.RMGrade
-            tempObj.RawMaterialSpecification = item.RMSpec
-            tempObj.RawMaterialCategory = item.Category
-            tempObj.UOM = item.UOM
-            tempObj.OldBasicRate = item.BasicRate
-            tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-            tempObj.OldScrapRate = item.ScrapRate
-            tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-            tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-            tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-            tempObj.OldNetLandedCost = item.NetLandedCost
-            tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-            tempObj.EffectiveDate = item.EffectiveDate
-            tempArr.push(tempObj)
+            console.log('item: ', item);
+            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+                let tempObj = {}
+                tempObj.CostingHead = item.CostingHead
+                tempObj.RawMaterialName = item.RawMaterial
+                tempObj.MaterialType = item.MaterialType
+                tempObj.RawMaterialGrade = item.RMGrade
+                tempObj.RawMaterialSpecification = item.RMSpec
+                tempObj.RawMaterialCategory = item.Category
+                tempObj.UOM = item.UOM
+                tempObj.OldBasicRate = item.BasicRate
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
+                tempObj.OldScrapRate = item.ScrapRate
+                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+                tempObj.OldNetLandedCost = item.NetLandedCost
+                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                tempObj.EffectiveDate = item.EffectiveDate
+                tempObj.RawMaterialId = item.RawMaterialId
+                tempObj.PlantId = item.PlantId
+                tempObj.Delta = 0
+                tempArr.push(tempObj)
+            }
+            return null;
         })
         obj.SimulationRawMaterials = tempArr
-        console.log(obj, "OBJ");
+
         dispatch(runVerifySimulation(obj, res => {
-            console.log(res, "RESP");
+
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
@@ -91,7 +108,7 @@ function RMSimulation(props) {
     }
 
     const cancelVerifyPage = () => {
-        console.log("VERIFY");
+
         setShowVerifyPage(false)
     }
 
@@ -177,7 +194,7 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? cell : row.BasicRate} </span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cell) : Number(row.BasicRate)} </span>
             </>
         )
     }
@@ -185,7 +202,7 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? cell : row.ScrapRate}</span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cell) : Number(row.ScrapRate)}</span>
             </>
         )
     }
@@ -220,7 +237,7 @@ function RMSimulation(props) {
     }
 
     const afterSaveCell = (row, cellName, cellValue, index) => {
-        console.log('index: ', index);
+
         if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
             setColorClass('red-value form-control')
         } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
@@ -358,14 +375,14 @@ function RMSimulation(props) {
                                 <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
-                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
-                                <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
-                                <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
+                                <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
+                                <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
                                 <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false}  >Scrap Rate (INR)</TableHeaderColumn>
-                                <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
-                                <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
+                                <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
+                                <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
+                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} editable={false} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
+                                <TableHeaderColumn row='0' rowSpan='2' columnTitle={true} width={100} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} editable={false} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>

@@ -13,7 +13,7 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -21,6 +21,8 @@ import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+import { getConfigurationKey } from '../../../helper';
+import { BopDomestic, } from '../../../config/constants';
 
 class BOPDomesticListing extends Component {
     constructor(props) {
@@ -169,7 +171,12 @@ class BOPDomesticListing extends Component {
         if (newValue && newValue !== '') {
             this.setState({ vendor: newValue }, () => {
                 const { vendor } = this.state;
-                this.props.getPlantSelectListByVendor(vendor.value, () => { })
+                if (getConfigurationKey().IsVendorPlantConfigurable) {
+
+                    this.props.getPlantSelectListByVendor(vendor.value, () => { })
+                } else {
+                    this.props.getPlantSelectList(() => { })
+                }
             });
         } else {
             this.setState({ vendor: [], });
@@ -286,6 +293,9 @@ class BOPDomesticListing extends Component {
     renderBasicRate = () => {
         return <>Basic<br /> Rate(INR)</>
     }
+    renderPlant = (cell, row, enumObject, rowIndex) => {
+        return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
+    }
     /**
     * @method renderListing
     * @description Used to show type of listing
@@ -369,6 +379,19 @@ class BOPDomesticListing extends Component {
 
     }
 
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.bopDomesticList
+        return products; // must return the data which you want to be exported
+    }
+
+    createCustomExportCSVButton = (onClick) => {
+        return (
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+        );
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -376,10 +399,12 @@ class BOPDomesticListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -394,7 +419,7 @@ class BOPDomesticListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -523,7 +548,8 @@ class BOPDomesticListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName={`${BopDomestic}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             // selectRow={selectRow}
@@ -536,7 +562,8 @@ class BOPDomesticListing extends Component {
                             {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== false} export={getConfigurationKey().IsDestinationPlantConfigure === false} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== true} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderBasicRate()}</TableHeaderColumn>

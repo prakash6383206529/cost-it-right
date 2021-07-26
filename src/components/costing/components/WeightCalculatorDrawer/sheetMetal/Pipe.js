@@ -19,9 +19,30 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-  console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
 
 
+
+  const convert = (FinishWeightOfSheet, dimmension) => {
+    switch (dimmension) {
+      case G:
+        setTimeout(() => {
+          setFinishWeights(FinishWeightOfSheet)
+        }, 200);
+        break;
+      case KG:
+        setTimeout(() => {
+          setFinishWeights(FinishWeightOfSheet * 1000)
+        }, 200);
+        break;
+      case MG:
+        setTimeout(() => {
+          setFinishWeights(FinishWeightOfSheet / 1000)
+        }, 200);
+        break;
+      default:
+        break;
+    }
+  }
   const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
@@ -65,15 +86,19 @@ function Pipe(props) {
   )
 
   let extraObj = {}
-  const [dataToSend, setDataToSend] = useState({})
+  const [dataToSend, setDataToSend] = useState({
+    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+  })
+  const [manualFinish, setManualFinish] = useState(false)
   const [isChangeApplies, setIsChangeApplied] = useState(true)
   const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
   const tempOldObj = WeightCalculatorRequest
-  const [GrossWeight, setGrossWeights] = useState('')
-  const [FinishWeight, setFinishWeights] = useState('')
-  console.log('FinishWeight: ', FinishWeight);
+  const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
+  const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
+
   const [useFinishWeight, setUseFinishWeight] = useState(false)
-  console.log(useFinishWeight, "in  finish Weight");
+
 
 
   const fieldValues = useWatch({
@@ -81,7 +106,17 @@ function Pipe(props) {
     name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
   })
 
+  // const fieldVal = useWatch({
+  //   control,
+  //   name: ['FinishWeight']
+  // })
 
+  // useEffect(() => {
+  //   if (manualFinish) {
+
+  //     onFinishChange()
+  //   }
+  // }, [fieldVal])
 
   const dispatch = useDispatch()
 
@@ -93,13 +128,13 @@ function Pipe(props) {
       const Data = res.data.Data
       const kgObj = Data.find(el => el.Text === G)
       setTimeout(() => {
-        setValue('UOMDimension', WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+        setValue('UOMDimension', Object.keys(WeightCalculatorRequest).length !== 0
           ? {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
           }
           : { label: kgObj.Text, value: kgObj.Value })
-        setUOMDimension(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+        setUOMDimension(Object.keys(WeightCalculatorRequest).length !== 0
           ? {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
@@ -107,13 +142,13 @@ function Pipe(props) {
           : { label: kgObj.Text, value: kgObj.Value })
       }, 100);
       if (WeightCalculatorRequest.FinishWeight !== null || WeightCalculatorRequest.FinishWeight !== undefined) {
-        console.log("ENTERD IN IF");
+
         setUseFinishWeight(false)
       } else {
         setUseFinishWeight(true)
       }
     }))
-    setFinishWeights(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : 0)
+    setFinishWeights(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : 0)
   }, [])
 
   const UOMSelectListByUnitType = useSelector(
@@ -154,7 +189,6 @@ function Pipe(props) {
     const updatedValue = dataToSend
     updatedValue.InnerDiameter = ID
     setDataToSend(updatedValue)
-    // setDataToSend({ ...dataToSend, updatedValue })
   }
 
   /**
@@ -163,14 +197,12 @@ function Pipe(props) {
    */
   const calculateNumberOfPartPerSheet = () => {
     if (fieldValues.SheetLength === '') {
-      // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
       setValue('NumberOfPartsPerSheet', 1)
       const updatedValue = dataToSend
       updatedValue.NumberOfPartsPerSheet = 1
       setDataToSend(updatedValue)
     } else {
       const NumberParts = checkForNull(fieldValues.SheetLength / fieldValues.PartLength)
-      // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: NumberParts })
       setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
       const updatedValue = dataToSend
       updatedValue.NumberOfPartsPerSheet = parseInt(NumberParts)
@@ -315,16 +347,18 @@ function Pipe(props) {
    * @description SET FINISH WEIGHT
    */
   const setFinishWeight = () => {
-    console.log(useFinishWeight, "in set finish Weight");
+
     if (!useFinishWeight) return false
-    console.log("COMING IN FINISH ");
+
     const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
     const updatedValue = dataToSend
 
     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
     updatedValue.FinishWeight = FinishWeight
     setDataToSend(updatedValue)
-    setFinishWeights(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+    setTimeout(() => {
+      setFinishWeights(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+    }, 200)
 
   }
 
@@ -452,9 +486,11 @@ function Pipe(props) {
     setUOMDimension(value)
     let grossWeight = GrossWeight
     // let finishWeight = setValueAccToUOM(getValues('FinishWeight'), value.label)
-    //console.log(finishWeight, "FW");
+    //
     grossWeight = setValueAccToUOM(grossWeight, value.label)
-    let finishWeight = setValueAccToUOM(FinishWeight, value.label)
+    let finishWeight = setValueAccToUOM(dataToSend?.FinishWeight ? dataToSend.FinishWeight : FinishWeight, value.label)
+    console.log('finishWeight: ', (finishWeight).toFixed(6));
+
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 
     setUnit(value.label)
@@ -476,26 +512,33 @@ function Pipe(props) {
     // return (<sup>2</sup>)
   }
 
-  const onFinishChange = (e) => {
+  const onFinishChange = (value) => {
     // if(e.target.value > getValues())
-    setUseFinishWeight(false)
-    console.log(Number(e.target.value), "FinishWeight");
-    if (UOMDimension.label === KG) {
-      setFinishWeights(Number(e.target.value) * 1000)
-      let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(e.target.value) * 1000
-      setDataToSend(updatedValue)
-    } else if (UOMDimension.label === MG) {
-      setFinishWeights(Number(e.target.value) / 1000)
-      let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(e.target.value) / 1000
-      setDataToSend(updatedValue)
-    } else {
-      setFinishWeights(Number(e.target.value))
-      let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(e.target.value)
-      setDataToSend(updatedValue)
 
+    if (Number(value)) {
+      setUseFinishWeight(false)
+
+      let FW = getValues('FinishWeight')
+
+      if (UOMDimension.label === KG) {
+        setFinishWeights(Number(value) * 1000)
+        let updatedValue = dataToSend
+        updatedValue.FinishWeight = Number(value) * 1000
+        setDataToSend(updatedValue)
+
+      } else if (UOMDimension.label === MG) {
+        setFinishWeights(Number(value) / 1000)
+        let updatedValue = dataToSend
+        updatedValue.FinishWeight = Number(value) / 1000
+        setDataToSend(updatedValue)
+
+      } else {
+        setFinishWeights(Number(value))
+        let updatedValue = dataToSend
+        updatedValue.FinishWeight = Number(value)
+        setDataToSend(updatedValue)
+
+      }
     }
   }
 
@@ -913,7 +956,7 @@ function Pipe(props) {
                       // },
                       // maxLength: 4,
                     }}
-                    handleChange={onFinishChange}
+                    handleChange={(e) => onFinishChange(e.target.value)}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}
@@ -923,21 +966,24 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
+            {
+              isEditFlag &&
 
-            <div className="col-sm-12 text-right px-0 mt-4">
-              <button
-                type={'button'}
-                className="reset mr15 cancel-btn"
-                onClick={cancel} >
-                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-              </button>
-              <button
-                type={'submit'}
-                className="submit-button save-btn">
-                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                {'Save'}
-              </button>
-            </div>
+              <div className="col-sm-12 text-right px-0 mt-4">
+                <button
+                  type={'button'}
+                  className="reset mr15 cancel-btn"
+                  onClick={cancel} >
+                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                </button>
+                <button
+                  type={'submit'}
+                  className="submit-button save-btn">
+                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'Save'}
+                </button>
+              </div>
+            }
 
           </form>
         </div>

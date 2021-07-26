@@ -16,7 +16,7 @@ import {
   saveCopyCosting,
 } from '../../actions/Costing';
 import { VBC, ZBC } from '../../../../config/constants';
-import { isUserLoggedIn, loggedInUserId } from '../../../../helper';
+import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -323,7 +323,7 @@ function CopyCosting(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>
@@ -425,7 +425,7 @@ function CopyCosting(props) {
                       errors={errors.fromVendorName}
                     />
                   </div>
-                  {loggedIn && (
+                  {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Vendor Plant"}
@@ -549,7 +549,7 @@ function CopyCosting(props) {
                       errors={errors.toVendorName}
                     />
                   </div>
-                  {loggedIn && (
+                  {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Vendor Plant"}

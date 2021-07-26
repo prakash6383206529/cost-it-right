@@ -21,6 +21,7 @@ import { renderText } from '../layout/FormInputs';
 import { Field, reduxForm } from 'redux-form';
 import { focusOnError } from "../layout/FormInputs";
 import ImpactDrawer from './ImpactDrawer';
+import LoaderCustom from '../common/LoaderCustom';
 
 /*************************************THIS FILE IS FOR SHOWING LEVEL LISTING ****************************************/
 
@@ -38,7 +39,8 @@ class LevelsListing extends Component {
 			DeleteAccessibility: false,
 
 			showImpact: false,
-			idForImpact: ''
+			idForImpact: '',
+			levelType: '',
 		}
 	}
 
@@ -67,7 +69,7 @@ class LevelsListing extends Component {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 		//this.props.onRef(this);
 	}
-	UNSAFE_componentWillUpdate(){
+	UNSAFE_componentWillUpdate() {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 	}
 	getLevelsListData = () => {
@@ -125,13 +127,14 @@ class LevelsListing extends Component {
 	 * @method getLevelMappingDetail
 	 * @description confirm edit item
 	 */
-	getLevelMappingDetail = (Id) => {
+	getLevelMappingDetail = (Id, levelType) => {
 		this.setState({
 			isEditFlag: true,
 			LevelId: Id,
 			isOpen: true,
 			isShowForm: false,
 			isShowMappingForm: true,
+			levelType: levelType,
 		})
 	}
 
@@ -221,7 +224,7 @@ class LevelsListing extends Component {
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
-	} 
+	}
 
 	afterSearch = (searchText, result) => {
 
@@ -258,9 +261,9 @@ class LevelsListing extends Component {
 	}
 
 	/**
-   * @method statusButtonFormatter
-   * @description Renders buttons
-   */
+	 * @method statusButtonFormatter
+	 * @description Renders buttons
+	 */
 	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
 		const { ActivateAccessibility } = this.props;
 		// if (ActivateAccessibility) {
@@ -296,9 +299,9 @@ class LevelsListing extends Component {
 	}
 
 	/**
-   * @method TextFormatter
-   * @description Renders buttons
-   */
+	 * @method TextFormatter
+	 * @description Renders buttons
+	 */
 	TextFormatter = (cell, row, enumObject, rowIndex) => {
 		// 
 		// this.setState({
@@ -331,7 +334,7 @@ class LevelsListing extends Component {
 			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
 		const options = {
 			clearSearch: true,
-			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+			noDataText: (this.props.usersListByTechnologyAndLevel === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
 			afterSearch: this.afterSearch,
 			paginationShowsTotal: this.renderPaginationShowsTotal,
 			prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -349,7 +352,7 @@ class LevelsListing extends Component {
 		return (
 			<>
 				<form className="levellisting-page">
-					{this.props.loading && <Loader />}
+					{/* {this.props.loading && <Loader />} */}
 					<Row className="pt-4">
 						<Col md="12">
 							<LevelTechnologyListing
@@ -382,8 +385,8 @@ class LevelsListing extends Component {
 										trClassName={'userlisting-row'}
 										tableHeaderClass={'my-custom-header'}
 										pagination>
-										<TableHeaderColumn  dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-										<TableHeaderColumn  dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+										<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
+										<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
 										<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn>
 										{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
 										<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
@@ -406,6 +409,7 @@ class LevelsListing extends Component {
 							isEditFlag={isEditFlag}
 							LevelId={LevelId}
 							anchor={'right'}
+							isEditedlevelType={this.state.levelType}
 						/>
 					)}
 					{showImpact && (

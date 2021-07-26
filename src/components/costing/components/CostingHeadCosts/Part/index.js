@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
@@ -22,10 +22,11 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CloseOpenAccordion, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, ComponentItemData, CloseOpenAccordion, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const toggle = (BOMLevel, PartNumber) => {
     // let IsLocked = true;
@@ -60,7 +61,7 @@ function PartCompoment(props) {
 
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
-    if (!CostingViewMode && IsOpen === false && Count > 0) {
+    if (!CostingViewMode && IsOpen === false && Count > 0 && Object.keys(ComponentItemData).length > 0) {
       let requestData = {
         "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
@@ -69,7 +70,12 @@ function PartCompoment(props) {
         "NetProcessCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": netPOPrice,
+        "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
+          checkForNull(item.CostingPartDetails.ProfitCost) +
+          checkForNull(item.CostingPartDetails.RejectionCost) +
+          checkForNull(item.CostingPartDetails.ICCCost) +
+          checkForNull(item.CostingPartDetails.PaymentTermCost),
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -143,6 +149,7 @@ function PartCompoment(props) {
                 index={props.index}
                 data={rmData}
                 setRMCost={props.setRMCost}
+                setRMMasterBatchCost={props.setRMMasterBatchCost}
                 item={item}
               />
 

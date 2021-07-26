@@ -63,6 +63,7 @@ function AssemblyPart(props) {
         ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
         setPartDetails={props.setPartDetails}
         setRMCost={props.setRMCost}
+        setRMMasterBatchCost={props.setRMMasterBatchCost}
         setBOPCost={props.setBOPCost}
         setBOPHandlingCost={props.setBOPHandlingCost}
         setProcessCost={props.setProcessCost}
@@ -81,6 +82,7 @@ function AssemblyPart(props) {
       setPartDetails={props.setPartDetails}
       toggleAssembly={props.toggleAssembly}
       setRMCost={props.setRMCost}
+      setRMMasterBatchCost={props.setRMMasterBatchCost}
       setBOPCost={props.setBOPCost}
       setBOPHandlingCost={props.setBOPHandlingCost}
       setProcessCost={props.setProcessCost}
@@ -135,7 +137,7 @@ function AssemblyPart(props) {
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         </div>
         <td>
-          {item?.CostingPartDetails?.TotalOperationCostPerAssembly !== 0 ?
+          {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
             <button
               type="button"
               className={'user-btn add-oprn-btn'}

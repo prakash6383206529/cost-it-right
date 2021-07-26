@@ -155,6 +155,20 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr>
                           )}
+                          {viewOverheadData.IsOverheadCombined && (
+                            <tr>
+                              <td>{viewOverheadData.OverheadApplicability}</td>
+                              <td>
+                                {viewOverheadData.OverheadPercentage ? viewOverheadData.OverheadPercentage : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedCost ? viewOverheadData.OverheadCombinedCost : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedTotalCost ? viewOverheadData.OverheadCombinedTotalCost : "-"}
+                              </td>
+                            </tr>
+                          )}
                         </>
                       )}
                       {Object.keys(viewOverheadData).length === 0 && (
@@ -250,6 +264,22 @@ function ViewOverheadProfit(props) {
                                 </td>
                               </tr>
                             )}
+                            {viewProfitData.IsProfitCombined && (
+                              <tr>
+                                <td>{viewProfitData.ProfitApplicability}</td>
+                                <td>
+                                  {viewProfitData.ProfitPercentage ? viewProfitData.ProfitPercentage : "-"}
+                                </td>
+                                <td>
+                                  {viewProfitData.ProfitCombinedCost ? viewProfitData.ProfitCombinedCost : "-"}
+                                </td>
+                                <td>
+                                  {viewProfitData.ProfitCombinedTotalCost
+                                    ? viewProfitData.ProfitCombinedTotalCost
+                                    : "-"}
+                                </td>
+                              </tr>
+                            )}
                           </>
                         )}
                         {Object.keys(viewProfitData).length === 0 && (
@@ -278,10 +308,9 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
-                          <th>{` Applicability`}</th>
-                          <th>{`Rejection(%)`}</th>
+                          <th>{`Applicability`}</th>
+                          <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost(Applicability)`}</th>
-
                           <th>{`Net Rejection`}</th>
                         </tr>
                       </thead>

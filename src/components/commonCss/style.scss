@@ -674,6 +674,21 @@ button.add-btn {
   margin-top: 0;
 }
 
+// dashboard css start
+.graph-box{
+    background-color: #fff;
+    border: 1px solid rgba(37, 107, 209, 0.1);
+    padding: 25px;
+    box-shadow: 0 0 10px rgba(37, 107, 209, 0.15);
+    margin-bottom: 30px;
+    .graph-container{
+      canvas{
+        max-height: 280px !important;
+      }
+    }
+}
+// dashboard css end
+
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
   color: #495057;
@@ -816,7 +831,9 @@ input.form-control{
 .textAreaWithBorder .inputbox {
   border: none;
 }
-
+.textAreaWithBorder.inputbox {
+  border: none;
+}
 .textAreaWithBorder textarea.form-control {
   border: 1px solid #ccc;
   padding: 5px;
@@ -849,6 +866,16 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
+
+.Balance {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/balance.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
+
 .edit-details-btn {
   width:25px;
   height: 13px;
@@ -862,7 +889,7 @@ input.form-control{
 .Delete {
   width: 32px;
   height: 32px;
-  background: transparent url("../../assests/images/Group 8857.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group-8857.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
@@ -870,7 +897,7 @@ input.form-control{
 .View {
   width: 32px;
   height: 32px;
-  background: transparent url("../../assests/images/Group 8858.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/Group-8858.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
@@ -911,6 +938,7 @@ input.form-control{
 }
 
 .Add,
+.Balance,
 .Edit,
 .Delete,
 .View,
@@ -919,6 +947,7 @@ input.form-control{
 .Activate,
 .Create,
 .Copy,
+.SOB,
 .Approve,
 .Run,
 .Save,
@@ -1404,9 +1433,62 @@ button.user-btn.pull-right {
       display: none
     }
 }
-.main-section .content-page .filter-block .css-yk16xz-control,
-.main-section .content-page .filter-block .css-1pahdxg-control
-{min-height: 32px !important;    height: 32px;}
+
+// filter row in drawer or filter row normal start
+.filter-row{
+  .filter-block {
+    .flex-fill,
+    .flex-fills {
+      padding-right: 10px;
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    h5 {
+      color: $headinlightgblack;
+      font-size: $font-16;
+      position: $positio-relative;
+      padding: 7px 15px 7px 10px;
+    }
+
+    .css-yk16xz-control,
+    .css-1pahdxg-control {
+      border: 1px solid #c2cbe8 !important;
+      color: #a4abc5;
+      min-height: 32px !important;
+      font-size: $font-14;
+      border-color: #c2cbe8;
+      height: 32px;
+    }
+
+    .css-tlfecz-indicatorContainer,.css-1gtu0rj-indicatorContainer{
+      padding: 5px;
+      padding-left: 0px;
+    }
+
+    .css-1hwfws3 {
+      padding: 0px 8px;
+    }
+  }
+}
+// filter row in drawer or filter row normal End
+
+.main-section {
+  .content-page {
+    .filter-block{
+      .css-yk16xz-control,.css-1pahdxg-control{
+        min-height: 32px !important;
+        height: 32px;
+      }
+    }
+  }
+}
+
+
+
+
 .drawer-edit{     margin-top: 31px;
   margin-left: 5px;
 }
@@ -1464,6 +1546,13 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
+.SOB {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/sob-icon.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
 .Run {
   width: 32px;
   height: 32px;
@@ -1498,10 +1587,18 @@ button.user-btn.pull-right {
 .react-bs-table-container.client-table {
   position: relative;
 }
-
-.client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-8 {
-  display: none;
+.hidepage-size{
+  .react-bs-table-container{
+    .react-bs-table-pagination{
+      .row{
+        .col-md-6:nth-child(1){
+          display: none;
+        }
+      }
+    }
+  }
 }
+
 .download-btn{
   img{margin-right: 8px;}
   span{
@@ -1775,6 +1872,25 @@ $roboto: "Roboto", sans-serif;
 	}
 }
 
+// drawer-full-top start
+.MuiDrawer-root.drawer-full-top{
+   .MuiDrawer-paper{
+    margin-top: 60px;
+    left: 0;
+    .container{
+      max-width: 100%;
+      .drawer-wrapper{
+        width: 100%;
+      }
+    }
+   }
+   .react-bs-container-body{
+     min-height: unset !important;
+   }
+}
+// drawer-full-top end
+
+
 body {
 	.icon-small-primary {
 		width: 25px;
@@ -1828,9 +1944,39 @@ body {
 	margin: 1px;
 	font-weight: 400;
 }
+.arrow-ico {
+  width: 12px;
+  height: 12px;
+  &.arrow-green{
+    filter: invert(38%) sepia(18%) saturate(1338%) hue-rotate(85deg) brightness(97%) contrast(83%);
+  }
+  &.arrow-red{
+    filter: invert(45%) sepia(44%) saturate(2855%) hue-rotate(320deg) brightness(106%) contrast(98%);
+  }
+}
 // =================Costing Approval=========================
 
 // =================approval-summary=========================
+.approval-listing-page{
+  .react-bs-table-container {
+    th,td{
+      >input[type=checkbox]{
+        min-width: 12px;
+      }
+    }
+    .react-bs-container-body{
+      tr{
+        td{
+          >div{
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+}
 .card-border {
 	border: 1px solid #C2CBE8;
 	position: relative;
@@ -2202,6 +2348,7 @@ html {
         &:last-child {
           width: 255px;
           padding-left: 15px;
+          min-width: 175px;
         }
         &:nth-child(1) {
           min-width: 90px;
@@ -2223,7 +2370,7 @@ html {
 			}
     }
     .flex-fill.sliderange{
-      min-width: 195px;
+      min-width: 280px;
       .input-range{
         margin-top: 7px;
       }
@@ -2297,7 +2444,7 @@ html {
       left: -7px;
       font-family: $roboto !important;
       font-size: 10px;
-      top: -27px;
+      top: -30px;
       color: #A4ABC5;
     }
   }
@@ -2308,19 +2455,25 @@ html {
 		&:nth-child(3) {
 			right: 0px;
 			.input-range__label--value {
-				right: -15px;
+				right:auto;
 				font-size: 10px;
+        left: calc(100% - 7px);
+        display: inline-block;
+        width: 33px;
+        white-space: break-spaces;
+        word-break: break-word;
+        line-height: 9px;
 			}
 		}
 		&:nth-child(2) {
 			.input-range__label--value {
         right: 0px;
 				span {
-          right: -8px;
+          right: 15px;
           color: #3D4465;
           font-family: "Roboto", sans-serif;;
           font-size: 10px;
-          top: -12px;
+          top: -5px;
           &:after{
             content: "-";
             right: -5px;
@@ -2711,9 +2864,9 @@ button:disabled{pointer-events: none;}
 }
 .no-filter-row{
   height: 0.25rem;
-  margin: 0px !important;
+  // margin: 0px !important;
   .search-user-block{
-    bottom: -32px;
+    bottom: -31px;
   }
 }
 .table-mt-0{
@@ -2767,7 +2920,7 @@ button:disabled{pointer-events: none;}
 .react-bs-table-container {
   th,td{
     >input[type=checkbox]{
-      min-width: 18px;
+      min-width: 24px;
     }
   }
   .react-bs-table-search-form{
@@ -2807,18 +2960,38 @@ button:disabled{pointer-events: none;}
 }
 
 .show-table-btn{
+  &.blue-before-inside{
+    .react-bs-table-tool-bar{
+      .col-lg-8{
+        z-index: 12;
+      }
+    }  
+  }
+
   .react-bs-table-tool-bar{
     .col-lg-8{
       display: block;
-      max-width: 160px;
+      max-width: 130px;
+      padding-left: 0px;
       order: 2;
+      position: absolute;
+      right: 0;
+      text-align: right;
+      z-index: 2;
       .btn-success{
+        margin-top: -1px;
+        height: 32px;
         background-color: #256bd1;
         border-color: #256bd1;
+        text-transform: uppercase;
+        font-weight: 500;
         &:hover,
         &:not(.disabled):active:focus {
           background-color: #1d59af;
         }
+      }
+      .btn-success.focus, .btn-success:focus,.btn-success:not(:disabled):not(.disabled).active:focus, .btn-success:not(:disabled):not(.disabled):active:focus, .show>.btn-success.dropdown-toggle:focus {
+        box-shadow: none;
       }
     }
     .col-lg-4{
@@ -2826,6 +2999,9 @@ button:disabled{pointer-events: none;}
       max-width: 245px;
       padding-right: 0;
     }
+  }
+  .search-user-block{
+    padding-right: 130px !important;
   }
 }
 
@@ -2868,12 +3044,12 @@ button:disabled{pointer-events: none;}
   }
 }
 
-.disabled-button,button:disabled {
+.disabled-button,button:disabled,.approval-btn:disabled {
   background-color: #e6e6e6 !important;
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus,.check-icon{
+  .plus,.check-icon,>img{
     filter: brightness(0.8) !important;
   }
   .cross-icon{
@@ -2953,11 +3129,11 @@ opacity: 0.5;
 // ========error page =============
 .error-page{
   .blue-box{
-      padding: 30px;
+      padding: 0;
       .content-page {
       width: 100%;
       .middleContainer{
-        min-height: calc(100vh - 96px);
+        min-height: calc(100vh - 36px);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -3586,6 +3762,69 @@ body{
     }
   }
 }
+
+.accordian-table-with-arrow,.accordian-table-with-arrow.table.cr-brdr-main{
+  border: none;
+  thead{
+    tr{
+      th{
+        border: none;
+        font-weight: bold;
+      }
+    }
+  }
+  tbody{
+    position: relative;
+    border-bottom: 4px solid #fff;
+    &:before{
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      border-top: 1px solid #C2CBE8;
+      content: "";
+      bottom: -2px;
+    }
+    tr{
+      td{
+        border-top: 1px solid #C2CBE8;
+        border-bottom: 1px solid #C2CBE8;
+        &:first-child{
+          border-left: 1px solid #C2CBE8;
+        }
+        &:last-child{
+          border-right: 1px solid #C2CBE8;
+        }
+        span{
+          display: inline-block;
+          width: 100%;
+        }
+      }
+      &.accordian-with-arrow,&.accordian-content{
+        .Close {
+          position: absolute;
+          left: 0px;
+          top: 0;
+          bottom: 0;
+          height: auto;
+          width: 15px;
+          background: transparent url(/static/media/caret-down.61c2a710.svg) 0% 0% no-repeat padding-box;
+          opacity: 1;
+          border: none;
+          background-position: center;
+        }
+        td:first-child{
+          span{
+            display: inline-block;
+            padding-left: 25px;
+            position: relative;
+          }
+        }
+      }
+    }
+  }
+}
+
 // radio-box standard radio buttons
 .radio-box{
   position: relative;
@@ -3634,8 +3873,12 @@ body{
       background-color: #256bd1;
     }
   }
-  input:disabled ~ span{
-    &:before,&:after{opacity: 0.5;}
+  input:disabled ~ span{opacity: 0.5;}
+  input[type="radio"]:disabled{
+    cursor: not-allowed;
+    & ~ span{
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -3853,7 +4096,15 @@ body{
   border-top-color: rgb(59, 59, 59);
 }
 // simulation page
+.container-fluid{
+  .container-fluid{
+    padding: 0;
+  }
+}
 .simulation-page{
+  .empty-table-paecholder{
+    min-height: calc(100vh - 350px);
+  }
   .filter-row-large{
     z-index: 11;
   }
@@ -3883,6 +4134,67 @@ body{
   }
 }
 // simulation page
+
+// simulation history pages start
+.smh-approval-summary-page{
+  .react-bs-container-body{
+    min-height: unset !important;
+    tr{
+      td{
+        >div{
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+  .costing-summary-table{
+    thead{
+      .main-row{
+        th{width: 25%;min-width: unset;}
+      }
+    }
+    .background-light-blue{
+      th,td{
+        >span{
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+.table,:not(.table){
+  .green-row{
+    border-top: 1.3px solid #4DC771;
+    th,td{
+    background-color: #DBF4E2;
+    border-color: #4DC771;
+    color: #4DC771;
+    }
+  }
+  .red-row{
+    border-top: 1.3px solid #FC5774;
+    th,td{
+    background-color: #FEDCE2;
+    border-color: #FC5774;
+    color: #FC5774;
+    }
+  }
+}
+
+@-moz-document url-prefix() {
+  .table,:not(.table){
+    .green-row{
+      border-top: 2px solid #4DC771;
+    }
+    .red-row{
+      border-top: 2px solid #FC5774;
+    }
+  }
+}
+// simulation history page end
 
 // spacing css
 .mt9{margin-top: 9px;}
@@ -3929,11 +4241,11 @@ body{
       }
     }
   }
-  th:nth-child(11),th:nth-child(12),th:nth-child(13){
+  th:nth-child(9),th:nth-child(10),th:nth-child(13){
     min-width: 220px;
     width: 220px;
   }
-  th:nth-child(9),th:nth-child(10),th:nth-child(14){
+  th:nth-child(11),th:nth-child(12),th:nth-child(14){
     min-width: 110px;
     width: 110px;
   }
@@ -3942,10 +4254,44 @@ body{
     width: 110px;
   }
 }
-
+.weight-calculator-headings{
+  font-size: 15px;
+  div.d-inline-block{
+    margin-right: 18px;
+    &:last-child{
+      margin-right: 0px;
+    }
+  }
+}
 
 // responsive media query start
 @media(max-width:1600px){
+
+  .content-page {
+    .filter-block {
+      .flex-fill.sliderange{
+        min-width: 200px;
+        .input-range{
+          margin-top: 7px;
+        }
+      }
+
+      .rm-domestic-filter,.rm-import-filter{
+        .flex-fill {
+          &:nth-child(2) {
+            width: 20%;
+          }
+          &:nth-child(4) {
+            width: 18%;
+          }
+          &:nth-child(5) {
+            width: 20%;
+          }
+        }
+      }
+    }
+  }
+
   // costing details page only
   .table.cr-brdr-main{font-size: 14px;}
   .table-responsive{
@@ -4053,6 +4399,7 @@ body{
 }// 1600px media query end
 
 @media(max-width:1366px){
+  .notification-dropdown{left: -9rem;}
   .text-warning{font-size: calc(12px * 80 / 100);}
   .warning-row{
     img{
@@ -4071,7 +4418,6 @@ body{
   // spacing
   .mt9{margin-top: calc(9px * 80 / 100);}
   // spacing
-  
   .form-control,.input-form-control.bg-grey,
   .manageuser .css-yk16xz-control {
     font-size: calc(14px * 80 / 100) !important;
@@ -4109,9 +4455,9 @@ body{
 
   .height152-label{
     .dzu-dropzone{
-      height: auto;
+      height: 135px;
       min-height: 88px;
-      label{height: 88px;}
+      label{height: 120px;}
     }
   }
 
@@ -4159,7 +4505,13 @@ body{
   }
 
   // simulation page
+  .costing-simulation-page{
+    .sf-btn-footer{
+      margin: 0 -27px -12px;
+    }
+  }
   .simulation-page{
+    .empty-table-paecholder{min-height: 314px;}
     .sf-btn-footer{
       margin: 0 -27px -12px;
     }
@@ -4276,6 +4628,8 @@ body{
 
       .Add,
       .Edit,
+      .SOB,
+      .Balance,
       .Delete,
       .View,
       .Download,
@@ -4341,6 +4695,29 @@ body{
         width: auto;
       }
 
+
+      .show-table-btn{
+        .react-bs-table-tool-bar{
+          .col-lg-8{
+            max-width: 112px;
+            .btn-success{
+              margin-top: 0;
+              font-size: calc(14px * 80 / 100);
+              height: calc(32px * 80 / 100);
+            }
+          }
+        }
+        .search-user-block{
+          padding-right: 115px !important;
+        }
+      }
+
+      .no-filter-row .search-user-block{
+        bottom: calc(-32px * 80 / 100);
+      }
+
+
+
       .edit-btn,.btn-danger{
         .cross-icon{
           width: calc(25px * 80 / 100);
@@ -4389,7 +4766,7 @@ body{
               width: calc(20px * 80 / 100);
             }
           }
-
+          
           .rm-domestic-filter,.rm-import-filter{
             .flex-fill {
               &:last-child {
@@ -4398,6 +4775,9 @@ body{
               }
               &:nth-child(1) {
                 min-width: 76px;
+              }
+              &:nth-child(3),&:nth-child(7) {
+                width: 14%;
               }
             }
           }
@@ -4411,7 +4791,7 @@ body{
             }
           }
           .flex-fill.sliderange{
-            min-width: 195px;
+            min-width: 175px;
             .input-range{
               margin-top: 7px;
             }
@@ -4492,7 +4872,7 @@ body{
         font-size: calc(14px * 80 /100);
         height: calc(40px * 80 /100);
       }
-      .content-page .filter-block .css-tlfecz-indicatorContainer{
+      .content-page .filter-block .css-tlfecz-indicatorContainer,.basic-multi-select .css-tlfecz-indicatorContainer{
         padding:calc(5px * 80 / 100) ;
         .css-6q0nyr-Svg{
           height: calc(20px * 80 / 100);
@@ -4546,6 +4926,15 @@ body{
           th,td{
             >input[type=checkbox]{
               min-width: 14px;
+            }
+          }
+        }
+      }
+      .approval-listing-page{
+        .react-bs-table-container {
+          th,td{
+            >input[type=checkbox]{
+              min-width: 21px;
             }
           }
         }
@@ -4664,7 +5053,7 @@ body{
       }
 
       .css-1fhf3k1-control,.css-f0arjc-control{
-        min-height: calc(38px * 80 / 100);
+        min-height: calc(40px * 80 / 100);
       }
 
       .select__value-container--has-value{
@@ -4715,6 +5104,15 @@ body{
      }
      .add-volume-table td .form-control,.login-form .inputbox.input-group .form-control,.form-control, .manageuser .css-yk16xz-control{
        height: calc(40px * 80 / 100);
+     }
+     .basic-multi-select.select--is-disabled{
+      border: none;
+      }
+     .content-page .basic-multi-select .select__control{
+       height: calc(40px * 80 / 100);
+     }
+     .select--is-disabled .css-12jo7m5{
+       font-size: calc(14px * 80 / 100);
      }
      textarea.form-control{
        height: auto;

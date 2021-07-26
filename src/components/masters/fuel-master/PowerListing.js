@@ -14,12 +14,13 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PowerMaster } from '../../../config/constants';
 
 class PowerListing extends Component {
   constructor(props) {
@@ -354,6 +355,19 @@ class PowerListing extends Component {
 
   }
 
+  handleExportCSVButtonClick = (onClick) => {
+    onClick();
+    let products = []
+    products = this.props.powerDataList
+    return products; // must return the data which you want to be exported
+  }
+
+createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+    );
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -365,6 +379,7 @@ class PowerListing extends Component {
       clearSearch: true,
       noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -374,7 +389,7 @@ class PowerListing extends Component {
 
     return (
 
-      <div>
+      <div className="show-table-btn">
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -468,29 +483,32 @@ class PowerListing extends Component {
                           className="fullinput-icon"
                         />
                       </div>
-                      <div className="flex-fill">
-                        <Field
-                          name="VendorPlant"
-                          type="text"
-                          label={""}
-                          component={searchableSelect}
-                          placeholder={"Vendor Plant"}
-                          isClearable={false}
-                          options={this.renderListing("VendorPlant")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.vendorPlant == null ||
-                              this.state.vendorPlant.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={this.handleVendorPlant}
-                          valueDescription={this.state.vendorPlant}
-                          disabled={isEditFlag ? true : false}
-                          className="fullinput-icon"
-                        />
-                      </div>
+                      {
+                        initialConfiguration && initialConfiguration.IsVendorPlantConfigurable &&
+                        <div className="flex-fill">
+                          <Field
+                            name="VendorPlant"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"Vendor Plant"}
+                            isClearable={false}
+                            options={this.renderListing("VendorPlant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.vendorPlant == null ||
+                                this.state.vendorPlant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleVendorPlant}
+                            valueDescription={this.state.vendorPlant}
+                            disabled={isEditFlag ? true : false}
+                            className="fullinput-icon"
+                          />
+                        </div>
+                      }
                     </>
                   )}
                   <div className="flex-fill">
@@ -550,7 +568,8 @@ class PowerListing extends Component {
                 bordered={false}
                 options={options}
                 search
-                // exportCSV
+                exportCSV
+                csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
                 pagination>
@@ -570,7 +589,8 @@ class PowerListing extends Component {
                 bordered={false}
                 options={options}
                 search
-                // exportCSV
+                exportCSV
+                    csvFileName={`${PowerMaster}.csv`}
                 //ignoreSinglePage
                 ref={'table'}
                 pagination>

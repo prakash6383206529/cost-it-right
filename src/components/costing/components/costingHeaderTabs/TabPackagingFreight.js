@@ -6,7 +6,7 @@ import {
   getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData,
   setComponentPackageFreightItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData
 } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import { toastr } from 'react-redux-toastr';
@@ -21,6 +21,7 @@ function TabPackagingFreight(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -39,9 +40,11 @@ function TabPackagingFreight(props) {
   useEffect(() => {
     let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
     let topHeaderData = {
-      NetFreightPackagingCost: TopHeaderValues && checkForNull(TopHeaderValues.NetFreightPackagingCost),
+      NetFreightPackagingCost: TopHeaderValues && TopHeaderValues.NetFreightPackagingCost !== null ? checkForNull(TopHeaderValues.NetFreightPackagingCost) : 0,
     }
-    props.setHeaderCost(topHeaderData)
+    if (props.activeTab === '4') {
+      props.setHeaderCost(topHeaderData)
+    }
   }, [PackageAndFreightTabData]);
 
   /**
@@ -145,11 +148,12 @@ function TabPackagingFreight(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
+      "NetPOPrice": netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
+      "TotalCost": netPOPrice,
       "CostingNumber": costData.CostingNumber,
-      "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+      //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
 

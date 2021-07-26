@@ -17,7 +17,7 @@ import {
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
     ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticSimulation, RMDomesticSimulationTempData,
 } from '../../config/masterData';
-import { checkVendorPlantConfigurable } from "../../helper";
+import { checkVendorPlantConfigurable, getConfigurationKey } from "../../helper";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -33,7 +33,16 @@ class Downloadxls extends React.Component {
         return excelData.filter((el) => {
             if (checkVendorPlantConfigurable() === false) {
                 if (el.value === 'VendorPlant') return false;
+                if (el.value === 'VendorName') return false;
+                if (el.value === 'LabourRate') return false;
+                if (el.value === 'VendorPlantCode') return false;
+                // if (el.value === 'DestinationPlant') return false;
+                // if (el.value === 'DestinationPlantCode') return false;
                 return true;
+            }
+            if (getConfigurationKey().IsDestinationPlantConfigure === false) {
+                if (el.value === 'DestinationPlant') return false;
+                if (el.value === 'DestinationPlantCode') return false;
             }
             return true;
         })
@@ -77,9 +86,9 @@ class Downloadxls extends React.Component {
             case 'RMImport':
                 return this.returnExcelColumn(RMImportZBC, RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(ZBCOperation, ZBCOperationTempData);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(ZBCOperation), ZBCOperationTempData);
             case 'Machine':
-                return this.returnExcelColumn(MachineZBC, MachineZBCTempData);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case 'ZBC_MACHINE_MORE':
                 return this.returnExcelColumn(MHRMoreZBC, MHRMoreZBCTempData);
             case 'BOPDomestic':
@@ -117,9 +126,9 @@ class Downloadxls extends React.Component {
             case 'BOPImport':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(BOP_VBC_IMPORT), BOP_VBC_IMPORT_TempData);
             case 'ActualVolume':
-                return this.returnExcelColumn(VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'BudgetedVolume':
-                return this.returnExcelColumn(VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(VOLUME_BUDGETED_VBC), VOLUME_BUDGETED_VBC_TEMPDATA);
             case 'InterestRate':
                 return this.returnExcelColumn(VBCInterestRate, VBCInterestRateTempData);
             default:
@@ -133,7 +142,7 @@ class Downloadxls extends React.Component {
     */
     returnExcelColumn = (data = [], TempData) => {
         const { fileName, failedData, isFailedFlag } = this.props;
-        console.log("COMING IN EXCEL COLUMN11111111111111111", TempData);
+
         if (isFailedFlag) {
 
             //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
@@ -143,10 +152,10 @@ class Downloadxls extends React.Component {
                 data.push(addObj)
             }
         }
-        console.log("COMING IN EXCEL COLUMN2222222222222222222222222222222222222");
+
 
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} style={ele.style} />)}
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
 

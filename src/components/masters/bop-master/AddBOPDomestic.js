@@ -7,7 +7,7 @@ import {
   maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, applySuperScript
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, } from '../../../actions/Common';
+import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
@@ -25,7 +25,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddBOPDomestic');
@@ -84,6 +84,9 @@ class AddBOPDomestic extends Component {
     this.props.fetchMaterialComboAPI(res => { });
     this.props.getVendorTypeBOPSelectList(() => { })
     this.getDetails()
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
   }
 
   componentDidUpdate(prevProps) {
@@ -182,7 +185,7 @@ class AddBOPDomestic extends Component {
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
-              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
+              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -267,11 +270,11 @@ class AddBOPDomestic extends Component {
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
-        const accept = AcceptableRMUOM.includes(item.Type)
+        const accept = AcceptableBOPUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        let display = this.applySuperScriptFormatter(item.Display)
-        temp.push({ label: display, value: item.Value })
+        // let display = this.applySuperScriptFormatter(item.Display)
+        temp.push({ label: item.Display, value: item.Value })
         return null
       });
       return temp;
@@ -388,7 +391,8 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces))
+    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) //COMMENTED FOR MINDA
+    const NetLandedCost = checkForNull(BasicRate) //THIS IS ONLY FOR MINDA
     this.setState({
       NetLandedCost: NetLandedCost
     })
@@ -521,8 +525,8 @@ class AddBOPDomestic extends Component {
     }
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'DatatoCheck')
+
+
       if (DataToCheck.IsVendor) {
         if (DataToCheck.Source == values.Source && DataToCheck.BasicRate == values.BasicRate && DropdownChanged) {
           this.cancel()
@@ -541,7 +545,7 @@ class AddBOPDomestic extends Component {
       let requestData = {
         BoughtOutPartId: BOPID,
         Source: values.Source,
-        SourceLocation: sourceLocation.value,
+        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
@@ -549,7 +553,8 @@ class AddBOPDomestic extends Component {
         Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
 
@@ -582,7 +587,7 @@ class AddBOPDomestic extends Component {
         Vendor: vendorName.value,
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.NetLandedCost,
@@ -905,17 +910,38 @@ class AddBOPDomestic extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           <Col md="3">
+                            <div className="inputbox date-section form-group">
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              //minDate={moment()}
+                              />
+                            </div>
+                          </Col>
+                          <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, postiveNumber, maxLength10]}
+                              validate={[postiveNumber, maxLength10]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isEditFlag ? true : false}
+                              disabled={false}
                             />
                           </Col>
                           <Col md="3">
@@ -946,49 +972,7 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="3">
-                            <div className="form-group">
-                              {/* <label>
-                                Effective Date */}
-                              {/* <span className="asterisk-required">*</span> */}
-                              {/* </label> */}
-                              <div className="inputbox date-section">
-                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    //e.preventDefault()
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                  disabled={isEditFlag ? true : false}
-                                //minDate={moment()}
-                                />
-                              </div>
-                            </div>
-                          </Col>
+
                         </Row>
 
                         <Row>
@@ -1223,6 +1207,8 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
+  getCityByCountry,
+  getAllCity
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,

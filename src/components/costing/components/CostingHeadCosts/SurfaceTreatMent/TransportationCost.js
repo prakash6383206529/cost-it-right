@@ -52,14 +52,13 @@ function TransportationCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    //setTimeout(() => {
 
     if (props.IsAssemblyCalculation) {
       props.setAssemblyTransportationCost(tempObj, Params, JSON.stringify(tempObj) !== JSON.stringify(OldTransportObj) ? true : false)
     } else {
       props.setTransportationCost(tempObj, Params)
     }
-    //}, 300)
+
   }, [uom, Rate, Quantity, fieldValues]);
 
   useEffect(() => {
@@ -255,8 +254,7 @@ function TransportationCost(props) {
                   rules={{
                     //required: true,
                     pattern: {
-                      value: /^[0-9]*$/i,
-                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                      value: /^\d*\.?\d*$/,
                       message: 'Invalid Number.'
                     },
                   }}

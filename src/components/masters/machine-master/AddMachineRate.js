@@ -6,7 +6,7 @@ import {
   required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
@@ -29,6 +29,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
+import moment from 'moment';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -65,7 +66,8 @@ class AddMachineRate extends Component {
 
       machineFullValue: {},
       DataToChange: [],
-      DropdownChange: true
+      DropdownChange: true,
+      effectiveDate: ''
 
     }
   }
@@ -192,9 +194,11 @@ class AddMachineRate extends Component {
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
-
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
+
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
 
@@ -214,6 +218,7 @@ class AddMachineRate extends Component {
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
 
+
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -227,7 +232,9 @@ class AddMachineRate extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
+              // Description: Data.Description,
               files: Data.Attachements,
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
             }, () => this.setState({ isLoader: false }))
           }, 100)
         }
@@ -500,9 +507,9 @@ class AddMachineRate extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
-    console.log('processName: ', processName);
-    console.log('processGrid: ', processGrid);
-    console.log('UOM: ', UOM);
+
+
+
     const { fieldsObj } = this.props;
     const tempArray = [];
 
@@ -573,6 +580,9 @@ class AddMachineRate extends Component {
     }
 
     let tempData = processGrid[processGridEditIndex];
+    if (MachineRate !== tempData.MachineRate || UOM.value !== tempData.UnitOfMeasurementId || processName.value !== tempData.ProcessId) {
+      this.setState({ DropdownChange: false })
+    }
     tempData = {
       processName: processName.label,
       ProcessId: processName.value,
@@ -589,6 +599,7 @@ class AddMachineRate extends Component {
       UOM: [],
       processGridEditIndex: '',
       isEditIndex: false,
+
     }, () => this.props.change('MachineRate', 0));
   };
 
@@ -619,7 +630,7 @@ class AddMachineRate extends Component {
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
     }, () => this.props.change('MachineRate', tempData.MachineRate))
-    this.setState({ DropdownChange: false })
+    // this.setState({ DropdownChange: false })
   }
 
   /**
@@ -768,8 +779,9 @@ class AddMachineRate extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange } = this.state;
-    const a = this.state.Data
+      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
+    console.log('DropdownChange: ', DropdownChange);
+
 
     if (isViewFlag) {
       this.cancel();
@@ -787,11 +799,11 @@ class AddMachineRate extends Component {
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
-      if (DropdownChange) {
 
-      }
+
+      // if (DropdownChange) {
+
+      // }
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
@@ -804,7 +816,6 @@ class AddMachineRate extends Component {
         })
 
       } else {
-
 
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
@@ -824,9 +835,14 @@ class AddMachineRate extends Component {
           VendorPlant: vendorPlantArray,
           Remark: remarks,
           Attachements: updatedFiles,
-          IsForcefulUpdated: true
+          IsForcefulUpdated: true,
+          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         }
         if (isEditFlag) {
+          if (DropdownChange) {
+            this.cancel();
+            return false
+          }
           const toastrConfirmOptions = {
             onOk: () => {
               this.props.reset()
@@ -864,8 +880,8 @@ class AddMachineRate extends Component {
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       }
-
       this.props.reset()
       this.props.createMachine(formData, (res) => {
         if (res.data.Result) {
@@ -873,6 +889,7 @@ class AddMachineRate extends Component {
           this.cancel();
         }
       });
+
     }
   }
 
@@ -882,17 +899,19 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-    console.log('data: ', data);
+
     this.props.getVendorListByVendorType(data.IsVendor, () => { })
     if (data.IsVendor) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
+
+    this.props.change('EffectiveDate', moment(data.EffectiveDate)._isValid ? moment(data.EffectiveDate)._d : '')
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
       let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
-      console.log('technologyArray: ', technologyArray);
+
 
       let MachineProcessArray = data && data.MachineProcessRates.map(el => {
         return {
@@ -931,6 +950,8 @@ class AddMachineRate extends Component {
       }, () => this.setState({ isLoader: false }))
     }, 100)
   }
+
+
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1010,7 +1031,7 @@ class AddMachineRate extends Component {
                             component={searchableSelect}
                             mendatory={true}
                             required
-                            validate={[required]}
+                            validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : [])}
                             className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
                             disabled={this.state.isViewFlag ? true : false}
@@ -1052,12 +1073,12 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>}
-                        {!this.state.IsVendor &&
+                        {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
                           <Col md="3">
                             <Field
                               name="Plant"
                               type="text"
-                              label="Plant"
+                              label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                               component={searchableSelect}
                               placeholder={'Select'}
                               options={this.renderListing('plant')}
@@ -1068,7 +1089,8 @@ class AddMachineRate extends Component {
                               valueDescription={this.state.selectedPlants}
                               disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
                             />
-                          </Col>}
+                          </Col>)}
+
                         <Col md="3">
                           <Field
                             label={`Machine No.`}
@@ -1094,7 +1116,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1129,7 +1151,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1148,12 +1170,34 @@ class AddMachineRate extends Component {
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
                             required={false}
-                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
                         </Col>
-
+                        <Col md="3">
+                          <div className="form-group">
+                            <div className="inputbox date-section">
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                disabled={false}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </div>
+                          </div>
+                        </Col>
 
                         {!this.state.IsVendor &&
                           <Col md="12">

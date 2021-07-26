@@ -39,8 +39,15 @@ class AddZBCPlant extends Component {
   componentDidMount() {
     this.props.fetchCountryDataAPI(() => { })
     this.props.getComapanySelectList(() => { })
+    // this.props.fetchStateDataAPI(0, () => { })
+    // this.props.fetchCityDataAPI(0, () => { })
     this.getDetails()
 
+  }
+
+  UNSAFE_componentWillMount() {
+    this.props.fetchStateDataAPI(0, () => { })
+    this.props.fetchCityDataAPI(0, () => { })
   }
 
   /**
@@ -221,7 +228,7 @@ class AddZBCPlant extends Component {
       if (DropdownChanged && DataToCheck.PlantName == values.PlantName && DataToCheck.PhoneNumber == values.PhoneNumber &&
         DataToCheck.Extension == values.Extension && DataToCheck.AddressLine1 == values.AddressLine1 &&
         DataToCheck.AddressLine2 == values.AddressLine2 && DataToCheck.ZipCode == values.ZipCode) {
-        console.log('chaNGES')
+
         this.toggleDrawer('')
         return false
       }
@@ -352,7 +359,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15]}
+                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength15]}
                       component={renderText}
                       required={true}
                       className=""

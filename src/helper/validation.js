@@ -249,7 +249,7 @@ export const getPlantCode = (name) => {
 }
 
 export const applySuperScript = (cell) => {
-    if (cell && cell !== '') { 
+    if (cell && cell !== '') {
         const capIndex = cell && cell.indexOf('^');
         const superNumber = cell.substring(capIndex + 1, capIndex + 2);
         const capWithNumber = cell.substring(capIndex, capIndex + 2);
@@ -316,7 +316,7 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return moment((excelDate - (25567 + 2)) * 86400 * 1000).format('DD-MM-YYYY');
+    return moment((excelDate - (25567 + 2)) * 86400 * 1000).local().format('YYYY-MM-DD HH:mm:ss');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
@@ -326,6 +326,15 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
         return false
     }
     return true
+}
+
+//CHECK IS COSTING EFFECTIVE DATE SELECTED
+export const CheckIsCostingDateSelected = (costingDate) => {
+    const IsSelected = moment(costingDate)._isValid ? true : false;
+    if (!IsSelected) {
+        toastr.warning('Please select Costing effective date.')
+    }
+    return !IsSelected;
 }
 
 

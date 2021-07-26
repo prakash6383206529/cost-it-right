@@ -2,16 +2,21 @@ import React, { useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch } from 'react-redux'
-import { pushedApprovedCosting, createRawMaterialSAP } from '../../actions/Approval'
+import { pushedApprovedCosting, createRawMaterialSAP, approvalPushedOnSap } from '../../actions/Approval'
 import { loggedInUserId } from '../../../../helper'
 import { useForm, Controller } from "react-hook-form";
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { materialGroup, purchasingGroup } from '../../../../config/masterData';
+import { useState } from 'react'
+import { INR } from '../../../../config/constants'
+import { toastr } from 'react-redux-toastr'
+import moment from 'moment'
 
 function PushButtonDrawer(props) {
 
-  const { approvalData, dataSend } = props
-  console.log('dataSend: ', dataSend);
+  const { approvalData, dataSend, costingList, isSimulation, simulationDetail } = props
+
+
   const dispatch = useDispatch()
   const { register, handleSubmit, errors, control } = useForm();
   const [plant, setPlant] = useState([]);
@@ -40,55 +45,125 @@ function PushButtonDrawer(props) {
   console.log(pushdata, 'pppppppp')
 
   const closeDrawerAfterPush = () => {
-    let obj = {
-      LoggedInUserId: loggedInUserId(),
-      CostingId: approvalData[0].CostingId
-    }
-    dispatch(pushedApprovedCosting(obj, res => {
-      if (res.data.Result) {
-        props.closeDrawer('', 'Push')
-      }
-    }))
-  }
-  const onSubmit = data => {
-    toggleDrawer('')
+
   }
 
   /**
-  * @method renderListing
-  * @description RENDER LISTING IN DROPDOWN
-  */
+* @method renderListing
+* @description RENDER LISTING IN DROPDOWN
+*/
   const renderListing = (label) => {
+    let tempArr = []
     if (label === 'MaterialGroup') {
-      return materialGroup;
+      const material = materialGroup;
+      material && material.map(item => {
+        tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+        return null
+      })
     }
     if (label === 'PurchasingGroup') {
-      return purchasingGroup;
+      const purchase = purchasingGroup;
+      purchase && purchase.map(item => {
+        tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+        return null
+      })
     }
+    return tempArr
   }
 
   /**
-  * @const handleMaterialChange
-  */
+ * @const handleMaterialChange
+ */
   const handleMaterialChange = (newValue) => {
     if (newValue && newValue !== '') {
       setMaterialGroup(newValue)
-      } else {
-        setMaterialGroup([])
+    } else {
+      setMaterialGroup([])
     }
   }
 
-    /**
-  * @const handlePurchasingChange
-  */
-     const handlePurchasingChange = (newValue) => {
-      if (newValue && newValue !== '') {
-        setPurchasingGroup(newValue)
-        } else {
-          setPurchasingGroup([])
+  /**
+* @const handlePurchasingChange
+*/
+  const handlePurchasingChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setPurchasingGroup(newValue)
+    } else {
+      setPurchasingGroup([])
+    }
+  }
+  const onSubmit = () => {
+    if (isSimulation) {
+      let temp = []
+      costingList && costingList.map(item => {
+        const vendor = item.VendorName.split('(')[1]
+        temp.push({
+          CostingId: item.CostingId, effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: item.NewPOPrice, plant: item.PlantCode ? item.PlantCode : '1511',
+          currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW',
+        })
+      })
+      let simObj = {
+        LoggedInUserId: loggedInUserId(),
+        Request: temp
       }
+      dispatch(approvalPushedOnSap(simObj, res => {
+        if (res && res.status && (res.status === 200 || res.status === 204)) {
+          toastr.success('Approval pushed successfully.')
+        }
+        props.closeDrawer('', 'Push')
+      }))
+    } else {
+
+      let pushdata = {
+        effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+        vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+        materialNumber: dataSend[1].PartNumber,
+        netPrice: dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : '',
+        plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+        currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+        materialGroup: MaterialGroup.label.split('(')[0],
+        taxCode: 'YW',
+        basicUOM: "NO",
+        purchasingGroup: PurchasingGroup.label.split('(')[0],
+        purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+        CostingId: approvalData[0].CostingId,
+        // effectiveDate: '11/30/2021',
+        // vendorCode: '203670',
+        // materialNumber: 'S07004-003A0Y',
+        // materialGroup: 'M089',
+        // taxCode: 'YW',
+        // plant: '1401',
+        // netPrice: '30.00',
+        // currencyKey: 'INR',
+        // basicUOM: 'NO',
+        // purchasingOrg: 'MRPL',
+        // purchasingGroup: 'O02'
+
+      }
+      let obj = {
+        LoggedInUserId: loggedInUserId(),
+        Request: [pushdata]
+      }
+      dispatch(approvalPushedOnSap(obj, res => {
+        if (res && res.status && (res.status === 200 || res.status === 204)) {
+          toastr.success('Approval pushed successfully.')
+        }
+        props.closeDrawer('', 'Push')
+      }))
     }
 
+
+
+    // dispatch(pushedApprovedCosting(obj, res => {
+    //   if (res.data.Result) {
+    //     dispatch(createRawMaterialSAP(pushdata, res => {
+    //       if (res.data.Result) {
+    //         props.closeDrawer('', 'Push')
+    //       }
+    //     }))
+    //   }
+    // }))
+  }
   return (
     <>
       <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen}
@@ -121,7 +196,7 @@ function PushButtonDrawer(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={""}
+                    // defaultValue={dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''}         // need to do once data started coming
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.CompanyCode}
@@ -188,7 +263,7 @@ function PushButtonDrawer(props) {
                   <button
                     type="button"
                     className="submit-button mr5 save-btn"
-                    onClick={closeDrawerAfterPush}
+                    onClick={onSubmit}
                   >
                     <div className={'check-icon'}>
                       <img

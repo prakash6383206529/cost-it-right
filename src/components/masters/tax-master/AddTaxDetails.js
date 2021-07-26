@@ -52,7 +52,7 @@ class AddTaxDetails extends Component {
               this.setState({
                 country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
                 effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-              }, ()=> this.setState({ isLoader: false })
+              }, () => this.setState({ isLoader: false })
               )
             }, 500)
           }
@@ -152,11 +152,11 @@ class AddTaxDetails extends Component {
 
     /** Update detail of TAX  */
     if (this.props.isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'datatocheck')
+
+
 
       if (DataToCheck.TaxName == values.TaxName && DataToCheck.Rate == values.Rate && DropdownChanged) {
-        console.log('chaNGES')
+
         this.toggleDrawer('')
         return false
       }
@@ -170,7 +170,7 @@ class AddTaxDetails extends Component {
         TaxName: values.TaxName,
         CountryId: country.value,
         Rate: values.Rate,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
 
@@ -188,7 +188,7 @@ class AddTaxDetails extends Component {
         TaxName: values.TaxName,
         CountryId: country.value,
         Rate: values.Rate,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
       this.props.reset()

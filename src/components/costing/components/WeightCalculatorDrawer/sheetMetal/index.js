@@ -1,23 +1,19 @@
 import React, { Fragment, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Container, } from 'reactstrap'
-import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import classnames from 'classnames'
-import Drawer from '@material-ui/core/Drawer'
 import Pipe from './Pipe'
-import Plate from './Plate'
-import Bracket from './Bracket'
 import SectionL from './SectionL'
 import SectionC from './SectionC'
 import SectionZ from './SectionZ'
 import Coil from './Coil'
-import { toastr } from 'react-redux-toastr'
 import Sheet from './Sheet'
 
 function WeightCalculator(props) {
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const { rmRowData } = props
+
 
   const getTabno = (layout) => {
     switch (layout) {
@@ -76,7 +72,7 @@ function WeightCalculator(props) {
                   toggle('1')
                 }}
                 //  disabled={rmRowData.WeightCalculatorRequest.LayoutType && rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
-                disabled={rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
               >
                 Pipe
               </NavLink>
@@ -87,7 +83,7 @@ function WeightCalculator(props) {
                 onClick={() => {
                   toggle('2')
                 }}
-                disabled={rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
               >
                 Coil
               </NavLink>
@@ -98,7 +94,7 @@ function WeightCalculator(props) {
                 onClick={() => {
                   toggle('3')
                 }}
-                disabled={rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
               >
                 Sheet
               </NavLink>

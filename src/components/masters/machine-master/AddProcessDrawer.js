@@ -183,7 +183,7 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
 

@@ -158,10 +158,10 @@ class SideBar extends Component {
   * @description Used to set left menu and Redirect to first menu.
   */
   SetMenu = (ModuleId) => {
-    if (ModuleId !== reactLocalStorage.get("ModuleId")) {
+    if (ModuleId !== reactLocalStorage.get("MenuModuleId")) {
       this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
     }
-    reactLocalStorage.set("ModuleId", ModuleId);
+    reactLocalStorage.set("MenuModuleId", ModuleId);
   };
 
   /**
@@ -219,15 +219,15 @@ class SideBar extends Component {
           return (
             <>
               <li className="nav-item dropdown"
-                onMouseOver={(e) => {
-                  //e.stopPropagation()
-                  this.SetMenu(el.ModuleId)
-                }}
+              // onMouseOver={(e) => {
+              //   //e.stopPropagation()
+              //   this.SetMenu(el.ModuleId)
+              // }}
               >
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  //   onMouseOver={() => this.setLeftMenu(el.ModuleId)}
+                  onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -253,10 +253,10 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
-                              onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
@@ -304,12 +304,11 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown">
+              <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
                 <Link
                   key={i}
-                  className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -333,32 +332,15 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
-                              onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
                         )
-                        // return (
-                        //   <li key={i}>
-                        //     <Link
-                        //       className="dropdown-item"
-                        //       //     onClick={this.setLeftMenuAccToMenu(menu.NavigationURL)}
-                        //       to={{
-                        //         pathname: menu.NavigationURL,
-                        //         state: {
-                        //           ModuleId: menu.PageId,
-                        //           PageName: menu.PageName,
-                        //           PageURL: menu.NavigationURL,
-                        //         },
-                        //       }}
-                        //     >
-                        //       - {menu.PageName}
-                        //     </Link>
-                        //   </li>
-                        // )
+
                       })
                     }
                   </ul>
@@ -421,66 +403,51 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li className="nav-item dropdown">
-              <Link
-                key={i}
-                isActive={location && location.pathname === '/costing' ? true : false}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-                onClick={() => this.setLeftMenu(el.ModuleId)}
-                onMouseOver={() => this.SetMenu(el.ModuleId)}
-                to={{
-                  pathname: "/costing",
-                  state: {
-                    ModuleId: el.ModuleId,
-                    PageName: "Technology",
-                    PageURL: "/costing",
-                  },
-                }}
-              >
-                <img
-                  className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
-                  alt={module + " icon"}
-                />
-                <span>Costing </span>
-              </Link>
-              <div className="dropdown-menu sub-menu">
-                <ul>
-                  {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
-                  {
-                    menuData && menuData.map((item, i) => {
-                      if (item.Sequence !== 0) return false
-                      return (
-                        <li key={i} className={`mb5`}>
-                          <Link
-                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
-                            to={{
-                              pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
-                            }}
-                          >{item.PageName}</Link>
-                        </li>
-                      )
-                    })
-                  }
-                  {/* <li>
-                    <Link
-                      className="dropdown-item "
-                      to={{
-                        pathname: "/approval-listing",
-                        state: {
-                          ModuleId: 1,
-                          PageName: "Costing",
-                          PageURL: "/approval-listing",
-                        },
-                      }}
-                    >
-                      - Approval
-                  </Link>
-                  </li> */}
-                </ul>
-              </div>
-            </li>
+            <>
+              <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
+                <Link
+                  key={i}
+                  // isActive={location && location.pathname === '/costing' ? true : false}
+                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  onClick={() => this.setLeftMenu(el.ModuleId)}
+                  to={{
+                    pathname: el.LandingPageURL,
+                    state: {
+                      ModuleId: el.ModuleId,
+                      PageName: "Costing",
+                      PageURL: el.LandingPageURL,
+                    },
+                  }}
+                >
+                  <img
+                    className=""
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
+                    alt={module + " icon"}
+                  />
+                  <span>Costing </span>
+                </Link>
+                <div className="dropdown-menu sub-menu">
+                  <ul>
+                    {
+                      menuData && menuData.map((item, i) => {
+                        if (item.Sequence !== 0) return false
+                        return (
+                          <li key={i} className={`mb5`}>
+                            <Link
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
+                              to={{
+                                pathname: item.NavigationURL,
+                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              }}
+                            >{item.PageName}</Link>
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
+                </div>
+              </li>
+            </>
           );
         }
         return null
@@ -505,8 +472,8 @@ class SideBar extends Component {
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  // pathname: el.LandingPageURL, //COMMENT FOR NOW
-                  pathname: '/simulation',
+                  pathname: el.LandingPageURL, //COMMENT FOR NOW
+                  // pathname: '/simulation',
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
@@ -530,10 +497,10 @@ class SideBar extends Component {
                       return (
                         <li key={i} className={`mb5`}>
                           <Link
-                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                             }}
                           >{item.PageName}</Link>
                         </li>
@@ -668,20 +635,11 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0"              >
-                <img
-                  src={require("../../assests/images/CIRlogo.svg")}
-                  alt="Cost It Right"
-                  height="40"
-                />
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
+                <img src={require("../../assests/images/logo/company-logo.png")} alt="Minda" height="40" />
               </a>
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo"              >
-                <img
-                  // src={require("../../assests/images/sipl-logo.svg")}
-                  src={require("../../assests/images/sipl-logo.svg")}
-                  alt="Cost It Right"
-                  height="40"
-                />
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
+                <img src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" height="40" />
               </a>
               <button
                 className="navbar-toggler p-0 border-0"

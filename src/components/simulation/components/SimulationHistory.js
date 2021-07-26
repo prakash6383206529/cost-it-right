@@ -13,8 +13,6 @@ import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getSimulationHistory } from '../actions/History'
 
-
-
 function SimulationHistory(props) {
 
     const simulationHistory = useSelector(state => state.history.simulationHistory)
@@ -32,16 +30,8 @@ function SimulationHistory(props) {
     }
 
     const linkableFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <Fragment>
-                <div
-                    onClick={() => { }} className={'link'}>{cell}
-                </div>
-            </Fragment>
-        )
+        return <div onClick={() => { }} className={'link'}>{cell}</div>
     }
-
-
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
@@ -103,7 +93,7 @@ function SimulationHistory(props) {
         <div className="container-fluid simulation-history-page">
             <Row>
                 <Col sm="12" >
-                    <h1 className="mb-4">{`Simulation History`}</h1>
+                    <h1 className="mb-4">{`Simulation History 002`}</h1>
                 </Col>
             </Row>
             <BootstrapTable

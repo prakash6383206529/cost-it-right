@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
@@ -215,8 +215,8 @@ class AddIndivisualPart extends Component {
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToCheck, 'datatocheck')
+
+
       if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
         DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
         DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
@@ -237,7 +237,7 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Remark: values.Remark,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true
@@ -273,7 +273,7 @@ class AddIndivisualPart extends Component {
         PartName: values.PartName,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -382,9 +382,9 @@ class AddIndivisualPart extends Component {
                               name={"Description"}
                               type="text"
                               placeholder={""}
-                              validate={[required, maxLength80, checkWhiteSpaces]}
+                              validate={[maxLength80, checkWhiteSpaces]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               className=""
                               customClassName={"withBorder"}
                             />
@@ -487,7 +487,7 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
                                 //minDate={moment()}
                                 />
 

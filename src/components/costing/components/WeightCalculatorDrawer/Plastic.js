@@ -1,31 +1,58 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useContext, useEffect, Fragment } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
+import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
+import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
+import { saveRawMaterialCalciData } from '../../actions/CostWorking'
+import { KG } from '../../../../config/constants'
+import { toastr } from 'react-redux-toastr'
 
 function Plastic(props) {
-  const trimValue = getConfigurationKey()
-  const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const { item, rmRowData } = props
+  const { CostingPartDetails } = item
+  const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
+
+  let totalRM
+  //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
+  if (IsApplyMasterBatch) {
+    const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
+    const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
+    totalRM = RMRatePlusMasterBatchRate
+  } else {
+    totalRM = Number(rmRowData.RMRate)
+  }
+
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+  const costData = useContext(costingInfoContext)
+  const dispatch = useDispatch()
 
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
-    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishedWeight !== undefined ? WeightCalculatorRequest.FinishedWeight : '',
+    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
-    rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RmCost !== undefined ? WeightCalculatorRequest.RmCost : '',
+    rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.MaterialCost !== undefined ? WeightCalculatorRequest.MaterialCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
 
   }
 
-  const [tableVal, setTableVal] = useState([])
-  const [lostWeight, setLostWeight] = useState(0)
-  const { rmRowData } = props
+  const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
+  const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
+  const [dataToSend, setDataToSend] = useState({
+    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
+    scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
+    rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
+    scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+  })
+
+
+
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -37,12 +64,12 @@ function Plastic(props) {
   // }
   const fieldValues = useWatch({
     control,
-    name: ['netWeight', 'runnerWeight'],
+    name: ['netWeight', 'runnerWeight', 'finishedWeight'],
   })
 
   const dropDown = [
     {
-      label: 'Processing Lost',
+      label: 'Processing Loss',
       value: 'processingLost',
     },
     {
@@ -53,7 +80,7 @@ function Plastic(props) {
 
   useEffect(() => {
     calculateGrossWeight()
-    // calculateRemainingCalculation(WeightCalculatorRequest ? WeightCalculatorRequest.LostSum : 0)
+    calculateRemainingCalculation(lostWeight)
   }, [fieldValues])
 
 
@@ -66,48 +93,109 @@ function Plastic(props) {
 
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
-    if (!netWeight || !runnerWeight) {
-      return ''
-    }
-    const grossWeight = netWeight + runnerWeight
-    setValue('grossWeight', grossWeight)
+
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostWeight
+    setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+
+    let updatedValue = dataToSend
+    updatedValue.grossWeight = grossWeight
+    setDataToSend(updatedValue)
   }
   /**
    * @method calculateRemainingCalculation
    * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
-    console.log("HOW MANY TIMES COMING ?");
-    console.log('lostSum: ', lostSum);
 
-    const grossWeight = Number(getValues('grossWeight'))
-    const netWeight = Number(getValues('netWeight'))
-    const finishedWeight = checkForDecimalAndNull(grossWeight + lostSum, trim)
-    const scrapWeight = checkForDecimalAndNull(finishedWeight - netWeight, trim)
-    const rmCost = checkForDecimalAndNull(finishedWeight * rmRowData.RMRate, trim) // TO DO Ask from Kamal sir which key to use for costing(transaction/PO)
-    const scrapCost = checkForDecimalAndNull(scrapWeight * rmRowData.ScrapRate, trim)
-    const materialCost = checkForDecimalAndNull(rmCost - scrapCost, trim)
 
-    setValue('finishedWeight', finishedWeight)
-    setValue('scrapWeight', scrapWeight)
-    setValue('rmCost', rmCost)
-    setValue('scrapCost', scrapCost)
-    setValue('materialCost', materialCost)
+    let scrapWeight = 0
+
+    const netWeight = Number(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
+    const runnerWeight = Number(getValues('runnerWeight'))
+    const finishedWeight = Number(getValues('finishedWeight'))
+
+
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostSum //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+    // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
+    if (finishedWeight > grossWeight) {
+      toastr.warning('Finish Weight should not be greater than gross weight')
+      return false
+    }
+    if (finishedWeight !== 0) {
+
+      scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+
+    }
+    const rmCost = checkForNull(grossWeight) * checkForNull(totalRM) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
+    const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
+    const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
+
+    const updatedValue = dataToSend
+    updatedValue.scrapWeight = scrapWeight
+    updatedValue.totalGrossWeight = grossWeight
+    updatedValue.rmCost = rmCost
+    updatedValue.scrapCost = scrapCost
+    updatedValue.materialCost = materialCost
+
+    setDataToSend(updatedValue)
+    // setTimeout(() => {
+
+    //   setDataToSend({ ...dataToSend, totalGrossWeight: grossWeight, scrapWeight: scrapWeight, rmCost: rmCost, scrapCost: scrapCost, materialCost: materialCost })
+    // }, 500);
+
+    setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput)) // SETING FINAL GROSS WEIGHT VALUE
+    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('materialCost', checkForDecimalAndNull(materialCost, getConfigurationKey().NoOfDecimalForPrice))
     setLostWeight(lostSum)
+
   }
+
   const onSubmit = () => {
     let obj = {}
+    obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.IsChangeApplied = true //Need to make it dynamic
+    obj.PartId = costData.PartId
+    obj.RawMaterialId = rmRowData.RawMaterialId
+    obj.CostingId = costData.CostingId
+    obj.TechnologyId = costData.TechnologyId
+    obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
+    obj.RawMaterialName = rmRowData.RMName
+    obj.RawMaterialType = rmRowData.MaterialType
+    obj.BasicRatePerUOM = totalRM
+    obj.ScrapRate = rmRowData.ScrapRate
+    obj.NetLandedCost = dataToSend.grossWeight * totalRM - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
+    obj.PartNumber = costData.PartNumber
+    obj.TechnologyName = costData.TechnologyName
+    obj.Density = rmRowData.Density
+    obj.UOMId = rmRowData.UOMId
+    obj.UOM = rmRowData.UOM
+    obj.UOMForDimension = KG
     obj.NetWeight = getValues('netWeight')
     obj.RunnerWeight = getValues('runnerWeight')
-    obj.GrossWeight = getValues('grossWeight')
-    obj.FinishedWeight = getValues('finishedWeight')
-    obj.ScrapWeight = getValues('scrapWeight')
-    obj.RmCost = getValues('rmCost')
-    obj.ScrapCost = getValues('scrapCost')
-    obj.MaterialCost = getValues('materialCost')
-    obj.LossData = tableVal
-    obj.LostSum = lostWeight
-    props.toggleDrawer('', obj)
+    obj.GrossWeight = dataToSend.grossWeight
+    obj.FinishWeight = getValues('finishedWeight')
+    obj.ScrapWeight = dataToSend.scrapWeight
+    obj.RMCost = dataToSend.rmCost
+    obj.ScrapCost = dataToSend.scrapCost
+    obj.NetRMCost = dataToSend.materialCost
+    obj.LoggedInUserId = loggedInUserId()
+    let tempArr = []
+    tableVal && tableVal.map(item => {
+      tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
+    })
+    obj.LossOfTypeDetails = tempArr
+    obj.NetLossWeight = lostWeight
+
+    dispatch(saveRawMaterialCalciData(obj, res => {
+      if (res.data.Result) {
+        obj.WeightCalculationId = res.data.Identity
+        toastr.success("Calculation saved successfully")
+        props.toggleDrawer('', obj)
+      }
+    }))
+    // props.toggleDrawer('', obj)
   }
   /**
    * @method onCancel
@@ -124,11 +212,11 @@ function Plastic(props) {
   return (
     <Fragment>
       <Row>
-        
-          <form noValidate className="form"
-          // onSubmit={handleSubmit(onSubmit)}
-          >
-            <Col md="12">
+
+        <form noValidate className="form"
+        // onSubmit={handleSubmit(onSubmit)}
+        >
+          <Col md="12">
             <div className="costing-border px-4">
               <Row>
                 <Col md="12" className={'mt25'}>
@@ -137,11 +225,11 @@ function Plastic(props) {
                   </div>
                 </Col>
               </Row>
-                
+
               <Row className={''}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Net Weight(Kg)`}
+                    label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
                     control={control}
@@ -171,9 +259,9 @@ function Plastic(props) {
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={true}
+                    mandatory={false}
                     rules={{
-                      required: true,
+                      required: false,
                       pattern: {
                         //value: /^[0-9]*$/i,
                         value: /^[0-9]\d*(\.\d+)?$/i,
@@ -189,31 +277,7 @@ function Plastic(props) {
                     disabled={false}
                   />
                 </Col>
-                <Col md="3" >
-                  <TextFieldHookForm
-                    label={`Gross Weight`}
-                    name={'grossWeight'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.grossWeight}
-                    disabled={true}
-                  />
-                </Col>
+
                 {/* <Col md="2">
                   <TextFieldHookForm
                     label={`Sacle Loss`}
@@ -240,7 +304,7 @@ function Plastic(props) {
                   />
                 </Col> */}
 
-                  {/* <Col md="2">
+                {/* <Col md="2">
                     <TextFieldHookForm
                       label={`Trimming Loss`}
                       name={'trimmingLoss'}
@@ -265,7 +329,7 @@ function Plastic(props) {
                       disabled={true}
                     />
                   </Col> */}
-                  {/* <Col md="2">
+                {/* <Col md="2">
                     <TextFieldHookForm
                       label={`Bar Cutting Allowance`}
                       name={'barCutting'}
@@ -290,7 +354,7 @@ function Plastic(props) {
                       disabled={true}
                     />
                   </Col> */}
-                  {/* <Col md="2">
+                {/* <Col md="2">
                     <TextFieldHookForm
                       label={`Billet Heating Loss`}
                       name={'billetLoss'}
@@ -316,178 +380,201 @@ function Plastic(props) {
                     />
                   </Col> */}
               </Row>
-                
-                <LossStandardTable
-                  dropDownMenu={dropDown}
-                  calculation={calculateRemainingCalculation}
-                  weightValue={Number(getValues('grossWeight'))}
-                  netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
-                  sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossData : []}
-                  tableValue={tableData}
-                />
-                
-                  <Row className={'mt25'}>
-                    <Col md="3" >
-                      <TextFieldHookForm
-                        label={`Finished Weight`}
-                        name={'finishedWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.finishedWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Scrap Weight(Kg)`}
-                        name={'scrapWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={WeightCalculatorRequest &&
-                          WeightCalculatorRequest.ScrapWeight !== undefined
-                          ? WeightCalculatorRequest.ScrapWeight
-                          : ''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.scrapWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                  </Row>
-                  <Row className={''}>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`RM Cost`}
-                        name={'rmCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.rmCost}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Scrap Cost`}
-                        name={'scrapCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     value: /^[0-9\b]+$/i,
-                        //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.scrapCost}
-                        disabled={true}
-                      />
-                    </Col>
 
-                    <Col md="3">
-                      <TextFieldHookForm
-                        // Confirm this name from tanmay bhaiya
-                        label={`RM Cost`}
-                        name={'materialCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.materialCost}
-                        disabled={true}
-                      />
-                    </Col>
-                  </Row>
-                
-              </div>
-            </Col>
-            <div className="mt25 col-md-12 text-right">
-              <button
-                onClick={onCancel} // Need to change this cancel functionality
-                type="submit"
-                value="CANCEL"
-                className="reset mr15 cancel-btn"
-              >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
+              <LossStandardTable
+                dropDownMenu={dropDown}
+                calculation={calculateRemainingCalculation}
+                weightValue={Number(getValues('netWeight'))}
+                netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
+                sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
+                tableValue={tableData}
+              />
+
+              <Row className={'mt25'}>
+                <Col md="3" >
+                  <TextFieldHookForm
+                    label={`Total Gross Weight(Kg)`}
+                    name={'grossWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: true,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.grossWeight}
+                    disabled={true}
                   />
-                </div>
+                </Col>
+                <Col md="3" >
+                  <TextFieldHookForm
+                    label={`Finished Weight(Kg)`}
+                    name={'finishedWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: true,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.finishedWeight}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Scrap Weight(Kg)`}
+                    name={'scrapWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: true,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={WeightCalculatorRequest &&
+                      WeightCalculatorRequest.ScrapWeight !== undefined
+                      ? WeightCalculatorRequest.ScrapWeight
+                      : ''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.scrapWeight}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`RM Cost`}
+                    name={'rmCost'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: true,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.rmCost}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Scrap Cost`}
+                    name={'scrapCost'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: false,
+                    //   pattern: {
+                    //     value: /^[0-9\b]+$/i,
+                    //     //value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.scrapCost}
+                    disabled={true}
+                  />
+                </Col>
+
+                <Col md="3">
+                  <TextFieldHookForm
+                    // Confirm this name from tanmay sir
+                    label={`Net RM Cost`}
+                    name={'materialCost'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: false,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.materialCost}
+                    disabled={true}
+                  />
+                </Col>
+              </Row>
+
+            </div>
+          </Col>
+          <div className="mt25 col-md-12 text-right">
+            <button
+              onClick={onCancel} // Need to change this cancel functionality
+              type="submit"
+              value="CANCEL"
+              className="reset mr15 cancel-btn"
+            >
+              <div className={'cross-icon'}>
+                <img
+                  src={require('../../../../assests/images/times.png')}
+                  alt="cancel-icon.jpg"
+                />
+              </div>
                 CANCEL
               </button>
-              <button
-                type="submit"
-                // disabled={isSubmitted ? true : false}
-                onClick={onSubmit} className="submit-button save-btn">
-                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                {'SAVE'}
-              </button>
-            </div>
-          </form>
-        
+            <button
+              type="submit"
+              // disabled={isSubmitted ? true : false}
+              onClick={onSubmit} className="submit-button save-btn">
+              <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+              {'SAVE'}
+            </button>
+          </div>
+        </form>
+
       </Row>
     </Fragment>
   )

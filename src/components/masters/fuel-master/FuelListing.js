@@ -10,13 +10,14 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import 'react-input-range/lib/css/index.css'
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
+import { FuelMaster } from '../../../config/constants';
 
 class FuelListing extends Component {
     constructor(props) {
@@ -37,7 +38,7 @@ class FuelListing extends Component {
     */
     componentDidMount() {
         this.props.getFuelComboData(() => { })
-        this.getDataList('', '')
+        this.getDataList(0, 0)
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -230,7 +231,7 @@ class FuelListing extends Component {
             StateName: [],
         }, () => {
             this.props.getFuelComboData(() => { })
-            this.getDataList('', '')
+            this.getDataList(0, 0)
         })
     }
 
@@ -243,7 +244,7 @@ class FuelListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => this.getDataList('', ''))
+        this.setState({ isBulkUpload: false }, () => this.getDataList(0, 0))
     }
 
     /**
@@ -251,6 +252,19 @@ class FuelListing extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => { }
+
+    handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.fuelDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      }
 
     /**
     * @method render
@@ -263,6 +277,7 @@ class FuelListing extends Component {
             clearSearch: true,
             noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -271,7 +286,7 @@ class FuelListing extends Component {
         };
 
         return (
-            <div>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -369,7 +384,8 @@ class FuelListing extends Component {
                             bordered={false}
                             options={options}
                             search
-                            // exportCSV
+                            exportCSV
+                            csvFileName={`${FuelMaster}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

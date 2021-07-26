@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { checkPageAuthorization } from './actions/auth/AuthActions'
 import { loggedInUserId } from './helper';
 
@@ -12,7 +12,6 @@ export default function (ComposedComponent, PAGENAME) {
             super(props);
             this.state = {
                 redirectToLogin: false,
-                redirectToDashboard: false,
             }
         }
 
@@ -32,10 +31,6 @@ export default function (ComposedComponent, PAGENAME) {
                 }
                 this.props.checkPageAuthorization(reqData, res => {
                     if (res && res.status === 401 && res.statusText === 'Unauthorized') {
-
-                        //MADE CHANGES ON 11TH MAY ENABLE THIS IF ANY ERROR
-                        //this.setState({ redirectToDashboard: true }) //CHANGES DONE FOR CONTINUES CALL UNAUTHORIZED 
-
                         //NEW ADDED FOR (DISABLED THIS IF ANY ERROR)
                         reactLocalStorage.setObject("isUserLoggedIn", false);
                         reactLocalStorage.setObject("userDetail", {});
@@ -49,19 +44,7 @@ export default function (ComposedComponent, PAGENAME) {
         render() {
 
             if (this.state.redirectToLogin === true) {
-                return (<Redirect
-                    to={{
-                        pathname: `/login`,
-                    }} />
-                )
-            }
-
-            if (this.state.redirectToDashboard === true) {
-                return (<Redirect
-                    to={{
-                        pathname: `/`,
-                    }} />
-                )
+                return <Redirect to={'/login'} />
             }
 
             //Render the component with all props

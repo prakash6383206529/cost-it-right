@@ -9,13 +9,14 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PlantVbc } from '../../../config/constants';
 
 class VBCPlantListing extends Component {
     constructor(props) {
@@ -343,15 +344,31 @@ class VBCPlantListing extends Component {
     * @method render
     * @description Renders the component
     */
+
+     handleExportCSVButtonClick = (onClick) => {
+        onClick();
+        let products = []
+        products = this.props.plantDataList
+        return products; // must return the data which you want to be exported
+      }
+    
+    createCustomExportCSVButton = (onClick) => {
+        return (
+          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+        );
+      } 
     render() {
         const { handleSubmit, AddAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
+
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
+            exportCSVBtn: this.createCustomExportCSVButton,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -361,7 +378,7 @@ class VBCPlantListing extends Component {
         };
 
         return (
-            <>
+            <div className="show-table-btn">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -469,19 +486,20 @@ class VBCPlantListing extends Component {
                     bordered={false}
                     options={options}
                     search
-                    // exportCSV
+                    exportCSV
+                    csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
                     <TableHeaderColumn dataField="VendorName" dataAlign="left" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantName" dataAlign="center" dataSort={true}>Plant Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataAlign="center" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PlantCode" dataAlign="left" dataSort={true}>Plant Code</TableHeaderColumn>
+                    <TableHeaderColumn dataField="CountryName" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
+                    <TableHeaderColumn dataField="StateName" dataAlign="left" dataSort={true}>State</TableHeaderColumn>
+                    <TableHeaderColumn dataField="CityName" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsActive" dataAlign="left" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
@@ -492,7 +510,7 @@ class VBCPlantListing extends Component {
                     ID={this.state.ID}
                     anchor={'right'}
                 />}
-            </ >
+            </div>
         );
     }
 }

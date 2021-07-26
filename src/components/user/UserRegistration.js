@@ -11,12 +11,13 @@ import {
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
+  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
+  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI
 } from "../../actions/auth/AuthActions";
-import { getAllCities } from "../../actions/Common";
+import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { loggedInUserId } from "../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
@@ -63,6 +64,13 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
+      isLoader: false,
+      simulationHeads: [],
+      simualtionLevel: [],
+      HeadLevelGrid: [],
+      oldHeadLevelGrid: [],
+      simulationLevelEditIndex: '',
+      isSimulationEditIndex: false,
     };
   }
 
@@ -75,10 +83,14 @@ class UserRegistration extends Component {
     this.props.setEmptyUserDataAPI('', () => { })
     this.props.getAllRoleAPI(() => { })
     this.props.getAllDepartmentAPI(() => { })
-    this.props.getAllCities(() => { })
+    // this.props.getAllCities(() => { })
     this.props.getAllTechnologyAPI(() => { })
     this.props.getLevelByTechnology('', () => { })
     this.getUserDetail(data);
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
+    this.props.getSimulationTechnologySelectList(() => { })
   }
 
   /**
@@ -165,7 +177,7 @@ class UserRegistration extends Component {
   * @description Used show listing
   */
   searchableSelectType = (label) => {
-    const { roleList, departmentList, cityList, technologyList, levelSelectList } = this.props;
+    const { roleList, departmentList, cityList, technologyList, levelSelectList, simulationTechnologyList, simulationLevelSelectList } = this.props;
     const temp = [];
 
     if (label === 'role') {
@@ -201,11 +213,28 @@ class UserRegistration extends Component {
       return temp;
     }
 
+    if (label === 'heads') {
+      simulationTechnologyList && simulationTechnologyList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
     if (label === 'level') {
       levelSelectList && levelSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
+      return temp;
+    }
+
+    if (label === 'simualtionLevel') {
+      simulationLevelSelectList && simulationLevelSelectList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+      })
       return temp;
     }
   }
@@ -295,6 +324,7 @@ class UserRegistration extends Component {
           }, 500)
 
           this.getUsersTechnologyLevelData(data.UserId)
+          this.getUsersSimulationTechnologyLevelData(data.UserId)
           if (data.passwordFlag) {
             $('input[type="password"]').get(0).focus()
           }
@@ -335,6 +365,24 @@ class UserRegistration extends Component {
         this.setState({
           TechnologyLevelGrid: TechnologyLevels,
           oldTechnologyLevelGrid: TechnologyLevels,
+        })
+      }
+    })
+  }
+
+  /**
+ * @method getUsersTechnologyLevelData
+ * @description used to get users technology level listing
+ */
+  getUsersSimulationTechnologyLevelData = (UserId) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let TechnologySimulationLevels = Data.TechnologyLevels;
+
+        this.setState({
+          HeadLevelGrid: TechnologySimulationLevels,
+          oldHeadLevelGrid: TechnologySimulationLevels,
         })
       }
     })
@@ -431,6 +479,16 @@ class UserRegistration extends Component {
     }
   };
 
+
+  headHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ simulationHeads: newValue, simualtionLevel: [] });
+      this.props.getSimualationLevelByTechnology(newValue.value, res => { })
+    } else {
+      this.setState({ simulationHeads: [] });
+    }
+  };
+
   /**
   * @method levelHandler
   * @description Used to handle 
@@ -440,6 +498,20 @@ class UserRegistration extends Component {
       this.setState({ level: newValue });
     } else {
       this.setState({ level: [] });
+    }
+  };
+
+
+
+  /**
+  * @method levelHandler
+  * @description Used to handle 
+  */
+  simualtionLevelHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ simualtionLevel: newValue });
+    } else {
+      this.setState({ simualtionLevel: [] });
     }
   };
 
@@ -519,6 +591,87 @@ class UserRegistration extends Component {
     });
   };
 
+
+  /**
+   * @method setTechnologyLevel
+   * @description Used to handle setTechnologyLevel
+   */
+  setSimualtionHeadLevel = () => {
+    const { simulationHeads, simualtionLevel, HeadLevelGrid } = this.state;
+    const tempArray = [];
+
+    if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
+      toastr.warning('Please select technology and level')
+      return false;
+    }
+
+    const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
+      return el.SimulationTechnologyId === simulationHeads.value
+      // && el.LevelId === level.value
+    })
+
+    if (isExistTechnology !== -1) {
+      // toastr.warning('Technology and Level already allowed.')
+      toastr.warning('Head cannot have multiple level.')
+      return false;
+    }
+
+    tempArray.push(...HeadLevelGrid, {
+      Technology: simulationHeads.label,
+      SimulationTechnologyId: simulationHeads.value,
+      Level: simualtionLevel.label,
+      LevelId: simualtionLevel.value,
+    })
+
+    this.setState({
+      HeadLevelGrid: tempArray,
+      simualtionLevel: [],
+      simulationHeads: [],
+    });
+  };
+
+  /**
+  * @method updateTechnologyLevel
+  * @description Used to handle updateTechnologyLevel
+  */
+  updateSimualtionHeadLevel = () => {
+    const { simulationHeads, simualtionLevel, HeadLevelGrid, simulationLevelEditIndex } = this.state;
+    let tempArray = [];
+
+    let tempData = HeadLevelGrid[simulationLevelEditIndex];
+    tempData = {
+      Technology: simulationHeads.label,
+      SimulationTechnologyId: simulationHeads.value,
+      Level: simualtionLevel.label,
+      LevelId: simualtionLevel.value,
+    }
+
+    tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
+
+    this.setState({
+      HeadLevelGrid: tempArray,
+      simualtionLevel: [],
+      simulationHeads: [],
+      simulationLevelEditIndex: '',
+      isSimulationEditIndex: false,
+    });
+  };
+
+  /**
+  * @method resetTechnologyLevel
+  * @description Used to handle setTechnologyLevel
+  */
+  resetSimualtionHeadLevel = () => {
+    this.setState({
+      simualtionLevel: [],
+      simulationHeads: [],
+      simulationLevelEditIndex: '',
+      isSimulationEditIndex: false,
+    });
+  };
+
+
+
   /**
   * @method editItemDetails
   * @description used to Reset form
@@ -551,6 +704,40 @@ class UserRegistration extends Component {
 
     this.setState({
       TechnologyLevelGrid: tempData
+    })
+  }
+
+  /**
+ * @method editItemDetails
+ * @description used to Reset form
+ */
+  editSimulationItemDetails = (index) => {
+    const { HeadLevelGrid } = this.state;
+    const tempData = HeadLevelGrid[index];
+    this.props.getSimualationLevelByTechnology(tempData.SimulationTechnologyId, res => { })
+    this.setState({
+      simulationLevelEditIndex: index,
+      isSimulationEditIndex: true,
+      simulationHeads: { label: tempData.Technology, value: tempData.SimulationTechnologyId },
+      simualtionLevel: { label: tempData.Level, value: tempData.LevelId },
+    })
+  }
+
+  /**
+  * @method deleteItem
+  * @description used to Reset form
+  */
+  deleteSimulationItem = (index) => {
+    const { HeadLevelGrid } = this.state;
+    let tempData = HeadLevelGrid.filter((item, i) => {
+      if (i === index) {
+        return false;
+      }
+      return true;
+    });
+
+    this.setState({
+      HeadLevelGrid: tempData
     })
   }
 
@@ -614,13 +801,18 @@ class UserRegistration extends Component {
 
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
-      oldTechnologyLevelGrid, UserId } = this.state;
+      oldTechnologyLevelGrid, UserId, HeadLevelGrid, oldHeadLevelGrid } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
     if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
       toastr.warning('Users technology level should not be empty.')
       return false;
     }
+    if (HeadLevelGrid && HeadLevelGrid.length === 0) {
+      toastr.warning('Users head level should not be empty.')
+      return false
+    }
+
     //this.setState({ isSubmitted: true })
 
     let tempTechnologyLevelArray = []
@@ -635,10 +827,23 @@ class UserRegistration extends Component {
       return null;
     })
 
+    let tempHeadLevelArray = []
+
+    HeadLevelGrid && HeadLevelGrid.map((item, index) => {
+      tempHeadLevelArray.push({
+        SimulationTechnologyId: item.SimulationTechnologyId,
+        LevelId: item.LevelId,
+        Technology: item.Technology,
+        Level: item.Level,
+
+      })
+      return null
+    })
+
     if (isEditFlag) {
       let updatedData = {
         UserId: UserId,
-        FullName: `${values.FirstName} ${values.LastName}`,
+        FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData.LevelId,
         LevelName: registerUserData.LevelName,
         DepartmentName: department.label,
@@ -649,18 +854,18 @@ class UserRegistration extends Component {
         //AdditionalPermission: registerUserData.AdditionalPermission,
         CityName: department.label,
         UserProfileId: registerUserData.UserProfileId,
-        UserName: values.UserName,
+        UserName: values.UserName ? values.UserName.trim() : '',
         Password: this.state.isShowPwdField ? values.Password : '',
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: department.CompanyId,
-        EmailAddress: values.EmailAddress,
+        CompanyId: department.CompanyId ? department.CompanyId : '',
+        EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
         Mobile: values.Mobile,
-        FirstName: values.FirstName,
-        MiddleName: values.MiddleName,
-        LastName: values.LastName,
+        FirstName: values.FirstName ? values.FirstName.trim() : '',
+        MiddleName: values.MiddleName ? values.MiddleName.trim() : '',
+        LastName: values.LastName ? values.LastName.trim() : '',
         RoleName: role.label,
         UserCode: registerUserData.UserCode,
         CreatedDate: registerUserData.CreatedDate,
@@ -676,6 +881,7 @@ class UserRegistration extends Component {
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
+        SimulationTechnologyLevels: tempHeadLevelArray
       }
 
       const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
@@ -722,18 +928,18 @@ class UserRegistration extends Component {
     } else {
 
       let userData = {
-        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName : null,
+        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName.trim() : null,
         Password: values.Password,
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: department.CompanyId,
-        EmailAddress: values.EmailAddress,
+        CompanyId: department.CompanyId ? department.CompanyId : '',
+        EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
         Mobile: values.Mobile,
-        FirstName: values.FirstName,
-        MiddleName: values.MiddleName,
-        LastName: values.LastName,
+        FirstName: values.FirstName ? values.FirstName.trim() : '',
+        MiddleName: values.MiddleName ? values.MiddleName.trim() : '',
+        LastName: values.LastName ? values.LastName.trim() : '',
         RoleName: role.label,
         AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
         AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
@@ -745,6 +951,7 @@ class UserRegistration extends Component {
         TechnologyLevels: tempTechnologyLevelArray,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
+        SimulationTechnologyLevels: tempHeadLevelArray
       }
       this.props.registerUserAPI(userData, res => {
         this.setState({ isSubmitted: false, })
@@ -758,6 +965,7 @@ class UserRegistration extends Component {
 
     }
   }
+
   handleKeyDown = function (e, cb) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -767,10 +975,10 @@ class UserRegistration extends Component {
 
   render() {
     const { handleSubmit, initialConfiguration, loading } = this.props;
-    const { isSubmitted } = this.state;
+    const { isSubmitted, isLoader } = this.state;
     return (
       <div className="container-fluid">
-        {loading && <Loader />}
+        {isLoader && <Loader />}
         <div className="login-container signup-form">
           <div className="row">
 
@@ -834,7 +1042,7 @@ class UserRegistration extends Component {
                           customClassName={'withBorder'}
                         />
                       </div>
-                      <div className="input-group col-md-3 input-withouticon">
+                      <div className="col-md-3">
                         <div className="row form-group">
                           <div className="Phone phoneNumber col-md-8 input-withouticon">
                             <Field
@@ -849,7 +1057,7 @@ class UserRegistration extends Component {
                               customClassName={'withBorder'}
                             />
                           </div>
-                          <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
+                          <div className="ext phoneNumber col-md-4 pl-0 pr-0">
                             <Field
                               label="Extension"
                               name={"Extension"}
@@ -893,7 +1101,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, minLength7, checkWhiteSpaces]}
+                            validate={[required, minLength3, checkWhiteSpaces]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
@@ -998,7 +1206,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={'Role & Company:'}
+                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1021,7 +1229,7 @@ class UserRegistration extends Component {
                         <Field
                           name="DepartmentId"
                           type="text"
-                          label="Company"
+                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                           component={searchableSelect}
                           placeholder={'Select company'}
                           options={this.searchableSelectType('department')}
@@ -1189,6 +1397,100 @@ class UserRegistration extends Component {
                       /////////////// User's technology level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
+                    <HeaderTitle
+                      title={'Simulation Heads & Level:'}
+                      customClass={''} />
+
+                    <div className="row form-group">
+                      <div className="col-md-3">
+                        <Field
+                          name="Head"
+                          type="text"
+                          label="Head"
+                          component={searchableSelect}
+                          options={this.searchableSelectType('heads')}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.headHandler}
+                          valueDescription={this.state.simulationHeads}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <Field
+                          name="simualtionLevel"
+                          type="text"
+                          label="Level"
+                          component={searchableSelect}
+                          options={this.searchableSelectType('simualtionLevel')}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.simualtionLevelHandler}
+                          valueDescription={this.state.simualtionLevel}
+                        />
+                      </div>
+                      <div className="col-md-3 btn-mr-rate d-flex">
+                        {this.state.isSimulationEditIndex ?
+                          <>
+                            <button
+                              type="button"
+                              className={'btn btn-primary add-button-big'}
+                              onClick={this.updateSimualtionHeadLevel}
+                            >Update</button>
+
+                            <button
+                              type="button"
+                              className={'reset-btn ml-2'}
+                              onClick={this.resetSimualtionHeadLevel}
+                            >Cancel</button>
+                          </>
+                          :
+                          <button
+                            type="button"
+                            className={'user-btn add-button-big ml-2'}
+                            onClick={this.setSimualtionHeadLevel}
+                          ><div className={'plus'}></div>ADD</button>}
+                      </div>
+                    </div>
+
+                    <div className="row form-group">
+                      <div className="col-md-12">
+                        <Table className="table" size="sm" >
+                          <thead>
+                            <tr>
+                              <th>{`Head`}</th>
+                              <th>{`Level`}</th>
+                              <th className="text-right">{`Action`}</th>
+                            </tr>
+                          </thead>
+                          <tbody >
+                            {
+                              this.state.HeadLevelGrid &&
+                              this.state.HeadLevelGrid.map((item, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <td>{item.Technology}</td>
+                                    <td>{item.Level}</td>
+                                    <td className="text-right">
+                                      <button className="Edit mr-2" type={'button'} onClick={() => this.editSimulationItemDetails(index)} />
+                                      <button className="Delete" type={'button'} onClick={() => this.deleteSimulationItem(index)} />
+                                    </td>
+                                  </tr>
+                                )
+                              })
+                            }
+                          </tbody>
+                        </Table>
+                        {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                      </div>
+                    </div>
+
+                    {/* ////////////////////////////////////////////////////
+                      ////////////////////////////////////////////////////
+                      /////////////// User's SIMULATION level END ////////
+                      ////////////////////////////////////////////////////
+                      ///////////////////////////////////////////////// */}
 
                   </div>
                   <div className="sf-btn-footer no-gutters justify-content-between bottom-footer">
@@ -1258,7 +1560,7 @@ function validate(values) {
 */
 const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
-    initialConfiguration, loading, levelSelectList } = auth;
+    initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList } = auth;
   const { cityList } = comman;
 
   let initialValues = {};
@@ -1283,7 +1585,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, initialConfiguration, loading, levelSelectList
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList
   };
 };
 
@@ -1311,7 +1613,12 @@ export default connect(mapStateToProps, {
   setUserAdditionalPermission,
   setUserTechnologyLevelForCosting,
   updateUserTechnologyLevelForCosting,
-  getLevelByTechnology
+  getLevelByTechnology,
+  getCityByCountry,
+  getAllCity,
+  getSimulationTechnologySelectList,
+  getSimualationLevelByTechnology,
+  getUsersSimulationTechnologyLevelAPI
 })(reduxForm({
   validate,
   form: 'Signup',

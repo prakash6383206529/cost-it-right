@@ -72,10 +72,10 @@ function PartSurfaceTreatment(props) {
         <div className="accordian-row" style={{ display: 'contents' }}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
-              {item && item.PartNumber}-{item && item.BOMLevel}
-              {/* <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div> */}
+              {item && item.PartNumber}
             </span>
           </td>
+          <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -110,7 +110,6 @@ function PartSurfaceTreatment(props) {
         ID={''}
         anchor={'right'}
         item={item}
-        isIncludeSurfaceTreatment={props.isIncludeSurfaceTreatment}
         surfaceData={item.CostingPartDetails.SurfaceTreatmentDetails}
         transportationData={item.CostingPartDetails.TransportationDetails}
         setSurfaceCost={props.setSurfaceCost}

@@ -46,8 +46,12 @@ function ManageSOBDrawer(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    setIsLoader(true)
+
+
+    // setTimeout(() => {
+
     dispatch(getManageBOPSOBById(ID, (res) => {
+      // setIsLoader(true)
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
 
@@ -61,19 +65,21 @@ function ManageSOBDrawer(props) {
           let tempData = Data.BoughtOutPartVendorList[0];
           tempData = {
             ...tempData,
-            ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
+            ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage !== 0 ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
 
           }
-          // else {
+          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
+          setGridData(tempArray)
+          setGridDataOldArray(tempArray)
 
-          setData(Data)
-          // setGridData(Data.BoughtOutPartVendorList)
-          // setGridDataOldArray(Data.BoughtOutPartVendorList)
-          // }
+
         }
-        setIsLoader(false)
+        setData(Data)
+
       }
     }))
+    // }, 500);
+    // setIsLoader(false)
 
   }, []);
 

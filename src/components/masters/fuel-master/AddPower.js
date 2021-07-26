@@ -1123,7 +1123,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: effectiveDate,
+              EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
             }
           ],
           SGChargesDetails: selfGridDataArray,
