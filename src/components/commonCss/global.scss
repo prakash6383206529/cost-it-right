@@ -921,7 +921,7 @@ a:hover {
     color: #3D4465;
     .ag-header-cell-text{
       font-size: 14px;
-      font-weight: normal;
+      font-weight: 500;
     }
   }
 }
@@ -2725,8 +2725,10 @@ body {
   .drawer-wrapper {
     width: calc(486px * 80 / 100);
   }
-  .drawer-1500px {
-    width: 100%;
+  :not(.view-conversion-cost-drawer),.view-conversion-cost-drawer{
+    .drawer-1500px {
+      width: 100%;
+    }
   }
   .drawer-700px {
     width: 100%;

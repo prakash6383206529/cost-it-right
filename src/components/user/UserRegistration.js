@@ -18,7 +18,7 @@ import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
@@ -52,6 +52,8 @@ class UserRegistration extends Component {
       isEditFlag: false,
       isShowForm: false,
       UserId: '',
+      acc1:false,
+      acc2:false,
 
       IsShowAdditionalPermission: false,
       Modules: [],
@@ -1060,7 +1062,7 @@ class UserRegistration extends Component {
                               customClassName={'withBorder'}
                             />
                           </div>
-                          <div className="ext phoneNumber col-md-4 pl-0 pr-0">
+                          <div className="ext phoneNumber col-md-4 pl-0">
                             <Field
                               label="Extension"
                               name={"Extension"}
@@ -1306,10 +1308,23 @@ class UserRegistration extends Component {
                               //////////////////////////////////////////////////
                               ///////////////////////////////////////////////// */}
 
-                    <HeaderTitle
-                      title={'Technology & Level:'}
-                      customClass={''} />
+                    <Row>
+                      <Col md="8">
+                        <HeaderTitle title={'Technology & Level:'} customClass={''} />
+                      </Col>
+                      <Col md="4" className="text-right">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({acc1:!this.state.acc1}) }}>
 
+                              {this.state.acc1 ? (
+                                  <i className="fa fa-minus" ></i>
+                              ) : (
+                                  <i className="fa fa-plus"></i>
+                              )}
+                          </button>
+                      </Col>
+                    </Row>
+                    {this.state.acc1 &&
+                    <>
                     <div className="row form-group">
                       <div className="col-md-3">
                         <Field
@@ -1362,6 +1377,7 @@ class UserRegistration extends Component {
                           ><div className={'plus'}></div>ADD</button>}
                       </div>
                     </div>
+                    
 
                     <div className="row form-group">
                       <div className="col-md-12">
@@ -1394,16 +1410,33 @@ class UserRegistration extends Component {
                         {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                       </div>
                     </div>
+                    </>
+                    }
 
                     {/* ////////////////////////////////////////////////////
                       ////////////////////////////////////////////////////
                       /////////////// User's technology level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
-                    <HeaderTitle
-                      title={'Simulation Heads & Level:'}
-                      customClass={''} />
 
+
+                    <Row>
+                      <Col md="8">
+                        <HeaderTitle title={'Simulation Heads & Level:'} customClass={''} />
+                      </Col>
+                      <Col md="4" className="text-right">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({acc2:!this.state.acc2}) }}>
+
+                              {this.state.acc2 ? (
+                                  <i className="fa fa-minus" ></i>
+                              ) : (
+                                  <i className="fa fa-plus"></i>
+                              )}
+                          </button>
+                      </Col>
+                    </Row>
+                    {this.state.acc2 && 
+                    <>
                     <div className="row form-group">
                       <div className="col-md-3">
                         <Field
@@ -1488,6 +1521,8 @@ class UserRegistration extends Component {
                         {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                       </div>
                     </div>
+                    </>
+                    }
 
                     {/* ////////////////////////////////////////////////////
                       ////////////////////////////////////////////////////

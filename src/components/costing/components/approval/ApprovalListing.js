@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../../common/LoaderCustom'
+import { Redirect } from 'react-router'
 
 const gridOptions = {};
 
@@ -629,7 +630,7 @@ function ApprovalListing(props) {
                         <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
                         <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
-                        <AgGridColumn field="RequestedBy" headerName="Requested By"></AgGridColumn>
+                        <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
                         <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
                         {!isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                         
@@ -651,6 +652,10 @@ function ApprovalListing(props) {
 
           </div>
           :
+          // <Redirect
+          //   to={{
+          //       pathname: "/approval-summary",
+          //   }}/>
           <ApprovalSummary
             approvalNumber={approvalData.approvalNumber}
             approvalProcessId={approvalData.approvalProcessId}
