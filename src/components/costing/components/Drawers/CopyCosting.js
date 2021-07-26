@@ -4,32 +4,36 @@ import { useForm, Controller } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
 import Switch from 'react-switch';
-import {
-  SearchableSelectHookForm,
-} from '../../../layout/HookFormInputs';
-
-import {
-  getPlantBySupplier,
-} from '../../../../actions/Common';
-import {
-  getCostingSummaryByplantIdPartNo,
-  saveCopyCosting,
-} from '../../actions/Costing';
+import { SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
+import { getPlantBySupplier, } from '../../../../actions/Common';
+import { getCostingSummaryByplantIdPartNo, saveCopyCosting, } from '../../actions/Costing';
 import { VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
+import DatePicker from "react-datepicker";
+import moment from 'moment';
+import { toastr } from 'react-redux-toastr';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
   const loggedUserId = loggedInUserId()
 
-  const {
-    copyCostingData,
-    partNo,
-    type,
-    zbcPlantGrid,
-    vbcVendorGrid,
-    selectedCostingId,
-  } = props
+  const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, } = props
+
+
+  const { register, control, formState: { errors }, handleSubmit, setValue, getValues } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      fromPlant: type === ZBC ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
+      fromVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+      // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
+      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
+      fromcostingId: selectedCostingId.zbcCosting,
+      fromVbccostingId: selectedCostingId.vbcCosting,
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+    },
+  })
+
 
   // const part = partNo ? partNo : '' should do or not ?
 
@@ -41,17 +45,22 @@ function CopyCosting(props) {
   const [vendorFromPlantDropdown, setVendorFromPlantDropdown] = useState([])
   const [vendorToPlantDropdown, setVendorToPlantDropdown] = useState([])
   const [vendorCostingId, setVendorCostingId] = useState([])
+  const [destinationPlant, setDestinationPlant] = useState([])
+  const [effectiveDate, setEffectiveDate] = useState('')
+  const [minDate, setMinDate] = useState('')
+  console.log('minDate: ', minDate);
 
   const [fromtype, setFromType] = useState(type === ZBC ? false : true)
   const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
-  const [isToZbc, setIsToZbc] = useState(true)
+  const [isToZbc, setIsToZbc] = useState(type === ZBC ? true : false)
   const [isFromVbc, setIsFromVbc] = useState(type === VBC ? true : false)
-  const [isToVbc, setIsToVbc] = useState(false)
-  const [toSwitch, setToSwitch] = useState(false)
+  const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
+  const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
 
   useEffect(() => {
     const ZbcTemp = []
     const VbcTemp = []
+
     /* For ZBC plant drop down*/
     zbcPlantGrid &&
       zbcPlantGrid.map((item) => {
@@ -62,13 +71,26 @@ function CopyCosting(props) {
       })
     setPlantDropDownList(ZbcTemp)
     /*For vendor dropdown*/
-    vbcVendorGrid &&
-      vbcVendorGrid.map((item) => {
-        VbcTemp.push({
-          label: `${item.VendorName}(${item.VendorCode})`,
-          value: item.VendorId,
+    if (getConfigurationKey().IsDestinationPlantConfigure) {
+      vbcVendorGrid &&
+        vbcVendorGrid.map((item) => {
+          VbcTemp.push({
+            label: `${item.VendorName}(${item.VendorCode})`,
+            value: item.DestinationPlantId,
+            vendorId: item.VendorId
+          })
         })
-      })
+    } else {
+      vbcVendorGrid &&
+        vbcVendorGrid.map((item) => {
+          VbcTemp.push({
+            label: `${item.VendorName}(${item.VendorCode})`,
+            value: item.VendorId,
+            vendorId: item.VendorId
+            // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
+          })
+        })
+    }
     setVendorName(VbcTemp)
 
     if (type === ZBC) {
@@ -76,32 +98,13 @@ function CopyCosting(props) {
     } else {
       getVendorPlantDropdown(copyCostingData.VendorId, 'from')
       filterCostingDropDown(copyCostingData.VendorId)
+      getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
+    const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
+    console.log('date: ', date);
+    setMinDate(date[0].EffectiveDate)
   }, [])
 
-  const { register, control, errors, handleSubmit, setValue } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      fromPlant:
-        type === ZBC
-          ? {
-            label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`,
-            value: copyCostingData.PlantId,
-          }
-          : '',
-      fromVendorName:
-        type === VBC
-          ? {
-            label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`,
-            value: copyCostingData.VendorId,
-          }
-          : '',
-      // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromcostingId: selectedCostingId.zbcCosting,
-      fromVbccostingId: selectedCostingId.vbcCosting,
-    },
-  })
 
   /**
    * @method handleToSwitch
@@ -141,13 +144,13 @@ function CopyCosting(props) {
   function getCostingDropDown(value, costingFor) {
     const temp = []
     dispatch(
-      getCostingSummaryByplantIdPartNo(partNo.label, value, (res) => {
-
+      getCostingSummaryByplantIdPartNo(partNo.value, value, (res) => {
         res.data.Data.CostingOptions &&
           res.data.Data.CostingOptions.map((costing) => {
             temp.push({
               label: costing.DisplayCostingNumber,
               value: costing.CostingId,
+
             })
           })
 
@@ -208,6 +211,10 @@ function CopyCosting(props) {
       }),
     )
   }
+
+
+
+
   /**
    * @method handlePlantChange
    * @description for finding costing based plant change
@@ -224,14 +231,43 @@ function CopyCosting(props) {
     setValue('fromVbccostingId', '')
     getVendorPlantDropdown(value.value, 'from')
     filterCostingDropDown(value.value)
+    if (getConfigurationKey().IsDestinationPlantConfigure) {
+      getDestinationPlant(value, 'from')
+    }
   }
   /**
    * @method handleToVendorName
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
+    console.log('value: ', value);
     getVendorPlantDropdown(value.value, 'to')
+    if (getConfigurationKey().IsDestinationPlantConfigure) {
+      getDestinationPlant(value, 'to')
+    }
   }
+
+
+  const getDestinationPlant = (value, type) => {
+    let temp = []
+    let vendor = value.vendorId
+
+    vbcVendorGrid && vbcVendorGrid.filter(item => {
+      if (item.VendorId === vendor) {
+        temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
+        return temp
+      }
+    })
+    setDestinationPlant(temp)
+
+  }
+
+
+  const handleEffectiveDateChange = (date) => {
+    setEffectiveDate(date)
+  }
+
+
 
   // const handleFromVendorPlant = (value) => {
   //   
@@ -244,45 +280,61 @@ function CopyCosting(props) {
   const submitForm = (value) => {
 
 
-    let obj = {}
-    if (isFromZbc) {
-      const plantCode = value.fromPlant.label.split('(')
 
-      obj.FromPlantId = value.fromPlant.value
-      obj.FromPlantCode = plantCode[1].split(')')[0]
-      obj.CostingId = value.fromcostingId.value
-      obj.CostingNumber = value.fromcostingId.label
+    const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
+    const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
+
+    let obj = {}
+
+    //  COPY FROM ZBC
+    if (isFromZbc) {
+      const plantCode = value.fromPlant && value.fromPlant.label.split('(')
+
+      obj.FromPlantId = value.fromPlant && value.fromPlant.value
+      obj.FromPlantCode = plantCode[1] && plantCode[1].split(')')[0]
+      obj.CostingId = value.fromcostingId && value.fromcostingId.value
+      obj.CostingNumber = value.fromcostingId && value.fromcostingId.label
       obj.FromVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.FromVendorPlantCode = ''
       obj.FromVendorId = '00000000-0000-0000-0000-000000000000'
       obj.FromVendorCode = ''
+
     }
+    // COPY TO ZBC
     if (isToZbc) {
-      obj.ToPlantId = value.toPlant.value
+      const plant = value.toPlant && value.toPlant.label.split('(')
+      obj.ToPlantId = value.toPlant && value.toPlant.value
+      obj.toPlantCode = plant && plant[1] && plant[1].split(')')[0]
       obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
     }
+    //COPY FROM VBC
     if (isFromVbc) {
       const costNo = value.fromVbccostingId.label.split('-')
-      const plantCode = value.fromVendorPlant.label.split('(')
-      const vendorCode = value.fromVendorName.label.split('(')
+      const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
+      const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
       obj.CostingId = value.fromVbccostingId.value
       obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
       obj.FromVendorId = value.fromVendorName.value
-      obj.FromVendorCode = vendorCode[1].split(')')[0]
-      obj.FromVendorPlantId = value.fromVendorPlant.value
-      obj.FromVendorPlantCode = plantCode[1].split(')')[0]
+      obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
+      obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
+      obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1].split(')')[0]
       obj.FromPlantCode = ''
       obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
+    //COPY TO VBC
     if (isToVbc) {
-      obj.ToVendorId = value.toVendorName.value
-      obj.ToVendorPlantId = value.toVendorPlant.value
+
+      obj.ToVendorId = value.toVendorName && value.toVendorName.value
+      obj.ToVendorname = value.toVendorName && value.toVendorName.label
+      obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
+      obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
       obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
+
     }
     obj.PartNumber = partNo.label
     obj.Comments = ''
-    obj.IsVendor = isToVbc ? true : false
+    // obj.IsVendor = isToVbc ? true : false
     obj.LoggedInUserId = loggedUserId
     if (isFromZbc && isToZbc) {
       obj.TypeOfCopy = 101
@@ -295,10 +347,18 @@ function CopyCosting(props) {
     }
 
 
+
+    obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
+    obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
+    obj.ToDestinationPlantCode = destination && destination[1] && destination[1].split(')')[0]
+    obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+    // obj.
+
     dispatch(
       saveCopyCosting(obj, (res) => {
 
         if ((res.status = 200)) {
+          toastr.success("Copy costing done sucessfully!")
           props.closeDrawer('')
         }
       }),
@@ -362,6 +422,7 @@ function CopyCosting(props) {
                           checkedIcon={false}
                           height={20}
                           width={46}
+                          disabled={true}
                         />
                         <div className={"right-title"}>VBC</div>
                       </label>
@@ -386,6 +447,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handlePlantChange}
                       errors={errors.fromPlant}
+                      disabled={true}
                     />
                   </div>
                   <div className="input-group form-group col-md-12 input-withouticon">
@@ -402,6 +464,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={() => { }}
                       errors={errors.fromcostingId}
+                      disabled={true}
                     />
                   </div>
                 </Row>
@@ -423,6 +486,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handleFromVendorName}
                       errors={errors.fromVendorName}
+                      disabled={true}
                     />
                   </div>
                   {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
@@ -440,6 +504,26 @@ function CopyCosting(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.fromVendorPlant}
+                        disabled={true}
+                      />
+                    </div>
+                  )}
+                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Destination Plant"}
+                        name={"fromDestinationPlant"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={destinationPlant}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.fromDestinationPlant}
+                        disabled={true}
                       />
                     </div>
                   )}
@@ -458,6 +542,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={() => { }}
                       errors={errors.fromVbccostingId}
+                      disabled={true}
                     />
                   </div>
                 </Row>
@@ -486,6 +571,7 @@ function CopyCosting(props) {
                           checkedIcon={false}
                           height={20}
                           width={46}
+                          disabled={true}
                         />
                         <div className={"right-title"}>VBC</div>
                       </label>
@@ -511,6 +597,28 @@ function CopyCosting(props) {
                       handleChange={() => { }}
                       errors={errors.toPlant}
                     />
+                  </div>
+                  <div className="form-group mb-0 col-md-12">
+                    <label>Costing Effective Date<span className="asterisk-required">*</span></label>
+                    <div className="inputbox date-section">
+                      <DatePicker
+                        name="EffectiveDate"
+                        selected={effectiveDate}
+                        onChange={handleEffectiveDateChange}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="dd/MM/yyyy"
+                        //maxDate={new Date()}
+                        minDate={new Date(minDate)}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
+
+                      />
+                    </div>
                   </div>
                   {/* <div className="input-group form-group col-md-12 input-withouticon">
                   <SearchableSelectHookForm
@@ -547,6 +655,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handleToVendorName}
                       errors={errors.toVendorName}
+                      disabled={true}
                     />
                   </div>
                   {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
@@ -564,10 +673,52 @@ function CopyCosting(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.toVendorPlant}
+                        disabled={true}
                       />
                     </div>
                   )}
+                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Destination Plant"}
+                        name={"toDestinationPlant"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={destinationPlant}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.toDestinationPlant}
+                      />
+                    </div>
+                  )}
+                  {/* <Col md="auto"> */}
+                  <div className="form-group mb-0 col-md-12">
+                    <label>Costing Effective Date<span className="asterisk-required">*</span></label>
+                    <div className="inputbox date-section">
+                      <DatePicker
+                        name="EffectiveDate"
+                        selected={effectiveDate}
+                        onChange={handleEffectiveDateChange}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="dd/MM/yyyy"
+                        //maxDate={new Date()}
+                        minDate={new Date(minDate)}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
 
+                      />
+                    </div>
+                  </div>
+                  {/* </Col> */}
                   {/* <div className="input-group form-group col-md-12 input-withouticon">
                   <SearchableSelectHookForm
                     label={'Costing ID'}
@@ -593,12 +744,7 @@ function CopyCosting(props) {
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
-                    <div className={"cross-icon"}>
-                      <img
-                        src={require("../../../../assests/images/times.png")}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{" "}
+                    <div className={'cancel-icon'}></div>
                     {"Cancel"}
                   </button>
 
@@ -607,13 +753,8 @@ function CopyCosting(props) {
                     className="submit-button save-btn"
                   // onClick={addHandler}
                   >
-                    <div className={"check-icon"}>
-                      <img
-                        src={require("../../../../assests/images/check.png")}
-                        alt="check-icon.jpg"
-                      />{" "}
-                    </div>
-                    {"Save"}
+                    <div className={'save-icon'}></div>
+                    {"Copy"}
                   </button>
                 </div>
               </Row>

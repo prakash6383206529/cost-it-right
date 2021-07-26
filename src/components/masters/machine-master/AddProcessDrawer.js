@@ -330,24 +330,14 @@ class AddProcessDrawer extends Component {
                       className="mr15 cancel-btn"
                       onClick={this.cancel}
                     >
-                      <div className={'cross-icon'}>
-                        <img
-                          src={require('../../../assests/images/times.png')}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{' '}
+                      <div className={"cancel-icon"}></div>
                       {'Cancel'}
                     </button>
                     <button
                       type="submit"
                       className="user-btn save-btn"
                     >
-                      <div className={'check-icon'}>
-                        <img
-                          src={require('../../../assests/images/check.png')}
-                          alt="check-icon.jpg"
-                        />{' '}
-                      </div>
+                      <div className={"save-icon"}></div>
                       {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>

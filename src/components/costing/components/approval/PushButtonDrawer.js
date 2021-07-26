@@ -18,7 +18,7 @@ function PushButtonDrawer(props) {
 
 
   const dispatch = useDispatch()
-  const { register, handleSubmit, errors, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, control } = useForm();
   const [plant, setPlant] = useState([]);
   const [MaterialGroup, setMaterialGroup] = useState([]);
   const [PurchasingGroup, setPurchasingGroup] = useState([]);
@@ -196,7 +196,7 @@ function PushButtonDrawer(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    // defaultValue={dataSend[0].CompanyCode ? dataSend[0].CompanyCode : ''}         // need to do once data started coming
+                    defaultValue={!isSimulation ? dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '' : simulationDetail && costingList[0].DepartmentCode}         // need to do once data started coming
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.CompanyCode}
@@ -251,12 +251,7 @@ function PushButtonDrawer(props) {
                     onClick={toggleDrawer}
                   >
 
-                    <div className={'cross-icon'}>
-                      <img
-                        src={require('../../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{' '}
+                    <div className={'cancel-icon'}></div>
                     {'Cancel'}
                   </button>
 
@@ -265,12 +260,7 @@ function PushButtonDrawer(props) {
                     className="submit-button mr5 save-btn"
                     onClick={onSubmit}
                   >
-                    <div className={'check-icon'}>
-                      <img
-                        src={require('../../../../assests/images/check.png')}
-                        alt="check-icon.jpg"
-                      />{' '}
-                    </div>
+                    <div className={'save-icon'}></div>
                     {'Push'}
                   </button>
                 </div>

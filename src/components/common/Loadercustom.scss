@@ -34,6 +34,18 @@
             }
         }
     }
+    .report-listing-page{
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: inline-block;
+                        width: 1580px;
+                    }
+                }
+            }
+        }
+    }
     .react-bs-table-container{
         .react-bs-table{
             .react-bs-container-body{
@@ -121,6 +133,16 @@
                 }
             }
         }
+        .report-listing-page .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: inline-block;
+                        width: 1270px;
+                    }
+                }
+            }
+        }
     }
 
     // firefox css start
@@ -188,7 +210,7 @@
     .blue-box{
         .main-section{
             > .left-side-menu + .content-page{
-                min-height: calc(100vh - 149px);
+                min-height: calc(100vh - 109px);
             }
         }
     }
@@ -230,6 +252,16 @@
         }
 
         .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    min-height: calc(100vh - 360px);
+                    .react-bs-table-no-data{
+                        width: 1075px;
+                    }
+                }
+            }
+        }
+        .report-listing-page .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{
                     min-height: calc(100vh - 360px);

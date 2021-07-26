@@ -22,7 +22,7 @@ function ApproveRejectDrawer(props) {
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit, setValue, getValues } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -90,6 +90,7 @@ function ApproveRejectDrawer(props) {
         dispatch(
           getAllSimulationApprovalList(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            console.log('Data: ', Data);
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
@@ -215,6 +216,7 @@ function ApproveRejectDrawer(props) {
         })
       })
       if (type === 'Approve') {
+        reset()
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
@@ -304,7 +306,7 @@ function ApproveRejectDrawer(props) {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(objs, res => {
           if (res.data.Result) {
-            toastr.success('Costing Rejected')
+            toastr.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -405,7 +407,8 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}
+            >
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
@@ -463,7 +466,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={"Departments"}
+                        label={"Department"}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}
@@ -498,7 +501,7 @@ function ApproveRejectDrawer(props) {
                     {
                       type === 'Sender' &&
                       <>
-                        <div className="input-group form-group col-md-12 input-withouticon">
+                        <div className="input-group form-group col-md-12">
                           <SearchableSelectHookForm
                             label={'Reason'}
                             name={'reason'}
@@ -567,7 +570,7 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    // rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{ required: type === 'Approve' ? false : true }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
@@ -575,7 +578,7 @@ function ApproveRejectDrawer(props) {
                     errors={errors.remark}
                     disabled={false}
                   />
-                  {showError && <span className="text-help">This is required field</span>}
+                  {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -585,26 +588,16 @@ function ApproveRejectDrawer(props) {
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
-                    <div className={'cross-icon'}>
-                      <img
-                        src={require('../../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{' '}
+                    <div className={'cancel-icon'}></div>
                     {'Cancel'}
                   </button>
 
                   <button
                     type="submit"
                     className="submit-button  save-btn"
-                    onClick={() => { }}
+                  // onClick={() => { }}
                   >
-                    <div className={'check-icon'}>
-                      <img
-                        src={require('../../../../assests/images/check.png')}
-                        alt="check-icon.jpg"
-                      />{' '}
-                    </div>
+                    <div className={'save-icon'}></div>
                     {'Submit'}
                   </button>
                 </div>

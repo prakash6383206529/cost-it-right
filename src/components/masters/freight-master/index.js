@@ -26,6 +26,7 @@ class FreightMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false
         }
     }
 
@@ -45,6 +46,8 @@ class FreightMaster extends Component {
                         EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                         DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                         BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false
+
                     })
                 }
             }
@@ -160,6 +163,8 @@ class FreightMaster extends Component {
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+
                                         />
                                     </TabPane>}
 

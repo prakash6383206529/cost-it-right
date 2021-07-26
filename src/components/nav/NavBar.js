@@ -11,6 +11,27 @@ import {
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
 import ConfirmComponent from "../../helper/ConfirmComponent"
+import masterImage from '../../assests/images/list.svg'
+import masterActive from '../../assests/images/masters-active.svg'
+import additionalMaster from '../../assests/images/list-add.png'
+import reportImg from '../../assests/images/chart.svg'
+import costingImg from '../../assests/images/costing.svg'
+import simulationImg from '../../assests/images/imac.svg'
+import userImg from '../../assests/images/men.svg'
+import auditImg from '../../assests/images/Audit.svg'
+import dashboardImg from '../../assests/images/homeicon.svg'
+import activeDashBoard from '../../assests/images/home-active.svg'
+import addMasterActive from '../../assests/images/aa-master-active.svg'
+import activeCosting from '../../assests/images/costing-active.svg'
+import activeSimulation from '../../assests/images/simulation-active.svg'
+import activeUser from '../../assests/images/user-active.svg'
+import activeAudit from '../../assests/images/audit-active.svg'
+import Logo from '../../assests/images/logo/company-logo.png'
+import cirLogo from '../../assests/images/logo/CIRlogo.svg'
+import userPic from '../../assests/images/user-pic.png'
+import UserImg from '../../assests/images/user.png'
+import logoutImg from '../../assests/images/logout.svg'
+import activeReport from '../../assests/images/report-active.svg'
 
 class SideBar extends Component {
   constructor(props) {
@@ -192,7 +213,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/home-active.svg")) : (require("../../assests/images/homeicon.svg"))}`}
+                    src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? activeDashBoard : dashboardImg}`}
                     alt={module + " icon"}
                   />
                   <span>{module}</span>
@@ -240,7 +261,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/masters-active.svg") : require("../../assests/images/list.svg")}
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? masterActive : masterImage}
                     alt={module + " icon"}
                   />
                   <span>Masters</span>
@@ -320,7 +341,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/aa-master-active.svg")) : (require("../../assests/images/list-add.png"))}
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? addMasterActive : additionalMaster}
                     alt={module + " icon"}
                   />
                   <span>Additional Masters</span>
@@ -370,17 +391,17 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/report-analytics",
+                  pathname: "/costing-detail-report",
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Reports & Analytics",
-                    PageURL: "/report-analytics",
+                    PageName: "costing-detail-report",
+                    PageURL: "/costing-detail-report",
                   },
                 }}
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/report-active.svg") : require("../../assests/images/chart.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeReport : reportImg}
                   alt={module + " icon"}
                 />
                 <span>Report</span>
@@ -421,7 +442,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeCosting : costingImg}
                     alt={module + " icon"}
                   />
                   <span>Costing </span>
@@ -483,7 +504,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/simulation-active.svg") : require("../../assests/images/imac.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeSimulation : simulationImg}
                   alt={module + " icon"}
                 />
                 <span>Simulation</span>
@@ -559,7 +580,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/user-active.svg") : require("../../assests/images/men.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeUser : userImg}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>
@@ -599,7 +620,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/audit-active.svg") : require("../../assests/images/Audit.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>
@@ -635,11 +656,16 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
-                <img src={require("../../assests/images/logo/company-logo.png")} alt="Minda" height="40" />
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 ">
+                <img
+                  src={Logo}
+                  // src={require("../../assests/images/sipl-logo.jpg")}
+                  alt="Systematix"
+                  height="40"
+                />
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-                <img src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" height="40" />
+                <img src={cirLogo} alt="Cost It Right" height="40" />
               </a>
               <button
                 className="navbar-toggler p-0 border-0"
@@ -683,7 +709,7 @@ class SideBar extends Component {
                               <a className="dropdown-item preview-item d-flex py-2 align-items-start">
                                 <div className="preview-thumbnail d-inline-block">
                                   <img
-                                    src={require("../../assests/images/user-pic.png")}
+                                    src={userPic}
                                     alt={""}
                                     className="img-sm profile-pic"
                                   />{" "}
@@ -702,7 +728,7 @@ class SideBar extends Component {
                               <a className="dropdown-item preview-item d-flex py-2 align-items-start">
                                 <div className="preview-thumbnail d-inline-block">
                                   <img
-                                    src={require("../../assests/images/user-pic.png")}
+                                    src={userPic}
                                     alt={""}
                                     className="img-sm profile-pic"
                                   />{" "}
@@ -721,7 +747,7 @@ class SideBar extends Component {
                               <a className="dropdown-item preview-item d-flex py-2 align-items-start">
                                 <div className="preview-thumbnail d-inline-block">
                                   <img
-                                    src={require("../../assests/images/user-pic.png")}
+                                    src={userPic}
                                     alt={""}
                                     className="img-sm profile-pic"
                                   />{" "}
@@ -764,7 +790,7 @@ class SideBar extends Component {
                                 <img
                                   className="img-xs rounded-circle"
                                   alt={""}
-                                  src={require("../../assests/images/user.png")}
+                                  src={UserImg}
                                 />
                                 {userData.Name}
                               </>
@@ -798,7 +824,7 @@ class SideBar extends Component {
                       <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
                         <img
                           className=""
-                          src={require("../../assests/images/logout.svg")}
+                          src={logoutImg}
                           alt=""
                         />
                       </a>

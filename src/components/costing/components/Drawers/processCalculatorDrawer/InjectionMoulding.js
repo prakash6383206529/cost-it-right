@@ -69,7 +69,7 @@ function InjectionMoulding(props) {
     setValue,
     getValues,
     reset,
-    errors,
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -584,12 +584,7 @@ function InjectionMoulding(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button
@@ -598,7 +593,7 @@ function InjectionMoulding(props) {
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
+                  <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
                 </div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>

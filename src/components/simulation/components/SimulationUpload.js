@@ -10,7 +10,7 @@ import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 
 function SimulationUpload(props) {
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })

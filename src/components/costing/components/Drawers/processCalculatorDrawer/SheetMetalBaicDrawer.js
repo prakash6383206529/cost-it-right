@@ -28,11 +28,13 @@ function SheetMetalBaicDrawer(props) {
     ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : ''
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onBlur',
     defaultValues: defaultValues,
   })
+
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
 
@@ -202,7 +204,7 @@ function SheetMetalBaicDrawer(props) {
       const cycleTime = checkForNull(getValues('CycleTime'))
       const efficiency = checkForNull(getValues('Efficiency'))
 
-      const prodPerHrs = checkForNull((cavity * 3600 * efficiency) / (cycleTime * 100))
+      const prodPerHrs = checkForDecimalAndNull((cavity * 3600 * efficiency) / (cycleTime * 100), initialConfiguration.NoOfDecimalForPrice)
 
       setValue('Quantity', prodPerHrs)
       setProdHr(prodPerHrs)
@@ -409,12 +411,7 @@ function SheetMetalBaicDrawer(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button
@@ -422,12 +419,7 @@ function SheetMetalBaicDrawer(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={"check-icon"}>
-                  <img
-                    src={require("../../../../../assests/images/check.png")}
-                    alt="check-icon.jpg"
-                  />{" "}
-                </div>
+                <div className={"save-icon"}></div>
                 {'SAVE'}
               </button>
             </div>

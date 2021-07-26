@@ -15,7 +15,7 @@ const schema = yup.object().shape({
 export default function VishualAdDrawer(props) {
     const { partType } = props
 
-    const { register, handleSubmit, watch, errors, control } = useForm({
+    const { register, handleSubmit, watch, formState: { errors }, control } = useForm({
         // resolver: yupResolver(schema),
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -105,13 +105,13 @@ export default function VishualAdDrawer(props) {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
 
                                     <button
                                         type="submit"
                                         className="submit-button mr5 save-btn">
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                        <div className={"save-icon"}></div>
                                         {'Update'}
                                     </button>
                                 </div>

@@ -16,7 +16,7 @@ let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
 
-  const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
+  const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -153,7 +153,7 @@ function BOPCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setValue(`${bopGridFields}[${index}]Quantity`, 0)
+        setValue(`${bopGridFields}.${index}.Quantity`, 0)
       }, 200)
       //toastr.warning('Please enter valid number.')
     }
@@ -306,7 +306,7 @@ function BOPCost(props) {
                                 {
                                   <NumberFieldHookForm
                                     label=""
-                                    name={`${bopGridFields}[${index}]Quantity`}
+                                    name={`${bopGridFields}.${index}.Quantity`}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -354,7 +354,7 @@ function BOPCost(props) {
                     }
                     {gridData && gridData.length === 0 &&
                       <tr>
-                        <td colSpan={7}>
+                        <td colSpan={6}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />
                         </td>
                       </tr>
@@ -392,7 +392,7 @@ function BOPCost(props) {
                     name={"BOPHandlingPercentage"}
                     Controller={Controller}
                     control={control}
-                    register={register({ required: true, })}
+                    register={register}
                     mandatory={false}
                     rules={{
                       required: true,

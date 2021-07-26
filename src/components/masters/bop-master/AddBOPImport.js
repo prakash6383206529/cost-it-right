@@ -32,6 +32,10 @@ import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -628,6 +632,7 @@ class AddBOPImport extends Component {
             })
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -729,7 +734,7 @@ class AddBOPImport extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1090,7 +1095,7 @@ class AddBOPImport extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -1116,10 +1121,10 @@ class AddBOPImport extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
@@ -1181,24 +1186,14 @@ class AddBOPImport extends Component {
                             className=" mr15 cancel-btn"
                             onClick={this.cancel}
                           >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >
-                            <div className={"check-icon"}>
-                              <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                              />{" "}
-                            </div>
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
                           </button>
                         </div>

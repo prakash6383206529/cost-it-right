@@ -10,12 +10,23 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import LoaderCustom from '../../../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+const gridOptions = {};
+
 
 function AddSurfaceTreatment(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [rowData, setRowData] = useState(null);
+
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
@@ -91,14 +102,17 @@ function AddSurfaceTreatment(props) {
   };
 
   const onRowSelect = (row, isSelected, e) => {
-    if (isSelected) {
-      let tempArr = [...selectedRowData, row]
-      setSelectedRowData(tempArr)
-    } else {
-      const OperationId = row.OperationId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
-      setSelectedRowData(tempArr)
-    }
+
+    var selectedRows = gridApi.getSelectedRows();
+    setSelectedRowData(selectedRows)
+    // if (isSelected) {
+    //   let tempArr = [...selectedRowData, row]
+    //   setSelectedRowData(tempArr)
+    // } else {
+    //   const OperationId = row.OperationId;
+    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
+    //   setSelectedRowData(tempArr)
+    // }
 
   }
 
@@ -142,6 +156,64 @@ function AddSurfaceTreatment(props) {
     toggleDrawer('')
   }
 
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+    return thisIsFirstColumn;
+  }
+
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
+  };
+
+
+  const onGridReady = (params) => {
+    // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    // getDataList()
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
+    params.api.paginationGoToPage(0);
+
+  };
+
+  const onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    gridApi.paginationSetPageSize(Number(value));
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  const rateFormat = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+  }
+
+  const frameworkComponents = {
+    // totalValueRenderer: this.buttonFormatter,
+    // effectiveDateRenderer: this.effectiveDateFormatter,
+    // costingHeadRenderer: this.costingHeadFormatter,
+    // netLandedFormat: netLandedFormat,
+    // netLandedConversionFormat: netLandedConversionFormat,
+    // currencyFormatter: currencyFormatter,
+    rateFormat: rateFormat,
+    customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+  };
+
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+  }
+
+
   /**
   * @method render
   * @description Renders the component
@@ -151,25 +223,26 @@ function AddSurfaceTreatment(props) {
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        <Container>
-          <div className={'drawer-wrapper drawer-1500px'}>
+        < div className={`ag-grid-react`}>
+          <Container>
+            <div className={'drawer-wrapper drawer-1500px'}>
 
-            <Row className="drawer-heading">
-              <Col>
-                <div className={'header-wrapper left'}>
-                  <h3>{'ADD Surface Treatment'}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}>
-                </div>
-              </Col>
-            </Row>
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={'header-wrapper left'}>
+                    <h3>{'ADD Surface Treatment'}</h3>
+                  </div>
+                  <div
+                    onClick={(e) => toggleDrawer(e)}
+                    className={'close-button right'}>
+                  </div>
+                </Col>
+              </Row>
 
 
-            <Row className="mx-0 mb-3">
-              <Col>
-                <BootstrapTable
+              <Row className="mx-0 mb-3">
+                <Col>
+                  {/* <BootstrapTable
                   data={tableData}
                   striped={false}
                   bordered={false}
@@ -189,33 +262,83 @@ function AddSurfaceTreatment(props) {
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Rate" searchable={false} >{'Rate'}</TableHeaderColumn>
                   {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'LabourRate'}</TableHeaderColumn>}
-                  {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Quantity" searchable={false} >{'Specification'}</TableHeaderColumn> */}
-                  {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourQuantity" searchable={false} >{'Specification'}</TableHeaderColumn> */}
-                </BootstrapTable>
-              </Col>
-            </Row>
+                 
+                </BootstrapTable> */}
+                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                        <div className="refresh mr-0"></div>
+                      </button>
+                    </div>
+                    <div
+                      className="ag-theme-material"
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <AgGridReact
+                        style={{ height: '100%', width: '100%' }}
+                        defaultColDef={defaultColDef}
+                        // columnDefs={c}
+                        rowData={tableData}
+                        pagination={true}
+                        paginationPageSize={10}
+                        onGridReady={onGridReady}
+                        gridOptions={gridOptions}
+                        loadingOverlayComponent={'customLoadingOverlay'}
+                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                        noRowsOverlayComponentParams={{
+                          title: CONSTANT.EMPTY_DATA,
+                        }}
+                        suppressRowClickSelection={true}
+                        rowSelection={'multiple'}
+                        frameworkComponents={frameworkComponents}
+                        onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
+                      >
+                        <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
+                        <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
+                        <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
+                        <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                        <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
+                        <AgGridColumn field="Rate" cellRenderer={'rateFormat'}></AgGridColumn>
+                        {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}
 
 
-            <div className="col-sm-12 text-left ">
-              <button
-                type={'button'}
-                className="submit-button mr5 save-btn"
-                onClick={addRow} >
-                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                {'SELECT'}
-              </button>
+                      </AgGridReact>
+                      <div className="paging-container d-inline-block float-right">
+                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                          <option value="10" selected={true}>10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
 
-              <button
-                type={'button'}
-                className="reset cancel-btn"
-                onClick={cancel} >
-                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-              </button>
+
+              <div className="col-sm-12 text-left ">
+                <button
+                  type={'button'}
+                  className="submit-button mr5 save-btn"
+                  onClick={addRow} >
+                  <div className={'save-icon'}></div>
+                  {'SELECT'}
+                </button>
+
+                <button
+                  type={'button'}
+                  className="reset cancel-btn"
+                  onClick={cancel} >
+                  <div className={'cancel-icon'}></div> {'Cancel'}
+                </button>
+              </div>
+
+
             </div>
-
-
-          </div>
-        </Container>
+          </Container>
+        </div>
       </Drawer>
     </div>
   );

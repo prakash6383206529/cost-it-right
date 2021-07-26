@@ -53,7 +53,7 @@ function HotForging(props) {
     setValue,
     getValues,
     reset,
-    errors,
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -521,12 +521,7 @@ function HotForging(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button

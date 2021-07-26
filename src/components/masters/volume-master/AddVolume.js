@@ -792,7 +792,6 @@ class AddVolume extends Component {
                             <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
                             <TableHeaderColumn dataField="BudgetedQuantity" editable={true} dataFormat={this.budgetFormatter}>Budgeted Quantity </TableHeaderColumn>
                             <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
-
                             <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>

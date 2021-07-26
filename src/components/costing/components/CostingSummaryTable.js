@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { DRAFT, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
@@ -26,7 +26,7 @@ import { isSafeInteger } from 'lodash'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -273,6 +273,9 @@ const CostingSummaryTable = (props) => {
         VendorPlantCode: tempData.vendorPlantCode,
         VendorName: tempData.vendorName,
         VendorCode: tempData.vendorCode,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantName : '',
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
@@ -289,8 +292,8 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          setPartInfo(res.data.Data)
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          setPartInfo(res.data.Data)
           showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
         }
       }),
@@ -585,10 +588,7 @@ const CostingSummaryTable = (props) => {
               <Col md="8" className="text-right">
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                    <img
-                      class="mr-1"
-                      src={require('../../../assests/images/send-for-approval.svg')}
-                    ></img>{' '}
+                    <div className="send-for-approval"></div>
                     {'Send For Approval'}
                   </button>
                 )}
@@ -597,7 +597,7 @@ const CostingSummaryTable = (props) => {
                   className={'user-btn mb-2 comparison-btn'}
                   onClick={addComparisonDrawerToggle}
                 >
-                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
+                  <div className="compare-arrows"></div>
                   Add To Comparison{' '}
                 </button>
                 {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
@@ -606,7 +606,7 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row>
+          <Row className={customClass}>
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
@@ -730,6 +730,8 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">RM Name-Grade</span>
+                        <span class="d-block small-grey-text">RM Rate</span>
+                        <span class="d-block small-grey-text">Scrap Rate</span>
                         <span class="d-block small-grey-text">Gross Weight</span>
                         <span class="d-block small-grey-text">Finish Weight</span>
                         <span class="d-block small-grey-text">Scrap Weight</span>
@@ -739,6 +741,12 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.rm : ''}</span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                              </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
@@ -753,19 +761,22 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData.length > 0 && viewCostingData[1].netRM ? 'red-row' : 'green-row' : '-'}`}>
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
                               <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
-                              <button
-                                type="button"
-                                class="float-right mb-0 View "
-                                onClick={() => viewRM(index)}
-                              >
-                              </button>
+                              {
+                                !simulationDrawer &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewRM(index)}
+                                >
+                                </button>
+                              }
                             </td>
                           )
                         })}
@@ -797,6 +808,8 @@ const CostingSummaryTable = (props) => {
                       <td>
                         <span class="d-block small-grey-text">Process Cost</span>
                         <span class="d-block small-grey-text">Operation Cost</span>
+                        <span class="d-block small-grey-text">Other Operation Cost</span>
+
                         <span class="d-block small-grey-text">
                           Surface Treatment
                         </span>
@@ -813,6 +826,9 @@ const CostingSummaryTable = (props) => {
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
@@ -1092,7 +1108,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData.length > 0 && viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                      <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
                         <th>Net PO Price(INR)</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
@@ -1121,7 +1137,7 @@ const CostingSummaryTable = (props) => {
                     {
                       !simulationDrawer &&
                       <tr class="background-light-blue">
-                        <th>Net PO Price (INR)</th>
+                        <th>Net PO Price (in Currency)</th>
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
@@ -1204,10 +1220,7 @@ const CostingSummaryTable = (props) => {
                                   }}
                                 >
                                   {' '}
-                                  <img
-                                    class="mr-1"
-                                    src={require('../../../assests/images/send-for-approval.svg')}
-                                  ></img>
+                                  <div class="send-for-approval"></div>
                                   Send For Approval
                                 </button>
                               }

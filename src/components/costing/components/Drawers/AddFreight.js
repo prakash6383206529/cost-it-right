@@ -25,7 +25,7 @@ function AddFreight(props) {
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
@@ -177,7 +177,10 @@ function AddFreight(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
+    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
+    const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
+    const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
     const RateAsPercentage = getValues('Rate');
 
     switch (Text) {
@@ -186,15 +189,15 @@ function AddFreight(props) {
         break;
 
       case 'RM + CC':
-        setValue('FreightCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(RateAsPercentage), 2))
+        setValue('FreightCost', checkForDecimalAndNull((RMCC) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       case 'CC':
-        setValue('FreightCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(RateAsPercentage), 2))
+        setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       case 'RM + CC + BOP':
-        setValue('FreightCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(RateAsPercentage), 2))
+        setValue('FreightCost', checkForDecimalAndNull((RMBOPCC) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       case 'RM + BOP':
@@ -515,13 +518,13 @@ function AddFreight(props) {
                       type={'button'}
                       className="reset mr15 cancel-btn"
                       onClick={cancel} >
-                      <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                      <div className={"cancel-icon"}></div> {'Cancel'}
                     </button>
 
                     <button
                       type={'submit'}
                       className="submit-button save-btn">
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                      <div className={"save-icon"}></div>
                       {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>

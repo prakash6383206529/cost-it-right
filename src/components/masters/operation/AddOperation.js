@@ -27,6 +27,9 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -503,6 +506,7 @@ class AddOperation extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -832,7 +836,7 @@ class AddOperation extends Component {
                           onChange={this.onPressSurfaceTreatment}
                         >
                           Surface Treatment Operation
-                              <input
+                          <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
                             disabled={isEditFlag ? true : false}
@@ -905,10 +909,10 @@ class AddOperation extends Component {
                                 Drag and Drop or{" "}
                                 <span className="text-primary">
                                   Browse
-                          </span>
+                                </span>
                                 <br />
-                          file to upload
-                        </span>
+                                file to upload
+                              </span>
                             </div>))}
                             styles={{
                               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
@@ -956,24 +960,14 @@ class AddOperation extends Component {
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
                       >
-                        <div className={"cross-icon"}>
-                          <img
-                            src={require("../../../assests/images/times.png")}
-                            alt="cancel-icon.jpg"
-                          />
-                        </div>{" "}
+                        <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
                         className="user-btn mr5 save-btn"
                       >
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../assests/images/check.png")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}
                       </button>
                     </div>

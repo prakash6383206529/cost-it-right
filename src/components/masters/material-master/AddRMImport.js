@@ -31,11 +31,11 @@ import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import moment from 'moment';
-
-
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import WarningMessage from '../../common/WarningMessage';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -942,20 +942,23 @@ class AddRMImport extends Component {
             this.cancel()
             return false
           }
-          const toastrConfirmOptions = {
-            onOk: () => {
-              this.props.reset()
-              this.props.updateRMImportAPI(requestData, (res) => {
-                if (res.data.Result) {
-                  toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                  this.clearForm();
-                }
-              })
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
+          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+            const toastrConfirmOptions = {
+              onOk: () => {
+                this.props.reset()
+                this.props.updateRMImportAPI(requestData, (res) => {
+                  if (res.data.Result) {
+                    toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                    this.clearForm();
+                  }
+                })
+              },
+              onCancel: () => { },
+              component: () => <ConfirmComponent />,
+            }
+            return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
           }
-          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+
         }
       }
 
@@ -1077,7 +1080,7 @@ class AddRMImport extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1431,7 +1434,7 @@ class AddRMImport extends Component {
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
                             >
-                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                              {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>
                           <Col md="4">
@@ -1625,7 +1628,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (Upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
@@ -1650,10 +1653,10 @@ class AddRMImport extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
@@ -1715,24 +1718,14 @@ class AddRMImport extends Component {
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
                           >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >
-                            <div className={"check-icon"}>
-                              <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
                           </button>
                         </div>

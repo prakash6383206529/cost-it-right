@@ -8,6 +8,8 @@ import { required } from '../../../helper';
 import { getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class Association extends Component {
     constructor(props) {
@@ -227,25 +229,13 @@ class Association extends Component {
                                                     className=" mr15 cancel-btn"
                                                     onClick={this.toggleDrawer}
                                                 >
-                                                    <div className={"cross-icon"}>
-                                                        {" "}
-                                                        <img
-                                                            alt={""}
-                                                            src={require("../../../assests/images/times.png")}
-                                                        ></img>
-                                                    </div>{" "}
+                                                    <div className={'cancel-icon'}></div>
                                                     {"Cancel"}
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="user-btn save-btn"
-                                                >
-                                                    <div className={"check-icon"}>
-                                                        <img
-                                                            alt={""}
-                                                            src={require("../../../assests/images/check.png")}
-                                                        ></img>
-                                                    </div>{" "}
+                                                ><div className={"save-icon"}></div>
                                                     {"Save"}
                                                 </button>
                                             </div>

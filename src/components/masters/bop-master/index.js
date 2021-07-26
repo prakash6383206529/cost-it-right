@@ -27,6 +27,7 @@ class BOPMaster extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
+      DownloadAccessibility: false,
     }
   }
 
@@ -46,6 +47,7 @@ class BOPMaster extends Component {
             EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
             DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
             BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
           })
         }
       }
@@ -148,7 +150,7 @@ class BOPMaster extends Component {
                     }}
                   >
                     Manage BOP (Domestic)
-                      </NavLink>
+                  </NavLink>
                 </NavItem>
 
                 <NavItem>
@@ -161,13 +163,13 @@ class BOPMaster extends Component {
                     }}
                   >
                     Manage BOP (Import)
-                      </NavLink>
+                  </NavLink>
                 </NavItem>
 
                 <NavItem>
                   <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                     Manage SOB
-                                </NavLink>
+                  </NavLink>
                 </NavItem>
 
               </Nav>
@@ -182,6 +184,7 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>
                 )}
@@ -195,6 +198,7 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>
                 )}
@@ -208,6 +212,7 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>}
 

@@ -12,7 +12,6 @@ import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL, SHEET_METAL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
@@ -355,18 +354,11 @@ class CostingBulkUploadDrawer extends Component {
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn"
                                             >
-                                                <div className={"cross-icon"}>
-                                                    <img
-                                                        src={require("../../../assests/images/times.png")}
-                                                        alt="cancel-icon.jpg"
-                                                    />
-                                                </div>
+                                                <div className={'cancel-icon'}></div>
                                                     CANCEL
                                             </button>
                                             <button type="submit" className="btn-primary save-btn">
-                                                <div className={"check-icon"}>
-                                                    <img src={require("../../../assests/images/check.png")} alt="" />
-                                                </div>
+                                                <div className={'save-icon'}></div>
                                                 {"SAVE"}
                                             </button>
                                         </div>

@@ -49,10 +49,10 @@ function SimulationHistory(props) {
         return <>Vendor Name</>
     }
     const renderImpactCosting = () => {
-        return <>Impact Costing </>
+        return <>Impacted Costing </>
     }
     const renderImpactParts = () => {
-        return <>Impact Parts </>
+        return <>Impacted Parts </>
     }
     const renderSimulatedBy = () => {
         return <>Simulated By </>
@@ -93,7 +93,7 @@ function SimulationHistory(props) {
         <div className="container-fluid simulation-history-page">
             <Row>
                 <Col sm="12" >
-                    <h1 className="mb-4">{`Simulation History 002`}</h1>
+                    <h1 className="mb-4">{`Simulation History`}</h1>
                 </Col>
             </Row>
             <BootstrapTable
