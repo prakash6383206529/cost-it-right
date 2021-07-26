@@ -2599,7 +2599,8 @@ td,.ag-cell {
   [class^="Awaiting"],
   .Approved,
   .Rejected,
-  .History {
+  .History,
+  .ApprovedBySimulation {
     background-color:#da94a1;
     min-width: 90px;
     height: 30px;
@@ -2618,7 +2619,7 @@ td,.ag-cell {
   [class^="Awaiting"]{
     background-color: #eac607;
   }
-  .Approved {
+  .Approved,.ApprovedBySimulation {
     background-color: #4dc771;
   }
   .History {
