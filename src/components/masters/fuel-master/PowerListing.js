@@ -700,11 +700,11 @@ class PowerListing extends Component {
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -728,6 +728,7 @@ class PowerListing extends Component {
                 {this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}

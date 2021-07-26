@@ -609,10 +609,11 @@ class UsersListing extends Component {
 						</div>
 						<div
 							className="ag-theme-material"
-							style={{ height: '100%', width: '100%' }}
+							
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
+domLayout='autoHeight'
 								// columnDefs={c}
 								rowData={this.props.userDataList}
 								pagination={true}

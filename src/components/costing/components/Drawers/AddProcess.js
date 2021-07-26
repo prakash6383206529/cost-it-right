@@ -283,11 +283,11 @@ function AddProcess(props) {
                     </div>
                     <div
                       className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
                     >
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={processDrawerList}
                         pagination={true}
