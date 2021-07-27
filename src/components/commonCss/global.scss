@@ -732,7 +732,7 @@ a:hover {
       }      
       .ag-theme-material{
         .ag-header{
-          // .ag-header-row{border-left: 1px solid #e5eaf9;}
+          .ag-header-row{border-left: 1px solid #e5eaf9;}
           border-top: 1px solid #e5eaf9;
           font-weight: normal;
           background-color: #fff;
@@ -744,7 +744,7 @@ a:hover {
           border: none;
         }
         .ag-row{
-          // border-left: 1px solid #e5eaf9;
+          border-left: 1px solid #e5eaf9;
           .ag-cell{
             button{
               vertical-align: middle;
