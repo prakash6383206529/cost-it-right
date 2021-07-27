@@ -731,7 +731,9 @@ a:hover {
         padding-right: 15px !important;
       }      
       .ag-theme-material{
-        .ag-header{border-top: 1px solid #e5eaf9;
+        .ag-header{
+          // .ag-header-row{border-left: 1px solid #e5eaf9;}
+          border-top: 1px solid #e5eaf9;
           font-weight: normal;
           background-color: #fff;
           .ag-header-cell-label{
@@ -742,6 +744,7 @@ a:hover {
           border: none;
         }
         .ag-row{
+          // border-left: 1px solid #e5eaf9;
           .ag-cell{
             button{
               vertical-align: middle;
@@ -756,12 +759,13 @@ a:hover {
                 min-width: unset;
               }
               .form-control{
-                padding: 7px 12px !important;
+                padding: 7px 8px !important;
                 height: auto;
                 min-height: auto;
                 line-height: initial;
                 max-width: 100%;
                 overflow: hidden;
+                text-overflow: ellipsis;
               }
             }            
             &:not(.has-checkbox){
@@ -1986,6 +1990,17 @@ form .form-control {
 
   img {
     width: 120px;
+  }
+}
+.ag-overlay-panel{
+  .nodate-section {
+    img{
+      width: 90px;
+    }
+    .my-2{
+      margin-top: 0 !important;
+      h5{font-size: 1rem;}
+    }
   }
 }
 
