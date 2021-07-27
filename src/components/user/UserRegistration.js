@@ -602,8 +602,6 @@ class UserRegistration extends Component {
    */
   setSimualtionHeadLevel = () => {
     const { simulationHeads, simualtionLevel, HeadLevelGrid } = this.state;
-    console.log('simulationHeads: ', simulationHeads);
-    console.log('HeadLevelGrid: ', HeadLevelGrid);
     const tempArray = [];
 
     if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
@@ -615,7 +613,7 @@ class UserRegistration extends Component {
       return Number(el.TechnologyId) === Number(simulationHeads.value)
       // && el.LevelId === level.value
     })
-    console.log(isExistTechnology, "isExistTechnology");
+
 
     if (isExistTechnology !== -1) {
       // toastr.warning('Technology and Level already allowed.')
@@ -721,7 +719,6 @@ class UserRegistration extends Component {
   editSimulationItemDetails = (index) => {
     const { HeadLevelGrid } = this.state;
     const tempData = HeadLevelGrid[index];
-    console.log('tempData: ', tempData);
     this.props.getSimualationLevelByTechnology(tempData.TechnologyId, res => { })
     this.setState({
       simulationLevelEditIndex: index,
