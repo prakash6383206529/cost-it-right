@@ -52,8 +52,8 @@ class UserRegistration extends Component {
       isEditFlag: false,
       isShowForm: false,
       UserId: '',
-      acc1:false,
-      acc2:false,
+      acc1: false,
+      acc2: false,
 
       IsShowAdditionalPermission: false,
       Modules: [],
@@ -602,6 +602,8 @@ class UserRegistration extends Component {
    */
   setSimualtionHeadLevel = () => {
     const { simulationHeads, simualtionLevel, HeadLevelGrid } = this.state;
+    console.log('simulationHeads: ', simulationHeads);
+    console.log('HeadLevelGrid: ', HeadLevelGrid);
     const tempArray = [];
 
     if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
@@ -610,9 +612,10 @@ class UserRegistration extends Component {
     }
 
     const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return Number(el.SimulationTechnologyId) === Number(simulationHeads.value)
+      return Number(el.TechnologyId) === Number(simulationHeads.value)
       // && el.LevelId === level.value
     })
+    console.log(isExistTechnology, "isExistTechnology");
 
     if (isExistTechnology !== -1) {
       // toastr.warning('Technology and Level already allowed.')
@@ -1313,104 +1316,104 @@ class UserRegistration extends Component {
                         <HeaderTitle title={'Technology & Level:'} customClass={''} />
                       </Col>
                       <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({acc1:!this.state.acc1}) }}>
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc1: !this.state.acc1 }) }}>
 
-                              {this.state.acc1 ? (
-                                  <i className="fa fa-minus" ></i>
-                              ) : (
-                                  <i className="fa fa-plus"></i>
-                              )}
-                          </button>
+                          {this.state.acc1 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
                       </Col>
                     </Row>
                     {this.state.acc1 &&
-                    <>
-                    <div className="row form-group">
-                      <div className="col-md-3">
-                        <Field
-                          name="TechnologyId"
-                          type="text"
-                          label="Technology"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('technology')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.technologyHandler}
-                          valueDescription={this.state.technology}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="LevelId"
-                          type="text"
-                          label="Level"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('level')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.levelHandler}
-                          valueDescription={this.state.level}
-                        />
-                      </div>
-                      <div className="col-md-3 btn-mr-rate d-flex">
-                        {this.state.isEditIndex ?
-                          <>
-                            <button
-                              type="button"
-                              className={'btn btn-primary add-button-big'}
-                              onClick={this.updateTechnologyLevel}
-                            >Update</button>
+                      <>
+                        <div className="row form-group">
+                          <div className="col-md-3">
+                            <Field
+                              name="TechnologyId"
+                              type="text"
+                              label="Technology"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('technology')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.technologyHandler}
+                              valueDescription={this.state.technology}
+                            />
+                          </div>
+                          <div className="col-md-3">
+                            <Field
+                              name="LevelId"
+                              type="text"
+                              label="Level"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('level')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.levelHandler}
+                              valueDescription={this.state.level}
+                            />
+                          </div>
+                          <div className="col-md-3 btn-mr-rate d-flex">
+                            {this.state.isEditIndex ?
+                              <>
+                                <button
+                                  type="button"
+                                  className={'btn btn-primary add-button-big'}
+                                  onClick={this.updateTechnologyLevel}
+                                >Update</button>
 
-                            <button
-                              type="button"
-                              className={'reset-btn ml-2'}
-                              onClick={this.resetTechnologyLevel}
-                            >Cancel</button>
-                          </>
-                          :
-                          <button
-                            type="button"
-                            className={'user-btn add-button-big ml-2'}
-                            onClick={this.setTechnologyLevel}
-                          ><div className={'plus'}></div>ADD</button>}
-                      </div>
-                    </div>
-                    
+                                <button
+                                  type="button"
+                                  className={'reset-btn ml-2'}
+                                  onClick={this.resetTechnologyLevel}
+                                >Cancel</button>
+                              </>
+                              :
+                              <button
+                                type="button"
+                                className={'user-btn add-button-big ml-2'}
+                                onClick={this.setTechnologyLevel}
+                              ><div className={'plus'}></div>ADD</button>}
+                          </div>
+                        </div>
 
-                    <div className="row form-group">
-                      <div className="col-md-12">
-                        <Table className="table" size="sm" >
-                          <thead>
-                            <tr>
-                              <th>{`Technology`}</th>
-                              <th>{`Level`}</th>
-                              <th className="text-right">{`Action`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              this.state.TechnologyLevelGrid &&
-                              this.state.TechnologyLevelGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.Technology}</td>
-                                    <td>{item.Level}</td>
-                                    <td className="text-right">
-                                      <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                      <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                    </td>
-                                  </tr>
-                                )
-                              })
-                            }
-                          </tbody>
-                        </Table>
-                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                      </div>
-                    </div>
-                    </>
+
+                        <div className="row form-group">
+                          <div className="col-md-12">
+                            <Table className="table" size="sm" >
+                              <thead>
+                                <tr>
+                                  <th>{`Technology`}</th>
+                                  <th>{`Level`}</th>
+                                  <th className="text-right">{`Action`}</th>
+                                </tr>
+                              </thead>
+                              <tbody >
+                                {
+                                  this.state.TechnologyLevelGrid &&
+                                  this.state.TechnologyLevelGrid.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <td>{item.Technology}</td>
+                                        <td>{item.Level}</td>
+                                        <td className="text-right">
+                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                          <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                        </td>
+                                      </tr>
+                                    )
+                                  })
+                                }
+                              </tbody>
+                            </Table>
+                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                          </div>
+                        </div>
+                      </>
                     }
 
                     {/* ////////////////////////////////////////////////////
@@ -1425,103 +1428,103 @@ class UserRegistration extends Component {
                         <HeaderTitle title={'Simulation Heads & Level:'} customClass={''} />
                       </Col>
                       <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({acc2:!this.state.acc2}) }}>
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc2: !this.state.acc2 }) }}>
 
-                              {this.state.acc2 ? (
-                                  <i className="fa fa-minus" ></i>
-                              ) : (
-                                  <i className="fa fa-plus"></i>
-                              )}
-                          </button>
+                          {this.state.acc2 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
                       </Col>
                     </Row>
-                    {this.state.acc2 && 
-                    <>
-                    <div className="row form-group">
-                      <div className="col-md-3">
-                        <Field
-                          name="Head"
-                          type="text"
-                          label="Head"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('heads')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.headHandler}
-                          valueDescription={this.state.simulationHeads}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="simualtionLevel"
-                          type="text"
-                          label="Level"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('simualtionLevel')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.simualtionLevelHandler}
-                          valueDescription={this.state.simualtionLevel}
-                        />
-                      </div>
-                      <div className="col-md-3 btn-mr-rate d-flex">
-                        {this.state.isSimulationEditIndex ?
-                          <>
-                            <button
-                              type="button"
-                              className={'btn btn-primary add-button-big'}
-                              onClick={this.updateSimualtionHeadLevel}
-                            >Update</button>
+                    {this.state.acc2 &&
+                      <>
+                        <div className="row form-group">
+                          <div className="col-md-3">
+                            <Field
+                              name="Head"
+                              type="text"
+                              label="Head"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('heads')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.headHandler}
+                              valueDescription={this.state.simulationHeads}
+                            />
+                          </div>
+                          <div className="col-md-3">
+                            <Field
+                              name="simualtionLevel"
+                              type="text"
+                              label="Level"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('simualtionLevel')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.simualtionLevelHandler}
+                              valueDescription={this.state.simualtionLevel}
+                            />
+                          </div>
+                          <div className="col-md-3 btn-mr-rate d-flex">
+                            {this.state.isSimulationEditIndex ?
+                              <>
+                                <button
+                                  type="button"
+                                  className={'btn btn-primary add-button-big'}
+                                  onClick={this.updateSimualtionHeadLevel}
+                                >Update</button>
 
-                            <button
-                              type="button"
-                              className={'reset-btn ml-2'}
-                              onClick={this.resetSimualtionHeadLevel}
-                            >Cancel</button>
-                          </>
-                          :
-                          <button
-                            type="button"
-                            className={'user-btn add-button-big ml-2'}
-                            onClick={this.setSimualtionHeadLevel}
-                          ><div className={'plus'}></div>ADD</button>}
-                      </div>
-                    </div>
+                                <button
+                                  type="button"
+                                  className={'reset-btn ml-2'}
+                                  onClick={this.resetSimualtionHeadLevel}
+                                >Cancel</button>
+                              </>
+                              :
+                              <button
+                                type="button"
+                                className={'user-btn add-button-big ml-2'}
+                                onClick={this.setSimualtionHeadLevel}
+                              ><div className={'plus'}></div>ADD</button>}
+                          </div>
+                        </div>
 
-                    <div className="row form-group">
-                      <div className="col-md-12">
-                        <Table className="table" size="sm" >
-                          <thead>
-                            <tr>
-                              <th>{`Head`}</th>
-                              <th>{`Level`}</th>
-                              <th className="text-right">{`Action`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              this.state.HeadLevelGrid &&
-                              this.state.HeadLevelGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.Technology}</td>
-                                    <td>{item.Level}</td>
-                                    <td className="text-right">
-                                      <button className="Edit mr-2" type={'button'} onClick={() => this.editSimulationItemDetails(index)} />
-                                      <button className="Delete" type={'button'} onClick={() => this.deleteSimulationItem(index)} />
-                                    </td>
-                                  </tr>
-                                )
-                              })
-                            }
-                          </tbody>
-                        </Table>
-                        {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                      </div>
-                    </div>
-                    </>
+                        <div className="row form-group">
+                          <div className="col-md-12">
+                            <Table className="table" size="sm" >
+                              <thead>
+                                <tr>
+                                  <th>{`Head`}</th>
+                                  <th>{`Level`}</th>
+                                  <th className="text-right">{`Action`}</th>
+                                </tr>
+                              </thead>
+                              <tbody >
+                                {
+                                  this.state.HeadLevelGrid &&
+                                  this.state.HeadLevelGrid.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <td>{item.Technology}</td>
+                                        <td>{item.Level}</td>
+                                        <td className="text-right">
+                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editSimulationItemDetails(index)} />
+                                          <button className="Delete" type={'button'} onClick={() => this.deleteSimulationItem(index)} />
+                                        </td>
+                                      </tr>
+                                    )
+                                  })
+                                }
+                              </tbody>
+                            </Table>
+                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                          </div>
+                        </div>
+                      </>
                     }
 
                     {/* ////////////////////////////////////////////////////
@@ -1547,7 +1550,7 @@ class UserRegistration extends Component {
                         type="submit"
                         disabled={isSubmitted ? true : false}
                         className="user-btn save-btn">
-                          <div className={"save-icon"}></div>
+                        <div className={"save-icon"}></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>
