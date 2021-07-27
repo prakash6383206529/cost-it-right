@@ -142,7 +142,7 @@ function ReportListing(props) {
             setTableData(temp)
             setLoader(false)
             var t1 = performance.now();
-            console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+            // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         })
     }
 
