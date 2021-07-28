@@ -283,12 +283,7 @@ class AddComponentForm extends Component {
                 className="reset mt-2 mr-2 cancel-btn"
                 onClick={this.cancel}
               >
-                <div className={"cross-icon"}>
-                  <img
-                    src={require("../../../assests/images/times.png")}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>{" "}
+                <div className={"cancel-icon"}></div>
                 {"Cancel"}
               </button>
               <button
@@ -304,12 +299,7 @@ class AddComponentForm extends Component {
                 className="submit-button mt-2 save-btn"
                 onClick={() => this.setState({ isAddMore: false })}
               >
-                <div className={"check-icon"}>
-                  <img
-                    src={require("../../../assests/images/check.png")}
-                    alt="check-icon.jpg"
-                  />{" "}
-                </div>
+                <div className={"save-icon"}></div>
                 {isEditFlag ? "Update" : "Save"}
               </button>
             </div>

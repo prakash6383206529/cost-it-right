@@ -26,7 +26,7 @@ function Tool(props) {
     NetToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.NetToolCost !== undefined ? ObjectForOverAllApplicability.NetToolCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
@@ -393,7 +393,7 @@ function Tool(props) {
                 {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
-                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  <div className={"save-icon"}></div>
                   {'Save'}
                 </button>}
               </div>

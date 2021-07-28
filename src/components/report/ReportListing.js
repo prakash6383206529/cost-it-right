@@ -26,7 +26,7 @@ function ReportListing(props) {
 
     const dispatch = useDispatch()
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -71,27 +71,98 @@ function ReportListing(props) {
         return <div className={cell}>{row.DisplayCostingStatus}</div>
     }
 
-    const renderVendorName = () => {
-        return <>Vendor Name</>
+    // table headings start
+    const renderCostingVersion = () => {
+        return <>Costing <br />Version</>
     }
-    const renderImpactCosting = () => {
-        return <>Impact Costing </>
+    const renderPOPrice = () => {
+        return <>PO Price</>
     }
-    const renderImpactParts = () => {
-        return <>Impact Parts </>
+    const renderPartNumber = () => {
+        return <>Part <br />Number</>
     }
-    const renderSimulatedBy = () => {
-        return <>Simulated By </>
+    const renderPartName = () => {
+        return <>Part <br />Name</>
     }
-    const renderSimulatedOn = () => {
-        return <>Simulated On </>
+    const renderRMNameGrade = () => {
+        return <>RM <br />Name-Grade</>
     }
-    const renderApprovedOn = () => {
-        return <>Approved On </>
+    const renderGrossWeight = () => {
+        return <>Gross <br />Weight</>
     }
-    const renderApprovedBy = () => {
-        return <>Approved By </>
+    const renderFinishWeight = () => {
+        return <>Finish <br />Weight</>
     }
+    const renderScrapWeight = () => {
+        return <>Scrap <br />Weight</>
+    }
+    const renderNetRMCost = () => {
+        return <>Net <br />RM Cost</>
+    }
+    const renderNetBOPCost = () => {
+        return <>Net <br />BOP Cost</>
+    }
+    const renderProcessCost = () => {
+        return <>Process <br />Cost</>
+    }
+    const renderOperationCost = () => {
+        return <>Operation <br />Cost</>
+    }
+    const renderSurfaceTreatment = () => {
+        return <>Surface <br />Treatment</>
+    }
+    const renderTransportationCost = () => {
+        return <>Transportation <br />Cost</>
+    }
+    const renderNetConversionCost = () => {
+        return <>Net <br />Conversion Cost</>
+    }
+    const renderModelTypeForOverheadProfit = () => {
+        return <>Model Type For<br /> Overhead/Profit</>
+    }
+    const renderPaymentTerms = () => {
+        return <>Payment <br />Terms</>
+    }
+    const renderNetOverheadProfits = () => {
+        return <>Net Overhead<br /> & Profits</>
+    }
+    const renderPackagingCost = () => {
+        return <>Packaging <br />Cost</>
+    }
+    const renderNetPackagingFreight = () => {
+        return <>Net Packaging<br /> & Freight</>
+    }
+    const renderToolMaintenanceCost = () => {
+        return <>Tool <br />Maintenance Cost</>
+    }
+    const renderToolPrice = () => {
+        return <>Tool<br /> Price</>
+    }
+    const renderAmortizationQuantity = () => {
+        return <>Amortization <br />Quantity(Tool Life)</>
+    }
+    const renderNetToolCost = () => {
+        return <>Net Tool<br /> Cost</>
+    }
+    const renderTotalCost = () => {
+        return <>Total<br /> Cost</>
+    }
+    const renderHundiOtherDiscount = () => {
+        return <>Hundi/Other<br /> Discount</>
+    }
+    const renderAnyOtherCost = () => {
+        return <>Any Other<br /> Cost</>
+    }
+    const renderNetPOPrice = () => {
+        return <>Net PO<br /> Price(INR)</>
+    }
+    const renderNetPOPrice2 = () => {
+        return <>Net PO<br /> Price (USD)</>
+    }
+
+    // table headings end
+
+
 
     /**
    * @method getTableData
@@ -105,17 +176,17 @@ function ReportListing(props) {
             fromDate: null,
             statusId: 1,
             technologyId: 1,
-            plantCode:"",
-            vendorCode:"",
-            userId:EMPTY_GUID,
-            isSortByOrderAsc:true,
+            plantCode: "",
+            vendorCode: "",
+            userId: loggedUser,
+            isSortByOrderAsc: true,
         }
-        props.getReportListing(filterData, (res) => {})
+        props.getReportListing(filterData, (res) => { })
     }
 
 
     useEffect(() => {
-        getTableData(); 
+        getTableData();
     }, [])
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -197,7 +268,7 @@ function ReportListing(props) {
 
 
     return (
-        <div className="container-fluid approval-listing-page">
+        <div className="container-fluid report-listing-page">
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
@@ -304,7 +375,8 @@ function ReportListing(props) {
                             <div>
                                 {(shown) ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                        <img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                        <div className="cancel-icon-white"></div>
+                                    </button>
                                 ) : (
                                     <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                                 )}
@@ -331,26 +403,54 @@ function ReportListing(props) {
                 pagination
             >
                 <TableHeaderColumn dataField="TokenNumber" isKey={true} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                <TableHeaderColumn dataField="CostingHead" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Technology'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="VendorName" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderVendorName()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactCosting()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactParts()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="SimulatedBy" width={110} columnTitle={true} dataAlign="left" dataSort={false} >{renderSimulatedBy()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="SimulatedOn" width={160} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={simulatedOnFormatter} >{renderSimulatedOn()} </TableHeaderColumn>
-                <TableHeaderColumn dataField="ApprovedBy" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderApprovedBy()} </TableHeaderColumn>
-                <TableHeaderColumn dataField="ApprovedOn" width={160} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={approvedOnFormatter}> {renderApprovedOn()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="CostingStatus" width={180} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                <TableHeaderColumn dataField="TokenNumber" width={90} columnTitle={true} dataSort={true} dataFormat={linkableFormatter} >{renderCostingVersion()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingHead" width={90} columnTitle={true} dataSort={false}>{renderPOPrice()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="Technology" width={90} columnTitle={true} dataSort={false}>{renderPartNumber()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="VendorName" width={90} columnTitle={true} dataSort={false}>{renderPartName()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataSort={false}>{renderRMNameGrade()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="SimulatedBy" width={90} columnTitle={true} dataSort={false} >{renderGrossWeight()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="SimulatedOn" width={90} columnTitle={true} dataSort={false} dataFormat={simulatedOnFormatter} >{renderFinishWeight()} </TableHeaderColumn>
+                <TableHeaderColumn dataField="ApprovedBy" width={90} columnTitle={true} dataSort={false}>{renderScrapWeight()} </TableHeaderColumn>
+                <TableHeaderColumn dataField="ApprovedOn" width={90} columnTitle={true} dataSort={false}> {renderNetRMCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderNetBOPCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderProcessCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderOperationCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderSurfaceTreatment()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={120} columnTitle={true} dataSort={false} >{renderTransportationCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={130} columnTitle={true} dataSort={false} >{renderNetConversionCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={130} columnTitle={true} dataSort={false} >{renderModelTypeForOverheadProfit()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={110} columnTitle={true} dataSort={false} >{`Overhead On`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{`Profit On`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={110} columnTitle={true} dataSort={false} >{`Rejection On`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{`ICC On`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderPaymentTerms()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={110} columnTitle={true} dataSort={false} >{renderNetOverheadProfits()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={100} columnTitle={true} dataSort={false} >{renderPackagingCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{`Freight`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={120} columnTitle={true} dataSort={false} >{renderNetPackagingFreight()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={145} columnTitle={true} dataSort={false} >{renderToolMaintenanceCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderToolPrice()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={145} columnTitle={true} dataSort={false} >{renderAmortizationQuantity()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={110} columnTitle={true} dataSort={false} >{renderNetToolCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{renderTotalCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={110} columnTitle={true} dataSort={false} >{renderHundiOtherDiscount()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={100} columnTitle={true} dataSort={false} >{renderAnyOtherCost()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={100} columnTitle={true} dataSort={false} >{renderNetPOPrice()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={90} columnTitle={true} dataSort={false} >{`Currency`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={110} columnTitle={true} dataSort={false} >{renderNetPOPrice2()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={100} columnTitle={true} dataSort={false} >{`Remark`}</TableHeaderColumn>
                 {/* <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} isKey={true} dataFormat={buttonFormatter}>Actions</TableHeaderColumn> */}
             </BootstrapTable>
         </div>
     );
 }
 
+
+
 function mapStateToProps({ report, auth }) {
     const { reportDataList, loading } = report;
     const { initialConfiguration } = auth;
-    return { reportDataList, loading, initialConfiguration,}
+    return { reportDataList, loading, initialConfiguration, }
 }
 
 export default connect(mapStateToProps, {

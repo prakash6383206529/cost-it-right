@@ -18,11 +18,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
 import PushSection from '../../../common/PushSection'
+const _ = require('lodash');
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, setError } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -257,12 +258,19 @@ const SendForApproval = (props) => {
     )
   }
 
+
+  var debounce_fun = _.debounce(function () {
+    console.log('Function debounced after 1000ms!');
+  }, 2000);
+
+
   /**
    * @method onSubmit
    * @param {*} data
    * @description This method is called on the submission of the form for send for approval
    */
   const onSubmit = (data) => {
+
 
     let count = 0
     viewApprovalData.map((item) => {
@@ -389,6 +397,9 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
 
 
+    // debounce_fun()
+    // console.log("After debounce");
+    props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
@@ -530,7 +541,7 @@ const SendForApproval = (props) => {
                                     :
 
                                     <DatePickerHookForm
-                                      name={`${dateField}EffectiveDate[${index}]`}
+                                      name={`${dateField}EffectiveDate.${index}`}
                                       label={'Effective Date'}
                                       selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                       handleChange={(date) => {
@@ -652,7 +663,7 @@ const SendForApproval = (props) => {
                       <Row className="px-3">
                         <Col md="6">
                           <SearchableSelectHookForm
-                            label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                            label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                             name={"dept"}
                             placeholder={"-Select-"}
                             Controller={Controller}
@@ -737,12 +748,7 @@ const SendForApproval = (props) => {
                       onClick={toggleDrawer}
                     // className="reset mr15 cancel-btn"
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
 
@@ -752,12 +758,7 @@ const SendForApproval = (props) => {
                     // className="submit-button save-btn"
                     // onClick={() => handleSubmit(onSubmit)}
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={'save-icon'}></div>
                       {"Submit"}
                     </button>
                   </Col>

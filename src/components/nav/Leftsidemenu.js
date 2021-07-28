@@ -56,7 +56,7 @@ class Leftmenu extends Component {
 										item.PageName === 'Levels' ||
 										item.PageName === 'Department' ||
 										item.PageName === 'Simulation Upload' ||
-										SIMULATION_LEFT_MENU_NOT_INCLUDED.includes(item.PageName)
+										(item.NavigationURL !== "/exchange-master" && SIMULATION_LEFT_MENU_NOT_INCLUDED.includes(item.PageName))
 									) return false;
 									return (
 
@@ -67,7 +67,7 @@ class Leftmenu extends Component {
 													pathname: item.NavigationURL,
 													state: { ModuleId: ModuleId, PageName: item.PageName, PageURL: item.NavigationURL }
 												}}
-											>{item.PageName}</Link>
+											>{item.PageName === 'Client' ? 'Customer' : item.PageName}</Link>
 										</li>
 									)
 								})

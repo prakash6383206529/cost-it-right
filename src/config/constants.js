@@ -14,7 +14,6 @@ export const config = {
   },
 }
 
-
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
@@ -508,6 +507,7 @@ export const API = {
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
+  getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -563,7 +563,7 @@ export const API = {
 
 
   //LOGIN API
-  login: `${BASE_URL}/user/login`,
+  login: `${BASE_URL}/user/login-ad`,
   tokenAPI: `${BASE_URL}/token`,
   AutoSignin: `${BASE_URL}/user/external-login`,
   logout: `${BASE_URL}/user/logout`,
@@ -825,6 +825,9 @@ export const API = {
   simulationReject: `${BASE_URL}/app-simulation-approval-system/rejected-simulated-costing-by-approver`,
   simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
+  simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,
+  getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
+
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
@@ -930,6 +933,7 @@ export const GET_RM_IMPORT_LIST = 'GET_RM_IMPORT_LIST'
 export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
+export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
@@ -1213,6 +1217,7 @@ export const SET_COSTING_EFFECTIVE_DATE = 'SET_COSTING_EFFECTIVE_DATE';
 export const CLOSE_OPEN_ACCORDION = 'CLOSE_OPEN_ACCORDION';
 export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DISABLED';
 export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
+export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1265,6 +1270,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+
 
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS'
@@ -1398,6 +1404,8 @@ export const AUDIT = 'Audit'
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
 
+export const DASHBOARDWITHGRAPH = 'DashboardWithGraph'
+
 export const RAW_MATERIAL = 'Raw Material'
 export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade'
 export const BOP = 'BOP'
@@ -1440,6 +1448,8 @@ export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
+export const FASTNERS = 'Fastners';
+export const RIVETS = 'Rivets';
 
 export const USER = 'User'
 export const ROLE = 'Role'
@@ -1463,9 +1473,10 @@ export const COSTING_SUMMARY = '/costing-summary'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
+export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
+export const DASHBOARDWITHGRAPH_PATH = '/dashboardWithGraph'
 export const DASHBOARD_PATH = '/'
 export const DASHBOARD_PATH_SECOND = '/dashboard'
-export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -1594,4 +1605,6 @@ export const InterestMaster = "Interest-rate"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
- // MASTER PAGES NAME END
+// MASTER PAGES NAME END
+
+export const VARIANCE = 'Variance'

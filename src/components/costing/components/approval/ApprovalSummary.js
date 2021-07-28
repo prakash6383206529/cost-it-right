@@ -12,6 +12,7 @@ import { Fragment } from 'react'
 import ApprovalListing from './ApprovalListing'
 import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
+import { Errorbox } from '../../../common/ErrorBox'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props
@@ -116,6 +117,7 @@ function ApprovalSummary(props) {
         showListing === false ?
           <>
             <div className="container-fluid approval-summary-page">
+              <Errorbox customClass="d-none" errorText="There is some error in your page" />
               <h2 className="heading-main">Approval Summary</h2>
               <Row>
                 <Col md="8">
@@ -127,7 +129,7 @@ function ApprovalSummary(props) {
                 <Col md="4" className="text-right">
                   <div className="right-border">
                     <button type={'button'} className="apply mr5" onClick={() => setShowListing(true)}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                      <div className={'back-icon'}></div>
                       {'Back '}
                     </button>
                     <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
@@ -367,9 +369,7 @@ function ApprovalSummary(props) {
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
-                      <div className={'cross-icon'}>
-                        <img src={require('../../../../assests/images/times.png')} alt="cancel-icon.jpg" />
-                      </div>{' '}
+                      <div className={'cancel-icon-white mr5'}></div>
                       {'Reject'}
                     </button>
                     <button
@@ -377,50 +377,35 @@ function ApprovalSummary(props) {
                       className="approve-button mr5 approve-hover-btn"
                       onClick={() => setApproveDrawer(true)}
                     >
-                      <div className={'check-icon'}>
-                        <img
-                          src={require('../../../../assests/images/check.png')}
-                          alt="check-icon.jpg"
-                        />{' '}
-                      </div>
+                      <div className={'save-icon'}></div>
                       {'Approve'}
                     </button>
-                    {
+                    {/* {
                       showFinalLevelButtons &&
                       <button
                         type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
-                        <div className={'check-icon'}>
-                          <img
-                            src={require('../../../../assests/images/check.png')}
-                            alt="check-icon.jpg"
-                          />{' '}
-                        </div>
+                        <div className={'save-icon'}></div>
                         {'Approve & Push'}
                       </button>
-                    }
+                    } */}
                   </Fragment>
 
                 </div>
               </Row>
             }
-            {
+            {/* {
               showPushButton &&
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
                     <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />
-                      </div>{" "}
+                    <div className={"save-icon"}></div>
                       {"Push"}
                     </button>
                   </Fragment>
                 </div>
               </Row>
-            }
+            } */}
           </> :
           <ApprovalListing />
       }

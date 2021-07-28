@@ -14,6 +14,11 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { ROLE } from '../../../config/constants';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const gridOptions = {};
 
 class RolesListing extends Component {
   constructor(props) {
@@ -25,7 +30,13 @@ class RolesListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
-      isLoader: false
+      isLoader: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
+
     }
   }
 
@@ -51,7 +62,10 @@ class RolesListing extends Component {
   }
 
   componentDidMount() {
-    this.getRolesListData()
+    setTimeout(() => {
+
+      this.getRolesListData()
+    }, 500);
     //this.props.onRef(this)
   }
 
@@ -120,18 +134,41 @@ class RolesListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell)} />}
-        {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   formToggle = () => {
     this.props.formToggle()
+  }
+
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
   /**
@@ -150,28 +187,51 @@ class RolesListing extends Component {
       lastPage: <span className="last-page-pg"></span>,
 
     };
-    return (
-      <>
-        {this.state.isLoader && <LoaderCustom />}
-        <Row className="pt-4 ">
-          <Col md="8" className="mb-2">
 
-          </Col>
-          <Col md="4" >
-            {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
-              <div>
-                <button
-                  type="button"
-                  className={'user-btn'}
-                  onClick={this.formToggle}>
-                  <div className={'plus'}></div>ADD</button>
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+    };
+
+    return (
+      <div className={"ag-grid-react"}>
+        <>
+          {this.state.isLoader && <LoaderCustom />}
+          <Row className="pt-4 ">
+            <Col md="8" className="mb-2">
+
+            </Col>
+            <Col md="6" className="search-user-block mb-3">
+              <div className="d-flex justify-content-end bd-highlight w100">
+                {AddAccessibility &&
+                  <div>
+                    <button
+                      type="button"
+                      className={'user-btn mr5'}
+                      title="Add"
+                      onClick={this.formToggle}>
+                      <div className={'plus mr-0'}></div></button>
+                  </div>
+                }
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
               </div>
-            </div>}
-          </Col>
-        </Row>
-        <Row class="">
-          <Col className="table-mt-0">
-            <BootstrapTable
+
+
+            </Col>
+          </Row>
+          <Row class="">
+            <Col className="table-mt-0">
+              {/* <BootstrapTable
               data={this.state.tableData}
               striped={false}
               bordered={false}
@@ -185,10 +245,50 @@ class RolesListing extends Component {
               pagination>
               <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="left" dataSort={true}>Role</TableHeaderColumn>
               <TableHeaderColumn dataField="RoleId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>
-          </Col>
-        </Row>
-      </ >
+            </BootstrapTable> */}
+
+              <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-header">
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                </div>
+                <div
+                  className="ag-theme-material"
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    // columnDefs={c}
+                    rowData={this.state.tableData}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={this.onGridReady}
+                    gridOptions={gridOptions}
+                    loadingOverlayComponent={'customLoadingOverlay'}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: CONSTANT.EMPTY_DATA,
+                    }}
+                    frameworkComponents={frameworkComponents}
+                  >
+                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                    <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+                    <AgGridColumn field="RoleId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  </AgGridReact>
+                  <div className="paging-container d-inline-block float-right">
+                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                      <option value="10" selected={true}>10</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+
+            </Col>
+          </Row>
+        </ >
+      </div>
     );
   }
 }

@@ -70,6 +70,7 @@ function AssemblyPart(props) {
         setBOPHandlingCost={props.setBOPHandlingCost}
         setProcessCost={props.setProcessCost}
         setOperationCost={props.setOperationCost}
+        setOtherOperationCost={props.setOtherOperationCost}
         setToolCost={props.setToolCost}
       />
     }
@@ -89,6 +90,7 @@ function AssemblyPart(props) {
       setBOPHandlingCost={props.setBOPHandlingCost}
       setProcessCost={props.setProcessCost}
       setOperationCost={props.setOperationCost}
+      setOtherOperationCost={props.setOtherOperationCost}
       setToolCost={props.setToolCost}
       setAssemblyOperationCost={props.setAssemblyOperationCost}
       setAssemblyToolCost={props.setAssemblyToolCost}

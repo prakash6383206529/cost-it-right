@@ -37,7 +37,7 @@ import {
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -1046,10 +1046,11 @@ export function getVendorWithVendorCodeSelectList() {
  * @description Used to get RM Domestic Datalist
  */
 export function getRMDomesticDataList(data, callback) {
+    console.log('data: ', data);
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const queryParams = `CostingHead=${data.costingHead}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1160,7 +1161,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, callback) {
     return (dispatch) => {
-        const queryParams = `CostingHead=${data.costingHead}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1552,4 +1553,13 @@ export function checkAndGetRawMaterialCode(code, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function setFilterForRM(filteredValue) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_FILTERED_RM_DATA,
+            payload: filteredValue,
+        });
+    }
 }

@@ -78,7 +78,7 @@ function Chamfering(props) {
     setValue,
     getValues,
     reset,
-    errors,
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -195,14 +195,14 @@ function Chamfering(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Turning Diameter(mm)`}
                         name={'turningDiameter'}
@@ -227,7 +227,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Finish Diameter(mm)`}
                         name={'finishDiameter'}
@@ -252,7 +252,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Turning Length(mm)`}
                         name={'turningLength'}
@@ -277,7 +277,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -302,7 +302,7 @@ function Chamfering(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Material To be Removed`}
                         name={'removedMaterial'}
@@ -328,7 +328,7 @@ function Chamfering(props) {
                       />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Depth of Cut(mm)`}
                         name={'doc'}
@@ -353,7 +353,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of Passes`}
                         name={'numberOfPasses'}
@@ -386,7 +386,7 @@ function Chamfering(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -411,7 +411,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -437,7 +437,7 @@ function Chamfering(props) {
                       />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -461,7 +461,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -494,7 +494,7 @@ function Chamfering(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -519,7 +519,7 @@ function Chamfering(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -544,7 +544,7 @@ function Chamfering(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
@@ -568,7 +568,7 @@ function Chamfering(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3"></Col>
+                    <Col md="4"></Col>
                   </Row>
                 </Col>
 
@@ -590,12 +590,7 @@ function Chamfering(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button
@@ -603,9 +598,7 @@ function Chamfering(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+                <div className={'save-icon'}></div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>

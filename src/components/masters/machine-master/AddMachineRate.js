@@ -30,6 +30,10 @@ import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import attachClose from '../../../assests/images/red-cross.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -854,6 +858,8 @@ class AddMachineRate extends Component {
               })
             },
             onCancel: () => { },
+            component: () => <ConfirmComponent />,
+
           }
           return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
@@ -1453,12 +1459,12 @@ class AddMachineRate extends Component {
                                 type={'button'}
                                 className=" mr15 cancel-btn"
                                 onClick={this.cancel} >
-                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn" >
-                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}
                               </button>
                             </>
@@ -1466,7 +1472,7 @@ class AddMachineRate extends Component {
                             <button
                               type="submit"
                               className="submit-button mr5 save-btn" >
-                              <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                              <div className={'save-icon'}></div>
                               {'Exit'}
                               {/* Need to change name of button for view flag */}
                             </button>

@@ -23,6 +23,7 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
 import moment from 'moment';
+import cloudImg from '../../assests/images/uploadcloud.png';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -440,7 +441,7 @@ class BulkUpload extends Component {
 
                                 <div className="input-group mt25 col-md-12 input-withouticon " >
                                     <div className="file-uploadsection">
-                                        <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../assests/images/uploadcloud.png')} ></img> </label>
+                                        <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
                                         <input
                                             type="file"
                                             name="File"
@@ -458,13 +459,13 @@ class BulkUpload extends Component {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div> {'Cancel'}
+                                        <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
                                     <button
                                         type="submit"
                                         className="submit-button save-btn" >
-                                        <div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img>
-                                        </div> {isEditFlag ? 'Update' : 'Save'}
+                                        <div className={"save-icon"}></div>
+                                         {isEditFlag ? 'Update' : 'Save'}
                                     </button>
                                 </div>
                             </Row>

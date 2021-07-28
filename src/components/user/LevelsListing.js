@@ -22,6 +22,11 @@ import { Field, reduxForm } from 'redux-form';
 import { focusOnError } from "../layout/FormInputs";
 import ImpactDrawer from './ImpactDrawer';
 import LoaderCustom from '../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const gridOptions = {};
 
 /*************************************THIS FILE IS FOR SHOWING LEVEL LISTING ****************************************/
 
@@ -41,6 +46,12 @@ class LevelsListing extends Component {
 			showImpact: false,
 			idForImpact: '',
 			levelType: '',
+			gridApi: null,
+			gridColumnApi: null,
+			rowData: null,
+			sideBar: { toolPanels: ['columns'] },
+			showData: false
+
 		}
 	}
 
@@ -325,6 +336,27 @@ class LevelsListing extends Component {
 		)
 	}
 
+	onGridReady = (params) => {
+		this.gridApi = params.api;
+		this.gridApi.sizeColumnsToFit();
+		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+		params.api.paginationGoToPage(0);
+	};
+
+	onPageSizeChanged = (newPageSize) => {
+		var value = document.getElementById('page-size').value;
+		this.state.gridApi.paginationSetPageSize(Number(value));
+	};
+
+	onFilterTextBoxChanged(e) {
+		this.state.gridApi.setQuickFilter(e.target.value);
+	}
+
+	resetState() {
+		gridOptions.columnApi.resetColumnState();
+	}
+
+
 	/**
 	* @method render
 	* @description Renders the component
@@ -349,82 +381,148 @@ class LevelsListing extends Component {
 			}],
 			sizePerPage: 5,
 		};
+
+		const defaultColDef = {
+			resizable: true,
+			filter: true,
+			sortable: true,
+
+		};
+
+		const frameworkComponents = {
+			totalValueRenderer: this.buttonFormatter,
+			customLoadingOverlay: LoaderCustom,
+			customNoRowsOverlay: NoContentFound
+		};
+
 		return (
-			<>
-				<form className="levellisting-page">
-					{/* {this.props.loading && <Loader />} */}
-					<Row className="pt-4">
-						<Col md="12">
-							<LevelTechnologyListing
-								onRef={ref => (this.child = ref)}
-								mappingToggler={this.mappingToggler}
-								getLevelMappingDetail={this.getLevelMappingDetail}
-								AddAccessibility={AddAccessibility}
-								EditAccessibility={EditAccessibility}
-								DeleteAccessibility={DeleteAccessibility}
-							/>
-						</Col>
-					</Row>
-					<Row className="pt-4">
-						<Col md="12">
-							<Row>
+			<div className={"levellisting-page-main"}>
+				<div className={"ag-grid-react"}>
+					<>
+						<form className="levellisting-page">
+							{/* {this.props.loading && <Loader />} */}
+							<Row className="pt-4">
 								<Col md="12">
-									<h2 className="manage-level-heading">{`Levels`}</h2>
-								</Col>
-
-								<Col className="mt-0 level-table">
-									<BootstrapTable
-										data={this.props.usersListByTechnologyAndLevel}
-										striped={false}
-										bordered={false}
-										hover={false}
-										options={options}
-										search
-										ignoreSinglePage
-										ref={'table'}
-										trClassName={'userlisting-row'}
-										tableHeaderClass={'my-custom-header'}
-										pagination>
-										<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-										<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-										<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn>
-										{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
-										<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
-
-										{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
-										{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
-									</BootstrapTable>
+									<LevelTechnologyListing
+										onRef={ref => (this.child = ref)}
+										mappingToggler={this.mappingToggler}
+										getLevelMappingDetail={this.getLevelMappingDetail}
+										AddAccessibility={AddAccessibility}
+										EditAccessibility={EditAccessibility}
+										DeleteAccessibility={DeleteAccessibility}
+									/>
 								</Col>
 							</Row>
-						</Col>
+							<Row className="pt-4">
+								<Col md="12">
+									<Row>
+										<Col md="12">
+											<h2 className="manage-level-heading">{`Levels`}</h2>
+										</Col>
+									</Row>
+									<Row>
+										<Col md="6" className=""></Col>
+										<Col md="6" className="search-user-block mb-3 text-right">
+											<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+										</Col>
+									</Row>
+									<Row>
+										<Col className="mt-0 level-table" md="12">
 
-					</Row>
+											{/* <BootstrapTable
+											data={this.props.usersListByTechnologyAndLevel}
+											striped={false}
+											bordered={false}
+											hover={false}
+											options={options}
+											search
+											ignoreSinglePage
+											ref={'table'}
+											trClassName={'userlisting-row'}
+											tableHeaderClass={'my-custom-header'}
+											pagination>
+											<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
+											<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+											<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn> */}
+											{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
+													<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
 
-					{isOpen && (
-						<Level
-							isOpen={isOpen}
-							isShowForm={isShowForm}
-							isShowMappingForm={isShowMappingForm}
-							closeDrawer={this.closeDrawer}
-							isEditFlag={isEditFlag}
-							LevelId={LevelId}
-							anchor={'right'}
-							isEditedlevelType={this.state.levelType}
-						/>
-					)}
-					{showImpact && (
-						<ImpactDrawer
-							isOpen={showImpact}
-							isShowForm={isShowForm}
-							isShowMappingForm={isShowMappingForm}
-							closeDrawer={this.closeImpactDrawer}
-							//isEditFlag={isEditFlag}
-							//LevelId={LevelId}
-							anchor={'right'}
-						/>
-					)}
-				</form>
-			</>
+													{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
+											{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
+											{/* </BootstrapTable> */}
+
+											<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+												<div className="ag-grid-header">
+													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+												</div>
+												<div
+													className="ag-theme-material"
+													style={{ height: '100%', width: '100%' }}
+												>
+													<AgGridReact
+														defaultColDef={defaultColDef}
+														// columnDefs={c}
+														rowData={this.props.usersListByTechnologyAndLevel}
+														pagination={true}
+														paginationPageSize={5}
+														onGridReady={this.onGridReady}
+														gridOptions={gridOptions}
+														loadingOverlayComponent={'customLoadingOverlay'}
+														noRowsOverlayComponent={'customNoRowsOverlay'}
+														noRowsOverlayComponentParams={{
+															title: CONSTANT.EMPTY_DATA,
+														}}
+														frameworkComponents={frameworkComponents}
+													>
+														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+														<AgGridColumn width="180" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads"></AgGridColumn>
+														<AgGridColumn width="100" field="Level"  suppressSizeToFit={true} headerName="Level"></AgGridColumn>
+														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
+													</AgGridReact>
+													<div className="paging-container d-inline-block float-right">
+														<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+															<option value="5" selected={true}>5</option>
+															<option value="20">20</option>
+															<option value="50">50</option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+
+										</Col>
+									</Row>
+								</Col>
+
+							</Row>
+
+							{isOpen && (
+								<Level
+									isOpen={isOpen}
+									isShowForm={isShowForm}
+									isShowMappingForm={isShowMappingForm}
+									closeDrawer={this.closeDrawer}
+									isEditFlag={isEditFlag}
+									LevelId={LevelId}
+									anchor={'right'}
+									isEditedlevelType={this.state.levelType}
+								/>
+							)}
+							{showImpact && (
+								<ImpactDrawer
+									isOpen={showImpact}
+									isShowForm={isShowForm}
+									isShowMappingForm={isShowMappingForm}
+									closeDrawer={this.closeImpactDrawer}
+									//isEditFlag={isEditFlag}
+									//LevelId={LevelId}
+									anchor={'right'}
+								/>
+							)}
+						</form>
+					</>
+				</div>
+			</div>
 		);
 	}
 }

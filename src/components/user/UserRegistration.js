@@ -317,6 +317,7 @@ class UserRegistration extends Component {
               department: DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+              // TechnologyLevelGrid:
             })
 
             if (Data.IsAdditionalAccess) {
@@ -530,9 +531,10 @@ class UserRegistration extends Component {
       return false;
     }
     const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return el.TechnologyId === technology.value
+      return Number(el.TechnologyId) === Number(technology.value)
       // && el.LevelId === level.value
     })
+
     if (isExistTechnology !== -1) {
       // toastr.warning('Technology and Level already allowed.')
       toastr.warning('Technology cannot have multiple level.')
@@ -608,7 +610,7 @@ class UserRegistration extends Component {
     }
 
     const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return el.SimulationTechnologyId === simulationHeads.value
+      return Number(el.SimulationTechnologyId) === Number(simulationHeads.value)
       // && el.LevelId === level.value
     })
 
@@ -620,7 +622,7 @@ class UserRegistration extends Component {
 
     tempArray.push(...HeadLevelGrid, {
       Technology: simulationHeads.label,
-      SimulationTechnologyId: simulationHeads.value,
+      TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
     })
@@ -643,7 +645,7 @@ class UserRegistration extends Component {
     let tempData = HeadLevelGrid[simulationLevelEditIndex];
     tempData = {
       Technology: simulationHeads.label,
-      SimulationTechnologyId: simulationHeads.value,
+      TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
     }
@@ -716,11 +718,12 @@ class UserRegistration extends Component {
   editSimulationItemDetails = (index) => {
     const { HeadLevelGrid } = this.state;
     const tempData = HeadLevelGrid[index];
-    this.props.getSimualationLevelByTechnology(tempData.SimulationTechnologyId, res => { })
+    console.log('tempData: ', tempData);
+    this.props.getSimualationLevelByTechnology(tempData.TechnologyId, res => { })
     this.setState({
       simulationLevelEditIndex: index,
       isSimulationEditIndex: true,
-      simulationHeads: { label: tempData.Technology, value: tempData.SimulationTechnologyId },
+      simulationHeads: { label: tempData.Technology, value: tempData.TechnologyId },
       simualtionLevel: { label: tempData.Level, value: tempData.LevelId },
     })
   }
@@ -810,10 +813,10 @@ class UserRegistration extends Component {
       toastr.warning('Users technology level should not be empty.')
       return false;
     }
-    if (HeadLevelGrid && HeadLevelGrid.length === 0) {
-      toastr.warning('Users head level should not be empty.')
-      return false
-    }
+    // if (HeadLevelGrid && HeadLevelGrid.length === 0) {
+    //   toastr.warning('Users head level should not be empty.')
+    //   return false
+    // }
 
     //this.setState({ isSubmitted: true })
 
@@ -833,7 +836,7 @@ class UserRegistration extends Component {
 
     HeadLevelGrid && HeadLevelGrid.map((item, index) => {
       tempHeadLevelArray.push({
-        SimulationTechnologyId: item.SimulationTechnologyId,
+        SimulationTechnologyId: item.TechnologyId,
         LevelId: item.LevelId,
         Technology: item.Technology,
         Level: item.Level,
@@ -1507,14 +1510,15 @@ class UserRegistration extends Component {
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn">
-                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
+                        <div className={"cancel-icon"}></div>
                       CANCEL
                       </button>
 
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn">
+                          <div className={"save-icon"}></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>

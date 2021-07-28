@@ -21,7 +21,7 @@ class Department extends Component {
 			isLoader: false,
 			isSubmitted: false,
 			isEditFlag: false,
-			isCompanyConfigurable: getConfigurationKey().IsCompanyConfigureOnPlant
+			isCompanyConfigurable: true
 		};
 	}
 
@@ -179,7 +179,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Purchase Group'}`}</h3>
+											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}`}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e)}
@@ -203,21 +203,20 @@ class Department extends Component {
 												customClassName={'withBorder'}
 											/>
 										</div>
-										{
-											this.state.isCompanyConfigurable &&
-											<div className="input-group col-md-12 input-withouticon" >
-												<Field
-													label="Code"
-													name={"CompanyCode"}
-													type="text"
-													placeholder={''}
-													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-													component={renderText}
-													required={true}
-													customClassName={'withBorder'}
-												/>
-											</div>
-										}
+
+										<div className="input-group col-md-12 input-withouticon" >
+											<Field
+												label="Code"
+												name={"CompanyCode"}
+												type="text"
+												placeholder={''}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												component={renderText}
+												required={true}
+												customClassName={'withBorder'}
+											/>
+										</div>
+
 
 										<div className="col-md-12">
 											<div className="text-right mt-0">
@@ -234,7 +233,7 @@ class Department extends Component {
 													type="button"
 													value="CANCEL"
 													className="mr15 cancel-btn">
-													<div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
+													<div className={"cancel-icon"}></div>CANCEL</button>
 												{/* <input
 													disabled={isSubmitted ? true : false}
 													type="submit"
@@ -245,8 +244,8 @@ class Department extends Component {
 													type="submit"
 													disabled={isSubmitted ? true : false}
 													className="user-btn save-btn"
-												>	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
-													</div>
+												>	
+												<div className={"save-icon"}></div>
 													{isEditFlag ? 'Update' : 'Save'}
 												</button>
 											</div>

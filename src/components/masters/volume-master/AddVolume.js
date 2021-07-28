@@ -792,7 +792,6 @@ class AddVolume extends Component {
                             <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
                             <TableHeaderColumn dataField="BudgetedQuantity" editable={true} dataFormat={this.budgetFormatter}>Budgeted Quantity </TableHeaderColumn>
                             <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
-
                             <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
@@ -807,24 +806,14 @@ class AddVolume extends Component {
                           className="mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
+                          <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                         >
-                          <div className={"check-icon"}>
-                            <img
-                              src={require("../../../assests/images/check.png")}
-                              alt="check-icon.jpg"
-                            />{" "}
-                          </div>
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>

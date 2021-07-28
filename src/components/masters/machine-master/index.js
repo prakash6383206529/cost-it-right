@@ -205,6 +205,7 @@ class MachineMaster extends Component {
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
 
@@ -214,6 +215,7 @@ class MachineMaster extends Component {
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
                                 </TabContent>

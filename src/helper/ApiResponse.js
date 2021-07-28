@@ -49,7 +49,8 @@ export function formatLoginResult(res) {
             DepartmentId: res.DepartmentId,
             Department: res.Department,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
-            LoggedInSimulationLevelId: res.LoggedInSimulationLevelId
+            LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
+            Role: res.Role
         };
         return userObj;
     }
@@ -111,11 +112,20 @@ export function formatGetPlanResult(result) {
 
 
 export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
+    console.log('selectedRowData: ', selectedRowData);
 
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
         costingArr && costingArr.map(item => {
-            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: item.IsChecked ? item.IsChecked : false })
+            let checked = false
+            selectedRowData && selectedRowData.map(item1 => {
+                if (item1.CostingId === item.CostingId) {
+                    checked = true
+                    return false
+                }
+                return true
+            })
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked })
         })
 
         const simulationObj = {

@@ -49,10 +49,10 @@ function SimulationHistory(props) {
         return <>Vendor Name</>
     }
     const renderImpactCosting = () => {
-        return <>Impact Costing </>
+        return <>Impacted Costing </>
     }
     const renderImpactParts = () => {
-        return <>Impact Parts </>
+        return <>Impacted Parts </>
     }
     const renderSimulatedBy = () => {
         return <>Simulated By </>

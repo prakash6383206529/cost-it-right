@@ -68,6 +68,7 @@ function CostingDetailStepTwo(props) {
       NetRMCost: data.NetRawMaterialsCost,
       NetBOPCost: data.NetBoughtOutPartCost,
       NetConversionCost: data.NetConversionCost,
+      OtherOperationCost: data.OtherOperationCost,
       NetTotalRMBOPCC: data.NetTotalRMBOPCC,
       ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
       TotalCost: OverAllCost,
@@ -376,7 +377,7 @@ function CostingDetailStepTwo(props) {
                     type="button"
                     className="submit-button mr5 save-btn cr-bk-btn"
                     onClick={props.backBtn} >
-                    <div className={'check-icon'}><img src={require('../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                    <div className={'back-icon'}></div>
                     {'Back '}
                   </button>
                 </Col>

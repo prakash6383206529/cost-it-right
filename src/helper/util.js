@@ -5,7 +5,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS,
 } from '../config/constants'
 
 /**
@@ -530,9 +530,11 @@ export function formViewData(costingSummary) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
+  let type = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : 'other'
+  console.log('type: ', type);
 
-  obj.zbc = dataFromAPI.TypeOfCosting ? dataFromAPI.TypeOfCosting : '-'
-  obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked ? dataFromAPI.IsApprovalLocked : '-'
+  obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
+  obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
   obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
   obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'
@@ -552,8 +554,7 @@ export function formViewData(costingSummary) {
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
     overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
-    overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail && checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) +
-      checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost),
+    overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails.NetOverheadCost : '-'
   }
   obj.profitOn = {
     profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-',
@@ -643,7 +644,10 @@ export function formViewData(costingSummary) {
   obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
   obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
   obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
-  obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : ''
+  obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
+  obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
+  console.log('obj: ', obj);
+
 
   // temp = [...temp, obj]
   temp.push(obj)
@@ -738,4 +742,7 @@ export function getTechnologyPermission(technology) {
   }
 }
 
-
+export function isRMDivisorApplicable(technology) {
+  const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
+  return allowedTechnologyForRMDivisor.includes(technology);
+}

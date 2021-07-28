@@ -18,10 +18,11 @@ import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
+import redcrossImg from '../../../../assests/images/red-cross.png'
 
 function TabDiscountOther(props) {
 
-  const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
+  const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -811,7 +812,7 @@ function TabDiscountOther(props) {
                                   alt={""}
                                   className="float-right"
                                   onClick={() => deleteFile(f.FileId, f.FileName)}
-                                  src={require("../../../../assests/images/red-cross.png")}
+                                  src={redcrossImg}
                                 ></img>
                               </div>
                             );
@@ -829,12 +830,7 @@ function TabDiscountOther(props) {
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}
                       >
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../../assests/images/check.png")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"save-icon"}></div>
                         {"Save"}
                       </button>}
 
@@ -844,12 +840,7 @@ function TabDiscountOther(props) {
                         onClick={() => setGoToNext(true)}
                       >
                         {"Next"}
-                        <div className={"check-icon ml-1"}>
-                          <img
-                            src={require("../../../../assests/images/right-arrow-white.svg")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"next-icon"}></div>
                       </button>}
 
                     </div>

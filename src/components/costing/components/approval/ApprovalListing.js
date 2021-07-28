@@ -16,10 +16,20 @@ import { checkForDecimalAndNull } from '../../../../helper'
 import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
 import { PENDING } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
+import imgArrowDown from "../../../../assests/images/arrow-down.svg";
+import imgArrowUP from "../../../../assests/images/arrow-up.svg";
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import LoaderCustom from '../../../common/LoaderCustom'
+import { Redirect } from 'react-router'
 
-function ApprovalListing() {
+const gridOptions = {};
+
+function ApprovalListing(props) {
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
+  const [dShown,setDshown] = useState(false)
 
   const [tableData, setTableData] = useState([])
   const [partNoDropdown, setPartNoDropdown] = useState([])
@@ -33,6 +43,9 @@ function ApprovalListing() {
   const [reasonId, setReasonId] = useState('')
   const [showApprovalSumary, setShowApprovalSummary] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [rowData, setRowData] = useState(null);
   const dispatch = useDispatch()
 
   const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -41,7 +54,9 @@ function ApprovalListing() {
   const approvalList = useSelector(state => state.approval.approvalList)
   const userList = useSelector(state => state.auth.userList)
 
-  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+  const isApproval = props.isApproval;
+
+  const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -154,7 +169,9 @@ function ApprovalListing() {
    * @method linkableFormatter
    * @description Renders Name link
    */
-  const linkableFormatter = (cell, row, enumObject, rowIndex) => {
+  const linkableFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
         <div
@@ -167,42 +184,55 @@ function ApprovalListing() {
     )
   }
 
-  const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-
+  const createdOnFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
-  const priceFormatter = (cell, row, enumObject, rowIndex) => {
+  const priceFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" />
+        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
   }
 
-  const oldpriceFormatter = (cell, row, enumObject, rowIndex) => {
+  const oldpriceFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
+        {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
   }
 
-  const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
+  const requestedOnFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
-  const statusFormatter = (cell, row, enumObject, rowIndex) => {
+  const statusFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return <div className={cell}>{row.DisplayStatus}</div>
   }
 
-  const renderPlant = (cell, row, enumObject, rowIndex) => {
+  const renderPlant = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
   }
 
-  const renderVendor = (cell, row, enumObject, rowIndex) => {
+  const renderVendor = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
   }
 
@@ -232,15 +262,17 @@ function ApprovalListing() {
 
 
 
-  const onRowSelect = (row, isSelected, e) => {
-    if (isSelected) {
-      let tempArr = [...selectedRowData, row]
-      setSelectedRowData(tempArr)
-    } else {
-      const CostingId = row.CostingId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-      setSelectedRowData(tempArr)
-    }
+  const onRowSelect = () => {
+    var selectedRows = gridApi.getSelectedRows();
+    setSelectedRowData(selectedRows)
+    // if (isSelected) {
+    //   let tempArr = [...selectedRowData, row]
+    //   setSelectedRowData(tempArr)
+    // } else {
+    //   const CostingId = row.CostingId;
+    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
+    //   setSelectedRowData(tempArr)
+    // }
   }
 
   const onSelectAll = (isSelected, rows) => {
@@ -318,14 +350,62 @@ function ApprovalListing() {
     //setRejectDrawer(false)
   }
 
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+    return thisIsFirstColumn;
+  }
+
+
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
+  };
+
+  const onGridReady = (params) => {
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
+    params.api.paginationGoToPage(0);
+
+  };
+
+  const onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    gridApi.paginationSetPageSize(Number(value));
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    gridApi.setQuickFilter(e.target.value);
+  }
+
+  const frameworkComponents = {
+    renderPlant: renderPlant,
+    renderVendor: renderVendor,
+    renderVendor: renderVendor,
+    priceFormatter: priceFormatter,
+    oldpriceFormatter: oldpriceFormatter,
+    createdOnFormatter: createdOnFormatter,
+    requestedOnFormatter: requestedOnFormatter,
+    statusFormatter: statusFormatter,
+    customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+    linkableFormatter: linkableFormatter
+  };
+
+  const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === PENDING : false
+
   return (
     <Fragment>
       {
         !showApprovalSumary ?
-          <div className="container-fluid approval-listing-page">
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-              <h1 className="mb-0">Costing Approval</h1>
+              {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
 
               <Row className="pt-4 blue-before">
@@ -430,16 +510,14 @@ function ApprovalListing() {
                     <div>
                       {(shown) ? (
                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
-                          <img src={require("../../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                          <div className="cancel-icon-white"></div></button>
                       ) : (
-                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
+                          <div className="filter mr-0"></div>
+                        </button>
                       )}
-                      <button class="user-btn approval-btn" onClick={sendForApproval}>
-                        <img
-                          class="mr-1"
-                          src={require('../../../../assests/images/send-for-approval.svg')}
-                        ></img>{' '}
-                        {'Send For Approval'}
+                      <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                        <div className="send-for-approval mr-0" ></div>
                       </button>
                     </div>
                   </div>
@@ -476,7 +554,7 @@ function ApprovalListing() {
               </Row>
             </form>
 
-            <BootstrapTable
+            {/* <BootstrapTable
               data={approvalList}
               striped={false}
               hover={false}
@@ -498,7 +576,6 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
-              {/* <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={priceFormatter} dataSort={false}>{'Old Price'}</TableHeaderColumn> */}
               <TableHeaderColumn dataField="NetPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField={'Reason'} width={100} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
@@ -507,9 +584,78 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
               <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
               <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
-            </BootstrapTable>
+            </BootstrapTable> */}
+            <Row>
+              <Col>
+                <div className={`ag-grid-react`}>
+                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                    </div>
+                    <div
+                      className="ag-theme-material"
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <AgGridReact
+                        style={{ height: '100%', width: '100%' }}
+                        defaultColDef={defaultColDef}
+                        // columnDefs={c}
+                        rowData={approvalList}
+                        pagination={true}
+                        paginationPageSize={10}
+                        onGridReady={onGridReady}
+                        gridOptions={gridOptions}
+                        loadingOverlayComponent={'customLoadingOverlay'}
+                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                        noRowsOverlayComponentParams={{
+                          title: CONSTANT.EMPTY_DATA,
+                        }}
+                        frameworkComponents={frameworkComponents}
+                        suppressRowClickSelection={true}
+                        rowSelection={'multiple'}
+                        // frameworkComponents={frameworkComponents}
+                        onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
+                      >
+                        <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                        {isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
+                        <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
+                        <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                        <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
+                        <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                        <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                        <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                        <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
+                        <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
+                        <AgGridColumn field="RequestedBy" headerName="Requested By"></AgGridColumn>
+                        <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                        {!isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        
+
+                      </AgGridReact>
+
+                      <div className="paging-container d-inline-block float-right">
+                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                          <option value="10" selected={true}>10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+
           </div>
           :
+          // <Redirect
+          //   to={{
+          //       pathname: "/approval-summary",
+          //   }}/>
           <ApprovalSummary
             approvalNumber={approvalData.approvalNumber}
             approvalProcessId={approvalData.approvalProcessId}

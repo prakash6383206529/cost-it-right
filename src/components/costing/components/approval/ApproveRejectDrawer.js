@@ -9,20 +9,20 @@ import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDeta
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit, setValue, getValues } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -167,14 +167,12 @@ function ApproveRejectDrawer(props) {
 
 
   const onSubmit = () => {
-
-
-
     const remark = getValues('remark')
+    console.log('remark: ', remark);
     const reason = getValues('reason')
+    console.log('reason: ', reason);
     const dept = getValues('dept')
     const approver = getValues('approver')
-
 
     if (type === 'Reject') {
       if (remark) {
@@ -192,7 +190,7 @@ function ApproveRejectDrawer(props) {
         setShowError(true)
         return false
       }
-      if (!reason && !selectedDate) return false
+      if (!reason || !selectedDate) return false
     }
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
@@ -215,6 +213,7 @@ function ApproveRejectDrawer(props) {
         })
       })
       if (type === 'Approve') {
+        reset()
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
@@ -289,14 +288,29 @@ function ApproveRejectDrawer(props) {
       else if (type === 'Approve') {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
         dispatch(simulationApprovalRequestByApprove(objs, res => {
-          if (res.data.Result) {
+          if (true) {
             if (IsPushDrawer) {
               toastr.success('The simulation token has been approved')
               setOpenPushButton(true)
 
             } else {
-              toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
-              props.closeDrawer('', 'submit')
+              if (IsFinalLevel) {
+                let pushObj = {}
+                let temp = []
+                costingList && costingList.map(item => {
+                  const vendor = item.VendorName.split('(')[1]
+                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: item.DepartmentCode, Plant: '2000', MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                })
+                pushObj.LoggedInUserId = userLoggedIn
+                pushObj.AmmendentDataRequests = temp
+                dispatch(pushAPI(pushObj, () => { }))
+                toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                props.closeDrawer('', 'submit')
+              } else {
+
+                toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                props.closeDrawer('', 'submit')
+              }
             }
           }
         }))
@@ -304,7 +318,7 @@ function ApproveRejectDrawer(props) {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(objs, res => {
           if (res.data.Result) {
-            toastr.success('Costing Rejected')
+            toastr.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -405,7 +419,8 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}
+            >
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
@@ -423,7 +438,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}
@@ -496,7 +511,7 @@ function ApproveRejectDrawer(props) {
                     {
                       type === 'Sender' &&
                       <>
-                        <div className="input-group form-group col-md-12 input-withouticon">
+                        <div className="input-group form-group col-md-12">
                           <SearchableSelectHookForm
                             label={'Reason'}
                             name={'reason'}
@@ -565,15 +580,15 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    // rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{ required: type === 'Approve' ? false : true }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
                     customClassName={'withBorder'}
-                    //errors={errors.ECNNumber}
+                    errors={errors.remark}
                     disabled={false}
                   />
-                  {showError && <span className="text-help">This is required field</span>}
+                  {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -583,26 +598,16 @@ function ApproveRejectDrawer(props) {
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
-                    <div className={'cross-icon'}>
-                      <img
-                        src={require('../../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{' '}
+                    <div className={'cancel-icon'}></div>
                     {'Cancel'}
                   </button>
 
                   <button
                     type="submit"
                     className="submit-button  save-btn"
-                    onClick={() => { }}
+                  // onClick={() => { }}
                   >
-                    <div className={'check-icon'}>
-                      <img
-                        src={require('../../../../assests/images/check.png')}
-                        alt="check-icon.jpg"
-                      />{' '}
-                    </div>
+                    <div className={'save-icon'}></div>
                     {'Submit'}
                   </button>
                 </div>
@@ -611,7 +616,7 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
       </Drawer>
-      {openPushButton && (
+      {/* {openPushButton && (
         <PushButtonDrawer
           isOpen={openPushButton}
           closeDrawer={closePushButton}
@@ -619,7 +624,7 @@ function ApproveRejectDrawer(props) {
           dataSend={dataSend}
           anchor={'right'}
         />
-      )}
+      )} */}
     </>
   )
 }

@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
@@ -17,6 +17,17 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantVbc } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { VBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class VBCPlantListing extends Component {
     constructor(props) {
@@ -24,7 +35,7 @@ class VBCPlantListing extends Component {
         this.state = {
             isEditFlag: false,
             isOpenVendor: false,
-            shown:false,
+            shown: false,
             ID: '',
             tableData: [],
             city: [],
@@ -140,38 +151,38 @@ class VBCPlantListing extends Component {
     * @method statusButtonFormatter
     * @description Renders buttons
     */
-    statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        const { ActivateAccessibility } = this.props;
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch">
-                        {/* <span>Switch with default style</span> */}
-                        <Switch
-                            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                            checked={cell}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cell ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
+    statusButtonFormatter = (props) => {
+        // const { ActivateAccessibility } = this.props;
+        // if (ActivateAccessibility) {
+        //     return (
+        //         <>
+        //             <label htmlFor="normal-switch">
+        //                 {/* <span>Switch with default style</span> */}
+        //                 <Switch
+        //                     onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+        //                     checked={cell}
+        //                     background="#ff6600"
+        //                     onColor="#4DC771"
+        //                     onHandleColor="#ffffff"
+        //                     offColor="#FC5774"
+        //                     id="normal-switch"
+        //                     height={24}
+        //                 />
+        //             </label>
+        //         </>
+        //     )
+        // } else {
+        //     return (
+        //         <>
+        //             {
+        //                 cell ?
+        //                     <div className={'Activated'}> {'Active'}</div>
+        //                     :
+        //                     <div className={'Deactivated'}>{'Deactive'}</div>
+        //             }
+        //         </>
+        //     )
+        // }
     }
 
     /**
@@ -340,25 +351,65 @@ class VBCPlantListing extends Component {
     onSubmit(values) {
     }
 
-    /**
-    * @method render
-    * @description Renders the component
-    */
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        params.api.paginationGoToPage(0);
+    };
 
-     handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.plantDataList
-        return products; // must return the data which you want to be exported
-      }
-    
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    returnExcelColumn = (data = [], TempData) => {
+        // let temp = []
+        // TempData.map((item) => {
+        //     if (item.ECNNumber === null) {
+        //         item.ECNNumber = ' '
+        //     } else if (item.RevisionNumber === null) {
+        //         item.RevisionNumber = ' '
+        //     } else if (item.DrawingNumber === null) {
+        //         item.DrawingNumber = ' '
+        //     } else if (item.Technology === '-') {
+        //         item.Technology = ' '
+        //     } else {
+        //         return false
+        //     }
+        //     return item
+        // })
+        return (
+
+            <ExcelSheet data={TempData} name={PlantVbc}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
     createCustomExportCSVButton = (onClick) => {
         return (
-          <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         );
-      } 
+    }
     render() {
-        const { handleSubmit, AddAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
 
 
@@ -377,8 +428,21 @@ class VBCPlantListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            statusButtonFormatter: this.statusButtonFormatter
+        };
+
         return (
-            <div className="show-table-btn">
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
@@ -461,17 +525,20 @@ class VBCPlantListing extends Component {
                                 <div>
                                     {this.state.shown ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
+                                    )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
                                             className={"user-btn"}
                                             onClick={this.formToggle}
+                                            title="Add"
                                         >
-                                            <div className={"plus"}></div>ADD
+                                            <div className={"plus mr-0"}></div>
                                         </button>
                                     )}
                                 </div>
@@ -479,14 +546,14 @@ class VBCPlantListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <BootstrapTable
+                {/* <BootstrapTable
                     data={this.props.plantDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
                     options={options}
                     search
-                    exportCSV
+                    exportCSV={DownloadAccessibility}
                     csvFileName={`${PlantVbc}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
@@ -501,7 +568,49 @@ class VBCPlantListing extends Component {
                     <TableHeaderColumn dataField="CityName" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" dataAlign="left" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
+                </BootstrapTable> */}
+
+                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                    </div>
+                    <div
+                        className="ag-theme-material"
+                        style={{ height: '100%', width: '100%' }}
+                    >
+                        <AgGridReact
+                            defaultColDef={defaultColDef}
+                            // columnDefs={c}
+                            rowData={this.props.plantDataList}
+                            pagination={true}
+                            paginationPageSize={10}
+                            onGridReady={this.onGridReady}
+                            gridOptions={gridOptions}
+                            loadingOverlayComponent={'customLoadingOverlay'}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                                title: CONSTANT.EMPTY_DATA,
+                            }}
+                            frameworkComponents={frameworkComponents}
+                        >
+                            <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
+                            <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
+                            <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                            <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                            <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                        </AgGridReact>
+                        <div className="paging-container d-inline-block float-right">
+                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                <option value="10" selected={true}>10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
                 {isOpenVendor && <AddVBCPlant
                     isOpen={isOpenVendor}

@@ -16,7 +16,7 @@ function LossStandardTable(props) {
 
 
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     //defaultValues: defaultValues,
@@ -222,7 +222,7 @@ function LossStandardTable(props) {
         </Col>
         <Col md="3">
           <TextFieldHookForm
-            label={`Lost(%)`}
+            label={`Loss(%)`}
             name={'LossPercentage'}
             Controller={Controller}
             control={control}

@@ -53,7 +53,7 @@ function Plastic(props) {
 
 
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -557,19 +557,14 @@ function Plastic(props) {
               value="CANCEL"
               className="reset mr15 cancel-btn"
             >
-              <div className={'cross-icon'}>
-                <img
-                  src={require('../../../../assests/images/times.png')}
-                  alt="cancel-icon.jpg"
-                />
-              </div>
+              <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
             <button
               type="submit"
               // disabled={isSubmitted ? true : false}
               onClick={onSubmit} className="submit-button save-btn">
-              <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+              <div className={'save-icon'}></div>
               {'SAVE'}
             </button>
           </div>

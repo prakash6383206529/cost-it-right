@@ -17,12 +17,22 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { getConfigurationKey } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class BOPDomesticListing extends Component {
     constructor(props) {
@@ -37,6 +47,12 @@ class BOPDomesticListing extends Component {
             BOPCategory: [],
             plant: [],
             vendor: [],
+            gridApi: null,
+            gridColumnApi: null,
+            rowData: null,
+            sideBar: { toolPanels: ['columns'] },
+            showData: false
+
         }
     }
 
@@ -196,25 +212,26 @@ class BOPDomesticListing extends Component {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    }
+    };
 
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
-    }
-
-
+    // /**
+    // * @method costingHeadFormatter
+    // * @description Renders Costing head
+    // */
+    // costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+    //     return cell ? 'VBC' : 'ZBC';
+    // }
 
     /**
     * @method indexFormatter
@@ -249,8 +266,9 @@ class BOPDomesticListing extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+    costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? 'Vendor Based' : 'Zero Based';
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -379,25 +397,89 @@ class BOPDomesticListing extends Component {
 
     }
 
-    handleExportCSVButtonClick = (onClick) => {
-        onClick();
-        let products = []
-        products = this.props.bopDomesticList
-        return products; // must return the data which you want to be exported
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-        );
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let value;
+        if (cellValue === null || cellValue === '') {
+            value = '-';
+        }
+        else {
+            value = cellValue
+        }
+        return value
     }
+
+    onGridReady = (params) => {
+        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        params.api.paginationGoToPage(0);
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        this.state.gridApi.paginationSetPageSize(Number(value));
+    };
+
+    onBtExport = () => {
+        let tempArr = []
+        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+
+        return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData.map((item) => {
+            if (item.IsVendor === true) {
+                item.IsVendor = 'VBC'
+            } if (item.IsVendor === false) {
+                item.IsVendor = 'ZBV'
+            } if (item.Plants === '-') {
+                item.Plants = ' '
+            } if (item.Vendor === '-') {
+                item.Vendor = ' '
+            } else {
+                return false
+            }
+            return item
+        })
+        return (
+
+            <ExcelSheet data={TempData} name={BopDomestic}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
 
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
 
         const options = {
@@ -412,6 +494,23 @@ class BOPDomesticListing extends Component {
 
         };
 
+        const defaultColDef = {
+            resizable: true,
+            filter: true,
+            sortable: true,
+
+        };
+
+        const frameworkComponents = {
+            totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter: this.hyphenFormatter,
+            costingHeadFormatter: this.costingHeadFormatter,
+            effectiveDateFormatter: this.effectiveDateFormatter
+        };
+
+
         const selectRow = {
             mode: 'checkbox',  // multi select
             clickToSelect: true,
@@ -419,7 +518,9 @@ class BOPDomesticListing extends Component {
         };
 
         return (
-            <div className="show-table-btn">
+            // <div>
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
@@ -519,20 +620,55 @@ class BOPDomesticListing extends Component {
                                 <div>
                                     {this.state.shown ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.formToggle}
+                                            title="Add"
+                                        >
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
+                                        </button>
+                                    )}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+
+                                            <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+
+                                        </>
+
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
+
                                 </div>
                             </div>
                         </Col>
@@ -541,7 +677,7 @@ class BOPDomesticListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <BootstrapTable
+                        {/* <BootstrapTable
                             data={this.props.bopDomesticList}
                             striped={false}
                             hover={false}
@@ -553,14 +689,14 @@ class BOPDomesticListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             // selectRow={selectRow}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn width={100} dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            pagination> */}
+                        {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width={100} dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
-                            <TableHeaderColumn width={110} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
-                            {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
+                            <TableHeaderColumn width={110} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
+                        {/* <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn width={110} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== false} export={getConfigurationKey().IsDestinationPlantConfigure === false} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== true} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
@@ -569,8 +705,58 @@ class BOPDomesticListing extends Component {
                             <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}  >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
+                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        </BootstrapTable> */}
+
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div
+                                className="ag-theme-material"
+                                style={{ height: '100%', width: '100%' }}
+                            >
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    // columnDefs={c}
+                                    rowData={this.props.bopDomesticList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                    <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor"></AgGridColumn>
+                                    <AgGridColumn width={205} field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload

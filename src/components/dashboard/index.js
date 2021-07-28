@@ -1,20 +1,19 @@
-import React, { Component, useEffect } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getMenuByUser, getLeftMenu } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
-import { reactLocalStorage } from "reactjs-localstorage";
 import { Col, Container, Row } from "reactstrap";
-import { DashboardMaster } from "../../config/constants";
+import ApprovalListing from '../costing/components/approval/ApprovalListing';
+import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
+import { reactLocalStorage } from "reactjs-localstorage";
 import { Field, reduxForm } from "redux-form";
-import { searchableSelect } from '../layout/FormInputs'
-import { Costmovementgraph } from "./CostMovementGraph";
-import { Costcomparisonplantgraph } from "./CostComparisonPlantGraph";
-import { Suppliercontributiongraph } from './SupplierContributionGraph';
-import { Costratiograph } from "./CostRatioGraph";
-import { Costratiobuyinggraph } from './CostRatioBuyingGraph';
+import dashboardImg from '../../assests/images/dashboard-img.png'
 
 function Dashboard(props) {
   const { handleSubmit, menusData } = props
+
+  const [acc1, setAcc1] = useState(true)
+  const [acc2, setAcc2] = useState(false)
 
   useEffect(() => {
     props.getMenuByUser(loggedInUserId(), () => {
@@ -33,88 +32,65 @@ function Dashboard(props) {
 
   return (
     <>
-      {/* <div className="dashboard-top position-relative">
-          <div className="dashboard-text">
-            <h2>Dashboard will come here</h2>
-          </div>
-          <img src={require('../../assests/images/dashboard-img.png')} alt='dashboard-background' />
-       </div> */}
-
-      <Container fluid className="dashboard-page">
+      <div className="dashboard-page w-100">
         <Row>
-          <Col md="12">
-            <h1>{DashboardMaster}</h1>
-          </Col>
+            <Col md="12">
+                <h1>Dashboard</h1>
+            </Col>
         </Row>
-
         <form onSubmit={handleSubmit}>
           <Row className="m-0">
-            <div className="graph-box w-100 d-flex pb-0">
-              <Col md="3">
-                <Field
-                  name="Business"
-                  type="text"
-                  label="Business"
-                  component={searchableSelect}
-                  placeholder={"Select"}
-                />
-              </Col>
-              <Col md="3">
-                <Field
-                  name="Plant"
-                  type="text"
-                  label="Plant"
-                  component={searchableSelect}
-                  placeholder={"Select"}
-                />
-              </Col>
-              <Col md="3">
-                <Field
-                  name="Part Number"
-                  type="text"
-                  label="Part Number"
-                  component={searchableSelect}
-                  placeholder={"Select"}
-                />
-              </Col>
+            <div className="graph-box w-100">
+              <Row>
+                  <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
+                  <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                          {acc1 ? (
+                              <i className="fa fa-minus" ></i>
+                          ) : (
+                              <i className="fa fa-plus"></i>
+                          )}
+                      </button>
+                  </Col>
+              </Row>
+              <Row>
+                <Col md="12">{acc1 && <ApprovalListing isApproval={true}/> }</Col>
+              </Row>
             </div>
           </Row>
-          <Row className="graph-section">
-            <Col md="6">
-              <div className="graph-box">
-                <h3 className="mb-3">Cost Movement by Cost Drivers</h3>
-                <Costmovementgraph />
-              </div>
-            </Col>
-            <Col md="6">
-              <div className="graph-box">
-                <h3 className="mb-3">Cost Comparison by Plant</h3>
-                <Costcomparisonplantgraph />
-              </div>
-            </Col>
-          </Row>
-          <Row className="graph-section">
-            <Col md="3">
-              <div className="graph-box">
-                <h3 className="mb-3">Supplier Contribution(SOB)</h3>
-                <Suppliercontributiongraph />
-              </div>
-            </Col>
-            <Col md="3">
-              <div className="graph-box">
-                <h3 className="mb-3">Cost Ratio(PFS)</h3>
-                <Costratiograph />
-              </div>
-            </Col>
-            <Col md="6">
-              <div className="graph-box">
-                <h3 className="mb-3">Cost Ratio(Buying)</h3>
-                <Costratiobuyinggraph />
-              </div>
-            </Col>
+
+          <Row className="m-0">
+            <div className="graph-box w-100">
+              <Row>
+                  <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
+                  <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                          {acc2 ? (
+                              <i className="fa fa-minus" ></i>
+                          ) : (
+                              <i className="fa fa-plus"></i>
+                          )}
+                      </button>
+                  </Col>
+              </Row>
+              
+              <Row>
+                <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} />}</Col>
+              </Row>
+            </div>
           </Row>
         </form>
-      </Container>
+      </div>
+      <Row className="m-0">
+        <div className="graph-box w-100">
+          <div className="dashboard-top position-relative">
+            <div className="dashboard-text">
+              <h2>Other Widgets Will Come Here</h2>
+            </div>
+            <img src={dashboardImg} alt='dashboard-background' />
+          </div>
+        </div>
+      </Row>
     </>
   )
 }

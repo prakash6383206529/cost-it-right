@@ -20,20 +20,24 @@ function AddToComparisonDrawer(props) {
   const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantCode, destinationPlantName, destinationPlantId } = editObject
 
-  const { register, handleSubmit, control, setValue, errors } = useForm({
+
+
+  const defaultValue = {
+    comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
+    // comparisonValue: 'VBC',
+    plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
+    costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
+    vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
+    vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
+    destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
+  }
+
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: {
-      // comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
-      comparisonValue: 'VBC',
-      plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
-      costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
-      vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
-      vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
-      destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
-    },
+    defaultValues: defaultValue
   })
-  const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
+  // const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
 
   const dispatch = useDispatch()
 
@@ -255,7 +259,7 @@ function AddToComparisonDrawer(props) {
           // let temp = viewCostingData;
           let dataFromAPI = res.data.Data
           let obj = {}
-          obj.zbc = dataFromAPI.TypeOfCosting
+          obj.zbc = obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
           obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked
           obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
           obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
@@ -276,8 +280,7 @@ function AddToComparisonDrawer(props) {
           obj.aValue = { applicability: 'Applicability', value: 'Value', }
           obj.overheadOn = {
             overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
-            overheadValue: dataFromAPI.CostingPartDetails.CostingOverheadDetail && checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) +
-              checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost),
+            overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails.NetOverheadCost : '-'
           }
           obj.profitOn = {
             profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-',
@@ -372,7 +375,7 @@ function AddToComparisonDrawer(props) {
           obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
           obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
           obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : ''
-
+          obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -557,9 +560,11 @@ function AddToComparisonDrawer(props) {
                 <RadioHookForm
                   className={"filter-from-section"}
                   name={"comparisonValue"}
+                  control={control}
+                  // Controller={Controller}
                   register={register}
                   onChange={handleComparison}
-                  defaultValue={"VBC"}
+                  defaultValue={defaultValue.comparisonValue}
                   dataArray={[
                     // THIS IS FOR MINDA 
                     // { 
@@ -698,13 +703,7 @@ function AddToComparisonDrawer(props) {
                     type={"button"}
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
-                  >
-                    <div className={"cross-icon"}>
-                      <img
-                        src={require("../../../assests/images/times.png")}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{" "}
+                  ><div className={"cancel-icon"}></div>
                     {"Cancel"}
                   </button>
 
@@ -714,13 +713,7 @@ function AddToComparisonDrawer(props) {
                   // onClick={addHandler}
                   >
                     {isEditFlag ? (
-                      <div className={"check-icon"}>
-                        {" "}
-                        <img
-                          src={require("../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={"save-icon"}></div>
                     ) : (
                       <div class="plus"></div>
                     )}{" "}

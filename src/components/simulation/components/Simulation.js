@@ -21,7 +21,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
     const { location } = props;
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -87,7 +87,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} />)
             default:
-                break;
+                return <div className="empty-table-paecholder" />;
         }
     }
 
@@ -149,11 +149,12 @@ function Simulation(props) {
     const editTable = () => {
         let flag = true;
         let vendorFlag = true;
+        let plantFlag = true;
         //  setShowEditTable(true)
         switch (master.label) {
             case RMDOMESTIC:
 
-                rmDomesticListing.forEach((element, index) => {
+                rmDomesticListing && rmDomesticListing.forEach((element, index) => {
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
@@ -166,9 +167,14 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
+                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
+                            toastr.warning('Please select one Plant at a time.')
+                            plantFlag = false
+                            return false
+                        }
                     }
                 });
-                if (flag === true && vendorFlag === true) {
+                if (flag === true && vendorFlag === true && plantFlag === true) {
                     setShowEditTable(true)
                 }
                 break;
@@ -186,9 +192,14 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
+                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
+                            toastr.warning('Please select one Plant at a time.')
+                            plantFlag = false
+                            return false
+                        }
                     }
                 })
-                if (flag === true && vendorFlag === true) {
+                if (flag === true && vendorFlag === true && plantFlag === true) {
                     setShowEditTable(true)
                 }
                 break;
@@ -204,11 +215,15 @@ function Simulation(props) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />
             default:
                 break;
         }
     }
+
+    useEffect(() => {
+
+    }, [rmDomesticListing])
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
@@ -216,11 +231,13 @@ function Simulation(props) {
         return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
 
+
+
     return (
-        <div className="container-fluid simulation-page ">
+        <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <>
+                <div className="simulation-main">
                     <Row>
                         <Col sm="12">
                             <h1>{`Simulation`}</h1>
@@ -280,9 +297,9 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2">
                                     <div>
-                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable}>
+                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false}>
                                             <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                             {renderColumn(master.label)}
                                         </ExcelFile>
                                         <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
@@ -298,10 +315,11 @@ function Simulation(props) {
                             closeDrawer={closeDrawer}
                             anchor={"right"}
                         />}
-                </>
+                </div>
             }
-
-            {showEditTable && editMasterPage(master.label)}
+            <div className="simulation-edit">
+                {showEditTable && editMasterPage(master.label)}
+            </div>
         </div>
     );
 }

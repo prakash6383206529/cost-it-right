@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -15,12 +14,19 @@ import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutPart
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+const gridOptions = {};
 
 function AddBOP(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [rowData, setRowData] = useState(null);
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
@@ -30,7 +36,7 @@ function AddBOP(props) {
   const { bopDrawerList } = useSelector(state => state.costing)
 
 
-  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+  const { register, handleSubmit, control, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -72,15 +78,18 @@ function AddBOP(props) {
 
   };
 
-  const onRowSelect = (row, isSelected, e) => {
-    if (isSelected) {
-      let tempArr = [...selectedRowData, row]
-      setSelectedRowData(tempArr)
-    } else {
-      const BoughtOutPartId = row.BoughtOutPartId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.BoughtOutPartId !== BoughtOutPartId)
-      setSelectedRowData(tempArr)
-    }
+  const onRowSelect = () => {
+
+    var selectedRows = gridApi.getSelectedRows();
+    if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+    var selected = gridApi.getSelectedNodes()
+    setSelectedRowData(selectedRows)
+    // if (isSelected) {
+    // } else {
+    //   const BoughtOutPartId = row.BoughtOutPartId;
+    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.BoughtOutPartId !== BoughtOutPartId)
+    //   setSelectedRowData(tempArr)
+    // }
 
   }
 
@@ -108,16 +117,26 @@ function AddBOP(props) {
     return <>Net Cost<br />Currency/UOM</>
   }
 
-  const netLandedFormat = (cell, row, enumObject, rowIndex) => {
-    return cell !== null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+  const netLandedFormat = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
   }
 
-  const netLandedConversionFormat = (cell, row, enumObject, rowIndex) => {
-    return row.Currency !== '-' ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+  const netLandedConversionFormat = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return rowData.Currency !== '-' ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
-  const currencyFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell !== '-' ? cell : 'INR'
+  const currencyFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue !== '-' ? cellValue : 'INR'
+  }
+
+  const specificationFormat = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? cellValue : '-'
   }
 
   /**
@@ -221,66 +240,124 @@ function AddBOP(props) {
     getDataList()
   }
 
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+    return thisIsFirstColumn;
+  }
+
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
+  };
+
+
+  const onGridReady = (params) => {
+    // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    // getDataList()
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
+    params.api.paginationGoToPage(0);
+
+  };
+
+  const onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    gridApi.paginationSetPageSize(Number(value));
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    gridApi.setQuickFilter(e.target.value);
+  }
+
+  const frameworkComponents = {
+    // totalValueRenderer: this.buttonFormatter,
+    // effectiveDateRenderer: this.effectiveDateFormatter,
+    // costingHeadRenderer: this.costingHeadFormatter,
+    netLandedFormat: netLandedFormat,
+    netLandedConversionFormat: netLandedConversionFormat,
+    currencyFormatter: currencyFormatter,
+    specificationFormat: specificationFormat,
+    customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+  };
+
+  useEffect(() => {
+
+  }, [tableData])
+
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.BoughtOutPartId) : false;
+
+
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+  }
 
   /**
   * @method render
   * @description Renders the component
   */
   return (
-    <div>
+    < div>
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        <Container className="add-bop-drawer">
-          <div className={'drawer-wrapper drawer-1500px'}>
+        < div className={`ag-grid-react`}>
+          <Container className="add-bop-drawer">
+            <div className={'drawer-wrapper drawer-1500px'}>
 
-            <Row className="drawer-heading">
-              <Col>
-                <div className={'header-wrapper left'}>
-                  <h3>{'ADD BOP'}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}>
-                </div>
-              </Col>
-            </Row>
-            < form onSubmit={handleSubmit(onSubmit)} noValidate >
-
-              <div className="filter-row">
-                <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
-                  <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
-                    <div className="flex-fills mb-0">
-                      <h5 className="left-border">{`Filter By:`}</h5>
-                    </div>
-
-                    <div className="flex-fills hide-label mb-0">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'Category'}
-                        placeholder={'Category'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        options={renderListing("category")}
-                        customClassName="mn-height-auto mb-0"
-                        handleChange={() => { }}
-                      />
-                    </div>
-
-
-                    <div className="flex-fills mb-0">
-                      <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"}</button>
-                      <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
-                    </div>
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={'header-wrapper left'}>
+                    <h3>{'ADD BOP'}</h3>
+                  </div>
+                  <div
+                    onClick={(e) => toggleDrawer(e)}
+                    className={'close-button right'}>
                   </div>
                 </Col>
-              </div>
+              </Row>
 
-            </form >
-            <Row className="mx-0">
-              <Col className="hidepage-size">
-                <BootstrapTable
+              < form onSubmit={handleSubmit(onSubmit)} noValidate >
+
+                <div className="filter-row">
+                  <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
+                    <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
+                      <div className="flex-fills mb-0">
+                        <h5 className="left-border">{`Filter By:`}</h5>
+                      </div>
+
+                      <div className="flex-fills hide-label mb-0">
+                        <SearchableSelectHookForm
+                          label={''}
+                          name={'Category'}
+                          placeholder={'Category'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          options={renderListing("category")}
+                          customClassName="mn-height-auto mb-0"
+                          handleChange={() => { }}
+                        />
+                      </div>
+
+
+                      <div className="flex-fills mb-0">
+                        <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"}</button>
+                        <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
+                      </div>
+                    </div>
+                  </Col>
+                </div>
+
+              </form >
+              <Row className="mx-0">
+                <Col className="hidepage-size">
+                  {/* <BootstrapTable
                   data={tableData}
                   striped={false}
                   bordered={false}
@@ -303,31 +380,84 @@ function AddBOP(props) {
                   <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" dataFormat={currencyFormatter} searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
                   <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
-                </BootstrapTable>
-              </Col>
-            </Row>
+                </BootstrapTable> */}
+                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                        <div className="refresh mr-0"></div>
+                      </button>
+                    </div>
+                    <div
+                      className="ag-theme-material"
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <AgGridReact
+                        style={{ height: '100%', width: '100%' }}
+                        defaultColDef={defaultColDef}
+                        // columnDefs={c}
+                        rowData={bopDrawerList}
+                        pagination={true}
+                        paginationPageSize={10}
+                        onGridReady={onGridReady}
+                        gridOptions={gridOptions}
+                        loadingOverlayComponent={'customLoadingOverlay'}
+                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                        noRowsOverlayComponentParams={{
+                          title: CONSTANT.EMPTY_DATA,
+                        }}
+                        suppressRowClickSelection={true}
+                        rowSelection={'multiple'}
+                        frameworkComponents={frameworkComponents}
+                        onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
+                      >
+                        <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
+                        <AgGridColumn field="EntryType" headerName="BOP Type"  ></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                        <AgGridColumn field="Specification" cellRenderer={'specificationFormat'}></AgGridColumn>
+                        {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
+                        <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-              <div className="col-sm-12 text-left bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="submit-button mr5 save-btn"
-                  onClick={addRow} >
-                  <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'SELECT'}
-                </button>
+                      </AgGridReact>
+                      <div className="paging-container d-inline-block float-right">
+                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                          <option value="10" selected={true}>10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
 
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-              </div>
-            </Row>
+              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+                <div className="col-sm-12 text-left bluefooter-butn">
+                  <button
+                    type={'button'}
+                    className="submit-button mr5 save-btn"
+                    onClick={addRow} >
+                    <div className={"save-icon"}></div>
+                    {'SELECT'}
+                  </button>
 
-          </div>
-        </Container>
+                  <button
+                    type={'button'}
+                    className="reset mr15 cancel-btn"
+                    onClick={cancel} >
+                    <div className={"cancel-icon"}></div> {'Cancel'}
+                  </button>
+                </div>
+              </Row>
+
+            </div>
+          </Container>
+        </div>
       </Drawer>
     </div >
   );

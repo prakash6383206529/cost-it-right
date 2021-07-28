@@ -11,7 +11,7 @@ import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 
 function AddVendorDrawer(props) {
 
-  const { register, handleSubmit, errors, reset, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset, control } = useForm();
 
   const [vendor, setVendor] = useState([]);
   const [vendorPlant, setVendorPlant] = useState([]);
@@ -260,12 +260,7 @@ function AddVendorDrawer(props) {
                     className="reset mr15 cancel-btn"
                     onClick={cancel}
                   >
-                    <div className={"cross-icon"}>
-                      <img
-                        src={require("../../../assests/images/times.png")}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{" "}
+                    <div className={"cancel-icon"}></div>
                     {"Cancel"}
                   </button>
 

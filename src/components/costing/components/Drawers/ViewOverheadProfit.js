@@ -38,6 +38,8 @@ function ViewOverheadProfit(props) {
     }
     props.closeDrawer('')
   }
+
+  console.log(rejectData, "viewOverheadData");
   return (
     <>
       <Drawer
@@ -155,9 +157,23 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr>
                           )}
+                          {viewOverheadData.IsOverheadCombined && (
+                            <tr>
+                              <td>{viewOverheadData.OverheadApplicability}</td>
+                              <td>
+                                {viewOverheadData.OverheadPercentage ? viewOverheadData.OverheadPercentage : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedCost ? viewOverheadData.OverheadCombinedCost : "-"}
+                              </td>
+                              <td>
+                                {viewOverheadData.OverheadCombinedTotalCost ? viewOverheadData.OverheadCombinedTotalCost : "-"}
+                              </td>
+                            </tr>
+                          )}
                         </>
                       )}
-                      {Object.keys(viewOverheadData).length === 0 && (
+                      {(viewOverheadData.IsOverheadFixedApplicable === null && viewOverheadData.IsOverheadRMApplicable === null && viewOverheadData.IsOverheadBOPApplicable === null && viewOverheadData.IsOverheadCCApplicable === null && viewOverheadData.IsOverheadCombined === null) && (
                         <tr>
                           <td colSpan={12}>
                             <NoContentFound title={CONSTANT.EMPTY_DATA} />
@@ -268,9 +284,9 @@ function ViewOverheadProfit(props) {
                             )}
                           </>
                         )}
-                        {Object.keys(viewProfitData).length === 0 && (
+                        {(viewProfitData.IsProfitFixedApplicable === null && viewProfitData.IsProfitRMApplicable === null && viewProfitData.IsProfitBOPApplicable === null && viewProfitData.IsProfitCCApplicable === null && viewProfitData.IsProfitCombined === null) && (
                           <tr>
-                            <td colSpan={9}>
+                            <td colSpan={12}>
                               <NoContentFound title={CONSTANT.EMPTY_DATA} />
                             </td>
                           </tr>
@@ -302,21 +318,35 @@ function ViewOverheadProfit(props) {
                         </tr>
                       </thead>
                       <tbody>
-                        {rejectData && (
+                        {
+                          (rejectData.RejectionApplicability === null) ?
+                            <tr>
+                              <td colSpan={8}>
+                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              </td>
+                            </tr> :
+                            <tr>
+                              <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
+                              <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
+                              <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
+                              <td>{rejectData.RejectionTotalCost ? rejectData.RejectionTotalCost : '-'}</td>
+                            </tr>
+                        }
+                        {/* {rejectData && (
                           <tr>
                             <td>{rejectData.RejectionApplicability}</td>
                             <td>{rejectData.RejectionPercentage}</td>
                             <td>{rejectData.RejectionCost}</td>
                             <td>{rejectData.RejectionTotalCost}</td>
                           </tr>
-                        )}
-                        {Object.keys(rejectData).length === 0 && (
+                        )} */}
+                        {/* {(rejectData.RejectionApplicability === null && rejectData.RejectionPercentage === null && rejectData.RejectionCost === null && rejectData.RejectionTotalCost === null) && (
                           <tr>
                             <td colSpan={8}>
                               <NoContentFound title={CONSTANT.EMPTY_DATA} />
                             </td>
                           </tr>
-                        )}
+                        )} */}
                       </tbody>
                     </Table>
                   </Col>

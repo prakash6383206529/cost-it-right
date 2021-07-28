@@ -74,7 +74,7 @@ function Facing(props) {
     setValue,
     getValues,
     reset,
-    errors,
+    formState: { errors },
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -201,14 +201,14 @@ function Facing(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Turning Diameter(mm)`}
                         name={'turningDiameter'}
@@ -233,7 +233,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Finish Diameter(mm)`}
                         name={'finishDiameter'}
@@ -258,7 +258,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -283,7 +283,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Material To be Removed`}
                         name={'removedMaterial'}
@@ -311,7 +311,7 @@ function Facing(props) {
                   </Row>
 
                   <Row>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Depth of Cut(mm)`}
                         name={'doc'}
@@ -336,7 +336,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of Passes`}
                         name={'numberOfPasses'}
@@ -369,7 +369,7 @@ function Facing(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -394,7 +394,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -420,7 +420,7 @@ function Facing(props) {
                       />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -444,7 +444,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -477,7 +477,7 @@ function Facing(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -502,7 +502,7 @@ function Facing(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -527,7 +527,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
@@ -551,7 +551,7 @@ function Facing(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3"></Col>
+                    <Col md="4"></Col>
                   </Row>
                 </Col>
 
@@ -573,12 +573,7 @@ function Facing(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button
@@ -587,7 +582,7 @@ function Facing(props) {
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
+                  <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
                 </div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>

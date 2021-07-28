@@ -11,14 +11,24 @@ import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn,ExportCSVButton } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj } from '../../../config/masterData';
+import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey } from '../../../helper';
 import { Sob } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class SOBListing extends Component {
   constructor(props) {
@@ -33,6 +43,11 @@ class SOBListing extends Component {
       BOPCategory: [],
       plant: [],
       vendor: [],
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
 
     }
   }
@@ -110,7 +125,7 @@ class SOBListing extends Component {
     const { EditAccessibility, } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />}
       </>
     )
   }
@@ -223,33 +238,117 @@ class SOBListing extends Component {
 
   }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.bopSobList
-    return products; // must return the data which you want to be exported
+  // returnExcelColumn = (data = [], TempData) => {
+  //   const ExcelFile = ReactExport.ExcelFile;
+  //   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  //   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+  //   let temp = []
+  //   temp = TempData.map((item) => {
+  //     if (item.CostingHead === true) {
+  //       item.CostingHead = 'Vendor Based'
+  //     } else if (item.CostingHead === false) {
+  //       item.CostingHead = 'Zero Based'
+  //     }
+  //     return item
+  //   })
+
+  //   return (<ExcelSheet data={temp} name={`${Sob}`}>
+  //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+  //     }
+  //   </ExcelSheet>);
+  // }
+  // renderColumn = (fileName) => {
+  //   let arr = this.props.bopSobList && this.props.bopSobList.length > 0 ? this.props.bopSobList : []
+  //   if (arr != []) {
+  //     arr && arr.map(item => {
+  //       let len = Object.keys(item).length
+  //       for (let i = 0; i < len; i++) {
+  //         // let s = Object.keys(item)[i]
+  //         if (item.Specification === null) {
+  //           item.Specification = ' '
+  //         } if (item.Plants === '-') {
+  //           item.Plants = ' '
+  //         }
+  //       }
+  //     })
+  //   }
+  //   return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, arr)
+  // }
+
+
+
+
+  /**
+  * @method hyphenFormatter
+  */
+  hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? cellValue : '-';
   }
 
-createCustomExportCSVButton = (onClick) => {
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    TempData.map((item) => {
+      if (item.Specification === null) {
+        item.Specification = ' '
+      } if (item.Plants === '-') {
+        item.Plants = ' '
+      } else {
+        return false
+      }
+      return item
+    })
     return (
-      <ExportCSVButton btnText='Download' onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
+
+      <ExcelSheet data={TempData} name={Sob}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+  }
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
+  createCustomExportCSVButton = (onClick) => {
+    return (
+      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
     );
   }
+
 
   /**
   * @method render
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, DownloadAccessibility } = this.props;
     const { isOpen, isEditFlag } = this.state;
-  
-    const onExportToCSV = (row) => {
-      // ...
-      let products = []
-      products = this.props.bopSobList
-      return products; // must return the data which you want to be exported
-    }
+
 
     const options = {
       clearSearch: true,
@@ -263,8 +362,24 @@ createCustomExportCSVButton = (onClick) => {
 
     };
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      hyphenFormatter: this.hyphenFormatter,
+      costingHeadFormatter: this.costingHeadFormatter,
+      effectiveDateFormatter: this.effectiveDateFormatter
+    };
+
     return (
-      <div className="show-table-btn">
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
@@ -314,11 +429,30 @@ createCustomExportCSVButton = (onClick) => {
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 {this.state.shown ? (
-                  <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
-                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                  <button type="button" className="user-btn filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                    <div className="cancel-icon-white"></div></button>
                 ) : (
-                  <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                    <div className="filter mr-0"></div>
+                  </button>
                 )}
+                {
+                  DownloadAccessibility &&
+                  <>
+                    <ExcelFile filename={Sob} fileExtension={'.xls'} element={
+                      <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                        {/* DOWNLOAD */}
+                      </button>}>
+                      {this.onBtExport()}
+                    </ExcelFile>
+                  </>
+                  //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                }
+
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                  <div className="refresh mr-0"></div>
+                </button>
+
               </div>
             </Col>
           </Row>
@@ -326,7 +460,7 @@ createCustomExportCSVButton = (onClick) => {
         </form>
         <Row>
           <Col>
-            <BootstrapTable
+            {/* <BootstrapTable
               data={this.props.bopSobList}
               striped={false}
               hover={false}
@@ -342,13 +476,59 @@ createCustomExportCSVButton = (onClick) => {
               <TableHeaderColumn width={100} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
               <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
               <TableHeaderColumn width={90} dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderNoOfVendor()}</TableHeaderColumn>
-              <TableHeaderColumn width={90} dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-              {/* <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataFormat={this.costRender} dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn> */}
-              <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
-              {/* <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn> */}
-              <TableHeaderColumn width={140} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>
+              <TableHeaderColumn width={90} dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataFormat={this.costRender} dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn width={140} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>
               <TableHeaderColumn dataAlign="right" width={80} dataField="BoughtOutPartNumber" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>
+            </BootstrapTable> */}
+
+            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              </div>
+              <div
+                className="ag-theme-material"
+                style={{ height: '100%', width: '100%' }}
+              >
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  // columnDefs={c}
+                  rowData={this.props.bopSobList}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={this.onGridReady}
+                  gridOptions={gridOptions}
+                  loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  noRowsOverlayComponentParams={{
+                    title: CONSTANT.EMPTY_DATA,
+                  }}
+                  frameworkComponents={frameworkComponents}
+                >
+                  {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                  <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                  <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="NoOfVendors" headerName="No of Vendors"></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                  <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
+                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+
+                </AgGridReact>
+                <div className="paging-container d-inline-block float-right">
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
           </Col>
         </Row>
         {isOpen && <ManageSOBDrawer

@@ -424,8 +424,7 @@ class AddZBCPlant extends Component {
                       </Col>
                     </Row>
                   </Col>
-                </Row>
-                <Row className="pl-3">
+                
                   <Col md="6">
                     <Field
                       label="Address 1"
@@ -454,8 +453,7 @@ class AddZBCPlant extends Component {
                       customClassName={"withBorder"}
                     />
                   </Col>
-                </Row>
-                <Row className="pl-3">
+                
                   <Col md="6">
                     <Field
                       name="CountryId"
@@ -498,9 +496,7 @@ class AddZBCPlant extends Component {
                       />
                     </Col>
                   )}
-                </Row>
-
-                <Row className="pl-3">
+                
                   <Col md="6">
                     <Field
                       name="CityId"
@@ -544,24 +540,14 @@ class AddZBCPlant extends Component {
                       className=" mr15 cancel-btn"
                       onClick={this.cancel}
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={"cancel-icon"}></div>
                       {"Cancel"}
                     </button>
                     <button
                       type="submit"
                       className="user-btn save-btn"
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}
                     </button>
                   </div>

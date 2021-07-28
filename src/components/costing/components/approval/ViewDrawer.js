@@ -110,12 +110,7 @@ function ViewDrawer(props) {
                   className="reset mr15 cancel-btn"
                   onClick={toggleDrawer}
                 >
-                  <div className={'cross-icon'}>
-                    <img
-                      src={require('../../../../assests/images/times.png')}
-                      alt="cancel-icon.jpg"
-                    />
-                  </div>{' '}
+                  <div className={'cancel-icon'}></div>{' '}
                   {'Cancel'}
                 </button>
               </div>

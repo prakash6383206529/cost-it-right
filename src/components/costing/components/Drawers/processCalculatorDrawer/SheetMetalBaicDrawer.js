@@ -28,7 +28,7 @@ function SheetMetalBaicDrawer(props) {
     ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : ''
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onBlur',
     defaultValues: defaultValues,
@@ -233,14 +233,14 @@ function SheetMetalBaicDrawer(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 {/* <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col> */}
 
                 <Row className={'mt15'}>
-                  <Col md="3">
+                  <Col md="4">
                     <TextFieldHookForm
                       label={`Tonnage(T)`}
                       name={'MachineTonnage'}
@@ -258,7 +258,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   {
                     hide &&
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'CycleTime'}
@@ -286,7 +286,7 @@ function SheetMetalBaicDrawer(props) {
                   }
                   {/* {
                       props.calculatorData.UOMType === DIMENSIONLESS && */}
-                  <Col md="3">
+                  <Col md="4">
                     <TextFieldHookForm
                       label={`Cavity`}
                       name={'Cavity'}
@@ -313,7 +313,7 @@ function SheetMetalBaicDrawer(props) {
                     />
                   </Col>
 
-                  <Col md="3">
+                  <Col md="4">
                     <TextFieldHookForm
                       label={`Efficiency(%)`}
                       name={'Efficiency'}
@@ -338,7 +338,7 @@ function SheetMetalBaicDrawer(props) {
                       disabled={false}
                     />
                   </Col>
-                  <Col md="3">
+                  <Col md="4">
                     <TextFieldHookForm
                       label={props.calculatorData.UOMType === MASS ? `Finished Weight` : props.calculatorData.UOMType === TIME ? `Production / Hour` : `Quantity`}
                       name={'Quantity'}
@@ -363,7 +363,7 @@ function SheetMetalBaicDrawer(props) {
                       disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME) ? true : false}
                     />
                   </Col>
-                  <Col md="3">
+                  <Col md="4">
                     <TextFieldHookForm
                       label={`Process Cost`}
                       name={'ProcessCost'}
@@ -409,12 +409,7 @@ function SheetMetalBaicDrawer(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button
@@ -422,12 +417,7 @@ function SheetMetalBaicDrawer(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={"check-icon"}>
-                  <img
-                    src={require("../../../../../assests/images/check.png")}
-                    alt="check-icon.jpg"
-                  />{" "}
-                </div>
+                <div className={"save-icon"}></div>
                 {'SAVE'}
               </button>
             </div>

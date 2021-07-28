@@ -18,7 +18,7 @@ import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -27,10 +27,12 @@ import BOMUpload from '../../massUpload/BOMUpload';
 import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
+import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
+
 export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -74,8 +76,14 @@ function CostingDetails(props) {
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
 
+
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+
+  // client based costing
+  const [clientDrawer, setClientDrawer] = useState(false)
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+  // client based costing
 
   const fieldValues = useWatch({
     control,
@@ -90,14 +98,14 @@ function CostingDetails(props) {
     reset()
     InjectRolePermission()
     dispatch(storePartNumber(''))
-    dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
     dispatch(gridDataAdded(false))
   }, [])
 
-  const technologySelectList = useSelector((state) => state.costing.technologySelectList)
+  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
@@ -150,13 +158,11 @@ function CostingDetails(props) {
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
-        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => {
-
-        }))
+        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => { }))
         dispatch(
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data
-            setValue('PartName', Data.PartName)
+            setValue("PartName", Data.PartName)
             setValue('Description', Data.Description)
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
@@ -303,14 +309,23 @@ function CostingDetails(props) {
     setEffectiveDate(date)
   }
 
+  // client based costing start 
+  const toggleCLientCosting = () => {
+    setClientDrawer(true)
+  }
+
+  const closeCLientCostingDrawer = () => {
+    setClientDrawer(false)
+  }
+  // client based costing end
+
+
   /**
    * @method nextToggle
    * @description DISPLAY FORM ONCLICK NEXT BUTTON
    */
   const nextToggle = () => {
-
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
-
       dispatch(getZBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
@@ -472,6 +487,7 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '') => {
+    nextToggle()
     setIsCopyCostingDrawer(false)
   }
 
@@ -1306,6 +1322,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
+  // const [isOpenDrawer] = 
 
 
   return (
@@ -1328,10 +1345,11 @@ function CostingDetails(props) {
             <span className="d-block mt-1">PDF</span>
           </button> */}
 
-          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+          {/* COMMENTED FOR NOW 29-06-2021 */}
+          {/* {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
             <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
             <span className="d-block mt-1">ADD BOM</span>
-          </button>}
+          </button>} */}
         </div>
       </span>
       <div className="login-container signup-form costing-details-page">
@@ -1532,14 +1550,14 @@ function CostingDetails(props) {
                               onClick={plantDrawerToggle}
                             >
                               <div className={"plus"}></div>ADD PLANT
-                          </button>
+                            </button>
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
                         <Row>
                           <Col md="12">
                             <Table
-                              className="table cr-brdr-main costing-table-next costing-table-zbc"
+                              className="table cr-brdr-main costing-table-next costing-table-vbc"
                               size="sm"
                             >
                               <thead>
@@ -1574,7 +1592,7 @@ function CostingDetails(props) {
                                         <td className="cr-select-height w-100px">
                                           <NumberFieldHookForm
                                             label={""}
-                                            name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
+                                            name={`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -1604,7 +1622,7 @@ function CostingDetails(props) {
                                         <td className="cr-select-height w-100px">
                                           <SearchableSelectHookForm
                                             label={""}
-                                            name={`${zbcPlantGridFields}[${index}]CostingVersion`}
+                                            name={`${zbcPlantGridFields}.${index}.CostingVersion`}
                                             placeholder={"Select"}
                                             Controller={Controller}
                                             control={control}
@@ -1713,7 +1731,7 @@ function CostingDetails(props) {
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
-                                          name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
+                                          name={`${vbcGridFields}.${index}.ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
                                           register={register}
@@ -1743,7 +1761,7 @@ function CostingDetails(props) {
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
-                                          name={`${vbcGridFields}[${index}]CostingVersion`}
+                                          name={`${vbcGridFields}.${index}.CostingVersion`}
                                           placeholder={"Select"}
                                           Controller={Controller}
                                           control={control}
@@ -1792,24 +1810,21 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
+
+                          {/* client based costing button */}
+                          {/* <button type={"button"} className="reset-btn w-auto px-3 mr5" onClick={toggleCLientCosting} >{"Client based costing"}</button> */}
+                          {/* client based costing button */}
+
+
+
                           <button type={"button"} className="reset-btn" onClick={cancel} >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className="cancel-icon"></div>
                             {"Clear"}
                           </button>
                           {IsShowNextBtn &&
                             <button type="button" className="submit-button save-btn ml15" onClick={nextToggle} >
                               {"Next"}
-                              <div className={"check-icon ml-1"}>
-                                <img
-                                  src={require("../../../assests/images/right-arrow-white.svg")}
-                                  alt="check-icon.jpg"
-                                />{" "}
-                              </div>
+                              <div className={"next-icon"}></div>
                             </button>}
                         </div>
                       </Row>}
@@ -1878,6 +1893,15 @@ function CostingDetails(props) {
         messageLabel={'BOM'}
         anchor={'right'}
       />}
+
+      {clientDrawer && (
+        <Clientbasedcostingdrawer
+          isOpen={clientDrawer}
+          closeDrawer={closeCLientCostingDrawer}
+          isEditFlag={false}
+          anchor={'right'}
+        />
+      )}
     </>
   );
 }
