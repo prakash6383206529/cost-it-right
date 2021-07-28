@@ -2405,8 +2405,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "ProcessName", value: "ProcessName", },
-    { label: "ProcessName", value: "ProcessName", },
+
 ]
 
 export const RMIMPORT_DOWNLOAD_EXCEl = [

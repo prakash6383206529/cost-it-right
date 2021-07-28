@@ -430,7 +430,7 @@ class BOPImportListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        temp = this.props.bopImportList && this.props.bopImportList.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {
@@ -439,14 +439,12 @@ class BOPImportListing extends Component {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={BopImport}>
+            <ExcelSheet data={temp} name={BopImport}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -705,6 +703,7 @@ class BOPImportListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopImportList}
                                     pagination={true}
