@@ -1,14 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
-import HeaderTitle from '../../common/HeaderTitle';
 import moment from 'moment'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
-import SimulationApprovalListing from './SimulationApprovalListing'
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
@@ -16,18 +13,14 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { runVerifySimulation } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
-import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
-import { toastr } from 'react-redux-toastr';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -103,11 +96,11 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason, ImpactedMasterDataList } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason })
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -253,60 +246,6 @@ function SimulationApprovalSummary(props) {
             setIsVerifyImpactDrawer(false);
         }
     }
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
-
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
-
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const renderRMName = () => {
-        return <>Raw Material<br />-Grade</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const NewPO = () => {
-        return <>PO Price <br />New </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldRM = () => {
-        return <>RM Cost<br /> Old</>
-    }
-
-    const renderNewRM = () => {
-        return <>RM Cost<br /> New</>
-    }
-
-    const renderRM = () => {
-        return <>Raw Material</>
-    }
-
-    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell && cell !== null ? cell : '-'
-    }
-
-    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
-    }
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -370,21 +309,7 @@ function SimulationApprovalSummary(props) {
         )
     }
 
-    const renderCostingHead = () => {
-        return <>Costing Head </>
-    }
 
-    const renderRawMaterial = () => {
-        return <>Raw Material </>
-    }
-
-    const renderRMGrade = () => {
-        return <>RM Grade </>
-    }
-
-    const renderRMSpec = () => {
-        return <>RM Spec </>
-    }
 
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -443,9 +368,6 @@ function SimulationApprovalSummary(props) {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
-    const renderShearingCost = () => {
-        return <>Shearing <br /> Cost</>
-    }
 
     const renderEffectiveDate = () => {
         return <>Effective <br /> Date</>
@@ -647,10 +569,6 @@ function SimulationApprovalSummary(props) {
                                     </button>
                                 </div>
                             </Col>
-                            {showImpactedData &&
-                                <div className="accordian-content w-100">
-                                    <div className={`ag-grid-react`}>
-
 
                                         <Col md="12" className="mb-3">
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -702,15 +620,7 @@ function SimulationApprovalSummary(props) {
 
                                                     </AgGridReact>
 
-                                                    <div className="paging-container d-inline-block float-right">
-                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                            <option value="10" selected={true}>10</option>
-                                                            <option value="50">50</option>
-                                                            <option value="100">100</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            </div>
 
                                         </Col>
                                     </div>
