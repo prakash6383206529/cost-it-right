@@ -20,6 +20,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
+import { table } from 'react-dom-factories';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,13 +50,29 @@ function ReportListing(props) {
     })
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const reportListingData = useSelector((state) => state.report.reportListing)
+    let reportListingData = useSelector((state) => state.report.reportListing)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const approvalList = useSelector(state => state.approval.approvalList)
 
     const userList = useSelector(state => state.auth.userList)
     // const { bopDrawerList } = useSelector(state => state.costing)
+
+    const getData = () => {
+
+        let temp = []
+        temp = reportListingData && reportListingData.map(item => {
+            if (item.Status === CREATED_BY_ASSEMBLY) {
+                return false
+            } else {
+                return item
+            }
+        })
+        setTableData(temp)
+        setTimeout(() => {
+            setLoader(false)
+        }, 200);
+    }
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -127,29 +144,26 @@ function ReportListing(props) {
         }
         var t0 = performance.now();
         console.log('t0: ', t0);
-        props.getReportListing(filterData, (res) => {
+        dispatch(getReportListing(filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
 
-            let temp = []
-            reportListingData && reportListingData.map(item => {
-                if (item.Status === DRAFT || item.Status === CREATED_BY_ASSEMBLY) {
-                    return false
-                } else {
-                    temp.push(item)
-                }
-            })
-            setTableData(temp)
-            setLoader(false)
-            var t1 = performance.now();
-            console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
-        })
+
+
+            // var t1 = performance.now();
+            // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+        }))
+
     }
 
 
     useEffect(() => {
         getTableData();
     }, [])
+
+    useEffect(() => {
+
+    }, [tableData])
 
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -322,7 +336,7 @@ function ReportListing(props) {
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
-            {isLoader && <LoaderCustom />}
+            {/* {isLoader && <LoaderCustom />} */}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
@@ -360,7 +374,7 @@ function ReportListing(props) {
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
                         // columnDefs={c}
-                        rowData={tableData}
+                        rowData={reportListingData}
                         pagination={true}
                         paginationPageSize={10}
                         onGridReady={onGridReady}
