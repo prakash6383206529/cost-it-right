@@ -14,6 +14,7 @@ function Dashboard(props) {
 
   const [acc1, setAcc1] = useState(true)
   const [acc2, setAcc2] = useState(false)
+  const [hideDash, setShowHideDash] = useState(false)
 
   useEffect(() => {
     props.getMenuByUser(loggedInUserId(), () => {
@@ -28,69 +29,77 @@ function Dashboard(props) {
     });
   })
 
+  const closeDashboard = () => {
+    setShowHideDash(true)
+  }
 
 
   return (
     <>
-      <div className="dashboard-page w-100">
-        <Row>
-            <Col md="12">
+      {
+        !hideDash &&
+        <>
+          <div className="dashboard-page w-100">
+            <Row>
+              <Col md="12">
                 <h1>Dashboard</h1>
-            </Col>
-        </Row>
-        <form onSubmit={handleSubmit}>
-          <Row className="m-0">
-            <div className="graph-box w-100">
-              <Row>
-                  <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
-                  <Col md="4" className="text-right">
+              </Col>
+            </Row>
+            <form onSubmit={handleSubmit}>
+              <Row className="m-0">
+                <div className="graph-box w-100">
+                  <Row>
+                    <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
+                    <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
-                          {acc1 ? (
-                              <i className="fa fa-minus" ></i>
-                          ) : (
-                              <i className="fa fa-plus"></i>
-                          )}
+                        {acc1 ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
                       </button>
-                  </Col>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} />}</Col>
+                  </Row>
+                </div>
               </Row>
-              <Row>
-                <Col md="12">{acc1 && <ApprovalListing isApproval={true}/> }</Col>
-              </Row>
-            </div>
-          </Row>
 
+              <Row className="m-0">
+                <div className="graph-box w-100">
+                  <Row>
+                    <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                        {acc2 ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} />}</Col>
+                  </Row>
+                </div>
+              </Row>
+            </form>
+          </div>
           <Row className="m-0">
             <div className="graph-box w-100">
-              <Row>
-                  <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
-                  <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
-                          {acc2 ? (
-                              <i className="fa fa-minus" ></i>
-                          ) : (
-                              <i className="fa fa-plus"></i>
-                          )}
-                      </button>
-                  </Col>
-              </Row>
-              
-              <Row>
-                <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} />}</Col>
-              </Row>
+              <div className="dashboard-top position-relative">
+                <div className="dashboard-text">
+                  <h2>Other Widgets Will Come Here</h2>
+                </div>
+                <img src={dashboardImg} alt='dashboard-background' />
+              </div>
             </div>
           </Row>
-        </form>
-      </div>
-      <Row className="m-0">
-        <div className="graph-box w-100">
-          <div className="dashboard-top position-relative">
-            <div className="dashboard-text">
-              <h2>Other Widgets Will Come Here</h2>
-            </div>
-            <img src={dashboardImg} alt='dashboard-background' />
-          </div>
-        </div>
-      </Row>
+        </>
+      }
     </>
   )
 }

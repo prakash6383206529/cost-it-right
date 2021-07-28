@@ -22,13 +22,14 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../../common/LoaderCustom'
+import { Redirect } from 'react-router-dom'
 
 const gridOptions = {};
 
 function ApprovalListing(props) {
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
-  const [dShown,setDshown] = useState(false)
+  const [dShown, setDshown] = useState(false)
 
   const [tableData, setTableData] = useState([])
   const [partNoDropdown, setPartNoDropdown] = useState([])
@@ -236,9 +237,9 @@ function ApprovalListing(props) {
   }
 
   const viewDetails = (approvalNumber, approvalProcessId) => {
-
     setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
     setShowApprovalSummary(true)
+    // props.closeDashboard()
     return (
       <ApprovalSummary
         approvalNumber={approvalNumber ? approvalNumber : '2345438'}
@@ -396,130 +397,143 @@ function ApprovalListing(props) {
 
   const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === PENDING : false
 
+  if (showApprovalSumary === true) {
+
+    return <Redirect
+      to={{
+        pathname: "/approval-summary",
+        state: {
+          approvalNumber: approvalData.approvalNumber,
+          approvalProcessId: approvalData.approvalProcessId
+        }
+      }}
+    />
+  }
+
   return (
     <Fragment>
       {
-        !showApprovalSumary ?
-          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        !showApprovalSumary &&
+        <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-              {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
-
-
-              <Row className="pt-4 blue-before">
-                {shown &&
-                  <Col lg="10" md="12" className="filter-block">
-                    <div className="d-inline-flex justify-content-start align-items-top w100">
-                      <div className="flex-fills">
-                        <h5>{`Filter By:`}</h5>
-                      </div>
-
-                      <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                          label={''}
-                          name={'partNo'}
-                          placeholder={'Part No.'}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: false }}
-                          register={register}
-                          // defaultValue={plant.length !== 0 ? plant : ''}
-                          options={renderDropdownListing('PartList')}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          errors={errors.partNo}
-                        />
-                      </div>
-                      <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                          label={''}
-                          name={'createdBy'}
-                          placeholder={'Initiated By'}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: false }}
-                          register={register}
-                          // defaultValue={plant.length !== 0 ? plant : ''}
-                          options={renderDropdownListing('users')}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          errors={errors.createdBy}
-                        />
-                      </div>
-                      <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                          label={''}
-                          name={'requestedBy'}
-                          placeholder={'Requested By'}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: false }}
-                          register={register}
-                          // defaultValue={plant.length !== 0 ? plant : ''}
-                          options={renderDropdownListing('users')}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          errors={errors.requestedBy}
-                        />
-                      </div>
-                      <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                          label={''}
-                          name={'status'}
-                          placeholder={'Status'}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: false }}
-                          register={register}
-                          // defaultValue={plant.length !== 0 ? plant : ''}
-                          options={renderDropdownListing('Status')}
-                          mandatory={false}
-                          handleChange={() => { }}
-                          errors={errors.status}
-                        />
-                      </div>
+            {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
 
-                      <div className="flex-fill filled-small hide-label">
-                        <button
-                          type="button"
-                          //disabled={pristine || submitting}
-                          onClick={resetHandler}
-                          className="reset mr10"
-                        >
-                          {'Reset'}
-                        </button>
-                        <button
-                          type="button"
-                          //disabled={pristine || submitting}
-                          onClick={onSubmit}
-                          className="apply mr5"
-                        >
-                          {'Apply'}
-                        </button>
-                      </div>
+            <Row className="pt-4 blue-before">
+              {shown &&
+                <Col lg="10" md="12" className="filter-block">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
                     </div>
-                  </Col>
-                }
+
+                    <div className="flex-fill filled-small hide-label">
+                      <SearchableSelectHookForm
+                        label={''}
+                        name={'partNo'}
+                        placeholder={'Part No.'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        options={renderDropdownListing('PartList')}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        errors={errors.partNo}
+                      />
+                    </div>
+                    <div className="flex-fill filled-small hide-label">
+                      <SearchableSelectHookForm
+                        label={''}
+                        name={'createdBy'}
+                        placeholder={'Initiated By'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        options={renderDropdownListing('users')}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        errors={errors.createdBy}
+                      />
+                    </div>
+                    <div className="flex-fill filled-small hide-label">
+                      <SearchableSelectHookForm
+                        label={''}
+                        name={'requestedBy'}
+                        placeholder={'Requested By'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        options={renderDropdownListing('users')}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        errors={errors.requestedBy}
+                      />
+                    </div>
+                    <div className="flex-fill filled-small hide-label">
+                      <SearchableSelectHookForm
+                        label={''}
+                        name={'status'}
+                        placeholder={'Status'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        options={renderDropdownListing('Status')}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        errors={errors.status}
+                      />
+                    </div>
 
 
-                <Col md="6" lg="6" className="search-user-block mb-3">
-                  <div className="d-flex justify-content-end bd-highlight w100">
-                    <div>
-                      {(shown) ? (
-                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
-                          <div className="cancel-icon-white"></div></button>
-                      ) : (
-                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
-                          <div className="filter mr-0"></div>
-                        </button>
-                      )}
-                      <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
-                        <div className="send-for-approval mr-0" ></div>
+                    <div className="flex-fill filled-small hide-label">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={resetHandler}
+                        className="reset mr10"
+                      >
+                        {'Reset'}
+                      </button>
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={onSubmit}
+                        className="apply mr5"
+                      >
+                        {'Apply'}
                       </button>
                     </div>
                   </div>
-                  {/* <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">
+                </Col>
+              }
+
+
+              <Col md="6" lg="6" className="search-user-block mb-3">
+                <div className="d-flex justify-content-end bd-highlight w100">
+                  <div>
+                    {(shown) ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
+                        <div className="cancel-icon-white"></div></button>
+                    ) : (
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
+                        <div className="filter mr-0"></div>
+                      </button>
+                    )}
+                    <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                      <div className="send-for-approval mr-0" ></div>
+                    </button>
+                  </div>
+                </div>
+                {/* <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">
                       Grant Marshall{' '}
                       <a href="">
                         <i className="ml-1 fa fa-times-circle"></i>
@@ -531,16 +545,16 @@ function ApprovalListing(props) {
                         <i className="ml-1 fa fa-times-circle"></i>
                       </a>
                     </Badge> */}
-                </Col>
+              </Col>
 
 
-                {/* <Col md="12"  className="mb-4">
+              {/* <Col md="12"  className="mb-4">
             <Badge color="success" pill className="badge-small">Approved </Badge>
             <Badge color="danger" pill className="badge-small">Rejected</Badge>
             <Badge color="warning" pill className="badge-small">Pending for Approval</Badge>
           </Col> */}
 
-                {/* <Col md="4" className="search-user-block">
+              {/* <Col md="4" className="search-user-block">
             <div className="d-flex justify-content-end bd-highlight">
               <div>
                 
@@ -549,10 +563,10 @@ function ApprovalListing(props) {
               </div>
             </div>
           </Col> */}
-              </Row>
-            </form>
+            </Row>
+          </form>
 
-            {/* <BootstrapTable
+          {/* <BootstrapTable
               data={approvalList}
               striped={false}
               hover={false}
@@ -583,77 +597,81 @@ function ApprovalListing(props) {
               <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
               <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
             </BootstrapTable> */}
-            <Row>
-              <Col>
-                <div className={`ag-grid-react`}>
-                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                    <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                    </div>
-                    <div
-                      className="ag-theme-material"
+          <Row>
+            <Col>
+              <div className={`ag-grid-react`}>
+                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-header">
+                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                  </div>
+                  <div
+                    className="ag-theme-material"
+                  >
+                    <AgGridReact
                       style={{ height: '100%', width: '100%' }}
+                      defaultColDef={defaultColDef}
+                      domLayout='autoHeight'
+                      // columnDefs={c}
+                      rowData={approvalList}
+                      pagination={true}
+                      paginationPageSize={10}
+                      onGridReady={onGridReady}
+                      gridOptions={gridOptions}
+                      loadingOverlayComponent={'customLoadingOverlay'}
+                      noRowsOverlayComponent={'customNoRowsOverlay'}
+                      noRowsOverlayComponentParams={{
+                        title: CONSTANT.EMPTY_DATA,
+                      }}
+                      frameworkComponents={frameworkComponents}
+                      suppressRowClickSelection={true}
+                      rowSelection={'multiple'}
+                      // frameworkComponents={frameworkComponents}
+                      onSelectionChanged={onRowSelect}
+                      isRowSelectable={isRowSelectable}
                     >
-                      <AgGridReact
-                        style={{ height: '100%', width: '100%' }}
-                        defaultColDef={defaultColDef}
-                        // columnDefs={c}
-                        rowData={approvalList}
-                        pagination={true}
-                        paginationPageSize={10}
-                        onGridReady={onGridReady}
-                        gridOptions={gridOptions}
-                        loadingOverlayComponent={'customLoadingOverlay'}
-                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
-                        }}
-                        frameworkComponents={frameworkComponents}
-                        suppressRowClickSelection={true}
-                        rowSelection={'multiple'}
-                        // frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
-                        isRowSelectable={isRowSelectable}
-                      >
-                        <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                        {isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                        <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
-                        <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
-                        <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                        <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
-                        <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
-                        <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                        <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
-                        <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
-                        <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                        <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
-                        <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
-                        <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                        {!isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                        
+                      <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                      <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                      {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                      <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
+                      <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
+                      <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                      <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
+                      <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
+                      <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                      <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                      <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                      <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
+                      <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
+                      <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
+                      <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                      {!isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
 
-                      </AgGridReact>
 
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
+                    </AgGridReact>
+
+                    <div className="paging-container d-inline-block float-right">
+                      <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                        <option value="10" selected={true}>10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
                     </div>
                   </div>
                 </div>
-              </Col>
-            </Row>
+              </div>
+            </Col>
+          </Row>
 
-          </div>
-          :
-          <ApprovalSummary
-            approvalNumber={approvalData.approvalNumber}
-            approvalProcessId={approvalData.approvalProcessId}
-          /> //TODO list
+        </div>
+        // :
+        // // <Redirect
+        // //   to={{
+        // //       pathname: "/approval-summary",
+        // //   }}/>
+        // <ApprovalSummary
+        //   approvalNumber={approvalData.approvalNumber}
+        //   approvalProcessId={approvalData.approvalProcessId}
+        // /> //TODO list
       }
       {approveDrawer && (
         <ApproveRejectDrawer
