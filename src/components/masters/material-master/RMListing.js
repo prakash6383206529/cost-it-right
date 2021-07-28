@@ -248,7 +248,6 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
-
         const options = {
             clearSearch: true,
             noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
