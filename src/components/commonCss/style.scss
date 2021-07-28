@@ -5559,6 +5559,7 @@ body{
         [class^="Pending"],
         [class^="Awaiting"],
         .Approved,
+        .ApprovedBySimulation,
         .Rejected,
         .History {
           min-width: calc(90px * 80 / 100);
