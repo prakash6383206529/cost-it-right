@@ -726,7 +726,7 @@ a:hover {
       }      
       .ag-theme-material{
         .ag-header{
-          // .ag-header-row{border-left: 1px solid #e5eaf9;}
+          .ag-header-row{border-left: 1px solid #e5eaf9;}
           border-top: 1px solid #e5eaf9;
           font-weight: normal;
           background-color: #fff;
@@ -738,7 +738,7 @@ a:hover {
           border: none;
         }
         .ag-row{
-          // border-left: 1px solid #e5eaf9;
+          border-left: 1px solid #e5eaf9;
           .ag-cell{
             button{
               vertical-align: middle;
@@ -869,15 +869,12 @@ a:hover {
         }
       }  
     }
-    .dashboard-page{
-      .ag-grid-react{
-        .ag-grid-wrapper{
-          min-height: 359px;
-          height: 359px !important;
-        }
+    .smh-approval-summary-page,.dashboard-page{
+      .ag-grid-wrapper{
+        min-height: auto;
+        height: auto !important;
       }
-    }
-    
+    }    
   }
 }
 
@@ -2852,6 +2849,12 @@ body {
           height: calc(100vh - 250px) !important;
         }
       }  
+    }
+    .smh-approval-summary-page,.dashboard-page{
+      .ag-grid-wrapper{
+        min-height: auto;
+        height: auto !important;
+      }
     }
   }
 }
