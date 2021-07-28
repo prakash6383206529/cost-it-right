@@ -4282,6 +4282,7 @@ body{
   }
 }
 .simulation-page{
+  min-height: inherit;
   .empty-table-paecholder{
     min-height: calc(100vh - 350px);
   }
