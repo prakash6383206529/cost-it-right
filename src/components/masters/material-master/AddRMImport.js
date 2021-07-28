@@ -407,7 +407,7 @@ class AddRMImport extends Component {
                 const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
                 this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-                this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+                this.handleCurrency(currencyObj ? { label: currencyObj.Text, value: currencyObj.Value } : '')
                 this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
                 // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 // this.props.change('NetLandedCost')
