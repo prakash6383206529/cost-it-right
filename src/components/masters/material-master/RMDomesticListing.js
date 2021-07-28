@@ -201,6 +201,7 @@ class RMDomesticListing extends Component {
     * @description edit material type
     */
     editItemDetails = (Id, rowData = {}) => {
+
         let data = {
             isEditFlag: true,
             Id: Id,
@@ -844,7 +845,6 @@ class RMDomesticListing extends Component {
                                             ) : (
                                                 <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
-                                                    {/* Show Filter */}
                                                 </button>
                                             )}
                                             {AddAccessibility && (
@@ -873,13 +873,14 @@ class RMDomesticListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
                                                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>}>
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
+
 
                                                 </>
 
