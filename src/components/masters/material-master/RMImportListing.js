@@ -978,7 +978,7 @@ class RMImportListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.rmImportDataList}
                   pagination={true}
