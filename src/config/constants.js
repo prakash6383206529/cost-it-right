@@ -818,6 +818,7 @@ export const API = {
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
+  deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,

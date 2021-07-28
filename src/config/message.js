@@ -318,4 +318,8 @@ export const MESSAGES = {
   RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost has been successfully saved.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
 
+
+  //SIMULATION
+  DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?'
+
 }
