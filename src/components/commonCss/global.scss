@@ -875,15 +875,7 @@ a:hover {
         }
       }  
     }
-    .dashboard-page{
-      .ag-grid-react{
-        .ag-grid-wrapper{
-          min-height: 359px;
-          height: 359px !important;
-        }
-      }
-    }
-    .smh-approval-summary-page{
+    .smh-approval-summary-page,.dashboard-page{
       .ag-grid-wrapper{
         min-height: auto;
         height: auto !important;
@@ -2873,7 +2865,7 @@ body {
         }
       }  
     }
-    .smh-approval-summary-page{
+    .smh-approval-summary-page,.dashboard-page{
       .ag-grid-wrapper{
         min-height: auto;
         height: auto !important;
