@@ -446,23 +446,10 @@ function SimulationApprovalListing(props) {
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-<<<<<<< HEAD
-                                        <div>
-                                            {(shown) ? (
-                                                <button type="button" className="user-btn mr5 filter-btn-top topminus88" onClick={() => setshown(!shown)}>
-                                                    <div className="cancel-icon-white"></div></button>
-                                            ) : (
-                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
-                                            )}
-                                        </div>
-=======
 
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
->>>>>>> 87b008dd6 (Filter removed and delete draft simulation done)
                                     </div>
                                 </Col>
 

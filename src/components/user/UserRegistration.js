@@ -18,7 +18,7 @@ import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
@@ -1062,7 +1062,7 @@ class UserRegistration extends Component {
                               customClassName={'withBorder'}
                             />
                           </div>
-                          <div className="ext phoneNumber col-md-4 pl-0 pr-0">
+                          <div className="ext phoneNumber col-md-4 pl-0">
                             <Field
                               label="Extension"
                               name={"Extension"}
@@ -1211,7 +1211,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}:`}
+                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1234,7 +1234,7 @@ class UserRegistration extends Component {
                         <Field
                           name="DepartmentId"
                           type="text"
-                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}
+                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                           component={searchableSelect}
                           placeholder={'Select company'}
                           options={this.searchableSelectType('department')}
@@ -1418,9 +1418,6 @@ class UserRegistration extends Component {
                       /////////////// User's technology level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
-                    <HeaderTitle
-                      title={'Simulation Heads & Level:'}
-                      customClass={''} />
 
 
                     <Row>
