@@ -716,8 +716,14 @@ a:hover {
         padding-bottom: 12px;
       }
       .ag-grid-wrapper{
-        min-height: calc(100vh - 342px);
-        height: calc(100vh - 342px) !important;
+        min-height: calc(100vh - 300px);
+        height: calc(100vh - 300px) !important;
+      }
+      .drawer-wrapper{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 240px);
+          height: calc(100vh - 240px) !important;
+        }
       }
       .search-user-block{
         // position: relative;
@@ -725,7 +731,7 @@ a:hover {
         padding-right: 15px !important;
       }      
       .ag-theme-material{
-        .ag-header{
+        .ag-header{border-top: 1px solid #e5eaf9;
           font-weight: normal;
           background-color: #fff;
           .ag-header-cell-label{
@@ -852,16 +858,16 @@ a:hover {
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: 360px;
-          height: 360px !important;
+          min-height: auto;
+          height: auto !important;
         }
       }  
     }
     .ag-grid-react{
       .sm-edit-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 320px);
-          height: calc(100vh - 320px) !important;
+          min-height: calc(100vh - 274px);
+          height: calc(100vh - 274px) !important;
         }
       }  
     }
@@ -873,7 +879,12 @@ a:hover {
         }
       }
     }
-    
+    .smh-approval-summary-page{
+      .ag-grid-wrapper{
+        min-height: auto;
+        height: auto !important;
+      }
+    }    
   }
 }
 
@@ -2801,8 +2812,14 @@ body {
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
       .ag-grid-wrapper{
-        min-height: calc(100vh - 30px);
-        height: calc(100vh - 30px) !important;
+        min-height: calc(100vh - 15px);
+        height: calc(100vh - 15px) !important;
+      }
+      .drawer-wrapper{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 190px);
+          height: calc(100vh - 190px) !important;
+        } 
       }
       &.no-tab-page{
         .ag-grid-wrapper{
@@ -2839,6 +2856,12 @@ body {
           height: calc(100vh - 250px) !important;
         }
       }  
+    }
+    .smh-approval-summary-page{
+      .ag-grid-wrapper{
+        min-height: auto;
+        height: auto !important;
+      }
     }
   }
 }

@@ -673,11 +673,11 @@ function SimulationApprovalSummary(props) {
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
-                                                    style={{ height: '100%', width: '100%' }}
                                                 >
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
+                                                        domLayout='autoHeight'
                                                         // columnDefs={c}
                                                         rowData={rmDomesticListing}
                                                         pagination={true}
@@ -877,11 +877,12 @@ function SimulationApprovalSummary(props) {
                                                         </div>
                                                         <div
                                                             className="ag-theme-material"
-                                                            style={{ height: '100%', width: '100%' }}
+
                                                         >
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
+                                                                domLayout='autoHeight'
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -967,41 +968,59 @@ function SimulationApprovalSummary(props) {
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
-                                                    style={{ height: '100%', width: '100%' }}
+
                                                 >
-                                                    <AgGridColumn width={160} field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-                                                    <AgGridColumn width={140} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                    <AgGridColumn width={144} field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                                                    <AgGridColumn width={145} field="Category" headerName="Category"></AgGridColumn>
-                                                    <AgGridColumn width={100} field="UOM" headerName="UOM"></AgGridColumn>
-                                                    <AgGridColumn width={200} headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
-                                                        <AgGridColumn width={100} field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                        <AgGridColumn width={100} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn width={200} headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
-                                                        <AgGridColumn width={100} field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                        <AgGridColumn width={100} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn width={160} field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                                    <AgGridColumn width={180} field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                                    <AgGridColumn width={200} headerClass="justify-content-center" headerName="Net Cost (INR)">
-                                                        <AgGridColumn width={100} field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                        <AgGridColumn width={100} field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                    <AgGridColumn width={160} field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                                    <AgGridColumn width={160} field="RawMaterialId" hide></AgGridColumn>
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        domLayout='autoHeight'
+                                                        // columnDefs={c}
+                                                        rowData={rmDomesticListing}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: CONSTANT.EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        stopEditingWhenCellsLoseFocus={true}
+                                                    >
+                                                        <AgGridColumn width={160} field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn width={144} field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="Category" headerName="Category"></AgGridColumn>
+                                                        <AgGridColumn width={100} field="UOM" headerName="UOM"></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" headerName="Basic Rate (INR)" marryChildren={true} >
+                                                            <AgGridColumn width={100} field="BasicRate" headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                            <AgGridColumn width={100} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" marryChildren={true} headerName="Scrap Rate (INR)">
+                                                            <AgGridColumn width={100} field="ScrapRate" headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                            <AgGridColumn width={100} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn width={160} field="RMFreightCost" cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                                        <AgGridColumn width={180} field="RMShearingCost" cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                                        <AgGridColumn width={200} headerClass="justify-content-center" headerName="Net Cost (INR)">
+                                                            <AgGridColumn width={100} field="NetLandedCost" cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                            <AgGridColumn width={100} field="NewNetLandedCost" cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                        </AgGridColumn>
+                                                        <AgGridColumn width={160} field="EffectiveDate" cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
+                                                        <AgGridColumn width={160} field="RawMaterialId" hide></AgGridColumn>
 
-                                                </AgGridReact>
+                                                    </AgGridReact>
 
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
+                                                    <div className="paging-container d-inline-block float-right">
+                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                            <option value="10" selected={true}>10</option>
+                                                            <option value="50">50</option>
+                                                            <option value="100">100</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-
                                         </Col>
                                     </div>
                                 </div>
