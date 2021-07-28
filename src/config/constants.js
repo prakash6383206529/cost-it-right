@@ -1416,6 +1416,8 @@ export const VENDOR = 'Vendor'
 export const CLIENT = 'Client'
 export const PLANT = 'Plant'
 
+export const PRODUCT = 'Product'
+
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
