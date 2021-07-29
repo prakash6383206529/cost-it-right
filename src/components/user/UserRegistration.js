@@ -8,7 +8,7 @@ import {
   minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
   maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
-import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, } from "../layout/FormInputs";
+import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
@@ -26,6 +26,7 @@ import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import ConfirmComponent from "../../helper/ConfirmComponent";
+import { EMPTY_GUID } from "../../config/constants";
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -239,6 +240,15 @@ class UserRegistration extends Component {
       })
       return temp;
     }
+
+    if (label === 'multiDepartment') {
+      departmentList && departmentList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.DepartmentName, Value: item.DepartmentId, CompanyId: item.CompanyId })
+        return null
+      })
+      return temp;
+    }
   }
 
   /**
@@ -304,17 +314,23 @@ class UserRegistration extends Component {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            const { roleList, departmentList, cityList } = this.props;
-
+            const { roleList, cityList, departmentList } = this.props;
+            let DepartmentObj = {}
+            const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
-            const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
+            if (Data.IsMultipleDepartmentAllowed) {
+              Data.Departments && Data.Departments.map(item => { depatArr.push({ Text: item.DepartmentName, Value: item.DepartmentId }) })
+            } else {
+              DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
+            }
+            // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsShowAdditionalPermission: Data.IsAdditionalAccess,
-              department: DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
+              department: (getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ Text: DepartmentObj.DepartmentName, Value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
               // TechnologyLevelGrid:
@@ -845,13 +861,21 @@ class UserRegistration extends Component {
       return null
     })
 
+    let multiDeptArr = []
+
+    department && department.map((item) => {
+      multiDeptArr.push({ DepartmentId: item.Value, DepartmentName: item.Text })
+    })
+
+
     if (isEditFlag) {
       let updatedData = {
         UserId: UserId,
         FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData.LevelId,
         LevelName: registerUserData.LevelName,
-        DepartmentName: department.label,
+        // DepartmentName: department.label,
+        DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -863,7 +887,10 @@ class UserRegistration extends Component {
         Password: this.state.isShowPwdField ? values.Password : '',
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
-        DepartmentId: department.value,
+        // DepartmentId: department.value,
+        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,
+        Departments: getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : [],
+        IsMultipleDepartmentAllowed: getConfigurationKey().IsMultipleDepartmentAllowed ? true : false,
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -937,7 +964,9 @@ class UserRegistration extends Component {
         Password: values.Password,
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
-        DepartmentId: department.value,
+        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,
+        Departments: getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : [],
+        IsMultipleDepartmentAllowed: getConfigurationKey().IsMultipleDepartmentAllowed ? true : false,
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -1230,21 +1259,43 @@ class UserRegistration extends Component {
                           valueDescription={this.state.role}
                         />
                       </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="DepartmentId"
-                          type="text"
-                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-                          component={searchableSelect}
-                          placeholder={'Select company'}
-                          options={this.searchableSelectType('department')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
-                          required={true}
-                          handleChangeDescription={this.departmentHandler}
-                          valueDescription={this.state.department}
-                        />
-                      </div>
+                      {
+                        getConfigurationKey().IsMultipleDepartmentAllowed ?
+                          <div className="col-md-3">
+                            <Field
+                              name="DepartmentId"
+                              type="text"
+                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              component={renderMultiSelectField}
+                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              selection={this.state.department == null || this.state.department.length === 0 ? [] : this.state.department}
+                              options={this.searchableSelectType('multiDepartment')}
+                              validate={this.state.department == null || this.state.department.length === 0 ? [required] : []}
+                              required={true}
+                              selectionChanged={this.departmentHandler}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              className="multiselect-with-border"
+                              mendatory={true}
+                            />
+                          </div> :
+                          <div className="col-md-3">
+                            <Field
+                              name="DepartmentId"
+                              type="text"
+                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              component={searchableSelect}
+                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              // placeholder={'Select company'}
+                              options={this.searchableSelectType('department')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.departmentHandler}
+                              valueDescription={this.state.department}
+                            />
+                          </div>
+                      }
                     </div>
 
 
