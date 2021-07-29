@@ -15,6 +15,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import { EMPTY_GUID, G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
+import TooltipCustom from '../../../../common/Tooltip'
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -854,7 +855,7 @@ function RawMaterialCost(props) {
               {costData.TechnologyName === PLASTIC &&
                 <Col md="2" className="py-3 ">
                   <label
-                    className={`custom-checkbox mb-0`}
+                    className={`custom-checkbox mb-0 w-auto`}
                     onChange={onPressApplyMasterBatch}
                   >
                     Apply Master Batch
@@ -869,6 +870,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
+                  <TooltipCustom customClass="float-none ml-n3" tooltipText="Can only be added with 1 RM"/>
                 </Col>
               }
 
