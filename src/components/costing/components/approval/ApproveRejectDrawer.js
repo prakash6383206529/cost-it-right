@@ -12,6 +12,7 @@ import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
+import { debounce } from 'lodash'
 
 
 function ApproveRejectDrawer(props) {
@@ -166,11 +167,11 @@ function ApproveRejectDrawer(props) {
 
 
 
-  const onSubmit = () => {
+
+
+  const onSubmit = debounce(handleSubmit(() => {
     const remark = getValues('remark')
-    console.log('remark: ', remark);
     const reason = getValues('reason')
-    console.log('reason: ', reason);
     const dept = getValues('dept')
     const approver = getValues('approver')
 
@@ -309,7 +310,7 @@ function ApproveRejectDrawer(props) {
         }))
       }
     }
-  }
+  }), 500)
 
   const renderDropdownListing = (label) => {
     const tempDropdownList = []
@@ -404,7 +405,7 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            <form onSubmit={handleSubmit(onSubmit)}
+            <form
             >
               <Row className="drawer-heading">
                 <Col>
@@ -588,9 +589,9 @@ function ApproveRejectDrawer(props) {
                   </button>
 
                   <button
-                    type="submit"
+                    type="button"
                     className="submit-button  save-btn"
-                  // onClick={() => { }}
+                    onClick={onSubmit}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
