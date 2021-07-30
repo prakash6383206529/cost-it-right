@@ -638,7 +638,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="UserId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

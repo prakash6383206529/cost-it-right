@@ -556,7 +556,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
 
