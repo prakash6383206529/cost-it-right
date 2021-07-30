@@ -3,11 +3,11 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { getPlantBySupplier, } from '../../../actions/Common'
+import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { APPROVED, REJECTED, HISTORY } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 
@@ -101,7 +101,8 @@ function AddToComparisonDrawer(props) {
         setIsVbcSelected(true)
         setisCbcSelected(false)
         dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-        dispatch(getPlantBySupplier(VendorId, (res) => { }))
+        // dispatch(getPlantBySupplier(VendorId, (res) => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, destinationPlantId, () => { }))
       } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
         setIsZbcSelected(false)
@@ -187,17 +188,16 @@ function AddToComparisonDrawer(props) {
     const temp = []
     setVendorId(value)
     setValue('destinationPlant', '')
-    if (loggedIn) {
-      dispatch(getPlantBySupplier(value, (res) => { }),
-        // dispatch(
-        //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
-        //   }),
-        //   )
-        setValue('costings', '')
-      )
-    } else {
-      handleVendorNameChange('')
-    }
+
+    // dispatch(getPlantBySupplier(value, (res) => { }),
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    // dispatch(
+    //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
+    //   }),
+    //   )
+    setValue('costings', '')
+
+
   }
 
 
