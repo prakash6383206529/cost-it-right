@@ -352,13 +352,13 @@ export const DatePickerHookForm = (field) => {
 export const RadioHookForm = (field) => {
   // console.log('field: ', field);
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
-  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+  const className = `${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
   return (
     <>
       <div
-      //className={className}
+      className={className}
       >
         <label>
           {label}

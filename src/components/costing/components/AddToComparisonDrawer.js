@@ -528,37 +528,42 @@ function AddToComparisonDrawer(props) {
             </Row>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Row className="pl-3 mb-2">
-                <RadioHookForm
-                  className={"filter-form-section"}
-                  name={"ZBC"}
-                  label={"ZBC"}
-                  defaultValue={isZbcSelected}
-                  control={control}
-                  Controller={Controller}
-                  register={register}
-                  handleChange={() => handleComparison("ZBC")}
-                />
-                <RadioHookForm
-                  className={"filter-form-section"}
-                  name={"VBC"}
-                  label={"VBC"}
-                  defaultValue={isVbcSelected}
-                  control={control}
-                  Controller={Controller}
-                  register={register}
-                  handleChange={() => handleComparison("VBC")}
-                />
-                <RadioHookForm
-                  className={"filter-form-section"}
-                  name={"CBC"}
-                  label={"CBC"}
-                  defaultValue={isCbcSelected}
-                  control={control}
-                  Controller={Controller}
-                  register={register}
-                  handleChange={() => handleComparison("CBC")}
-                />
+              <Row className="pl-3 my-3">
+                <Col>
+                  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                    className={"filter-form-section mr-1"}
+                    name={"ZBC"}
+                    label={"ZBC"}
+                    defaultValue={isZbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison("ZBC")}
+                  />
+                  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                    className={"filter-form-section mr-1"}
+                    name={"VBC"}
+                    label={"VBC"}
+                    defaultValue={isVbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison("VBC")}
+                  />
+                  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline"
+                    className={"filter-form-section mr-1"}
+                    name={"CBC"}
+                    label={"CBC"}
+                    defaultValue={isCbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison("CBC")}
+                  />
+                </Col>
               </Row>
               <Row className="pl-3">
                 {isZbcSelected && (
