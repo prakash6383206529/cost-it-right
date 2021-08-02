@@ -4466,6 +4466,22 @@ body{
 }
 // error_box 
 
+// toastr css start
+.redux-toastr {
+  .top-left, .top-right, .top-center, .bottom-left, .bottom-right, .bottom-center{
+    width: 430px;
+  }
+  .toastr {
+    .rrt-middle-container{
+      font-size: 0.95em;
+      min-height: 70px;
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+}
+// toastr css end
+
 
 // responsive media query start
 @media(max-width:1600px){
@@ -5969,6 +5985,13 @@ body{
   }
 }
 // dashboard css end
+// toastr css start
+.redux-toastr {
+  .top-left, .top-right, .top-center, .bottom-left, .bottom-right, .bottom-center{
+    width: 380px;
+  }
+}
+// toastr css end
 
 }// ==================================1366 END
 

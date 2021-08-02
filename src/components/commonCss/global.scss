@@ -2820,8 +2820,8 @@ body {
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
       .ag-grid-wrapper{
-        min-height: calc(100vh - 15px);
-        height: calc(100vh - 15px) !important;
+        min-height: auto;
+        height: auto !important;
       }
       .drawer-wrapper{
         .ag-grid-wrapper{
@@ -2831,8 +2831,8 @@ body {
       }
       &.no-tab-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 38px);
-          height: calc(100vh - 38px) !important;
+          min-height: auto;
+          height: auto !important;
         }
       }
       .search-user-block{
@@ -2860,8 +2860,15 @@ body {
     .ag-grid-react{
       .sm-edit-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 250px);
-          height: calc(100vh - 250px) !important;
+          min-height: calc(100vh - 213px);
+          height: calc(100vh - 213px) !important;
+        }
+      }  
+    }
+    .simulation-edit{
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 246px);
         }
       }  
     }
