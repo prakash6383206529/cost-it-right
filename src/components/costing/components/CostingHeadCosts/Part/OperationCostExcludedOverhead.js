@@ -224,7 +224,7 @@ function OperationCostExcludedOverhead(props) {
             <Col md="8">
               <div className="left-border d-flex align-items-center">
                 {'Other Operation Cost:'}
-                <WarningMessagge  dClass="ml-2" message="Following operation costs are excluded from overheads and profits calculation."/>
+                <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
             </Col>
             <Col md={'4'}>
