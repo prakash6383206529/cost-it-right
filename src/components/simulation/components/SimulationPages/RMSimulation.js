@@ -48,7 +48,7 @@ function RMSimulation(props) {
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     useEffect(() => {
         setValue('NoOfCorrectRow', rowCount.correctRow)
-        setValue('NoOfInCorrectRow', rowCount.incorrectRow)
+        setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
     }, [])
 
     const verifySimulation = () => {
@@ -384,7 +384,7 @@ function RMSimulation(props) {
                                         <label>No of rows without changes:</label>
                                         <TextFieldHookForm
                                             label=""
-                                            name={'NoOfInCorrectRow'}
+                                            name={'NoOfRowsWithoutChange'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -394,7 +394,7 @@ function RMSimulation(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfInCorrectRow}
+                                            errors={errors.NoOfRowsWithoutChange}
                                             disabled={true}
                                         />
                                     </div>
