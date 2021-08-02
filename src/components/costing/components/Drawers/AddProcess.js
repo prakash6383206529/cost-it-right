@@ -306,7 +306,7 @@ domLayout='autoHeight'
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="ProcessName" headerName="Process Name"  ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
                         <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                         <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
                         <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
