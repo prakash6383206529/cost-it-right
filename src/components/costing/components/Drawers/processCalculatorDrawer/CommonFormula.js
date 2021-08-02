@@ -17,10 +17,7 @@ export const findRpm = (cuttingSpeed, diameter) => {
   if (!cuttingSpeed || !diameter) {
     return ''
   } else {
-    return checkForDecimalAndNull(
-      (1000 * cuttingSpeed) / (3.14 * diameter),
-      trimNo.NumberOfDecimalForWeightCalculation,
-    )
+    return (1000 * cuttingSpeed) / (3.14 * diameter)
   }
 }
 
@@ -28,10 +25,7 @@ export const feedByMin = (feedRev, rpm) => {
   if (!feedRev || !rpm) {
     return ''
   } else {
-    return checkForDecimalAndNull(
-      feedRev * rpm,
-      trimNo.NumberOfDecimalForWeightCalculation,
-    )
+    return feedRev * rpm
   }
 }
 
@@ -39,10 +33,7 @@ export const clampingTime = (cutTime, clampingTimePercent) => {
   if (!cutTime || !clampingTimePercent) {
     return ''
   } else {
-    return checkForDecimalAndNull(
-      (cutTime * clampingTimePercent) / 100,
-      trimNo.NumberOfDecimalForWeightCalculation,
-    )
+    return (cutTime * clampingTimePercent) / 100
   }
 }
 
@@ -50,9 +41,6 @@ export const totalMachineTime = (cutTime, clampingTimeValue) => {
   if (!cutTime || !clampingTimeValue) {
     return ''
   } else {
-    return checkForDecimalAndNull(
-      cutTime + clampingTimeValue,
-      trimNo.NumberOfDecimalForWeightCalculation,
-    )
+    return cutTime + clampingTimeValue
   }
 }

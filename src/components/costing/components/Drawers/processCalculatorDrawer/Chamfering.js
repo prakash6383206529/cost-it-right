@@ -1,144 +1,88 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
-import {
-  clampingTime,
-  feedByMin,
-  findRpm,
-  passesNo,
-  totalMachineTime,
-} from './CommonFormula'
-import {
-  checkForDecimalAndNull,
-  getConfigurationKey,
-} from '../../../../../helper'
-import { trim } from 'jquery'
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
+import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
+import { toastr } from 'react-redux-toastr'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
+
 
 function Chamfering(props) {
   const { technology, process, calculateMachineTime } = props
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  const costData = useContext(costingInfoContext);
+
   const defaultValues = {
-    cutLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutLength !== undefined
-      ? WeightCalculatorRequest.CutLength
-      : '',
-    // removedMaterial: '',
-    rpm: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Rpm !== undefined
-      ? WeightCalculatorRequest.Rpm : '',
-    feedMin: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FeedMin !== undefined
-      ? WeightCalculatorRequest.FeedMin : '',
-    cutTime: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutTime !== undefined
-      ? WeightCalculatorRequest.CutTime : '',
-    numberOfPasses: WeightCalculatorRequest &&
-      WeightCalculatorRequest.NumberOfPasses !== undefined
-      ? WeightCalculatorRequest.NumberOfPasses : '',
-    clampingPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingPercentage !== undefined
-      ? WeightCalculatorRequest.ClampingPercentage : '',
-    clampingValue: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingValue !== undefined
-      ? WeightCalculatorRequest.ClampingValue : '',
-    turningDiameter: WeightCalculatorRequest &&
-      WeightCalculatorRequest.TurningDiameter !== undefined
-      ? WeightCalculatorRequest.TurningDiameter : '',
-    finishDiameter: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FinishDiameter !== undefined
-      ? WeightCalculatorRequest.FinishDiameter : '',
-    removedMaterial: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RemovedMaterial !== undefined
-      ? WeightCalculatorRequest.RemovedMaterial : '',
-    cuttingSpeed: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CuttingSpeed !== undefined
-      ? WeightCalculatorRequest.CuttingSpeed : '',
-    doc: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Doc !== undefined
-      ? WeightCalculatorRequest.Doc : '',
-    feedRev: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FeedRev !== undefined
-      ? WeightCalculatorRequest.FeedRev : '',
-    clampingPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingPercentage !== undefined
-      ? WeightCalculatorRequest.ClampingPercentage : '',
-    turningLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.TurningLength !== undefined
-      ? WeightCalculatorRequest.TurningLength : ''
+    cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
+    rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
+    feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    numberOfPasses: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPasses !== undefined ? WeightCalculatorRequest.NumberOfPasses : '',
+    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
+    turningDiameter: WeightCalculatorRequest && WeightCalculatorRequest.TurningDiameter !== undefined ? WeightCalculatorRequest.TurningDiameter : '',
+    finishDiameter: WeightCalculatorRequest && WeightCalculatorRequest.FinishDiameter !== undefined ? WeightCalculatorRequest.FinishDiameter : '',
+    removedMaterial: WeightCalculatorRequest && WeightCalculatorRequest.RemovedMaterial !== undefined ? WeightCalculatorRequest.RemovedMaterial : '',
+    cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
+    doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
+    feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
+    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    turningLength: WeightCalculatorRequest && WeightCalculatorRequest.TurningLength !== undefined ? WeightCalculatorRequest.TurningLength : ''
   }
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    formState: { errors },
-  } = useForm({
+
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+
   const fieldValues = useWatch({
     control,
-    name: [
-      'turningDiameter',//
-      'finishDiameter',//
-      'turningLength',
-      'removedMaterial',//
-      'cuttingSpeed',//
-      'doc',//
-      'feedRev',//
-      'clampingPercentage',//
-    ],
+    name: ['turningDiameter', 'finishDiameter', 'turningLength', 'removedMaterial', 'cuttingSpeed', 'doc', 'feedRev', 'clampingPercentage',],
   })
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     onTurningLength()
     onClampingPercantageChange()
-    // onFinishDiameterChange()
     onDocChange()
     onFeedRevChange()
     onSpeedChange()
   }, [fieldValues])
 
 
+  const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
-  const trimValue = getConfigurationKey()
-  const isEditFlag = WeightCalculatorRequest ? true : false
-  const trim = trimValue.NumberOfDecimalForWeightCalculation
-  const fieldForProcess = () => { }
+  const [dataToSend, setDataToSend] = useState({})
 
   const onTurningLength = () => {
     const cutLength = checkForDecimalAndNull(getValues('turningLength'), trim)
     if (cutLength === 0) {
       return ''
     }
-    setValue('cutLength', cutLength)
+    setDataToSend(prevState => ({ ...prevState, cutLength: cutLength }))
+    setValue('cutLength', checkForDecimalAndNull(cutLength, trim))
   }
 
   const onDocChange = () => {
     const removedMaterial = getValues('removedMaterial')
     const doc = getValues('doc')
-    if (technology === 'Machining') {
-      const numberOfPasses = passesNo(removedMaterial, doc)
-      setValue('numberOfPasses', numberOfPasses)
-    }
+    const numberOfPasses = passesNo(removedMaterial, doc)
+    setValue('numberOfPasses', numberOfPasses)
   }
 
   const onSpeedChange = (e) => {
     const turningDiameter = getValues('turningDiameter')
-    const finishDiameter = getValues('finishDiameter')
     const cuttingSpeed = getValues('cuttingSpeed')
     const rpm = findRpm(cuttingSpeed, turningDiameter)
-    //(1000 * cuttingSpeed) / (3.14 * turningDiameter)
-    setValue('rpm', rpm)
+    setDataToSend(prevState => ({ ...prevState, rpm: rpm }))
+    setValue('rpm', checkForDecimalAndNull(rpm, trim))
   }
+
   const onFeedRevChange = (e) => {
     const feedRev = getValues('feedRev')
     const rpm = getValues('rpm')
@@ -149,43 +93,65 @@ function Chamfering(props) {
     if (!tCut) {
       return false
     }
-    setValue('feedMin', feedMin)
-    setValue('cutTime', tCut)
+    setValue('feedMin', checkForDecimalAndNull(feedMin, trim))
+    setValue('cutTime', checkForDecimalAndNull(tCut, trim))
+    setDataToSend(prevState => ({ ...prevState, feedMin: feedMin, tCut: tCut }))
   }
+
   const onClampingPercantageChange = () => {
     const tcut = Number(getValues('cutTime'))
     const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
-    setValue('clampingValue', clampingValue)
-    // setValue('totalmachineTime', totalMachiningTime)
+    setValue('clampingValue', checkForDecimalAndNull(clampingValue, trim))
+    setDataToSend(prevState => ({ ...prevState, clampingValue: clampingValue }))
     setTotalMachiningTime(totalMachiningTime)
   }
-  // const onSubmit = (value) => {
-  //   
-  //   calculateMachineTime(totalMachiningTime, value)
-  // }
+
   const onSubmit = (formValue) => {
-
-
     let obj = {}
+    obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    obj.IsChangeApplied = true
+    obj.TechnologyId = costData.TechnologyId
+    obj.CostingId = costData.CostingId
+    obj.TechnologyName = costData.TechnologyName
+    obj.PartId = costData.PartId
+    obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
+    obj.MachineRateId = props.calculatorData.MachineRateId
+    obj.PartNumber = costData.PartNumber
+    obj.ProcessId = props.calculatorData.ProcessId
+    obj.ProcessName = props.calculatorData.ProcessName
+    obj.ProcessDescription = props.calculatorData.ProcessDescription
+    obj.MachineName = costData.MachineName
+    obj.UOM = props.calculatorData.UOM
+    obj.LoggedInUserId = loggedInUserId()
+    obj.UnitTypeId = props.calculatorData.UOMTypeId
+    obj.UnitType = props.calculatorData.UOMType
     obj.TurningDiameter = formValue.turningDiameter
     obj.FinishDiameter = formValue.finishDiameter
-    obj.CutLength = formValue.cutLength
+    obj.CutLength = dataToSend.cutLength
     obj.RemovedMaterial = formValue.removedMaterial
-    obj.Rpm = formValue.rpm
+    obj.Rpm = dataToSend.rpm
     obj.FeedRev = formValue.feedRev
-    obj.FeedMin = formValue.feedMin
-    obj.CutTime = formValue.cutTime
+    obj.FeedMin = dataToSend.feedMin
+    obj.CutTime = dataToSend.tCut
     obj.NumberOfPasses = formValue.numberOfPasses
     obj.ClampingPercentage = formValue.clampingPercentage
-    obj.ClampingValue = formValue.clampingValue
+    obj.ClampingValue = dataToSend.clampingValue
     obj.CuttingSpeed = formValue.cuttingSpeed
     obj.Doc = formValue.doc
     obj.TurningLength = formValue.turningLength
     obj.TotalMachiningTime = totalMachiningTime
-
-    calculateMachineTime(totalMachiningTime, obj)
+    obj.MachineRate = props.calculatorData.MHR
+    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    dispatch(saveProcessCostCalculationData(obj, res => {
+      if (res.data.Result) {
+        obj.ProcessCalculationId = res.data.Identity
+        toastr.success('Calculation saved sucessfully.')
+        calculateMachineTime(totalMachiningTime, obj)
+      }
+    }))
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -361,15 +327,6 @@ function Chamfering(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -419,15 +376,6 @@ function Chamfering(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -446,12 +394,11 @@ function Chamfering(props) {
                         register={register}
                         mandatory={true}
                         rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
+                          required: true,
+                          pattern: {
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.'
+                          },
                         }}
                         handleChange={onFeedRevChange}
                         defaultValue={''}
@@ -469,15 +416,6 @@ function Chamfering(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -502,15 +440,6 @@ function Chamfering(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -530,11 +459,9 @@ function Chamfering(props) {
                         rules={{
                           required: true,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={onClampingPercantageChange}
                         defaultValue={''}
@@ -552,14 +479,6 @@ function Chamfering(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -575,32 +494,16 @@ function Chamfering(props) {
                 <div className="bluefooter-butn border row">
                   <div className="col-sm-8">Total Machining Time </div>
                   <span className="col-sm-4 text-right">
-                    {totalMachiningTime === '0.00'
-                      ? totalMachiningTime
-                      : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
-                    min
+                    {totalMachiningTime === '0.00' ? totalMachiningTime : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}  min
                   </span>
                 </div>
               </div>
             </Col>
             <div className="mt25 col-md-12 text-right">
-              <button
-                onClick={onCancel} // Need to change this cancel functionality
-                type="submit"
-                value="CANCEL"
-                className="reset mr15 cancel-btn"
-              >
-                <div className={'cancel-icon'}></div>
-                CANCEL
-              </button>
-              <button
-                type="submit"
-                // disabled={isSubmitted ? true : false}
-                className="btn-primary save-btn"
-              >
-                <div className={'save-icon'}></div>
-                {isEditFlag ? 'UPDATE' : 'SAVE'}
-              </button>
+              <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn" >
+                <div className={'cancel-icon'}></div> CANCEL</button>
+              <button type="submit" className="btn-primary save-btn">
+                <div className={'save-icon'}></div> {'SAVE'} </button>
             </div>
           </form>
         </Col>

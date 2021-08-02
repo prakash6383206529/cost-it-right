@@ -13,7 +13,6 @@ import RubberCalciTab from './rubber'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, isEditFlag, item } = props
-  const [RMRate, setRMRate] = useState('')
   const { CostingPartDetails } = item
   const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
   let totalRM;
@@ -22,10 +21,10 @@ function OpenWeightCalculator(props) {
     const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
     const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
     totalRM = RMRatePlusMasterBatchRate
-    //setRMRate(totalRM)
+
   } else {
     totalRM = Number(rmRowData.RMRate)
-    //  setRMRate(totalRM)
+
   }
 
   const technology = props.technology;
