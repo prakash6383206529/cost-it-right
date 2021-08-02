@@ -437,8 +437,8 @@ class UsersListing extends Component {
 		params.api.paginationGoToPage(0);
 
 		//if resolution greater than 1920 table listing fit to 100%
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
-        //if resolution greater than 1920 table listing fit to 100%
+		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+		//if resolution greater than 1920 table listing fit to 100%
 	};
 
 	/**
@@ -538,16 +538,16 @@ class UsersListing extends Component {
 								</Col>
 							}
 							<Col md="6" className="search-user-block mb-3">
-									<div className="d-flex justify-content-end bd-highlight w100">
-								{AddAccessibility && (
+								<div className="d-flex justify-content-end bd-highlight w100">
+									{AddAccessibility && (
 										<div>
 											{this.state.shown ? (
 												<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
 													<div className="cancel-icon-white"></div></button>
 											) : (
 												<button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+													<div className="filter mr-0"></div>
+												</button>
 											)}
 											<button
 												type="button"
@@ -558,11 +558,11 @@ class UsersListing extends Component {
 												<div className={"plus mr-0"}></div>
 											</button>
 										</div>
-								)}
-								<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-									</div>
+									)}
+									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+										<div className="refresh mr-0"></div>
+									</button>
+								</div>
 
 
 							</Col>
@@ -609,11 +609,11 @@ class UsersListing extends Component {
 						</div>
 						<div
 							className="ag-theme-material"
-							
+
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
-domLayout='autoHeight'
+								domLayout='autoHeight'
 								// columnDefs={c}
 								rowData={this.props.userDataList}
 								pagination={true}
@@ -637,8 +637,8 @@ domLayout='autoHeight'
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Purchase Group"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn field="IsActive" width={120} headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

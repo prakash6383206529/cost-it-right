@@ -272,7 +272,7 @@ domLayout='autoHeight'
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-                    <AgGridColumn field="RoleId" headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="RoleId" headerName="Action"  type="rightAligned"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -167,8 +167,8 @@ class DepartmentsListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete ml5" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   };
@@ -280,7 +280,7 @@ class DepartmentsListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -297,7 +297,7 @@ domLayout='autoHeight'
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}></AgGridColumn>
                     <AgGridColumn field="DepartmentCode" headerName="Purchase Group Code"></AgGridColumn>
-                    <AgGridColumn field="DepartmentId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

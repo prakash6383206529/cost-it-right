@@ -831,7 +831,7 @@ class MachineRateListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}
@@ -855,7 +855,7 @@ domLayout='autoHeight'
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="MachineId" width={160} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

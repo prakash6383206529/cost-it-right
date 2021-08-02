@@ -314,9 +314,9 @@ domLayout='autoHeight'
                                                     <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
-                                                    <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"  type="rightAligned"></AgGridColumn>
                                                     {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
-                                                    <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn> */}
+                                                    <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
                                                 </AgGridReact>
                                                 <div className="paging-container d-inline-block float-right">

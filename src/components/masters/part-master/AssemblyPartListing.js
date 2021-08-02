@@ -464,11 +464,11 @@ class AssemblyPartListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
                             pagination={true}
@@ -493,7 +493,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
