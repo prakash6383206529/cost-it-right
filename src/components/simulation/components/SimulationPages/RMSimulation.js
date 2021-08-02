@@ -125,58 +125,6 @@ function RMSimulation(props) {
         setShowVerifyPage(false)
     }
 
-    const renderCostingHead = () => {
-        return <>Costing Head </>
-    }
-
-    const renderRawMaterial = () => {
-        return <>Raw Material </>
-    }
-
-    const renderRMGrade = () => {
-        return <>RM Grade </>
-    }
-
-    const renderRMSpec = () => {
-        return <>RM Spec </>
-    }
-
-    const renderBasicRate = () => {
-        return <>Basic <br /> Rate(INR) </>
-    }
-
-    const rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost</>
-    }
-
-    const renderShearingCost = () => {
-        return <>Shearing <br /> Cost</>
-    }
-
-    const renderNewBasicRate = () => {
-        return <>New Basic <br />  Rate(INR) </>
-    }
-
-
-    const renderScrapRate = () => {
-        return <>Scrap <br /> Rate(INR) </>
-    }
-
-    const renderNewScrapRate = () => {
-        return <>New Scrap <br /> Rate(INR) </>
-    }
-
-    const renderNetCost = () => {
-        return <>Net <br /> Cost(INR) </>
-    }
-
-    const renderNewNetCost = () => {
-        return <>New Net <br /> Cost(INR) </>
-    }
-
-    const renderEffectiveDate = () => {
-        return <>Effective <br /> Date</>
-    }
 
     /**
      * @method shearingCostFormatter
