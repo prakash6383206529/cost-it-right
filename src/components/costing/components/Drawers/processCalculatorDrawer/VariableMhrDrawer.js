@@ -68,100 +68,15 @@ function VariableMhrDrawer(props) {
 
   const getProcessComponent = (process) => {
     if (technology === MACHINING) {
-      if (calculatorData.UOMType === TIME) {
-        switch (process) {
-          case FACING:
-            return (
-              <Facing
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case DRILLING:
-            return (
-              <Drilling
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case TURNING:
-            return (
-              <Turning
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case CHAMFERING:
-            return (
-              <Chamfering
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case FACEMILING:
-            return (
-              <FaceMilling
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case SIDEFACEMILING:
-            return (
-              <SideFaceMiling
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case SLOTCUTTING:
-            return (
-              <SlotCutting
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case CHAMFERINGMILLER:
-            return (
-              <ChamferingMiller
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case ENDMILL:
-            return (
-              <EndMill
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          default:
-            return (
-              <SheetMetalBaicDrawer
-                calculateMachineTime={calculateMachineTime}
-                tonnage={tonnage}
-                rmFinishWeight={props.rmFinishWeight}
-                calculatorData={calculatorData}
-              />
-            )
-        }
-      } else {
-        return (
-          <SheetMetalBaicDrawer
-            calculateMachineTime={calculateMachineTime}
-            tonnage={tonnage}
-            rmFinishWeight={props.rmFinishWeight}
-            calculatorData={calculatorData}
-          />
-        )
-      }
+      return (
+        <SheetMetalBaicDrawer
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
+
     } else if (technology === SHEETMETAL) {
       switch (process) {
         case 'Facing':

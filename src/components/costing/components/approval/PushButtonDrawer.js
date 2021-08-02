@@ -88,7 +88,7 @@ function PushButtonDrawer(props) {
         const vendor = item.VendorName.split('(')[1]
         temp.push({
           CostingId: item.CostingId, effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: item.NewPOPrice, plant: item.PlantCode ? item.PlantCode : '1511',
-          currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW',
+          currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW', TokenNumber: simulationDetail.Token
         })
       })
       let simObj = {
