@@ -19,6 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
+import { data } from 'react-dom-factories'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -32,6 +33,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -46,6 +48,7 @@ const SendForApproval = (props) => {
   const [showErrorMsg, setShowErrorMsg] = useState(false)
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
+  const [dataToPush, setDataToPush] = useState({})
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
@@ -395,6 +398,8 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
+    obj.PurchasingGroup = SAPData.PurchasingGroup?.label
+    obj.MaterialGroup = SAPData.MaterialGroup?.label
 
 
     // debounce_fun()
@@ -409,6 +414,8 @@ const SendForApproval = (props) => {
       }),
     )
   }), 500)
+
+
 
   const handleApproverChange = (data) => {
     setApprover(data.label)
@@ -646,7 +653,7 @@ const SendForApproval = (props) => {
                 {
                   isFinalApproverShow === false ?
                     <>
-                      {/* <Row className="px-3">
+                      <Row className="px-3">
                         <Col md="12">
                           <div className="left-border">{"Push Drawer"}</div>
                         </Col>
@@ -654,7 +661,7 @@ const SendForApproval = (props) => {
 
                           <PushSection />
                         </Col>
-                      </Row> */}
+                      </Row>
                       <Row className="px-3">
                         <Col md="4">
                           <div className="left-border">{"Approver"}</div>

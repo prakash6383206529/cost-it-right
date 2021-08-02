@@ -38,6 +38,7 @@ function ApproveRejectDrawer(props) {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
 
   // const simulationDeptList = useSelector((state)=> state.simulation)
@@ -274,7 +275,8 @@ function ApproveRejectDrawer(props) {
         senderObj.EffectiveDate = moment(selectedDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
-
+        senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
+        senderObj.MaterialGroup = SAPData.MaterialGroup?.label
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -545,7 +547,7 @@ function ApproveRejectDrawer(props) {
                         </div>
                       </>
                     }
-                    {/* <Row className="px-3">
+                    <Row className="px-3">
                       <Col md="12">
                         <div className="left-border">{"Push Drawer"}</div>
                       </Col>
@@ -553,7 +555,7 @@ function ApproveRejectDrawer(props) {
 
                         <PushSection />
                       </Col>
-                    </Row> */}
+                    </Row>
 
                   </>
                 }

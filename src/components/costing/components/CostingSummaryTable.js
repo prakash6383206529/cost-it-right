@@ -1213,7 +1213,7 @@ const CostingSummaryTable = (props) => {
                                 data.status === DRAFT &&
                                 <button
                                   class="user-btn"
-                                  disabled={isWarningFlag}
+                                  disabled={isWarningFlag || isFinalApproverShow}
                                   onClick={() => {
                                     sendForApprovalData([data.costingId], index)
                                     setShowApproval(true)
