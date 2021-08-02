@@ -2829,6 +2829,10 @@ body {
       .ag-grid-wrapper{
         min-height: auto;
         height: auto !important;
+        &.add-volume-table{
+          min-height: auto;
+          height: auto !important;
+        }
       }
       .drawer-wrapper{
         .ag-grid-wrapper{
@@ -2849,6 +2853,13 @@ body {
         .ag-paging-row-summary-panel{
           margin-right: 80px;
         }
+      }
+      .add-volume-table{
+        .ag-paging-panel{
+          .ag-paging-row-summary-panel{
+            margin-right: 0;
+          }
+        } 
       }
       .table-search{
         height: calc(32px * 80 / 100);
