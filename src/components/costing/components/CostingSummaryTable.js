@@ -1200,7 +1200,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    {!viewMode && (
+                    {(!viewMode) && (
                       <tr class="background-light-blue">
                         <td className="text-center"></td>
 
@@ -1213,7 +1213,7 @@ const CostingSummaryTable = (props) => {
                                 data.status === DRAFT &&
                                 <button
                                   class="user-btn"
-                                  //   disabled={(data.status === DRAFT || data.status === WAITING_FOR_APPROVAL) ? false : true}
+                                  disabled={isWarningFlag}
                                   onClick={() => {
                                     sendForApprovalData([data.costingId], index)
                                     setShowApproval(true)

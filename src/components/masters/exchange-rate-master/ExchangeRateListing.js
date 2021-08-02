@@ -331,9 +331,9 @@ class ExchangeRateListing extends Component {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-        
-        window.screen.width <= 1366 ?  params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
-        
+
+        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -431,158 +431,157 @@ class ExchangeRateListing extends Component {
             <>
                 {this.state.isLoader && <LoaderCustom />}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-                    {/* {this.props.loading && <Loader />} */}
-                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                        <Row>
-                            <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
-                        </Row>
-                        <Row className="pt-4 blue-before">
-                            {this.state.shown && (
-                                <Col md="7" className="filter-block">
-                                    <div className="d-inline-flex justify-content-start align-items-top w100">
-                                        <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="Currency"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={'Select Currency'}
-                                                isClearable={false}
-                                                options={this.renderListing('currency')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleCurrency}
-                                                valueDescription={this.state.currency}
-                                                disabled={false}
-                                            />
-                                        </div>
+                    <div className="container-fluid">
+                        {/* {this.props.loading && <Loader />} */}
+                        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                            <Row>
+                                <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
+                            </Row>
+                            <Row className="pt-4 blue-before">
+                                {this.state.shown && (
+                                    <Col md="7" className="filter-block">
+                                        <div className="d-inline-flex justify-content-start align-items-top w100">
+                                            <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                            <div className="flex-fill">
+                                                <Field
+                                                    name="Currency"
+                                                    type="text"
+                                                    label=""
+                                                    component={searchableSelect}
+                                                    placeholder={'Select Currency'}
+                                                    isClearable={false}
+                                                    options={this.renderListing('currency')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.handleCurrency}
+                                                    valueDescription={this.state.currency}
+                                                    disabled={false}
+                                                />
+                                            </div>
 
-                                        <div className="flex-fill">
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={this.resetFilter}
-                                                className="reset mr10"
-                                            >
-                                                {'Reset'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={this.filterList}
-                                                className="user-btn mr5"
-                                            >
-                                                {'Apply'}
-                                            </button>
+                                            <div className="flex-fill">
+                                                <button
+                                                    type="button"
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.resetFilter}
+                                                    className="reset mr10"
+                                                >
+                                                    {'Reset'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    //disabled={pristine || submitting}
+                                                    onClick={this.filterList}
+                                                    className="user-btn mr5"
+                                                >
+                                                    {'Apply'}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Col>)}
-                            <Col md="6" className="search-user-block mb-3">
-                                <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        {this.state.shown ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                <div className="cancel-icon-white"></div></button>
-                                        ) : (
-                                            <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                    </Col>)}
+                                <Col md="6" className="search-user-block mb-3">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div>
+                                            {this.state.shown ? (
+                                                <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="cancel-icon-white"></div></button>
+                                            ) : (
+                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="filter mr-0"></div>
                                                 </button>
-                                        )}
-                                        {AddAccessibility && <button
-                                            type="button"
-                                            className={'user-btn mr5'}
-                                            title="Add"
-                                            onClick={this.formToggle}>
-                                            <div className={'plus mr-0'}></div></button>}
-                                        {
-                                            DownloadAccessibility &&
-                                            <>
-                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-                                            </>
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                        }
+                                            )}
+                                            {AddAccessibility && <button
+                                                type="button"
+                                                className={'user-btn mr5'}
+                                                title="Add"
+                                                onClick={this.formToggle}>
+                                                <div className={'plus mr-0'}></div></button>}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
+                                                    <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
+                                                        <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                            }
 
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
+                                        </div>
                                     </div>
-                                </div>
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
 
-                    </form>
-                    {/*<BootstrapTable
-                        data={this.props.exchangeRateDataList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        exportCSV
+                        </form>
+                        {/*<BootstrapTable
+                            data={this.props.exchangeRateDataList}
+                            striped={false}
+                            hover={false}
+                            bordered={false}
+                            options={options}
+                            search
+                            exportCSV={DownloadAccessibility}
                             csvFileName={`${ExchangeMaster}.csv`}
-                        //ignoreSinglePage
-                        ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass='my-custom-header'
-                        pagination>
-                        <TableHeaderColumn dataField="Currency" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" >{this.renderExchangeRate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" >{this.renderBankRate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" >{this.renderBankCommision()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" >{this.renderCustomrate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="DateOfModification" width={130} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
-                        <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable> */}
+                            //ignoreSinglePage
+                            ref={'table'}
+                            trClassName={'userlisting-row'}
+                            tableHeaderClass='my-custom-header'
+                            pagination>
+                            <TableHeaderColumn dataField="Currency" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" >{this.renderExchangeRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" >{this.renderBankRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" >{this.renderBankCommision()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" >{this.renderCustomrate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="DateOfModification" width={130} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        </BootstrapTable> */}
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                        <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
-                        <div
-                            className="ag-theme-material"
-                            style={{ height: '100%', width: '100%' }}
-                        >
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                // columnDefs={c}
-                                rowData={this.props.exchangeRateDataList}
-                                pagination={true}
-                                paginationPageSize={10}
-                                onGridReady={this.onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: CONSTANT.EMPTY_DATA,
-                                }}
-                                frameworkComponents={this.frameworkComponents}
-                            >
-                                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
-                                <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
-                                <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                <AgGridColumn  suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" cellRenderer='totalValueRenderer'></AgGridColumn>
-                            </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div className="ag-theme-material">
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
+                                    // columnDefs={c}
+                                    rowData={this.props.exchangeRateDataList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                    }}
+                                    frameworkComponents={this.frameworkComponents}
+                                >
+                                    <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </ >
         );

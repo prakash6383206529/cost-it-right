@@ -33,7 +33,7 @@ function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
 }
 
-class IndivisualPartListing extends Component {
+class IndivisualProductListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -380,44 +380,44 @@ class IndivisualPartListing extends Component {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        title="Add"
-                                        onClick={this.formToggle}>
-                                        <div className={'plus mr-0'}></div></button>
-                                )}
-                                {BulkUploadAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
-                                        onClick={this.bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
-                                        {/* Bulk Upload */}
-                                    </button>
-                                )}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
+                                                 <button
+                                                 type="button"
+                                                 className={'user-btn mr5'}
+                                                 title="Add"
+                                                 onClick={this.formToggle}>
+                                                 <div className={'plus mr-0'}></div></button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
+                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
 
-                                            {this.onBtExport()}
-                                        </ExcelFile>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
 
-                                    </>
+                                                </>
 
-                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                }
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                             </div>
                         </div>
@@ -458,10 +458,11 @@ class IndivisualPartListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+                        
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
                             pagination={true}
@@ -482,7 +483,7 @@ class IndivisualPartListing extends Component {
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="Action"  type="rightAligned"   cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -533,4 +534,4 @@ export default connect(mapStateToProps, {
     deletePart,
     activeInactivePartStatus,
     checkStatusCodeAPI,
-})(IndivisualPartListing);
+})(IndivisualProductListing);

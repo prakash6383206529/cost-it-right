@@ -1,27 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
+import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
-import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
-import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
-import BulkUpload from '../../massUpload/BulkUpload';
+import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
-import { ComponentPart } from '../../../config/constants';
+import { AssemblyPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import BOMViewerProduct from './BOMViewerProduct';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -33,7 +34,7 @@ function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
 }
 
-class IndivisualPartListing extends Component {
+class AssemblyProductListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,27 +42,28 @@ class IndivisualPartListing extends Component {
             isOpen: false,
             tableData: [],
 
+            isOpenVisualDrawer: false,
+            visualAdId: '',
+            BOMId: '',
             isBulkUpload: false,
-            ActivateAccessibility: true,
         }
     }
 
     componentDidMount() {
         this.getTableListData();
-        //this.props.checkStatusCodeAPI(412, () => { })
     }
 
-    // Get updated list after any action performed.
+    // Get updated user list after any action performed.
     getUpdatedData = () => {
         this.getTableListData()
     }
 
     /**
     * @method getTableListData
-    * @description Get DATA LIST
+    * @description Get user list data
     */
     getTableListData = () => {
-        this.props.getPartDataList((res) => {
+        this.props.getAssemblyPartDataList((res) => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -89,7 +91,7 @@ class IndivisualPartListing extends Component {
 
     /**
     * @method deleteItem
-    * @description confirm delete part
+    * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
@@ -99,21 +101,71 @@ class IndivisualPartListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
+        return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
     * @method confirmDeleteItem
-    * @description confirm delete user item
+    * @description DELETE ASSEMBLY PART
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePart(ID, (res) => {
+        this.props.deleteAssemblyPart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                toastr.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
             }
         });
     }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    }
+
+    renderEffectiveDate = () => {
+        return <> Effective <br /> Date </>
+    }
+
+    renderNumberOfParts = () => {
+        return <>No. of <br />Child Parts </>
+    }
+    renderBOMLevelCount = () => {
+        return <>BOM <br />Level Count</>
+    }
+
+    /**
+    * @method visualAdFormatter
+    * @description Renders buttons
+    */
+    visualAdFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (
+            <>
+                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cellValue)} />
+            </>
+        )
+    }
+
+    /**
+    * @method visualAdDetails
+    * @description Renders buttons
+    */
+    visualAdDetails = (cell) => {
+        this.setState({ visualAdId: cell, isOpenVisualDrawer: true })
+    }
+
+    /**
+    * @method closeVisualDrawer
+    * @description CLOSE VISUAL AD DRAWER
+    */
+    closeVisualDrawer = () => {
+        this.setState({ isOpenVisualDrawer: false, visualAdId: '', })
+    }
+
 
     /**
     * @method buttonFormatter
@@ -137,32 +189,32 @@ class IndivisualPartListing extends Component {
     */
     hyphenFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '') {
-            value = '-'
+        let data;
+        if (cellValue === '' || cellValue === null) {
+            data = '-'
         }
         else {
-            value = cellValue
+            data = cellValue
         }
-        return value;
+        return data;
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
-            Id: row.PartId,
+            Id: row.PlantId,
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        this.props.activeInactivePartStatus(data, res => {
-            if (res && res.data && res.data.Result) {
-                // if (cell === true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                // }
-                this.getTableListData()
-            }
-        })
+        // this.props.activeInactiveStatus(data, res => {
+        //     if (res && res.data && res.data.Result) {
+        //         if (cell == true) {
+        //             toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+        //         } else {
+        //             toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+        //         }
+        //         this.getTableListData()
+        //     }
+        // })
     }
 
     /**
@@ -170,37 +222,23 @@ class IndivisualPartListing extends Component {
     * @description Renders buttons
     */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
-        const { ActivateAccessibility } = this.state;
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch">
-                        {/* <span>Switch with default style</span> */}
-                        <Switch
-                            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                            checked={cell}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cell ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
+        return (
+            <>
+                <label htmlFor="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+                        checked={cell}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                    />
+                </label>
+            </>
+        )
     }
 
     /**
@@ -219,18 +257,6 @@ class IndivisualPartListing extends Component {
         return serialNumber;
     }
 
-    /**
-    * @method effectiveDateFormatter
-    * @description Renders buttons
-    */
-    effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-    }
-    renderEffectiveDate = () => {
-        return <> Effective <br /> Date </>
-    }
-
     onExportToCSV = (row) => {
         return this.state.userData; // must return the data which you want to be exported
     }
@@ -239,42 +265,27 @@ class IndivisualPartListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
+    formToggle = () => {
+        this.props.formToggle()
+    }
+
+    displayForm = () => {
+        this.props.displayForm()
+    }
+
+
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
         })
     }
-
-    formToggle = () => {
-        this.props.formToggle()
-    }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
-
-
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
-
-        // dont remove this
-        // var allColumnIds = [];
-        // params.columnApi.getAllColumns().forEach(function (column) {
-        //     allColumnIds.push(column.colId);
-        // });
-        // params.columnApi.autoSizeColumns(allColumnIds);
-        // dont remove this
-
-        //if resolution greater than 1920 table listing fit to 100%
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
-        //if resolution greater than 1920 table listing fit to 100%
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -289,7 +300,7 @@ class IndivisualPartListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -310,7 +321,7 @@ class IndivisualPartListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={TempData} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -318,6 +329,7 @@ class IndivisualPartListing extends Component {
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
+
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
@@ -329,24 +341,16 @@ class IndivisualPartListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { isBulkUpload } = this.state;
+        const { isOpenVisualDrawer, isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.newPartsListing
-            return products; // must return the data which you want to be exported
-        }
-
         const options = {
             clearSearch: true,
-            noDataText: (this.props.newPartsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
-            exportCSVBtn: this.createCustomExportCSVButton,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -365,6 +369,7 @@ class IndivisualPartListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
+            visualAdFormatter: this.visualAdFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter
         };
 
@@ -380,77 +385,78 @@ class IndivisualPartListing extends Component {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        title="Add"
-                                        onClick={this.formToggle}>
-                                        <div className={'plus mr-0'}></div></button>
-                                )}
-                                {BulkUploadAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
-                                        onClick={this.bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
-                                        {/* Bulk Upload */}
-                                    </button>
-                                )}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
+                                                 <button
+                                                 type="button"
+                                                 className={'user-btn mr5'}
+                                                 title="Add"
+                                                 onClick={this.displayForm}>
+                                                 <div className={'plus mr-0'}></div></button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
+                                                    <ExcelFile filename={'Assembly Part'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                    </button>}>
 
-                                            {this.onBtExport()}
-                                        </ExcelFile>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
 
-                                    </>
+                                                </>
 
-                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                }
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
 
                             </div>
                         </div>
                     </Col>
                 </Row>
 
-
                 {/* <BootstrapTable
-                    data={this.props.newPartsListing}
+                    data={this.props.partsListing}
                     striped={false}
                     bordered={false}
                     hover={false}
                     options={options}
                     search
                     exportCSV={DownloadAccessibility}
-                    csvFileName={`${ComponentPart}.csv`}
+                    csvFileName={`${AssemblyPart}.csv`}
                     //ignoreSinglePage
                     ref={'table'}
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
                     <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="BOMNumber" width={'100'} >BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" width={'100'} >Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn> */}
                 {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                {/* <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} export={false} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
+                    <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable> */}
-
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -458,12 +464,13 @@ class IndivisualPartListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+                        
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            domLayout='autoHeight'
                             // columnDefs={c}
-                            rowData={this.props.newPartsListing}
+                            rowData={this.props.partsListing}
                             pagination={true}
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
@@ -476,13 +483,17 @@ class IndivisualPartListing extends Component {
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="BOMNumber" headerName="BOM NO."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                            <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"></AgGridColumn>
+                            <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="Action"  type="rightAligned"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -494,14 +505,21 @@ class IndivisualPartListing extends Component {
                     </div>
                 </div>
 
-
-                {isBulkUpload && <BulkUpload
+                {isOpenVisualDrawer && <BOMViewerProduct
+                    isOpen={isOpenVisualDrawer}
+                    closeDrawer={this.closeVisualDrawer}
+                    isEditFlag={true}
+                    PartId={this.state.visualAdId}
+                    anchor={'right'}
+                    isFromVishualAd={true}
+                    NewAddedLevelOneChilds={[]}
+                />}
+                {isBulkUpload && <BOMUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'PartComponent'}
-                    isZBCVBCTemplate={false}
-                    messageLabel={'Part'}
+                    fileName={'BOM'}
+                    messageLabel={'BOM'}
                     anchor={'right'}
                 />}
             </div >
@@ -515,10 +533,10 @@ class IndivisualPartListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ part, auth }) {
-    const { newPartsListing } = part
+    const { partsListing } = part
     const { initialConfiguration } = auth;
 
-    return { newPartsListing, initialConfiguration };
+    return { partsListing, initialConfiguration };
 }
 
 /**
@@ -528,9 +546,8 @@ function mapStateToProps({ part, auth }) {
 * @param {function} mapDispatchToProps
 */
 
-export default connect(mapStateToProps, {
-    getPartDataList,
-    deletePart,
-    activeInactivePartStatus,
-    checkStatusCodeAPI,
-})(IndivisualPartListing);
+export default connect(mapStateToProps,
+    {
+        getAssemblyPartDataList,
+        deleteAssemblyPart,
+    })(AssemblyProductListing);
