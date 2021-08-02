@@ -449,7 +449,7 @@ class PowerListing extends Component {
       // effectiveDateRenderer: this.effectiveDateFormatter,
       // costingHeadRenderer: this.costingHeadFormatter,
       // customLoadingOverlay: LoaderCustom,
-      // customNoRowsOverlay: NoContentFound,
+      customNoRowsOverlay: NoContentFound,
       // freightCostFormatter: this.freightCostFormatter,
       // shearingCostFormatter: this.shearingCostFormatter,
       costFormatter: this.costFormatter
