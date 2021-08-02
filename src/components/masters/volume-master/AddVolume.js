@@ -824,12 +824,12 @@ class AddVolume extends Component {
 
                         <Row>
                           <Col md="12">
-                            <div className="left-border mb-0">{"Quantity:"}</div>
+                            <div className="left-border">{"Quantity:"}</div>
                           </Col>
 
-                          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                          <Col>
+                          <div className="ag-grid-wrapper add-volume-table" style={{ width: '100%', height: '100%' }}>
                             {/* <Col md="12"> */}
-
                             <div
                               className="ag-theme-material"
 
@@ -841,7 +841,7 @@ class AddVolume extends Component {
                                 // columnDefs={c}
                                 rowData={this.state.tableData}
                                 pagination={true}
-                                paginationPageSize={6}
+                                paginationPageSize={12}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 loadingOverlayComponent={'customLoadingOverlay'}
@@ -860,13 +860,6 @@ class AddVolume extends Component {
                                 <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
                               </AgGridReact>
                             </div>
-
-
-
-
-
-
-
                             {/* <BootstrapTable
                             data={this.state.tableData}
                             striped={false}
@@ -884,7 +877,7 @@ class AddVolume extends Component {
                           </BootstrapTable> */}
                             {/* </Col> */}
                           </div>
-
+                          </Col>
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
