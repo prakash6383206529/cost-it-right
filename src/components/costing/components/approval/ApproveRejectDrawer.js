@@ -300,7 +300,7 @@ function ApproveRejectDrawer(props) {
                 let temp = []
                 costingList && costingList.map(item => {
                   const vendor = item.VendorName.split('(')[1]
-                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: item.DepartmentCode, Plant: '2000', MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: userDetails().DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
                 })
                 pushObj.LoggedInUserId = userLoggedIn
                 pushObj.AmmendentDataRequests = temp
@@ -308,7 +308,6 @@ function ApproveRejectDrawer(props) {
                 toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
               } else {
-
                 toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
               }

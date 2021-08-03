@@ -457,9 +457,9 @@ function SimulationApprovalSummary(props) {
                                     <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
                                         View All
                                     </button>
-                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>{"Verify Impact "}
-                                    </button>
+                                    </button> */}
                                 </div>
                             </Col>
                         </Row>
@@ -635,7 +635,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="Variance" cellRenderer="varianceFormatter" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"  type="rightAligned"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
