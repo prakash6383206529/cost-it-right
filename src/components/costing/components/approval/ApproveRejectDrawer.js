@@ -551,7 +551,9 @@ function ApproveRejectDrawer(props) {
                       <Col md="12">
                         <div className="left-border">{"Push Drawer"}</div>
                       </Col>
-                      <PushSection />
+                      <div className="w-100">
+                        <PushSection />
+                      </div>
                       
                     </Row>
 
