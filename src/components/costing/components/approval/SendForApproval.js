@@ -655,7 +655,7 @@ const SendForApproval = (props) => {
                     <>
                       <Row className="px-3">
                         <Col md="12">
-                          <div className="left-border">{"Push Drawer"}</div>
+                          <div className="left-border">{"SAP-Push Details"}</div>
                         </Col>
                         <div className="w-100">
                           <PushSection />

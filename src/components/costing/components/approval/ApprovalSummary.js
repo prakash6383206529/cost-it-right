@@ -47,7 +47,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, PurchasingGroup, MaterialGroup } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const partNumber = PartDetails.PartNumber
@@ -67,7 +67,9 @@ function ApprovalSummary(props) {
         ApprovalProcessSummaryId: ApprovalProcessSummaryId,
         ApprovalNumber: ApprovalNumber,
         CostingId: CostingId,
-        ReasonId: ApprovalDetails[0].ReasonId
+        ReasonId: ApprovalDetails[0].ReasonId,
+        PurchasingGroup: PurchasingGroup,
+        MaterialGroup: MaterialGroup
       })
     }),
     )
@@ -428,6 +430,7 @@ function ApprovalSummary(props) {
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
+
         />
       )}
       {rejectDrawer && (

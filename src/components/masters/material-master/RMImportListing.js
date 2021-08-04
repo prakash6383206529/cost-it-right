@@ -990,7 +990,7 @@ domLayout='autoHeight'
                   }}
                   frameworkComponents={frameworkComponents}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                   <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
@@ -1006,8 +1006,8 @@ domLayout='autoHeight'
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

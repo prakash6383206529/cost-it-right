@@ -470,6 +470,7 @@ class AssemblyPartListing extends Component {
                             defaultColDef={defaultColDef}
 domLayout='autoHeight'
                             // columnDefs={c}
+                            domLayout='autoHeight'
                             rowData={this.props.partsListing}
                             pagination={true}
                             paginationPageSize={10}

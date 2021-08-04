@@ -615,6 +615,7 @@ class UsersListing extends Component {
 								defaultColDef={defaultColDef}
 domLayout='autoHeight'
 								// columnDefs={c}
+								domLayout='autoHeight'
 								rowData={this.props.userDataList}
 								pagination={true}
 								paginationPageSize={10}

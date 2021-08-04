@@ -464,6 +464,7 @@ class IndivisualPartListing extends Component {
                             defaultColDef={defaultColDef}
 domLayout='autoHeight'
                             // columnDefs={c}
+                            domLayout='autoHeight'
                             rowData={this.props.newPartsListing}
                             pagination={true}
                             paginationPageSize={10}

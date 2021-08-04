@@ -962,13 +962,13 @@ domLayout='autoHeight'
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}>
-                                    <AgGridColumn field="CostingHead" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
                                     <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Category"></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName"></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
                                     <AgGridColumn field="VendorName"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
@@ -978,8 +978,8 @@ domLayout='autoHeight'
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId"  headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                                     {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

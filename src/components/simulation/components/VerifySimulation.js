@@ -379,9 +379,9 @@ function VerifySimulation(props) {
                                             style={{ height: '100%', width: '100%' }}
                                         >
                                             <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
+                                                // style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                                domLayout='autoHeight'
                                                 // columnDefs={c}
                                                 rowData={verifyList}
                                                 pagination={true}
