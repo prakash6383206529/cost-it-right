@@ -535,6 +535,7 @@ class SpecificationListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     // columnDefs={c}
+                                    domLayout='autoHeight'
                                     rowData={this.props.rmSpecificationList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -550,7 +551,7 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

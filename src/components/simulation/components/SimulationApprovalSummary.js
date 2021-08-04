@@ -96,11 +96,11 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason, ImpactedMasterDataList } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason, ImpactedMasterDataList, MaterialGroup, PurchasingGroup } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList })
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList, MaterialGroup: 'MP(1001)', PurchasingGroup: 'PG(5444)' })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -804,7 +804,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="Variance" cellRenderer="varianceFormatter" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"  type="rightAligned"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 

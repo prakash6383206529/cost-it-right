@@ -655,7 +655,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handleToVendorName}
                       errors={errors.toVendorName}
-                      disabled={false}
+                      disabled={true}
                     />
                   </div>
                   {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (

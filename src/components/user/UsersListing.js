@@ -614,6 +614,7 @@ class UsersListing extends Component {
 							<AgGridReact
 								defaultColDef={defaultColDef}
 								// columnDefs={c}
+								domLayout='autoHeight'
 								rowData={this.props.userDataList}
 								pagination={true}
 								paginationPageSize={10}

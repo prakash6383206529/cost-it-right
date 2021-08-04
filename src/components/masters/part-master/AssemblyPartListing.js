@@ -469,6 +469,7 @@ class AssemblyPartListing extends Component {
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             // columnDefs={c}
+                            domLayout='autoHeight'
                             rowData={this.props.partsListing}
                             pagination={true}
                             paginationPageSize={10}

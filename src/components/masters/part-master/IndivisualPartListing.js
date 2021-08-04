@@ -463,6 +463,7 @@ class IndivisualPartListing extends Component {
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             // columnDefs={c}
+                            domLayout='autoHeight'
                             rowData={this.props.newPartsListing}
                             pagination={true}
                             paginationPageSize={10}

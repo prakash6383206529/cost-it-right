@@ -13,6 +13,7 @@ import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
 import { materialGroup, purchasingGroup } from '../../config/masterData';
 import { setSAPData } from '../costing/actions/Approval';
+import { userDetails } from '../../helper';
 
 
 function PushSection(props) {
@@ -81,7 +82,7 @@ function PushSection(props) {
                         register={register}
                         mandatory={false}
                         handleChange={() => { }}
-                        defaultValue={() => { }}
+                        defaultValue={userDetails().DepartmentCode}
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.CompanyCode}
