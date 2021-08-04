@@ -606,6 +606,7 @@ function ApprovalListing(props) {
                   </div>
                   <div
                     className="ag-theme-material"
+                    style={{ height: '100%', width: '100%' }}
                   >
                     <AgGridReact
                       style={{ height: '100%', width: '100%' }}
