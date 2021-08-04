@@ -199,7 +199,7 @@ class RMImportListing extends Component {
     let data = {
       isEditFlag: true,
       Id: Id,
-      IsVendor: rowData.CostingHead == 'Vendor Based' ? true : false,
+      IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     this.props.getDetails(data);
   }
@@ -1008,8 +1008,8 @@ class RMImportListing extends Component {
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>
