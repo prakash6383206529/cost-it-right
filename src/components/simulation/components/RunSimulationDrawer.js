@@ -2,24 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 // import { runSimulation } from '../actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
 import CostingSimulation from './CostingSimulation';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability } from '../actions/Simulation';
+import { DatePickerHookForm } from '../../layout/HookFormInputs';
+import moment from 'moment';
 
 function RunSimulationDrawer(props) {
     const { objs } = props
 
-    const { handleSubmit, } = useForm({
+    const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+
+
 
     const dispatch = useDispatch()
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
+    const [selectedDate, setSelectedDate] = useState('')
+
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -56,8 +63,11 @@ function RunSimulationDrawer(props) {
     const IsAvailable = (id) => { }
 
     const SimulationRun = () => {
+
+
+
         //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-        dispatch(runSimulationOnSelectedCosting({ ...objs, SimulationApplicability: [] }, (res) => {
+        dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: [] }, (res) => {
             if (res.data.Result) {
                 toastr.success('Simulation process has been run successfully.')
                 runSimulationCosting()
@@ -73,6 +83,11 @@ function RunSimulationDrawer(props) {
         //         runSimulationCosting()
         //     }
         // }))
+    }
+
+
+    const handleEffectiveDateChange = (date) => {
+        setSelectedDate(date)
     }
 
     return (
