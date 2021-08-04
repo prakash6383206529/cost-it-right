@@ -551,6 +551,7 @@ class ExchangeRateListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.exchangeRateDataList}
                                 pagination={true}

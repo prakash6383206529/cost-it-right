@@ -638,6 +638,7 @@ class ProcessListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.processList}
                   pagination={true}

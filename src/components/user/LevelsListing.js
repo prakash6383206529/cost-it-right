@@ -461,6 +461,7 @@ class LevelsListing extends Component {
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
+domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}
 														pagination={true}

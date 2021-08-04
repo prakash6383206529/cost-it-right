@@ -714,6 +714,7 @@ class BOPImportListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopImportList}
                                     pagination={true}

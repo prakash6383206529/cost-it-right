@@ -1978,6 +1978,19 @@ form .form-control {
   }
 }
 
+.ag-overlay-panel{
+  .nodate-section {
+    img{
+      width: 90px;
+    }
+    .my-2{
+      margin-top: 0 !important;
+      h5{font-size: 1rem;}
+    }
+  }
+}
+
+
 // textarea.form-control {
 //   height: calc(2.25rem + 2px);
 // }

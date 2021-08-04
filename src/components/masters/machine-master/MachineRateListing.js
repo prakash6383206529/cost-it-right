@@ -832,6 +832,7 @@ class MachineRateListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}

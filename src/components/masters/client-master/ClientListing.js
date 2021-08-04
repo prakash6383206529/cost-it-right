@@ -418,6 +418,7 @@ class ClientListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}

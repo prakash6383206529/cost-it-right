@@ -351,6 +351,7 @@ class RMListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}

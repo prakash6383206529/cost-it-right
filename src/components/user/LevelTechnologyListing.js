@@ -267,6 +267,7 @@ class LevelTechnologyListing extends Component {
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
+domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}
@@ -348,6 +349,7 @@ class LevelTechnologyListing extends Component {
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
+domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.props.simulationLevelDataList}
 									pagination={true}
