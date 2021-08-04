@@ -205,8 +205,6 @@ class RMDomesticListing extends Component {
     * @description edit material type
     */
     editItemDetails = (Id, rowData = {}) => {
-        console.log('rowData: ', rowData);
-
         let data = {
             isEditFlag: true,
             Id: Id,
@@ -982,7 +980,7 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
