@@ -925,6 +925,7 @@ class LabourListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
+domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}

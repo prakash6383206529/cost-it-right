@@ -580,6 +580,7 @@ class VBCPlantListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}

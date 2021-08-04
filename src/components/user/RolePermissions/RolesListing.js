@@ -257,6 +257,7 @@ class RolesListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}

@@ -549,6 +549,7 @@ class ExchangeRateListing extends Component {
                             <div className="ag-theme-material">
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.exchangeRateDataList}

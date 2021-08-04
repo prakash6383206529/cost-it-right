@@ -534,6 +534,7 @@ class SpecificationListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmSpecificationList}
                                     pagination={true}
