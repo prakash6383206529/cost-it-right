@@ -178,6 +178,10 @@ class RMImportListing extends Component {
         this.setState({
           tableData: Data,
           maxRange: DynamicData.MaxRange,
+        }, () => {
+          if (isSimulation) {
+            this.props.apply()
+          }
         })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [], maxRange: 0, })
@@ -195,7 +199,7 @@ class RMImportListing extends Component {
     let data = {
       isEditFlag: true,
       Id: Id,
-      IsVendor: rowData.CostingHead == 'Vendor Based' ? true : false,
+      IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     this.props.getDetails(data);
   }
@@ -971,11 +975,9 @@ class RMImportListing extends Component {
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
                   domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.rmImportDataList}
@@ -1007,7 +1009,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                   {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  {/* {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

@@ -187,6 +187,10 @@ class RMDomesticListing extends Component {
                 this.setState({
                     tableData: Data,
                     maxRange: DynamicData.MaxRange,
+                }, () => {
+                    if (isSimulation) {
+                        this.props.apply()
+                    }
                 })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [], maxRange: 0, })
@@ -201,11 +205,10 @@ class RMDomesticListing extends Component {
     * @description edit material type
     */
     editItemDetails = (Id, rowData = {}) => {
-
         let data = {
             isEditFlag: true,
             Id: Id,
-            IsVendor: rowData.CostingHead,
+            IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         this.props.getDetails(data);
     }
@@ -621,7 +624,7 @@ class RMDomesticListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = this.props.rmDataList && this.props.rmDataList.map((item) => {
+        temp = TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -875,7 +878,7 @@ class RMDomesticListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
                                                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>}>
@@ -943,12 +946,10 @@ class RMDomesticListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}
@@ -979,7 +980,8 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
+                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
