@@ -209,11 +209,14 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
-                        if (element.PlantId !== rmImportListing[index - 1].PlantId) {
-                            // toastr.warning('Please select one Plant at a time.')
-                            setEditWarning(true);
-                            plantFlag = false
-                            return false
+                        if (userDetails().Role !== 'Group Category Head') {
+
+                            if (element.PlantId !== rmImportListing[index - 1].PlantId) {
+                                // toastr.warning('Please select one Plant at a time.')
+                                setEditWarning(true);
+                                plantFlag = false
+                                return false
+                            }
                         }
                     }
                 })
