@@ -145,7 +145,7 @@ function RunSimulationDrawer(props) {
                                                 )
                                             })
                                         }
-                                        <div className="input-group form-group col-md-12">
+                                        <div className="input-group form-group col-md-12 px-0">
                                             <div className="inputbox date-section">
                                                 <DatePickerHookForm
                                                     name={`EffectiveDate`}

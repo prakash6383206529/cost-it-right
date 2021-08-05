@@ -365,6 +365,7 @@ function ReportListing(props) {
                 >
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
+                        domLayout="autoHeight"
                         defaultColDef={defaultColDef}
                         // columnDefs={c}
                         rowData={reportListingData}
