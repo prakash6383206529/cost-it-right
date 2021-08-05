@@ -547,15 +547,18 @@ function ApproveRejectDrawer(props) {
                         </div>
                       </>
                     }
-                    <Row className="px-3">
-                      <Col md="12">
-                        <div className="left-border">{"SAP-Push Details"}</div>
-                      </Col>
-                      <div className="w-100">
-                        <PushSection />
-                      </div>
+                    {
+                      type === 'Sender' &&
+                      <Row className="px-3">
+                        <Col md="12">
+                          <div className="left-border">{"SAP-Push Details"}</div>
+                        </Col>
+                        <div className="w-100">
+                          <PushSection />
+                        </div>
 
-                    </Row>
+                      </Row>
+                    }
 
                   </>
                 }

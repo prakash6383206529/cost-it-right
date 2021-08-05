@@ -621,7 +621,7 @@ class RMDomesticListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = this.props.rmDataList && this.props.rmDataList.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -875,7 +875,7 @@ class RMDomesticListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>}>
@@ -948,7 +948,7 @@ class RMDomesticListing extends Component {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    domLayout='autoHeight'
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}
@@ -963,19 +963,19 @@ domLayout='autoHeight'
                                     }}
                                     frameworkComponents={frameworkComponents}>
                                     <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Category"></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
-                                    <AgGridColumn field="VendorName"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}

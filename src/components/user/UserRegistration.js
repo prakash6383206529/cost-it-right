@@ -1418,9 +1418,6 @@ class UserRegistration extends Component {
                       /////////////// User's technology level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
-                    <HeaderTitle
-                      title={'Simulation Heads & Level:'}
-                      customClass={''} />
 
 
                     <Row>

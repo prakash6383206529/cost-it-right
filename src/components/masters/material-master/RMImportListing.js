@@ -975,7 +975,7 @@ class RMImportListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                  domLayout='autoHeight'
                   domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.rmImportDataList}
@@ -991,19 +991,19 @@ domLayout='autoHeight'
                   frameworkComponents={frameworkComponents}
                 >
                   <AgGridColumn field="CostingHead" headerName="Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                   <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                   <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                  <AgGridColumn field="MaterialType" headerName="Material" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                  <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                  <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                  <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                   {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}

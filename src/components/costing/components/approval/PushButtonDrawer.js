@@ -21,8 +21,8 @@ function PushButtonDrawer(props) {
   const dispatch = useDispatch()
   const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm();
   const [plant, setPlant] = useState([]);
-  const [MaterialGroup, setMaterialGroup] = useState({ label: approvalData[0].MaterialGroup, value: approvalData[0].MaterialGroup });
-  const [PurchasingGroup, setPurchasingGroup] = useState({ label: approvalData[0].PurchasingGroup, value: approvalData[0].PurchasingGroup });
+  const [MaterialGroup, setMaterialGroup] = useState(!isSimulation ? { label: approvalData[0].MaterialGroup, value: approvalData[0].MaterialGroup } : { label: simulationDetail.MaterialGroup, value: simulationDetail.MaterialGroup });
+  const [PurchasingGroup, setPurchasingGroup] = useState(!isSimulation ? { label: approvalData[0].PurchasingGroup, value: approvalData[0].PurchasingGroup } : { label: simulationDetail.PurchasingGroup, value: simulationDetail.PurchasingGroup });
 
   const toggleDrawer = (event) => {
     if (
@@ -119,7 +119,7 @@ function PushButtonDrawer(props) {
         taxCode: 'YW',
         basicUOM: "NO",
         purchasingGroup: PurchasingGroup?.label ? PurchasingGroup.label.split('(')[0] : '',
-        purchasingOrg: userDetails().DepartmentCode,
+        purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
         CostingId: approvalData[0].CostingId,
         // effectiveDate: '11/30/2021',
         // vendorCode: '203670',
@@ -182,7 +182,7 @@ function PushButtonDrawer(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={userDetails().DepartmentCode}
+                    defaultValue={!isSimulation ? dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '' : simulationDetail && costingList[0].DepartmentCode}         // need to do once data started coming
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.CompanyCode}
