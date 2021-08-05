@@ -3180,7 +3180,7 @@ button:disabled{pointer-events: none;}
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus,.check-icon,>img,.save-icon,.send-for-approval,.back-icon{
+  .plus,.check-icon,>img,.save-icon,.send-for-approval,.back-icon,.edit-icon,.download{
     filter: brightness(0.8) !important;
   }
   .cross-icon,.cancel-icon{
@@ -3368,6 +3368,7 @@ opacity: 0.5;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 90px;
     }
     .green-value{
       background-color: #DBF4E2;
