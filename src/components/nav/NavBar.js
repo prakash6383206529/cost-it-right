@@ -6,7 +6,8 @@ import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
+  getTopAndLeftMenuData,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -54,6 +55,8 @@ class SideBar extends Component {
         this.setLeftMenu(res.data.Data.ModuleId);
         this.setState({ isLoader: false });
       });
+
+      this.props.getTopAndLeftMenuData(() => { })
     }
 
     const loginUserId = loggedInUserId();
@@ -861,8 +864,8 @@ class SideBar extends Component {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData } = auth
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData }
+  const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData }
 }
 
 /**
@@ -878,5 +881,6 @@ export default connect(mapStateToProps, {
   getLeftMenu,
   getPermissionByUser,
   getModuleIdByPathName,
-  getMenu
+  getMenu,
+  getTopAndLeftMenuData,
 })(SideBar)
