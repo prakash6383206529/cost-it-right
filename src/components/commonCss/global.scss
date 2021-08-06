@@ -715,6 +715,11 @@ a:hover {
         z-index: 1;
         padding-bottom: 12px;
       }
+      .ag-pinned-right-header{
+        .ag-header-cell{
+          border-right: 1px solid #e5eaf9;
+        }
+      }
       .ag-grid-wrapper{
         min-height: calc(100vh - 300px);
         height: calc(100vh - 300px) !important;
