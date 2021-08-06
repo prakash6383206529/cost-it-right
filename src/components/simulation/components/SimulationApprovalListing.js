@@ -11,14 +11,16 @@ import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { EMPTY_GUID } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
+import { MESSAGES } from '../../../config/message'
+import ConfirmComponent from '../../../helper/ConfirmComponent'
 const gridOptions = {};
 
 function SimulationApprovalListing(props) {
@@ -185,7 +187,12 @@ function SimulationApprovalListing(props) {
 
     const buttonFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <button className="View" type={'button'} onClick={() => viewDetails(row)} />
+        return (
+            <>
+                <button className="View mr5" type={'button'} onClick={() => viewDetails(row)} />
+                {row.Status === DRAFT && <button className="Delete" type={'button'} onClick={() => deleteItem(row)} />}
+            </>
+        )
     }
 
     const viewDetails = (rowObj) => {
@@ -197,6 +204,31 @@ function SimulationApprovalListing(props) {
             setShowApprovalSummary(true)
         }
     }
+
+
+    const deleteItem = (rowData) => {
+        let data = {
+            loggedInUser: loggedInUserId(),
+            simulationId: rowData.SimulationId
+        }
+
+
+        const toastrConfirmOptions = {
+            onOk: () => {
+                dispatch(deleteDraftSimulation(data, res => {
+                    if (res.data.Result) {
+                        toastr.success("Simulation token deleted successfully.")
+                        getTableData()
+                    }
+                }))
+            },
+            onCancel: () => { },
+            component: () => <ConfirmComponent />,
+        };
+        return toastr.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
+
+    }
+
     const requestedByFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
@@ -410,111 +442,11 @@ function SimulationApprovalListing(props) {
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             <Row className="pt-4 blue-before">
-                                {shown &&
-                                    <Col lg="10" md="10" className="filter-block">
-                                        <div className="d-inline-flex justify-content-start align-items-top w100">
-                                            <div className="flex-fills">
-                                                <h5>{`Filter By:`}</h5>
-                                            </div>
 
-                                            {/* <div className="flex-fill hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'partNo'}
-                                                    placeholder={'Part No.'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('PartList')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.partNo}
-                                                />
-                                            </div> */}
-                                            <div className="flex-fill  hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'createdBy'}
-                                                    placeholder={'Simulated By'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('users')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.createdBy}
-                                                />
-                                            </div>
-                                            <div className="flex-fill  hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'requestedBy'}
-                                                    placeholder={'Requested By'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('users')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.requestedBy}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <SearchableSelectHookForm
-                                                    label={''}
-                                                    name={'status'}
-                                                    placeholder={'Status'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                                    options={renderDropdownListing('Status')}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    errors={errors.status}
-                                                />
-                                            </div>
-                                            <div className="flex-fill filled-small hide-label">
-                                                <button
-                                                    type="button"
-                                                    //disabled={pristine || submitting}
-                                                    onClick={resetHandler}
-                                                    className="reset mr10"
-                                                >
-                                                    {'Reset'}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    //disabled={pristine || submitting}
-                                                    onClick={onSubmit}
-                                                    className="apply mr5"
-                                                >
-                                                    {'Apply'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                }
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div>
-                                            {(shown) ? (
-                                                <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => setshown(!shown)}>
-                                                    <div className="cancel-icon-white"></div></button>
-                                            ) : (
-                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
-                                            )}
-                                        </div>
+
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -524,34 +456,17 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        {/* <BootstrapTable
-                        data={simualtionApprovalList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        // selectRow={selectRowProp}
-                        // exportCSV
-                        //ignoreSinglePage
-                        //ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass="my-custom-header"
-                        pagination
-                    >
-                       
-                    </BootstrapTable> */}
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
                                     pagination={true}
@@ -572,12 +487,12 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
-                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Simulated By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn width={142} field="RequestedBy" headerName='Requested By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="RequestedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     {!isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId"  headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

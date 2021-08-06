@@ -35,11 +35,12 @@ import CostingRoutes from './costing/Routes'
 import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
-  BOP, DASHBOARD,FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
+  BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config,DASHBOARDWITHGRAPH_PATH,SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND} from '../config/constants'
+  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT
+} from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -52,6 +53,7 @@ import axios from 'axios';
 import ReportListing from './report/ReportListing'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
+import productMaster from './masters/product-master'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -227,7 +229,7 @@ class Main extends Component {
         location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
         location.pathname === DASHBOARD_PATH ||
         location.pathname === DASHBOARD_PATH_SECOND ||
-        location.pathname === DASHBOARDWITHGRAPH_PATH ? 'w-100' : '' 
+        location.pathname === DASHBOARDWITHGRAPH_PATH ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
@@ -338,7 +340,8 @@ class Main extends Component {
 
                     <Route path="/costing-summary" component={CostingRoutes} />
 
-                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} />
+                    {/* <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} /> */}
+                    <Route path="/approval-summary" component={ApprovalSummary} />
 
                     <Route path="/approval-listing" component={ApprovalListing} />
                     {/* <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} /> */}
@@ -369,6 +372,8 @@ class Main extends Component {
                     <Route path="/costing-detail-report" component={ReportListing} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
+
+                    <Route path="/product-master" component={productMaster} />
 
                     <Route
                       render={(props) => (

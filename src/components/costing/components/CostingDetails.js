@@ -487,6 +487,7 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '') => {
+    nextToggle()
     setIsCopyCostingDrawer(false)
   }
 

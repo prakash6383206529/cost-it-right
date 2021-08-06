@@ -108,6 +108,15 @@ export const API = {
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
 
+  // PRODUCT MASTER 
+  getProductDataList: `${BASE_URL}/masters-product/get-all`,
+  getProductById: `${BASE_URL}/masters-product/get-by-id`,
+  createProduct: `${BASE_URL}/masters-product/create`,
+  updateProduct: `${BASE_URL}/masters-product/update`,
+  deleteProduct: `${BASE_URL}/masters-product/delete`,
+  productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
+  bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
   getAssemblyPartDataList: `${BASE_URL}/masters-part/get-all-assembly-part`,
@@ -671,6 +680,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
+  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -818,6 +828,7 @@ export const API = {
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
+  deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -889,6 +900,10 @@ export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE'
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS'
 export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA'
 export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
+
+//PRODUCT MASTER
+export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
+export const GET_PRODUCT_UNIT_DATA = 'GET_PRODUCT_UNIT_DATA'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
@@ -1280,6 +1295,7 @@ export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SU
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS'
 export const GET_LEFT_MENU_BY_MODULE_ID_AND_USER = 'GET_LEFT_MENU_BY_MODULE_ID_AND_USER'
 export const GET_MENU_BY_MODULE_ID_AND_USER = 'GET_MENU_BY_MODULE_ID_AND_USER'
+export const GET_TOP_AND_LEFT_MENU_DATA = 'GET_TOP_AND_LEFT_MENU_DATA'
 
 //REASON
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS'
@@ -1371,6 +1387,7 @@ export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
+export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1415,6 +1432,8 @@ export const VENDOR = 'Vendor'
 export const CLIENT = 'Client'
 export const PLANT = 'Plant'
 
+export const PRODUCT = 'Product'
+
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
@@ -1449,7 +1468,7 @@ export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
 export const FASTNERS = 'Fastners';
-export const RIVETS = 'Rivets';
+export const RIVETS = 'Rivet';
 
 export const USER = 'User'
 export const ROLE = 'Role'

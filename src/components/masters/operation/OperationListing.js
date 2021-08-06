@@ -778,10 +778,11 @@ class OperationListing extends Component {
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{ height: '100%', width: '100%' }}
+
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
@@ -807,7 +808,7 @@ class OperationListing extends Component {
                                 {/* <AgGridColumn field="IsActive" headerName="Status"
                                 cellRenderer={'statusButtonFormatter'} 
                                 ></AgGridColumn> */}
-                                <AgGridColumn field="OperationId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="OperationId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

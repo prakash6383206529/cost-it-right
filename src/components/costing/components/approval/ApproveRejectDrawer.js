@@ -12,7 +12,9 @@ import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
-
+import { debounce } from 'lodash'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function ApproveRejectDrawer(props) {
 
@@ -163,14 +165,9 @@ function ApproveRejectDrawer(props) {
     setSelectedDate(date)
   }
 
-
-
-
-  const onSubmit = () => {
+  const onSubmit = debounce(handleSubmit(() => {
     const remark = getValues('remark')
-    console.log('remark: ', remark);
     const reason = getValues('reason')
-    console.log('reason: ', reason);
     const dept = getValues('dept')
     const approver = getValues('approver')
 
@@ -190,7 +187,7 @@ function ApproveRejectDrawer(props) {
         setShowError(true)
         return false
       }
-      if (!reason || !selectedDate) return false
+      if (!reason) return false
     }
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
@@ -273,7 +270,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = moment(selectedDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = moment(simulationDetail.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
 
@@ -309,7 +306,7 @@ function ApproveRejectDrawer(props) {
         }))
       }
     }
-  }
+  }), 500)
 
   const renderDropdownListing = (label) => {
     const tempDropdownList = []
@@ -404,7 +401,7 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            <form onSubmit={handleSubmit(onSubmit)}
+            <form
             >
               <Row className="drawer-heading">
                 <Col>
@@ -512,7 +509,7 @@ function ApproveRejectDrawer(props) {
                             errors={errors.reason}
                           />
                         </div>
-                        <div className="input-group form-group col-md-12">
+                        {/* <div className="input-group form-group col-md-12">
                           <div className="inputbox date-section">
                             <DatePickerHookForm
                               name={`EffectiveDate`}
@@ -540,6 +537,28 @@ function ApproveRejectDrawer(props) {
                               disabled={false}
                               mandatory={true}
                               errors={errors.EffectiveDate}
+                            />
+                          </div>
+                        </div> */}
+
+                        <div className="input-group form-group col-md-12">
+                          <label>Effective Date<span className="asterisk-required">*</span></label>
+                          <div className="inputbox date-section">
+                            <DatePicker
+                              name="EffectiveDate"
+                              selected={moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                              // onChange={handleEffectiveDateChange}
+                              showMonthDropdown
+                              showYearDropdown
+                              dateFormat="dd/MM/yyyy"
+                              //maxDate={new Date()}
+                              dropdownMode="select"
+                              placeholderText="Select date"
+                              className="withBorder"
+                              autoComplete={"off"}
+                              disabledKeyboardNavigation
+                              onChangeRaw={(e) => e.preventDefault()}
+                              disabled={true}
                             />
                           </div>
                         </div>
@@ -588,9 +607,9 @@ function ApproveRejectDrawer(props) {
                   </button>
 
                   <button
-                    type="submit"
+                    type="button"
                     className="submit-button  save-btn"
-                  // onClick={() => { }}
+                    onClick={onSubmit}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}

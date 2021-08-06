@@ -716,8 +716,18 @@ a:hover {
         padding-bottom: 12px;
       }
       .ag-grid-wrapper{
-        min-height: calc(100vh - 342px);
-        height: calc(100vh - 342px) !important;
+        min-height: calc(100vh - 300px);
+        height: calc(100vh - 300px) !important;
+        &.add-volume-table{
+          min-height: calc(100vh - 250px);
+          height: calc(100vh - 250px) !important;
+        }
+      }
+      .drawer-wrapper{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 240px);
+          height: calc(100vh - 240px) !important;
+        }
       }
       .search-user-block{
         // position: relative;
@@ -726,6 +736,8 @@ a:hover {
       }      
       .ag-theme-material{
         .ag-header{
+          // .ag-header-row{border-left: 1px solid #e5eaf9;}
+          border-top: 1px solid #e5eaf9;
           font-weight: normal;
           background-color: #fff;
           .ag-header-cell-label{
@@ -736,6 +748,7 @@ a:hover {
           border: none;
         }
         .ag-row{
+          // border-left: 1px solid #e5eaf9;
           .ag-cell{
             button{
               vertical-align: middle;
@@ -750,12 +763,13 @@ a:hover {
                 min-width: unset;
               }
               .form-control{
-                padding: 7px 12px !important;
+                padding: 7px 8px !important;
                 height: auto;
                 min-height: auto;
                 line-height: initial;
                 max-width: 100%;
                 overflow: hidden;
+                text-overflow: ellipsis;
               }
             }            
             &:not(.has-checkbox){
@@ -788,6 +802,9 @@ a:hover {
             }
           }
         }
+      }
+      .add-volume-table{
+        .ag-paging-row-summary-panel{margin-right: 0;}
       }
       .ag-cell{
         button{
@@ -852,28 +869,25 @@ a:hover {
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: 360px;
-          height: 360px !important;
+          min-height: auto;
+          height: auto !important;
         }
       }  
     }
     .ag-grid-react{
       .sm-edit-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 320px);
-          height: calc(100vh - 320px) !important;
+          min-height: calc(100vh - 274px);
+          height: calc(100vh - 274px) !important;
         }
       }  
     }
-    .dashboard-page{
-      .ag-grid-react{
-        .ag-grid-wrapper{
-          min-height: 359px;
-          height: 359px !important;
-        }
+    .smh-approval-summary-page,.dashboard-page{
+      .ag-grid-wrapper{
+        min-height: auto;
+        height: auto !important;
       }
-    }
-    
+    }    
   }
 }
 
@@ -921,7 +935,7 @@ a:hover {
     color: #3D4465;
     .ag-header-cell-text{
       font-size: 14px;
-      font-weight: normal;
+      font-weight: 500;
     }
   }
 }
@@ -1977,6 +1991,17 @@ form .form-control {
     width: 120px;
   }
 }
+.ag-overlay-panel{
+  .nodate-section {
+    img{
+      width: 90px;
+    }
+    .my-2{
+      margin-top: 0 !important;
+      h5{font-size: 1rem;}
+    }
+  }
+}
 
 // textarea.form-control {
 //   height: calc(2.25rem + 2px);
@@ -2578,7 +2603,8 @@ td,.ag-cell{
   [class^="Awaiting"],
   .Approved,
   .Rejected,
-  .History {
+  .History,
+  .ApprovedBySimulation {
     background-color:#da94a1;
     min-width: 90px;
     height: 30px;
@@ -2597,7 +2623,7 @@ td,.ag-cell{
   [class^="Awaiting"]{
     background-color: #eac607;
   }
-  .Approved {
+  .Approved,.ApprovedBySimulation {
     background-color: #4dc771;
   }
   .History {
@@ -2719,14 +2745,40 @@ body {
   border: none;
 }
 
+@media(max-width:1600px){
+  .content-page,:not(.content-page){
+    .tab-pane,:not(.tab-pane){
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 300px);
+          height: auto !important;
+          &.add-volume-table{
+            min-height: calc(100vh - 250px);
+            height: auto !important;
+          }
+        }
+      }
+      .ag-grid-react{
+        .sm-edit-page{
+          .ag-grid-wrapper{
+            min-height: calc(100vh - 274px);
+            height: auto !important;
+          }
+        }  
+      }
+    }
+  }
+}
 
 @media(max-width:1366px){
   /* Drawer Css */
   .drawer-wrapper {
     width: calc(486px * 80 / 100);
   }
-  .drawer-1500px {
-    width: 100%;
+  :not(.view-conversion-cost-drawer),.view-conversion-cost-drawer{
+    .drawer-1500px {
+      width: 100%;
+    }
   }
   .drawer-700px {
     width: 100%;
@@ -2803,13 +2855,23 @@ body {
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
       .ag-grid-wrapper{
-        min-height: calc(100vh - 30px);
-        height: calc(100vh - 30px) !important;
+        min-height: auto;
+        height: auto !important;
+        &.add-volume-table{
+          min-height: auto;
+          height: auto !important;
+        }
+      }
+      .drawer-wrapper{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 190px);
+          height: calc(100vh - 190px) !important;
+        } 
       }
       &.no-tab-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 38px);
-          height: calc(100vh - 38px) !important;
+          min-height: auto;
+          height: auto !important;
         }
       }
       .search-user-block{
@@ -2819,6 +2881,13 @@ body {
         .ag-paging-row-summary-panel{
           margin-right: 80px;
         }
+      }
+      .add-volume-table{
+        .ag-paging-panel{
+          .ag-paging-row-summary-panel{
+            margin-right: 0;
+          }
+        } 
       }
       .table-search{
         height: calc(32px * 80 / 100);
@@ -2837,10 +2906,23 @@ body {
     .ag-grid-react{
       .sm-edit-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 250px);
-          height: calc(100vh - 250px) !important;
+          min-height: calc(100vh - 213px);
+          height: calc(100vh - 213px) !important;
         }
       }  
+    }
+    .simulation-edit{
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 246px);
+        }
+      }  
+    }
+    .smh-approval-summary-page,.dashboard-page{
+      .ag-grid-wrapper{
+        min-height: auto;
+        height: auto !important;
+      }
     }
   }
 }

@@ -68,6 +68,7 @@ function CostingDetailStepTwo(props) {
       NetRMCost: data.NetRawMaterialsCost,
       NetBOPCost: data.NetBoughtOutPartCost,
       NetConversionCost: data.NetConversionCost,
+      OtherOperationCost: data.OtherOperationCost,
       NetTotalRMBOPCC: data.NetTotalRMBOPCC,
       ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
       TotalCost: OverAllCost,

@@ -15,6 +15,8 @@ import {
     GET_BOUGHTOUT_PART_SELECTLIST,
     GET_DRAWER_CHILD_PART_DATA,
     SET_ACTUAL_BOM_DATA,
+    GET_PRODUCT_DATA_LIST,
+    GET_PRODUCT_UNIT_DATA
 } from '../../../config/constants';
 
 const initialState = {
@@ -137,7 +139,20 @@ export default function partReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
-
+        case GET_PRODUCT_DATA_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                productDataList: action.payload
+            }
+        case GET_PRODUCT_UNIT_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                productData: action.payload
+            }
         default:
             return state;
     }

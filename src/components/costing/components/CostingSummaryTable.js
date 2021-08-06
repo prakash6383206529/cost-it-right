@@ -613,7 +613,7 @@ const CostingSummaryTable = (props) => {
                   <thead>
                     <tr className="main-row">
                       {
-                        isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC</th>
+                        isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC/ZBC</th>
                       }
 
                       {viewCostingData &&
@@ -730,6 +730,8 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>
                         <span class="d-block small-grey-text">RM Name-Grade</span>
+                        <span class="d-block small-grey-text">RM Rate</span>
+                        <span class="d-block small-grey-text">Scrap Rate</span>
                         <span class="d-block small-grey-text">Gross Weight</span>
                         <span class="d-block small-grey-text">Finish Weight</span>
                         <span class="d-block small-grey-text">Scrap Weight</span>
@@ -739,6 +741,12 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.rm : ''}</span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                              </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
@@ -800,6 +808,8 @@ const CostingSummaryTable = (props) => {
                       <td>
                         <span class="d-block small-grey-text">Process Cost</span>
                         <span class="d-block small-grey-text">Operation Cost</span>
+                        <span class="d-block small-grey-text">Other Operation Cost</span>
+
                         <span class="d-block small-grey-text">
                           Surface Treatment
                         </span>
@@ -816,6 +826,9 @@ const CostingSummaryTable = (props) => {
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
@@ -1187,7 +1200,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    {!viewMode && (
+                    {(!viewMode) && (
                       <tr class="background-light-blue">
                         <td className="text-center"></td>
 
@@ -1200,7 +1213,7 @@ const CostingSummaryTable = (props) => {
                                 data.status === DRAFT &&
                                 <button
                                   class="user-btn"
-                                  //   disabled={(data.status === DRAFT || data.status === WAITING_FOR_APPROVAL) ? false : true}
+                                  disabled={isWarningFlag}
                                   onClick={() => {
                                     sendForApprovalData([data.costingId], index)
                                     setShowApproval(true)

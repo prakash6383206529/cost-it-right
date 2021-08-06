@@ -497,10 +497,10 @@ class SOBListing extends Component {
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.bopSobList}
                   pagination={true}
@@ -523,7 +523,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
