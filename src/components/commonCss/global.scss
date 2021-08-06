@@ -715,6 +715,11 @@ a:hover {
         z-index: 1;
         padding-bottom: 12px;
       }
+      .ag-pinned-right-header{
+        .ag-header-cell{
+          border-right: 1px solid #e5eaf9;
+        }
+      }
       .ag-grid-wrapper{
         min-height: calc(100vh - 300px);
         height: calc(100vh - 300px) !important;
@@ -760,7 +765,6 @@ a:hover {
               .red-value,.green-value,.form-control{
                 display: inline-block;
                 vertical-align: middle;
-                min-width: unset;
               }
               .form-control{
                 padding: 7px 8px !important;
