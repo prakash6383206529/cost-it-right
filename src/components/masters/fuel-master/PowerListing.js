@@ -459,42 +459,6 @@ class PowerListing extends Component {
       costFormatter: this.costFormatter
     };
 
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: true,
-
-    };
-
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      // effectiveDateRenderer: this.effectiveDateFormatter,
-      // costingHeadRenderer: this.costingHeadFormatter,
-      // customLoadingOverlay: LoaderCustom,
-      // customNoRowsOverlay: NoContentFound,
-      // freightCostFormatter: this.freightCostFormatter,
-      // shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
-    };
-
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: true,
-
-    };
-
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      // effectiveDateRenderer: this.effectiveDateFormatter,
-      // costingHeadRenderer: this.costingHeadFormatter,
-      // customLoadingOverlay: LoaderCustom,
-      // customNoRowsOverlay: NoContentFound,
-      // freightCostFormatter: this.freightCostFormatter,
-      // shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
-    };
-
     return (
 
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
