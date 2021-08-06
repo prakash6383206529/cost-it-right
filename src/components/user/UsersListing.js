@@ -637,7 +637,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
