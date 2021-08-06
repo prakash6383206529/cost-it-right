@@ -19,7 +19,6 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
-import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
