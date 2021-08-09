@@ -108,15 +108,8 @@ function ReportListing(props) {
     * @method hyphenFormatter
     */
     const hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '' || cellValue === 'NA') {
-            value = '-';
-        }
-        else {
-            value = cellValue
-        }
-        return value
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
+        return cell
     }
 
     const statusFormatter = (props) => {
@@ -372,6 +365,7 @@ function ReportListing(props) {
                 >
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
+                        domLayout="autoHeight"
                         defaultColDef={defaultColDef}
                         // columnDefs={c}
                         rowData={reportListingData}
@@ -392,7 +386,7 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                         <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>

@@ -108,6 +108,15 @@ export const API = {
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
 
+  // PRODUCT MASTER 
+  getProductDataList: `${BASE_URL}/masters-product/get-all`,
+  getProductById: `${BASE_URL}/masters-product/get-by-id`,
+  createProduct: `${BASE_URL}/masters-product/create`,
+  updateProduct: `${BASE_URL}/masters-product/update`,
+  deleteProduct: `${BASE_URL}/masters-product/delete`,
+  productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
+  bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
   getAssemblyPartDataList: `${BASE_URL}/masters-part/get-all-assembly-part`,
@@ -891,6 +900,10 @@ export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE'
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS'
 export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA'
 export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
+
+//PRODUCT MASTER
+export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
+export const GET_PRODUCT_UNIT_DATA = 'GET_PRODUCT_UNIT_DATA'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
