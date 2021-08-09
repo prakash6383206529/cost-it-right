@@ -516,7 +516,7 @@ function CostingSimulation(props) {
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+
                                                     domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={costingList}
@@ -558,7 +558,7 @@ domLayout='autoHeight'
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
 

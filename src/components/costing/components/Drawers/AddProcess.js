@@ -278,7 +278,7 @@ function AddProcess(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={processDrawerList}
                         pagination={true}
