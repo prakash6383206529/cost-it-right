@@ -11,18 +11,23 @@ import { KG } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 
 function Plastic(props) {
-  const { item, rmRowData } = props
-  const { CostingPartDetails } = item
-  const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
-
+  const { item, rmRowData, isSummary } = props
   let totalRM
-  //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
-  if (IsApplyMasterBatch) {
-    const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
-    const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
-    totalRM = RMRatePlusMasterBatchRate
+  if (!isSummary) {
+    const { CostingPartDetails } = item
+    const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
+
+    //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
+    if (IsApplyMasterBatch) {
+      const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
+      const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
+      totalRM = RMRatePlusMasterBatchRate
+    } else {
+      totalRM = Number(rmRowData.RMRate)
+    }
   } else {
     totalRM = Number(rmRowData.RMRate)
+    console.log('totalRM: ', totalRM);
   }
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -249,7 +254,7 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-                    disabled={false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
                   />
                 </Col>
                 <Col md="3">
@@ -274,7 +279,7 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.runnerWeight}
-                    disabled={false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
                   />
                 </Col>
 
@@ -388,6 +393,7 @@ function Plastic(props) {
                 netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
                 tableValue={tableData}
+                CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
               />
 
               <Row className={'mt25'}>
@@ -438,7 +444,7 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.finishedWeight}
-                    disabled={false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
                   />
                 </Col>
                 <Col md="3">
@@ -562,7 +568,7 @@ function Plastic(props) {
               </button>
             <button
               type="submit"
-              // disabled={isSubmitted ? true : false}
+              disabled={props.CostingViewMode}
               onClick={onSubmit} className="submit-button save-btn">
               <div className={'save-icon'}></div>
               {'SAVE'}

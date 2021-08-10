@@ -1076,6 +1076,7 @@ function RawMaterialCost(props) {
           ID={''}
           anchor={'right'}
           rmRowData={gridData[editIndex]}
+          isSummary={false}
         />
       )}
     </>
