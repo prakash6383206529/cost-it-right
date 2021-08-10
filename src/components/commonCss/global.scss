@@ -2754,10 +2754,10 @@ body {
     .tab-pane,:not(.tab-pane){
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 300px);
+          min-height: auto;
           height: auto !important;
           &.add-volume-table{
-            min-height: calc(100vh - 250px);
+            min-height: auto;
             height: auto !important;
           }
         }
