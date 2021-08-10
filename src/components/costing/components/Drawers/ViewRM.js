@@ -100,51 +100,53 @@ function ViewRM(props) {
                 ></div>
               </Col>
             </Row>
-            <Table className="table cr-brdr-main" size="sm">
-              <thead>
-                <tr>
-                  <th>{`RM Name -Grade`}</th>
-                  <th>{`RM Rate`}</th>
-                  <th>{`Scrap Rate`}</th>
-                  <th>{`Gross Weight(Kg)`}</th>
-                  <th>{`Finish Weight(Kg)`}</th>
-                  <th>{`Calculator`}</th>
-                  <th>{`Freight Cost`}</th>
-                  <th>{`Shearing Cost`}</th>
-                  <th className="costing-border-right">{`Net RM Cost`}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{item.RMName}</td>
-                      <td>{item.RMRate}</td>
-                      <td>{item.ScrapRate}</td>
-                      <td>{item.GrossWeight}</td>
-                      <td>{item.FinishWeight}</td>
-                      <td><button
-                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-                        type={"button"}
-                        disabled={item.WeightCalculationId === EMPTY_GUID}
-                        onClick={() => { getWeightData(index) }}
-                      /></td>
-                      <td>{item.RMFreightCost ? item.RMFreightCost : '-'}</td>
-                      <td>{item.RMShearingCost ? item.RMShearingCost : '-'}</td>
-                      <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-
-                    </tr>
-                  )
-                })}
-                {viewRM.length === 0 && (
+            <Col>
+              <Table className="table cr-brdr-main" size="sm">
+                <thead>
                   <tr>
-                    <td colSpan={7}>
-                      <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                    </td>
+                    <th>{`RM Name -Grade`}</th>
+                    <th>{`RM Rate`}</th>
+                    <th>{`Scrap Rate`}</th>
+                    <th>{`Gross Weight(Kg)`}</th>
+                    <th>{`Finish Weight(Kg)`}</th>
+                    <th>{`Calculator`}</th>
+                    <th>{`Freight Cost`}</th>
+                    <th>{`Shearing Cost`}</th>
+                    <th className="costing-border-right">{`Net RM Cost`}</th>
                   </tr>
-                )}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>{item.RMName}</td>
+                        <td>{item.RMRate}</td>
+                        <td>{item.ScrapRate}</td>
+                        <td>{item.GrossWeight}</td>
+                        <td>{item.FinishWeight}</td>
+                        <td><button
+                          className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                          type={"button"}
+                          disabled={item.WeightCalculationId === EMPTY_GUID}
+                          onClick={() => { getWeightData(index) }}
+                        /></td>
+                        <td>{item.RMFreightCost ? item.RMFreightCost : '-'}</td>
+                        <td>{item.RMShearingCost ? item.RMShearingCost : '-'}</td>
+                        <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+
+                      </tr>
+                    )
+                  })}
+                  {viewRM.length === 0 && (
+                    <tr>
+                      <td colSpan={9}>
+                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </Col>
             {/* <form>
               <Row className="pl-3">
                 <div className="input-group form-group col-md-12 input-withouticon">
