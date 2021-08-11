@@ -96,14 +96,6 @@ function ReportListing(props) {
     const hyphenFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
         return cell
-        // let value;
-        // if (cellValue === null || cellValue === '' || cellValue === 'NA') {
-        //     return '-';
-        // }
-        // else {
-        //     return cellValue
-        // }
-        // return value
     }
 
     const statusFormatter = (props) => {
