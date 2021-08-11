@@ -174,7 +174,7 @@ export function Impactedmasterdata(props) {
 
     return (
         <>
-            <Row className="mb-3">
+            <div className="mb-3 w-100">
                 {/* <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
                 <Col md="6" className="text-right">
                     <div className={'right-details'}>
@@ -254,7 +254,7 @@ domLayout='autoHeight'
                     </div>
                 </div>
 
-            </Row>
+            </div>
         </>
     )
 }

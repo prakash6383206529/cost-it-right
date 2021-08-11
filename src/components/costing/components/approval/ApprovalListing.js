@@ -646,9 +646,7 @@ domLayout='autoHeight'
                       <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
                       <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
                       <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                      {!isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-
-
+                      {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                     </AgGridReact>
 
                     <div className="paging-container d-inline-block float-right">
