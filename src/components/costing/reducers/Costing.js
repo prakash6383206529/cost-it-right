@@ -280,10 +280,11 @@ export default function costingReducer(state = initialState, action) {
         RMCCTabData: action.payload
       };
     case SET_COSTING_DATALIST_BY_COSTINGID:
+      const Costingdata1 = action.payload
       return {
         ...state,
         loading: false,
-        CostingDataList: action.payload
+        CostingDataList: [...Costingdata1]
       };
     case SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID:
       return {
