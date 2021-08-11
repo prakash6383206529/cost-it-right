@@ -26,6 +26,7 @@ function RunSimulationDrawer(props) {
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
     const [selectedDate, setSelectedDate] = useState('')
+    const [selectedData, setSelectedData] = useState([])
 
 
     useEffect(() => {
@@ -48,6 +49,7 @@ function RunSimulationDrawer(props) {
 
     const handleApplicabilityChange = (elementObj) => {
         let temp = multipleHeads
+        let temp1 = multipleHeads
         if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
             const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
             if (ind !== -1) {
@@ -55,8 +57,10 @@ function RunSimulationDrawer(props) {
             }
         } else {
             temp.push({ SimulationApplicabilityName: elementObj.Text, SimulationApplicabilityId: elementObj.Value })
+            temp1.push(elementObj.Text)
         }
         setMultipleHeads(temp)
+        setSelectedData(temp1)
         setIsOpposite(!opposite)
     }
 
@@ -64,10 +68,26 @@ function RunSimulationDrawer(props) {
 
     const SimulationRun = () => {
 
+        let obj = {}
 
+        const Overhead = selectedData.includes("Overhead")
+        const Profit = selectedData.includes("Profit")
+        const Rejection = selectedData.includes("Rejection")
+        const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
+        const PaymentTerms = selectedData.includes("Payment Terms")
+        const Inventory = selectedData.includes("Inventory")
+        let temp = []
+        obj.IsOverhead = Overhead
+        obj.IsProfit = Profit
+        obj.IsRejection = Rejection
+        obj.IsInventory = Inventory
+        obj.IsPaymentTerms = PaymentTerms
+        obj.IsDiscountAndOtherCost = DiscountOtherCost
+        temp.push(obj)
+        console.log('temp: ', temp);
 
         //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-        dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: [] }, (res) => {
+        dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
             if (res.data.Result) {
                 toastr.success('Simulation process has been run successfully.')
                 runSimulationCosting()

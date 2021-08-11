@@ -295,6 +295,7 @@ function LossStandardTable(props) {
                 type="submit"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
+                disabled={props.CostingViewMode}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -329,11 +330,13 @@ function LossStandardTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
+                                disabled={props.CostingViewMode}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
+                                disabled={props.CostingViewMode}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>
