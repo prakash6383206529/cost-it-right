@@ -743,11 +743,12 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`UOM`}</th>
                       <th>{`Scrap Rate`}</th>
-                      {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>}
-                      <th style={{ width: "220px" }}>{`Gross Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Finish Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Scrap Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+                      {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
+                      <th style={{ width: "190px" }}>{`Gross Weight`}</th>
+                      <th style={{ width: "190px" }}>{`Finish Weight`}</th>
+                      {/* <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th> */}
+                      <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
+                      <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -841,7 +842,7 @@ function RawMaterialCost(props) {
                     }
                     {gridData && gridData.length === 0 &&
                       <tr>
-                        <td colSpan={10}>
+                        <td colSpan={11}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />
                         </td>
                       </tr>
@@ -870,7 +871,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM"/>
+                  <TooltipCustom customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
                 </Col>
               }
 

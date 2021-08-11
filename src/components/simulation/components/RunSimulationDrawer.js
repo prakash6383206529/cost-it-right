@@ -130,6 +130,37 @@ function RunSimulationDrawer(props) {
                                                 )
                                             })
                                         }
+                                        <div className="input-group form-group col-md-12 px-0">
+                                            <div className="inputbox date-section">
+                                                <DatePickerHookForm
+                                                    name={`EffectiveDate`}
+                                                    label={'Effective Date'}
+                                                    selected={selectedDate}
+                                                    handleChange={(date) => {
+                                                        handleEffectiveDateChange(date);
+                                                    }}
+                                                    //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                                    rules={{ required: true }}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dateFormat="aa/MM/yyyy"
+                                                    //maxDate={new Date()}
+                                                    dropdownMode="select"
+                                                    placeholderText="Select date"
+                                                    customClassName="withBorder"
+                                                    className="withBorder"
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                    disabled={false}
+                                                    mandatory={true}
+                                                    errors={errors.EffectiveDate}
+                                                />
+                                            </div>
+                                        </div>
                                     </Col>
                                 </Row>
 
