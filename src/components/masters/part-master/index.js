@@ -11,6 +11,8 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import IndivisualProductListing from './IndivisualProductListing';
+import AddIndivisualProduct from './AddIndivisualProduct';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -20,6 +22,7 @@ class PartMaster extends Component {
             activeTab: '1',
             isAddBOMForm: false,
             isPartForm: false,
+            isProductForm: false,
             getDetails: {},
 
             ViewAccessibility: false,
@@ -39,7 +42,6 @@ class PartMaster extends Component {
                 let Data = leftMenuData;
                 const accessData = Data && Data.find(el => el.PageName === PART)
                 const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
                 if (permmisionData !== undefined) {
                     this.setState({
                         ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
@@ -78,7 +80,7 @@ class PartMaster extends Component {
 
     //HIDE BOM & PART INDIVIDUAL FORM
     hideForm = () => {
-        this.setState({ isAddBOMForm: false, isPartForm: false, getDetails: {}, })
+        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, })
     }
 
     //DISPLAY INDIVIDUAL PART FORM
@@ -91,12 +93,22 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isPartForm: true, isAddBOMForm: false, })
     }
 
+    //DISPLAY INDIVIDUAL PART FORM
+    displayIndividualProductForm = () => {
+        this.setState({ isProductForm: true, getDetails: {} })
+    }
+
+    //GET DETAILS OF INDIVIDUAL PART
+    getIndividualProductDetails = (data) => {
+        this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isAddBOMForm, isPartForm, } = this.state;
+        const { isAddBOMForm, isPartForm, isProductForm } = this.state;
 
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
@@ -108,6 +120,13 @@ class PartMaster extends Component {
 
         if (isPartForm === true) {
             return <AddIndivisualPart
+                hideForm={this.hideForm}
+                data={this.state.getDetails}
+            />
+        }
+
+        if (isProductForm === true) {
+            return <AddIndivisualProduct
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
             />
@@ -131,6 +150,11 @@ class PartMaster extends Component {
                                         Manage Component/Part
                                 </NavLink>
                                 </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                        Manage Products
+                                </NavLink>
+                                </NavItem>
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&
@@ -150,6 +174,18 @@ class PartMaster extends Component {
                                         <IndivisualPartListing
                                             formToggle={this.displayIndividualForm}
                                             getDetails={this.getIndividualPartDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                                {this.state.activeTab === '3' &&
+                                    <TabPane tabId="3">
+                                        <IndivisualProductListing
+                                            formToggle={this.displayIndividualProductForm}
+                                            getDetails={this.getIndividualProductDetails}
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}

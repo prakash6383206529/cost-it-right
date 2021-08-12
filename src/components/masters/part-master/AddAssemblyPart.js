@@ -42,6 +42,7 @@ class AddAssemblyPart extends Component {
       selectedPlants: [],
       effectiveDate: '',
       files: [],
+      ProductGroup: [],
 
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
@@ -108,6 +109,11 @@ class AddAssemblyPart extends Component {
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
   }
+
+  handleProductGroup = (e) => {
+    this.setState({ ProductGroup: e })
+  }
+
 
   /**
   * @method handleChange
@@ -225,6 +231,10 @@ class AddAssemblyPart extends Component {
       });
       return temp;
     }
+    if (label === 'ProductGroup') {
+      return []
+    }
+
   }
 
   /**
@@ -716,6 +726,26 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
+                        {/* <Col md="3">
+                          <Field
+                            label="Product Group"
+                            name="ProductGroup"
+                            placeholder={"Select"}
+                            selection={
+                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                            options={this.renderListing("ProductGroup")}
+                            selectionChanged={this.handleProductGroup}
+                            validate={
+                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                            required={true}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                          // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                          />
+                        </Col> */}
                         {/* <Col md="3">
                           <Field
                             label="Plant"
