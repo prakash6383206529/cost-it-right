@@ -4482,6 +4482,15 @@ body{
 }
 // toastr css end
 
+// drawer-attachment
+.drawer-attachment{
+  margin-bottom: 20px;
+  .dzu-dropzone{
+    min-height: 130px;
+  }
+}
+// drawer-attachment
+
 
 // responsive media query start
 @media(max-width:1600px){

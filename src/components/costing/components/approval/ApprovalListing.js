@@ -607,6 +607,7 @@ function ApprovalListing(props) {
                   </div>
                   <div
                     className="ag-theme-material"
+                    style={{ height: '100%', width: '100%' }}
                   >
                     <AgGridReact
                       style={{ height: '100%', width: '100%' }}
@@ -630,36 +631,34 @@ function ApprovalListing(props) {
                       onSelectionChanged={onRowSelect}
                       isRowSelectable={isRowSelectable}
                     >
-                      <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                      <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                      {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                      <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
-                      <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
-                      <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                      <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
-                      <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
-                      <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                      <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
-                      <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
-                      <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                      <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
-                      <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
-                      <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                      {!isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                        {isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
+                        <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
+                        <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                        <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
+                        <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                        <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                        <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                        <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
+                        <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
+                        <AgGridColumn field="RequestedBy" headerName="Requested By"></AgGridColumn>
+                        <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                        {!isApproval && <AgGridColumn  headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                      </AgGridReact>
 
-
-                    </AgGridReact>
-
-                    <div className="paging-container d-inline-block float-right">
-                      <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                        <option value="10" selected={true}>10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                      </select>
+                      <div className="paging-container d-inline-block float-right">
+                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                          <option value="10" selected={true}>10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
             </Col>
           </Row>
 
