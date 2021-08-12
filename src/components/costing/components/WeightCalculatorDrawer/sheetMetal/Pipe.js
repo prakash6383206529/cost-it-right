@@ -16,6 +16,15 @@ import { toastr } from 'react-redux-toastr'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
+  });
+
+  return values;
+}
+
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -99,12 +108,13 @@ function Pipe(props) {
 
   const [useFinishWeight, setUseFinishWeight] = useState(false)
 
-
-
-  const fieldValues = useWatch({
-    control,
-    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
-  })
+  let fields = IsolateReRender(control)
+  let fieldValues = {
+    OuterDiameter: fields && fields[0],
+    Thickness: fields && fields[1],
+    SheetLength: fields && fields[2],
+    PartLength: fields && fields[3],
+  }
 
   // const fieldVal = useWatch({
   //   control,

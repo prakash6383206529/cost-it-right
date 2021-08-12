@@ -248,7 +248,6 @@ class RMListing extends Component {
     render() {
         const { isOpen, isEditFlag, ID } = this.state;
         const { AddAccessibility, DownloadAccessibility } = this.props;
-
         const options = {
             clearSearch: true,
             noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -347,10 +346,10 @@ class RMListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
@@ -365,11 +364,11 @@ class RMListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="RawMaterial"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

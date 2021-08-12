@@ -6,13 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
@@ -82,7 +81,7 @@ function CostingSimulation(props) {
                 })
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
-                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn })
+                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
                 setLoader(false)
             }
         }))
@@ -96,44 +95,13 @@ function CostingSimulation(props) {
 
     const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
+    useEffect(() => {
+        costingList && costingList.map(item => {
+            item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+        })
+    }, [costingList])
 
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
 
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const NewPO = () => {
-        return <>PO Price <br />New </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldRM = () => {
-        return <>RM Cost<br /> Old</>
-    }
-
-    const renderNewRM = () => {
-        return <>RM Cost<br /> New</>
-    }
 
     const runCostingDetailSimulation = () => {
         setCostingDetailDrawer(true)
@@ -159,12 +127,14 @@ function CostingSimulation(props) {
         }))
     }
 
+
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
+
             </>
         )
     }
@@ -247,31 +217,31 @@ function CostingSimulation(props) {
 
     const onSaveSimulation = () => {
 
-        const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
+        // const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
 
-        switch (selectedMasterForSimulation.label) {
-            case RMDOMESTIC:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation saved successfully.')
-                        setShowApprovalHistory(true)
-                    }
-                }))
-                break;
-            case RMIMPORT:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation saved successfully.')
-                        setShowApprovalHistory(true)
-                    }
-                }))
-                break;
+        // switch (selectedMasterForSimulation.label) {
+        //     case RMDOMESTIC:
+        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
+        //             if (res.data.Result) {
+        //                 toastr.success('Simulation saved successfully.')
+        //                 setShowApprovalHistory(true)
+        //             }
+        //         }))
+        //         break;
+        //     case RMIMPORT:
+        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
+        //             if (res.data.Result) {
+        //                 toastr.success('Simulation saved successfully.')
+        //                 setShowApprovalHistory(true)
+        //             }
+        //         }))
+        //         break;
 
-            default:
-                break;
-        }
-        // setShowApprovalHistory(true)
+        //     default:
+        //         break;
+        // }
+        setShowApprovalHistory(true)
     }
 
 
@@ -357,6 +327,12 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const varianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return cell
     }
 
 
@@ -453,6 +429,7 @@ function CostingSimulation(props) {
         newRMFormatter: newRMFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        varianceFormatter: varianceFormatter
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -474,83 +451,6 @@ function CostingSimulation(props) {
                                     </Col>
                                 </Row>
                                 <Row className="filter-row-large pt-4 blue-before">
-                                    {shown &&
-                                        <Col lg="8" md="8" className="filter-block">
-                                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                                <div className="flex-fills">
-                                                    <h5>{`Filter By:`}</h5>
-                                                </div>
-
-                                                {/* <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'partNo'}
-                                                        placeholder={'Part No.'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('PartList')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.partNo}
-                                                    />
-                                                </div> */}
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'plantCode'}
-                                                        placeholder={'Plant Code'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('plant')}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        errors={errors.plantCode}
-                                                    />
-                                                </div>
-                                                <div className="flex-fill hide-label">
-                                                    <SearchableSelectHookForm
-                                                        label={''}
-                                                        name={'rawMaterial'}
-                                                        placeholder={'Raw Material'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        // defaultValue={plant.length !== 0 ? plant : ''}
-                                                        options={renderDropdownListing('material')}
-                                                        mandatory={false}
-                                                        handleChange={handleMaterial}
-                                                        errors={errors.rawMaterial}
-                                                    />
-                                                </div>
-
-                                                <div className="flex-fill hide-label">
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={resetFilter}
-                                                        className="reset mr10"
-                                                    >
-                                                        {'Reset'}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        //disabled={pristine || submitting}
-                                                        onClick={filterList}
-                                                        className="apply mr5"
-                                                    >
-                                                        {'Apply'}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    }
 
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
@@ -568,76 +468,71 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-
-                                        <Col>
-                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                                <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                        <div className="refresh mr-0"></div>
-                                                    </button>
-                                                </div>
-                                                <div
-                                                    className="ag-theme-material"
+                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                            <div className="ag-grid-header">
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            </div>
+                                            <div
+                                                className="ag-theme-material"
+                                                style={{ height: '100%', width: '100%' }}
+                                            >
+                                                <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    domLayout='autoHeight'
+                                                    // columnDefs={c}
+                                                    rowData={costingList}
+                                                    pagination={true}
+                                                    paginationPageSize={10}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: CONSTANT.EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    suppressRowClickSelection={true}
+                                                    rowSelection={'multiple'}
+                                                    // frameworkComponents={frameworkComponents}
+                                                    onSelectionChanged={onRowSelect}
+                                                // isRowSelectable={isRowSelectable}
                                                 >
-                                                    <AgGridReact
-                                                        style={{ height: '100%', width: '100%' }}
-                                                        defaultColDef={defaultColDef}
-                                                        // columnDefs={c}
-                                                        rowData={costingList}
-                                                        pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        loadingOverlayComponent={'customLoadingOverlay'}
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: CONSTANT.EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                        suppressRowClickSelection={true}
-                                                        rowSelection={'multiple'}
-                                                        // frameworkComponents={frameworkComponents}
-                                                        onSelectionChanged={onRowSelect}
-                                                    // isRowSelectable={isRowSelectable}
-                                                    >
-                                                        <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
-                                                        <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
-                                                        <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
+                                                    <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                    <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                    <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                                    </AgGridReact>
+                                                </AgGridReact>
 
-                                                    <div className="paging-container d-inline-block float-right">
-                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                            <option value="10" selected={true}>10</option>
-                                                            <option value="50">50</option>
-                                                            <option value="100">100</option>
-                                                        </select>
-                                                    </div>
+                                                <div className="paging-container d-inline-block float-right">
+                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                        <option value="10" selected={true}>10</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
                                                 </div>
                                             </div>
-                                        </Col>
-
+                                        </div>
                                     </Col>
                                 </Row>
                             </div>
@@ -656,9 +551,9 @@ function CostingSimulation(props) {
                                     <button
                                         type="button"
                                         className="user-btn mr5 save-btn"
-                                        disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
+                                        // disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                         onClick={onSaveSimulation}>
-                                        <div className={"save-icon"}></div>
+                                        <div className={"back-icon"}></div>
                                         {"Go to History"}
                                     </button>
 
@@ -720,5 +615,6 @@ function CostingSimulation(props) {
 
     );
 }
+
 
 export default CostingSimulation;

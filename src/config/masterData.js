@@ -1692,7 +1692,7 @@ export const SurfaceTreatmentPartGetJSON = [
 
 export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
 export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
-export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
+export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
@@ -2269,6 +2269,7 @@ export const CostingSimulationDownload = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "Variance", value: "Variance" }
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -2404,8 +2405,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "ProcessName", value: "ProcessName", },
-    { label: "ProcessName", value: "ProcessName", },
+
 ]
 
 export const RMIMPORT_DOWNLOAD_EXCEl = [
@@ -2547,4 +2547,49 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "CountryName", value: "CountryName", },
     { label: "StateName", value: "StateName", },
     { label: "CityName", value: "CityName", },
+]
+export const REPORT_DOWNLOAD_EXCEl = [
+    { label: "CostingVersion", value: "CostingVersion", },
+    { label: "CreatedDate", value: "CreatedDate", },
+    { label: "Status", value: "Status", },
+    { label: "NetPOPrice", value: "NetPOPrice", },
+    { label: "PartNumber", value: "PartNumber", },
+    { label: "Rev", value: "Rev", },
+    { label: "ECN", value: "ECN", },
+    { label: "PlantName", value: "PlantName", },
+    { label: "VendorName", value: "VendorName", },
+    { label: "VendorCode", value: "VendorCode", },
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RMGrade", value: "RMGrade", },
+    { label: "RMSpecification", value: "RMSpecification", },
+    { label: "GrossWeight", value: "GrossWeight", },
+    { label: "FinishWeight", value: "FinishWeight", },
+    { label: "ScrapWeight", value: "ScrapWeight", },
+    { label: "NetRawMaterialsCost", value: "NetRawMaterialsCost", },
+    { label: "NetBoughtOutPartCost", value: "NetBoughtOutPartCost", },
+    { label: "NetProcessCost", value: "NetProcessCost", },
+    { label: "NetOperationCost", value: "NetOperationCost", },
+    { label: "SurfaceTreatmentCost", value: "SurfaceTreatmentCost", },
+    { label: "TransportationCost", value: "TransportationCost", },
+    { label: "NetConversionCost", value: "NetConversionCost", },
+    { label: "ModelTypeForOverheadAndProfit", value: "ModelTypeForOverheadAndProfit", },
+    { label: "OverheadOn", value: "OverheadOn", },
+    { label: "ProfitOn", value: "ProfitOn", },
+    { label: "RejectOn", value: "RejectOn", },
+    { label: "ICCOn", value: "ICCOn", },
+    { label: "PaymentTermCost", value: "PaymentTermCost", },
+    { label: "NetOverheadAndProfitCost", value: "NetOverheadAndProfitCost", },
+    { label: "PackagingCost", value: "PackagingCost", },
+    { label: "FreightCost", value: "FreightCost", },
+    { label: "NetFreightPackagingCost", value: "NetFreightPackagingCost", },
+    { label: "ToolMaintenaceCost", value: "ToolMaintenaceCost", },
+    { label: "ToolPrice", value: "ToolPrice", },
+    { label: "AmorizationQuantity", value: "AmorizationQuantity", },
+    { label: "NetToolCost", value: "NetToolCost", },
+    { label: "TotalCost", value: "TotalCost", },
+    { label: "NetDiscountsCost", value: "NetDiscountsCost", },
+    { label: "AnyOtherCost", value: "AnyOtherCost", },
+    { label: "NetPOPrice", value: "NetPOPrice", },
+    { label: "Remark", value: "Remark", },
+    { label: "CreatedBy", value: "CreatedBy", }
 ]

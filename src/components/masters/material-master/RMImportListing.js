@@ -195,7 +195,7 @@ class RMImportListing extends Component {
     let data = {
       isEditFlag: true,
       Id: Id,
-      IsVendor: rowData.CostingHead == 'Vendor Based' ? true : false,
+      IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     this.props.getDetails(data);
   }
@@ -974,7 +974,9 @@ class RMImportListing extends Component {
                 style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
+                  style={{ height: '100%', width: '100%' }}
                   defaultColDef={defaultColDef}
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.rmImportDataList}
                   pagination={true}
@@ -988,24 +990,24 @@ class RMImportListing extends Component {
                   }}
                   frameworkComponents={frameworkComponents}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                   <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                   <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                  <AgGridColumn field="MaterialType" headerName="Material" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                  <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
-                  <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
-                  <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
+                  {/* <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
+                  <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn> */}
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {/* {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

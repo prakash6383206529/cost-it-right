@@ -407,7 +407,7 @@ class AddRMImport extends Component {
                 const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
                 this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-                this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+                this.handleCurrency(currencyObj ? { label: currencyObj.Text, value: currencyObj.Value } : '')
                 this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
                 // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 // this.props.change('NetLandedCost')
@@ -1086,6 +1086,22 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           <Col md="4">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleTechnologyChange}
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1208,22 +1224,7 @@ class AddRMImport extends Component {
                               disabled={false}
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleTechnologyChange}
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+
                           {(this.state.IsVendor === false && (
                             <Col md="4">
                               <Field
@@ -1498,7 +1499,7 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
+                          {/* <Col md="4">
                             <Field
                               label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
@@ -1525,7 +1526,7 @@ class AddRMImport extends Component {
                               maxLength="15"
                               customClassName=" withBorder"
                             />
-                          </Col>
+                          </Col> */}
                           <Col md="4">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}

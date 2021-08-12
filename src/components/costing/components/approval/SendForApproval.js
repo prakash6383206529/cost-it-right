@@ -18,7 +18,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
 import PushSection from '../../../common/PushSection'
-const _ = require('lodash');
+import { debounce } from 'lodash'
+
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -259,9 +260,7 @@ const SendForApproval = (props) => {
   }
 
 
-  var debounce_fun = _.debounce(function () {
-    console.log('Function debounced after 1000ms!');
-  }, 2000);
+
 
 
   /**
@@ -269,9 +268,10 @@ const SendForApproval = (props) => {
    * @param {*} data
    * @description This method is called on the submission of the form for send for approval
    */
-  const onSubmit = (data) => {
 
 
+
+  const onSubmit = debounce(handleSubmit((data) => {
     let count = 0
     viewApprovalData.map((item) => {
       if (item.effectiveDate == '') {
@@ -399,7 +399,7 @@ const SendForApproval = (props) => {
 
     // debounce_fun()
     // console.log("After debounce");
-    props.closeDrawer()
+    // props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
@@ -408,7 +408,7 @@ const SendForApproval = (props) => {
         dispatch(setCostingViewData([]))
       }),
     )
-  }
+  }), 500)
 
   const handleApproverChange = (data) => {
     setApprover(data.label)
@@ -642,7 +642,7 @@ const SendForApproval = (props) => {
                 );
               })}
             <div className="">
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form >
                 {
                   isFinalApproverShow === false ?
                     <>
@@ -668,12 +668,12 @@ const SendForApproval = (props) => {
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: false }}
+                            rules={{ required: true }}
                             register={register}
                             defaultValue={""}
                             options={renderDropdownListing("Dept")}
-                            disabled={true}
-                            mandatory={false}
+                            disabled={false}
+                            mandatory={true}
                             handleChange={handleDepartmentChange}
                             errors={errors.dept}
                           />
@@ -685,12 +685,12 @@ const SendForApproval = (props) => {
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: false }}
+                            rules={{ required: true }}
                             register={register}
                             defaultValue={""}
                             options={approvalDropDown}
-                            mandatory={false}
-                            disabled={true}
+                            mandatory={true}
+                            disabled={false}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
                           />
@@ -754,9 +754,9 @@ const SendForApproval = (props) => {
 
                     <button
                       className="btn btn-primary save-btn"
-                      type="submit"
-                    // className="submit-button save-btn"
-                    // onClick={() => handleSubmit(onSubmit)}
+                      type="button"
+                      // className="submit-button save-btn"
+                      onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>
                       {"Submit"}

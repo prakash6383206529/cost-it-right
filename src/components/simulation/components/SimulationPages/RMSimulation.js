@@ -18,7 +18,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
-const gridOptions = {};
+const gridOptions = {
+
+};
 
 
 function RMSimulation(props) {
@@ -46,7 +48,7 @@ function RMSimulation(props) {
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     useEffect(() => {
         setValue('NoOfCorrectRow', rowCount.correctRow)
-        setValue('NoOfInCorrectRow', rowCount.incorrectRow)
+        setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
     }, [])
 
     const verifySimulation = () => {
@@ -123,58 +125,6 @@ function RMSimulation(props) {
         setShowVerifyPage(false)
     }
 
-    const renderCostingHead = () => {
-        return <>Costing Head </>
-    }
-
-    const renderRawMaterial = () => {
-        return <>Raw Material </>
-    }
-
-    const renderRMGrade = () => {
-        return <>RM Grade </>
-    }
-
-    const renderRMSpec = () => {
-        return <>RM Spec </>
-    }
-
-    const renderBasicRate = () => {
-        return <>Basic <br /> Rate(INR) </>
-    }
-
-    const rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost</>
-    }
-
-    const renderShearingCost = () => {
-        return <>Shearing <br /> Cost</>
-    }
-
-    const renderNewBasicRate = () => {
-        return <>New Basic <br />  Rate(INR) </>
-    }
-
-
-    const renderScrapRate = () => {
-        return <>Scrap <br /> Rate(INR) </>
-    }
-
-    const renderNewScrapRate = () => {
-        return <>New Scrap <br /> Rate(INR) </>
-    }
-
-    const renderNetCost = () => {
-        return <>Net <br /> Cost(INR) </>
-    }
-
-    const renderNewNetCost = () => {
-        return <>New Net <br /> Cost(INR) </>
-    }
-
-    const renderEffectiveDate = () => {
-        return <>Effective <br /> Date</>
-    }
 
     /**
      * @method shearingCostFormatter
@@ -367,7 +317,6 @@ function RMSimulation(props) {
         setGridColumnApi(params.columnApi)
 
         params.api.paginationGoToPage(0);
-
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -436,7 +385,7 @@ function RMSimulation(props) {
                                         <label>No of rows without changes:</label>
                                         <TextFieldHookForm
                                             label=""
-                                            name={'NoOfInCorrectRow'}
+                                            name={'NoOfRowsWithoutChange'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -446,7 +395,7 @@ function RMSimulation(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfInCorrectRow}
+                                            errors={errors.NoOfRowsWithoutChange}
                                             disabled={true}
                                         />
                                     </div>
@@ -498,11 +447,12 @@ function RMSimulation(props) {
                                     </div>
                                     <div
                                         className="ag-theme-material"
-                                        style={{ height: '100%', width: '100%' }}
+
                                     >
                                         <AgGridReact
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
+                                            domLayout='autoHeight'
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
@@ -525,16 +475,16 @@ function RMSimulation(props) {
                                             <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
                                             <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={100} field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={100} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
+                                                <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn width={100} field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={100} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
+                                                <AgGridColumn width={120} field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                            {/* <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
+                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn> */}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={200} headerName="Net Cost (INR)">
                                                 <AgGridColumn width={100} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={100} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>

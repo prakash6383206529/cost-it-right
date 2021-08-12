@@ -368,7 +368,7 @@ function OverheadProfit(props) {
   */
   const calculateOverheadFixedTotalCost = () => {
     if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
-      console.log('OverheadFixedPercentage: IN', overheadFixedFieldValues, overheadObj, overheadObj.IsOverheadFixedApplicable);
+
       setValue('OverheadFixedCost', '-')
       setValue('OverheadFixedTotalCost', checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration.NoOfDecimalForPrice))
       setOverheadObj({
@@ -554,6 +554,7 @@ function OverheadProfit(props) {
   * @description PROFIT RM APPLICABILITY CALCULATION
   */
   const checkIsProfitRMApplicable = () => {
+
     if (headerCosts !== undefined && profitObj && profitObj.IsProfitRMApplicable) {
       const { ProfitRMPercentage } = profitObj;
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;

@@ -439,7 +439,7 @@ class BOPImportListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        temp = this.props.bopImportList && this.props.bopImportList.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {
@@ -448,14 +448,12 @@ class BOPImportListing extends Component {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={BopImport}>
+            <ExcelSheet data={temp} name={BopImport}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -710,10 +708,10 @@ class BOPImportListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopImportList}
                                     pagination={true}
@@ -741,7 +739,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

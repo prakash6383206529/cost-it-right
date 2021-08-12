@@ -1100,6 +1100,25 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={
+                                this.handleTechnologyChange
+                              }
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1229,25 +1248,7 @@ class AddRMDomestic extends Component {
                               disabled={false}
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={
-                                this.handleTechnologyChange
-                              }
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+
                           {(this.state.IsVendor === false && (
                             <Col md="4">
                               <Field
@@ -1482,7 +1483,7 @@ class AddRMDomestic extends Component {
                               maxLength="15"
                             />
                           </Col>
-                          <Col md="4">
+                          {/* <Col md="4">
                             <Field
                               label={`RM Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"FrieghtCharge"}
@@ -1511,7 +1512,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                               maxLength="15"
                             />
-                          </Col>
+                          </Col> */}
                           <Col md="4">
                             <Field
                               label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}

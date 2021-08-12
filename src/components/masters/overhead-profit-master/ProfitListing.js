@@ -746,10 +746,10 @@ class ProfitListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -773,7 +773,7 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitId" width={120} headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="ProfitId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

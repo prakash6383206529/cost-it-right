@@ -136,11 +136,11 @@ function Simulation(props) {
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '', tableData = {}, correctRow = 0, incorrectRow = 0) => {
+    const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0) => {
         setShowDrawer(false)
         if (Object.keys(tableData).length > 0) {
             setTableData(tableData)
-            setRowCount({ correctRow: correctRow, incorrectRow: incorrectRow })
+            setRowCount({ correctRow: correctRow, NoOfRowsWithoutChange: NoOfRowsWithoutChange })
             setShowEditTable(true)
             setIsBulkUpload(true)
         }

@@ -263,10 +263,11 @@ class LevelTechnologyListing extends Component {
 							</div>
 							<div
 								className="ag-theme-material"
-								style={{ height: '100%', width: '100%' }}
+								
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
+domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}
@@ -283,7 +284,7 @@ class LevelTechnologyListing extends Component {
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -344,10 +345,11 @@ class LevelTechnologyListing extends Component {
 							</div>
 							<div
 								className="ag-theme-material"
-								style={{ height: '100%', width: '100%' }}
+								
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
+domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.props.simulationLevelDataList}
 									pagination={true}
@@ -364,7 +366,7 @@ class LevelTechnologyListing extends Component {
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action"  type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">

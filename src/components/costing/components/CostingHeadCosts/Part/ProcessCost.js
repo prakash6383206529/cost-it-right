@@ -84,7 +84,7 @@ function ProcessCost(props) {
     let tempData = gridData[id]
     // const calciData = gridData[id]
 
-    /****************************FOR SENDING CALCULATED VALUE IN CALCULATOR**************************/
+    /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
     dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data

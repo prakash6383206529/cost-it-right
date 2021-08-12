@@ -443,10 +443,10 @@ class ReasonListing extends Component {
             </div>
             <div
               className="ag-theme-material"
-              style={{ height: '100%', width: '100%' }}
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
+domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}
@@ -462,7 +462,7 @@ class ReasonListing extends Component {
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
                 <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                <AgGridColumn field="ReasonId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions"  type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
