@@ -974,12 +974,12 @@ domLayout='autoHeight'
                                         {'Approve'}
                                     </button>
 
-                                    {showFinalLevelButtons &&
+                                    {/* {showFinalLevelButtons &&
                                         <button
                                             type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                                             <div className={'save-icon'}></div>
                                             {'Approve & Push'}
-                                        </button>}
+                                        </button>} */}
                                 </Fragment>
                             </div>
                         </Row>
@@ -1016,6 +1016,7 @@ domLayout='autoHeight'
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
                 IsPushDrawer={showPushDrawer}
+                showFinalLevelButtons={showFinalLevelButtons}
             // dataSend={[approvalDetails, partDetail]}
             />}
 

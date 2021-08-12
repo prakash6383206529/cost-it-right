@@ -18,7 +18,8 @@ import "react-datepicker/dist/react-datepicker.css";
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master,
+    selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -216,7 +217,7 @@ function ApproveRejectDrawer(props) {
         reset()
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
-            if (IsPushDrawer) {
+            if (showFinalLevelButtons) {
               toastr.success('The costing has been approved')
               setOpenPushButton(true)
 
@@ -290,7 +291,7 @@ function ApproveRejectDrawer(props) {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
         dispatch(simulationApprovalRequestByApprove(objs, res => {
           if (res.data.Result) {
-            if (IsPushDrawer) {
+            if (showFinalLevelButtons) {
               toastr.success('The simulation token has been approved')
               setOpenPushButton(true)
 
@@ -629,7 +630,7 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
       </Drawer>
-      {openPushButton && (
+      {(openPushButton || showFinalLevelButtons) && (
         <PushButtonDrawer
           isOpen={openPushButton}
           closeDrawer={closePushButton}
