@@ -531,7 +531,6 @@ export function formViewData(costingSummary) {
   let dataFromAPI = costingSummary
   let obj = {}
   let type = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : 'other'
-  console.log('type: ', type);
 
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
@@ -650,7 +649,7 @@ export function formViewData(costingSummary) {
   obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
-  console.log('obj: ', obj);
+
 
 
   // temp = [...temp, obj]

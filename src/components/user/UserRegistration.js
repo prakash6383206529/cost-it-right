@@ -193,8 +193,7 @@ class UserRegistration extends Component {
 
     if (label === 'department') {
       departmentList && departmentList.map(item =>
-        // temp.push({ label: item.DepartmentName, value: item.DepartmentId, CompanyId: item.CompanyId })
-        temp.push({ Text: item.DepartmentName, Value: item.DepartmentId, CompanyId: item.CompanyId })
+        temp.push({ label: item.DepartmentName, value: item.DepartmentId, CompanyId: item.CompanyId })
       );
       return temp;
     }
@@ -258,7 +257,6 @@ class UserRegistration extends Component {
     */
   departmentHandler = (newValue, actionMeta) => {
     this.setState({ department: newValue });
-    console.log('department: ', this.state.department);
   };
 
   /**
@@ -1242,7 +1240,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
+                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}:`}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1267,9 +1265,9 @@ class UserRegistration extends Component {
                             <Field
                               name="DepartmentId"
                               type="text"
-                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
                               component={renderMultiSelectField}
-                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
                               selection={this.state.department == null || this.state.department.length === 0 ? [] : this.state.department}
                               options={this.searchableSelectType('multiDepartment')}
                               validate={this.state.department == null || this.state.department.length === 0 ? [required] : []}
@@ -1285,9 +1283,9 @@ class UserRegistration extends Component {
                             <Field
                               name="DepartmentId"
                               type="text"
-                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
                               component={searchableSelect}
-                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Purchase Group' : 'Purchase Group'}`}
                               // placeholder={'Select company'}
                               options={this.searchableSelectType('department')}
                               //onKeyUp={(e) => this.changeItemDesc(e)}

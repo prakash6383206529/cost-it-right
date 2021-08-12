@@ -164,11 +164,9 @@ function RMSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
-        console.log('value: ', value);
         // costFormatter(props)
         gridApi && gridApi.redrawRows({ force: true })
         if (value) {
-            console.log("Value updated");
             setTimeout(() => {
 
                 setUpdate(!update)
@@ -183,7 +181,7 @@ function RMSimulation(props) {
 
 
     useEffect(() => {
-        console.log("Update?");
+
     }, [update])
 
     const newScrapRateFormatter = (props) => {
@@ -200,7 +198,7 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (props) => {
-        console.log('props from OLd cost: ', props);
+
         gridApi && gridOptions.gridApi.redrawRows()
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -247,7 +245,6 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        console.log(props, "PROPS IN new cost formatter");
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''

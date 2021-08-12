@@ -9,7 +9,7 @@ import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDeta
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, uploadSimulationAttachmentByCategory } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
@@ -19,6 +19,7 @@ import { FILE_URL } from '../../../../config/constants';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { fileDeleteCosting, fileUploadCosting } from '../../actions/Costing'
 import { ViewCostingContext } from '../CostingDetails'
+import { assign } from 'lodash'
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -67,6 +68,7 @@ function ApproveRejectDrawer(props) {
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
 
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
@@ -77,12 +79,64 @@ function ApproveRejectDrawer(props) {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      dispatch(fileUploadCosting(data, (res) => {
+      dispatch(uploadSimulationAttachmentByCategory(data, 'Impact_Sheet', (res) => {
         let Data = res.data[0]
         files.push(Data)
         setFiles(files)
         setIsOpen(!IsOpen)
       }))
+    }
+
+    if (status === 'rejected_file_type') {
+      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+    }
+  }
+
+
+  const handleChangeSupplierConfirmationStatus = ({ meta, file }, status) => {
+
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData()
+      // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
+      //   let Data = res.data[0]
+      //   files.push(Data)
+      //   setFiles(files)
+      //   setIsOpen(!IsOpen)
+      // }))
+    }
+
+    if (status === 'rejected_file_type') {
+      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+    }
+  }
+
+
+  const handleChangeInvoiceBackupStatus = ({ meta, file }, status) => {
+
+
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData()
+      data.append('file', file)
+      // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
+      //   let Data = res.data[0]
+      //   files.push(Data)
+      //   setFiles(files)
+      //   setIsOpen(!IsOpen)
+      // }))
     }
 
     if (status === 'rejected_file_type') {
@@ -689,11 +743,12 @@ function ApproveRejectDrawer(props) {
                 </div>
 
                 {
-                  isSimulation && (type === 'Approve' || type === 'Sender') && !IsFinalLevel &&
+                  isSimulation &&
                   <>
+                    {/* FIRST ATTACHMENT SECTION */}
                     <div className="col-md-12 drawer-attachment">
                       <div className="d-flex w-100 flex-wrap">
-                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 1</h6></Col>
+                        <Col md="8" className="p-0"><h6 className="mb-0">Impact Sheet</h6></Col>
                         <Col md="4" className="text-right p-0">
                           <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
                             {acc1 ? (
@@ -707,8 +762,8 @@ function ApproveRejectDrawer(props) {
                       <div className="d-flex w-100 flex-wrap pt-2">
                         {acc1 && <>
                           <Col md="12" className="p-0">
-                            <label>Upload Attachment (upload up to 4 files)</label>
-                            {files && files.length >= 4 ? (
+                            <label>Upload Attachment (upload up to 2 files)</label>
+                            {files && files.length >= 2 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
@@ -717,7 +772,7 @@ function ApproveRejectDrawer(props) {
                                 getUploadParams={getUploadParams}
                                 onChangeStatus={handleChangeStatus}
                                 PreviewComponent={Preview}
-                                //onSubmit={this.handleSubmit}
+                                // onSubmit={handleImapctSubmit}
                                 accept="*"
                                 initialFiles={initialFiles}
                                 maxFiles={4}
@@ -746,7 +801,7 @@ function ApproveRejectDrawer(props) {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 classNames="draper-drop"
-                                disabled={CostingViewMode ? true : false}
+                                disabled={isSimulation && type === 'Sender' ? false : true}
                               />
                             )}
                           </Col>
@@ -776,10 +831,10 @@ function ApproveRejectDrawer(props) {
                         }
                       </div>
                     </div>
-
+                    {/* 2 ATTACHMENT SECTION STARTS HERE */}
                     <div className="col-md-12 drawer-attachment">
                       <div className="d-flex w-100 flex-wrap">
-                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 2</h6></Col>
+                        <Col md="8" className="p-0"><h6 className="mb-0">Supplier Confirmation</h6></Col>
                         <Col md="4" className="text-right p-0">
                           <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
                             {acc2 ? (
@@ -793,15 +848,15 @@ function ApproveRejectDrawer(props) {
                       <div className="d-flex w-100 flex-wrap pt-2">
                         {acc2 && <>
                           <Col md="12" className="p-0">
-                            <label>Upload Attachment (upload up to 4 files)</label>
-                            {files && files.length >= 4 ? (
+                            <label>Upload Attachment (upload up to 2 files)</label>
+                            {files && files.length >= 2 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
                             ) : (
                               <Dropzone
                                 getUploadParams={getUploadParams}
-                                onChangeStatus={handleChangeStatus}
+                                onChangeStatus={handleChangeSupplierConfirmationStatus}
                                 PreviewComponent={Preview}
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
@@ -832,7 +887,7 @@ function ApproveRejectDrawer(props) {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 className="draper-drop"
-                                disabled={CostingViewMode ? true : false}
+                                disabled={isSimulation && type === 'Sender' ? false : true}
                               />
                             )}
                           </Col>
@@ -863,9 +918,10 @@ function ApproveRejectDrawer(props) {
                       </div>
                     </div>
 
+                    {/* 3 ATTACHMNET STARTS HERE */}
                     <div className="col-md-12 drawer-attachment">
                       <div className="d-flex w-100 flex-wrap">
-                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 3</h6></Col>
+                        <Col md="8" className="p-0"><h6 className="mb-0">Invoice Backups</h6></Col>
                         <Col md="4" className="text-right p-0">
                           <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
                             {acc3 ? (
@@ -879,8 +935,8 @@ function ApproveRejectDrawer(props) {
                       <div className="d-flex w-100 flex-wrap pt-2">
                         {acc3 && <>
                           <Col md="12" className="p-0">
-                            <label>Upload Attachment (upload up to 4 files)</label>
-                            {files && files.length >= 4 ? (
+                            <label>Upload Attachment (upload up to 10 files)</label>
+                            {files && files.length >= 10 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
@@ -918,7 +974,7 @@ function ApproveRejectDrawer(props) {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 className="draper-drop"
-                                disabled={CostingViewMode ? true : false}
+                                disabled={isSimulation && type === 'Sender' ? false : true}
                               />
                             )}
                           </Col>
@@ -948,10 +1004,10 @@ function ApproveRejectDrawer(props) {
                         }
                       </div>
                     </div>
-
+                    {/* 4 ATTACHMWENT STARTS HERE */}
                     <div className="col-md-12 drawer-attachment">
                       <div className="d-flex w-100 flex-wrap">
-                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 4</h6></Col>
+                        <Col md="8" className="p-0"><h6 className="mb-0">Others</h6></Col>
                         <Col md="4" className="text-right p-0">
                           <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
                             {acc4 ? (
@@ -965,8 +1021,8 @@ function ApproveRejectDrawer(props) {
                       <div className="d-flex w-100 flex-wrap pt-2">
                         {acc4 && <>
                           <Col md="12" className="p-0">
-                            <label>Upload Attachment (upload up to 4 files)</label>
-                            {files && files.length >= 4 ? (
+                            <label>Upload Attachment (upload up to 10 files)</label>
+                            {files && files.length >= 10 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
@@ -1004,7 +1060,7 @@ function ApproveRejectDrawer(props) {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 className="draper-drop"
-                                disabled={CostingViewMode ? true : false}
+                                disabled={isSimulation && type === 'Sender' ? false : true}
                               />
                             )}
                           </Col>
@@ -1034,10 +1090,10 @@ function ApproveRejectDrawer(props) {
                         }
                       </div>
                     </div>
-
+                    {/* 5 ATTACHMENT STARTS HERE */}
                     <div className="col-md-12 drawer-attachment">
                       <div className="d-flex w-100 flex-wrap">
-                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 5</h6></Col>
+                        <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
                         <Col md="4" className="text-right p-0">
                           <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
                             {acc5 ? (
@@ -1059,7 +1115,7 @@ function ApproveRejectDrawer(props) {
                             ) : (
                               <Dropzone
                                 getUploadParams={getUploadParams}
-                                onChangeStatus={handleChangeStatus}
+                                onChangeStatus={handleChangeInvoiceBackupStatus}
                                 PreviewComponent={Preview}
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
@@ -1090,7 +1146,7 @@ function ApproveRejectDrawer(props) {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 className="draper-drop"
-                                disabled={CostingViewMode ? true : false}
+                                disabled={isSimulation && type === 'Sender' ? false : true}
                               />
                             )}
                           </Col>

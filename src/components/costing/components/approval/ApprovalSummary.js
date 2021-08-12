@@ -398,7 +398,7 @@ function ApprovalSummary(props) {
               </div>
             </Row>
           }
-          {
+          {/* {
             showPushButton &&
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
@@ -410,7 +410,7 @@ function ApprovalSummary(props) {
                 </Fragment>
               </div>
             </Row>
-          }
+          } */}
         </>
         //  :
         // <ApprovalListing />

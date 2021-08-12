@@ -136,7 +136,6 @@ function ReportListing(props) {
             isSortByOrderAsc: true,
         }
         var t0 = performance.now();
-        console.log('t0: ', t0);
         dispatch(getReportListing(filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
@@ -281,11 +280,8 @@ function ReportListing(props) {
     const onRowSelect = () => {
 
         var selectedRows = gridApi.getSelectedRows();
-        console.log(JSON.stringify(selectedRows) === JSON.stringify(selectedIds), "sss", selectedRowData, "ii", selectedIds);
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
-        console.log('selected: ', selected);
-        console.log(selectedRows, 'selectedRowsselectedRowsselectedRowsselectedRowsselectedRowsselectedRows')
         setSelectedRowData(selectedRows)
 
     }

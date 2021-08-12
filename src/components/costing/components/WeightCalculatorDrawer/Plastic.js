@@ -27,7 +27,6 @@ function Plastic(props) {
     }
   } else {
     totalRM = Number(rmRowData.RMRate)
-    console.log('totalRM: ', totalRM);
   }
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest

@@ -470,3 +470,16 @@ export function deleteDraftSimulation(data, callback) {
             });
     };
 }
+
+export function uploadSimulationAttachmentByCategory(data, category, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.simulationUploadFileByCategory}/${category}`, data, headers)
+            .then((response) => {
+                callback(response)
+            }).catch(error => {
+                callback(error.response)
+                dispatch({ type: API_FAILURE })
+            })
+    }
+}

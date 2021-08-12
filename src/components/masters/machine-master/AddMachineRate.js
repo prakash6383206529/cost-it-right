@@ -784,7 +784,7 @@ class AddMachineRate extends Component {
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-    console.log('DropdownChange: ', DropdownChange);
+
 
 
     if (isViewFlag) {
