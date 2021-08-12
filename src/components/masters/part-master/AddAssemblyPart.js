@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -38,6 +38,7 @@ class AddAssemblyPart extends Component {
       selectedPlants: [],
       effectiveDate: '',
       files: [],
+      ProductGroup: [],
 
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
@@ -104,6 +105,11 @@ class AddAssemblyPart extends Component {
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
   }
+
+  handleProductGroup = (e) => {
+    this.setState({ ProductGroup: e })
+  }
+
 
   /**
   * @method handleChange
@@ -221,6 +227,10 @@ class AddAssemblyPart extends Component {
       });
       return temp;
     }
+    if (label === 'ProductGroup') {
+      return []
+    }
+
   }
 
   /**
@@ -712,6 +722,26 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
+                        {/* <Col md="3">
+                          <Field
+                            label="Product Group"
+                            name="ProductGroup"
+                            placeholder={"Select"}
+                            selection={
+                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                            options={this.renderListing("ProductGroup")}
+                            selectionChanged={this.handleProductGroup}
+                            validate={
+                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                            required={true}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                          // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                          />
+                        </Col> */}
                         {/* <Col md="3">
                           <Field
                             label="Plant"

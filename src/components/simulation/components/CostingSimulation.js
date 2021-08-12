@@ -81,7 +81,7 @@ function CostingSimulation(props) {
                 })
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
-                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn })
+                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
                 setLoader(false)
             }
         }))
@@ -101,44 +101,7 @@ function CostingSimulation(props) {
         })
     }, [costingList])
 
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
 
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
-
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const NewPO = () => {
-        return <>PO Price <br />New </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldRM = () => {
-        return <>RM Cost<br /> Old</>
-    }
-
-    const renderNewRM = () => {
-        return <>RM Cost<br /> New</>
-    }
 
     const runCostingDetailSimulation = () => {
         setCostingDetailDrawer(true)
@@ -511,10 +474,12 @@ function CostingSimulation(props) {
                                             </div>
                                             <div
                                                 className="ag-theme-material"
+                                                style={{ height: '100%', width: '100%' }}
                                             >
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
+
                                                     domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={costingList}
@@ -556,7 +521,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
 

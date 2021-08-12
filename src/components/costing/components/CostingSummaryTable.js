@@ -55,6 +55,7 @@ const CostingSummaryTable = (props) => {
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
+  const [rmMBDetail, setrmMBDetail] = useState({})
 
 
   const [flag, setFlag] = useState(false)
@@ -140,6 +141,12 @@ const CostingSummaryTable = (props) => {
     setIsViewRM(true)
     setIndex(index)
     setViewRMData(data)
+    setrmMBDetail({
+      MasterBatchTotal: viewCostingData[index].masterBatchTotal,
+      MasterBatchRMPrice: viewCostingData[index].masterBatchRMPrice,
+      MasterBatchPercentage: viewCostingData[index].masterBatchPercentage,
+      IsApplyMasterBatch: viewCostingData[index].isApplyMasterBatch
+    })
   }
 
   /**
@@ -557,6 +564,23 @@ const CostingSummaryTable = (props) => {
     }
   }, [costingID])
 
+
+  const reducer = (array) => {
+    const arr = array.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.GrossWeight
+    }, 0)
+
+    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForPrice)
+  }
+
+
+  const reducerFinish = (array) => {
+    const arr = array.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.FinishWeight
+    }, 0)
+
+    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForPrice)
+  }
   // useEffect(() => {
   //   
   // }, [multipleCostings])
@@ -613,7 +637,7 @@ const CostingSummaryTable = (props) => {
                   <thead>
                     <tr className="main-row">
                       {
-                        isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC</th>
+                        isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC/ZBC</th>
                       }
 
                       {viewCostingData &&
@@ -739,19 +763,22 @@ const CostingSummaryTable = (props) => {
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
+
                             <td>
-                              <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.rm : ''}</span>
+                              <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : data.rm : ''}</span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {/* try with component */}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && reducer(data.netRMCostView) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && reducerFinish(data.netRMCostView) : ''}
+                                {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
@@ -1213,14 +1240,12 @@ const CostingSummaryTable = (props) => {
                                 data.status === DRAFT &&
                                 <button
                                   class="user-btn"
-                                  disabled={isWarningFlag || isFinalApproverShow}
+                                  disabled={isWarningFlag}
                                   onClick={() => {
                                     sendForApprovalData([data.costingId], index)
                                     setShowApproval(true)
                                   }}
-                                >
-                                  {' '}
-                                  <div class="send-for-approval"></div>
+                                ><div className="send-for-approval"></div>
                                   Send For Approval
                                 </button>
                               }
@@ -1273,6 +1298,7 @@ const CostingSummaryTable = (props) => {
           anchor={'right'}
           index={index}
           technologyId={technologyId}
+          rmMBDetail={rmMBDetail}
         />
       )}
       {isViewOverheadProfit && (

@@ -13,7 +13,8 @@ import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, 
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function ApproveRejectDrawer(props) {
 
@@ -86,7 +87,7 @@ function ApproveRejectDrawer(props) {
           DepartmentId: departObj[0].Value,
           //NEED TO MAKE THIS 2   
           TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-          ReasonId: 0
+          ReasonId: reasonId
         }
 
         dispatch(
@@ -189,7 +190,7 @@ function ApproveRejectDrawer(props) {
         setShowError(true)
         return false
       }
-      if (!reason && !selectedDate) return false
+      if (!reason) return false
     }
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
@@ -272,7 +273,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = moment(selectedDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = moment(simulationDetail.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
@@ -514,7 +515,7 @@ function ApproveRejectDrawer(props) {
                             errors={errors.reason}
                           />
                         </div>
-                        <div className="input-group form-group col-md-12 input-withouticon">
+                        {/* <div className="input-group form-group col-md-12">
                           <div className="inputbox date-section">
                             <DatePickerHookForm
                               name={`EffectiveDate`}
@@ -544,18 +545,43 @@ function ApproveRejectDrawer(props) {
                               errors={errors.EffectiveDate}
                             />
                           </div>
+                        </div> */}
+
+                        <div className="input-group form-group col-md-12">
+                          <label>Effective Date<span className="asterisk-required">*</span></label>
+                          <div className="inputbox date-section">
+                            <DatePicker
+                              name="EffectiveDate"
+                              selected={moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                              // onChange={handleEffectiveDateChange}
+                              showMonthDropdown
+                              showYearDropdown
+                              dateFormat="dd/MM/yyyy"
+                              //maxDate={new Date()}
+                              dropdownMode="select"
+                              placeholderText="Select date"
+                              className="withBorder"
+                              autoComplete={"off"}
+                              disabledKeyboardNavigation
+                              onChangeRaw={(e) => e.preventDefault()}
+                              disabled={true}
+                            />
+                          </div>
                         </div>
                       </>
                     }
-                    <Row className="px-3">
-                      <Col md="12">
-                        <div className="left-border">{"SAP-Push Details"}</div>
-                      </Col>
-                      <div className="w-100">
-                        <PushSection />
-                      </div>
+                    {
+                      type === 'Sender' &&
+                      <Row className="px-3">
+                        <Col md="12">
+                          <div className="left-border">{"SAP-Push Details"}</div>
+                        </Col>
+                        <div className="w-100">
+                          <PushSection />
+                        </div>
 
-                    </Row>
+                      </Row>
+                    }
 
                   </>
                 }

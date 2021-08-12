@@ -715,6 +715,11 @@ a:hover {
         z-index: 1;
         padding-bottom: 12px;
       }
+      .ag-pinned-right-header{
+        .ag-header-cell{
+          border-right: 1px solid #e5eaf9;
+        }
+      }
       .ag-grid-wrapper{
         min-height: calc(100vh - 300px);
         height: calc(100vh - 300px) !important;
@@ -760,7 +765,6 @@ a:hover {
               .red-value,.green-value,.form-control{
                 display: inline-block;
                 vertical-align: middle;
-                min-width: unset;
               }
               .form-control{
                 padding: 7px 8px !important;
@@ -869,16 +873,16 @@ a:hover {
     .levellisting-page-main{
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: 360px;
-          height: 360px !important;
+          min-height: auto;
+          height: auto !important;
         }
       }  
     }
     .ag-grid-react{
       .sm-edit-page{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 320px);
-          height: calc(100vh - 320px) !important;
+          min-height: calc(100vh - 274px);
+          height: calc(100vh - 274px) !important;
         }
       }  
     }
@@ -935,7 +939,7 @@ a:hover {
     color: #3D4465;
     .ag-header-cell-text{
       font-size: 14px;
-      font-weight: normal;
+      font-weight: 500;
     }
   }
 }
@@ -2599,7 +2603,8 @@ td,.ag-cell {
   [class^="Awaiting"],
   .Approved,
   .Rejected,
-  .History {
+  .History,
+  .ApprovedBySimulation {
     background-color:#da94a1;
     min-width: 90px;
     height: 30px;
@@ -2618,7 +2623,7 @@ td,.ag-cell {
   [class^="Awaiting"]{
     background-color: #eac607;
   }
-  .Approved {
+  .Approved,.ApprovedBySimulation {
     background-color: #4dc771;
   }
   .History {
@@ -2740,6 +2745,30 @@ body {
   border: none;
 }
 
+@media(max-width:1600px){
+  .content-page,:not(.content-page){
+    .tab-pane,:not(.tab-pane){
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: auto;
+          height: auto !important;
+          &.add-volume-table{
+            min-height: auto;
+            height: auto !important;
+          }
+        }
+      }
+      .ag-grid-react{
+        .sm-edit-page{
+          .ag-grid-wrapper{
+            min-height: calc(100vh - 274px);
+            height: auto !important;
+          }
+        }  
+      }
+    }
+  }
+}
 
 @media(max-width:1366px){
   /* Drawer Css */
@@ -2819,7 +2848,7 @@ body {
 
   
 
-  // ag-grid-react start
+    // ag-grid-react start
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{

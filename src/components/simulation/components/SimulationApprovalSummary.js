@@ -92,7 +92,12 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
+        getSimulationApprovalSummary()
 
+    }, [])
+
+
+    const getSimulationApprovalSummary = () => {
         const reqParams = {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
@@ -103,7 +108,7 @@ function SimulationApprovalSummary(props) {
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList, MaterialGroup: 'MP(1001)', PurchasingGroup: 'PG(5444)' })
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList, MaterialGroup: MaterialGroup, PurchasingGroup: PurchasingGroup })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -124,7 +129,7 @@ function SimulationApprovalSummary(props) {
             }
         }))
 
-    }, [])
+    }
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -138,6 +143,7 @@ function SimulationApprovalSummary(props) {
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
+            getSimulationApprovalSummary()
         }
     }
 
@@ -148,6 +154,7 @@ function SimulationApprovalSummary(props) {
             setRejectDrawer(false)
         } else {
             setPushButton(false)
+            getSimulationApprovalSummary()
         }
     }
 
@@ -606,6 +613,7 @@ function SimulationApprovalSummary(props) {
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                                         // columnDefs={c}
                                                         rowData={rmDomesticListing}
                                                         pagination={true}
@@ -802,6 +810,7 @@ function SimulationApprovalSummary(props) {
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
+                                                                domLayout='autoHeight'
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -892,6 +901,7 @@ function SimulationApprovalSummary(props) {
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                                         // columnDefs={c}
                                                         rowData={rmDomesticListing}
                                                         pagination={true}

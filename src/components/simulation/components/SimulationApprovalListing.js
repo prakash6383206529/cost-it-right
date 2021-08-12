@@ -467,6 +467,7 @@ function SimulationApprovalListing(props) {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
@@ -492,7 +493,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     <AgGridColumn width={142} field="RequestedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    {!isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={105} field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>

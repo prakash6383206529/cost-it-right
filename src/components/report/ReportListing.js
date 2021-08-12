@@ -50,7 +50,7 @@ function ReportListing(props) {
     })
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
-    let reportListingData = useSelector((state) => state.report.reportListing)
+    const reportListingData = useSelector((state) => state.report.reportListing)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const approvalList = useSelector(state => state.approval.approvalList)
@@ -58,21 +58,7 @@ function ReportListing(props) {
     const userList = useSelector(state => state.auth.userList)
     // const { bopDrawerList } = useSelector(state => state.costing)
 
-    const getData = () => {
 
-        let temp = []
-        temp = reportListingData && reportListingData.map(item => {
-            if (item.Status === CREATED_BY_ASSEMBLY) {
-                return false
-            } else {
-                return item
-            }
-        })
-        setTableData(temp)
-        setTimeout(() => {
-            setLoader(false)
-        }, 200);
-    }
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -108,21 +94,14 @@ function ReportListing(props) {
     * @method hyphenFormatter
     */
     const hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '' || cellValue === 'NA') {
-            value = '-';
-        }
-        else {
-            value = cellValue
-        }
-        return value
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
+        return cell
     }
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.Status}</div>
+        return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     /**
@@ -148,7 +127,7 @@ function ReportListing(props) {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
 
-
+            setLoader(false)
 
             // var t1 = performance.now();
             // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
@@ -161,9 +140,7 @@ function ReportListing(props) {
         getTableData();
     }, [])
 
-    useEffect(() => {
 
-    }, [tableData])
 
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -224,14 +201,14 @@ function ReportListing(props) {
         return thisIsFirstColumn;
     }
 
-    const defaultColDef = {
-        resizable: true,
-        filter: true,
-        sortable: true,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
-    };
 
+    const revisionFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
+
+        return cell
+        // return params.value !== null ? params.value : '-'
+    }
 
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -250,24 +227,12 @@ function ReportListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-    useEffect(() => {
 
-    }, [tableData])
 
     // const renderColumn = (fileName) => {
     //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
     // }
 
-    const frameworkComponents = {
-        linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
-        hyphenFormatter: hyphenFormatter,
-        simulatedOnFormatter: simulatedOnFormatter,
-        customNoRowsOverlay: NoContentFound,
-        dateFormatter: dateFormatter,
-        statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom
-    };
 
     /**
     * @method resetHandler
@@ -288,11 +253,8 @@ function ReportListing(props) {
     const onRowSelect = () => {
 
         var selectedRows = gridApi.getSelectedRows();
-        console.log(JSON.stringify(selectedRows) === JSON.stringify(selectedIds), "sss", selectedRowData, "ii", selectedIds);
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        var selected = gridApi.getSelectedNodes()
-        console.log('selected: ', selected);
-        console.log(selectedRows, 'selectedRowsselectedRowsselectedRowsselectedRowsselectedRowsselectedRows')
+
         setSelectedRowData(selectedRows)
 
     }
@@ -309,6 +271,8 @@ function ReportListing(props) {
         return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
 
     }
+
+
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
@@ -332,6 +296,26 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
+    };
+
+    const frameworkComponents = {
+        linkableFormatter: linkableFormatter,
+        createDateFormatter: createDateFormatter,
+        hyphenFormatter: hyphenFormatter,
+        simulatedOnFormatter: simulatedOnFormatter,
+        customNoRowsOverlay: NoContentFound,
+        dateFormatter: dateFormatter,
+        statusFormatter: statusFormatter,
+        customLoadingOverlay: LoaderCustom,
+        revisionFormatter: revisionFormatter
+    };
 
 
     return (
@@ -372,7 +356,9 @@ function ReportListing(props) {
                 >
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
+                        domLayout="autoHeight"
                         defaultColDef={defaultColDef}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={reportListingData}
                         pagination={true}
@@ -384,7 +370,7 @@ function ReportListing(props) {
                         noRowsOverlayComponentParams={{
                             title: CONSTANT.EMPTY_DATA,
                         }}
-                        suppressRowClickSelection={true}
+                        // suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
@@ -392,15 +378,16 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
-                        <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>

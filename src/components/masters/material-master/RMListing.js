@@ -350,6 +350,7 @@ class RMListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     domLayout='autoHeight'
                                     rowData={this.props.rawMaterialTypeDataList}
@@ -365,7 +366,7 @@ class RMListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="RawMaterial"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>

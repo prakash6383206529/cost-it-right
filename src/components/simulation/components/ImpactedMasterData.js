@@ -174,7 +174,7 @@ export function Impactedmasterdata(props) {
 
     return (
         <>
-            <Row className="mb-3">
+            <div className="mb-3 w-100">
                 {/* <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
                 <Col md="6" className="text-right">
                     <div className={'right-details'}>
@@ -197,11 +197,13 @@ export function Impactedmasterdata(props) {
                                 </div>
                                 <div
                                     className="ag-theme-material"
+                                    style={{ height: '100%', width: '100%' }}
 
                                 >
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
                                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                         domLayout='autoHeight'
                                         rowData={data}
                                         pagination={true}
@@ -252,7 +254,7 @@ export function Impactedmasterdata(props) {
                     </div>
                 </div>
 
-            </Row>
+            </div>
         </>
     )
 }

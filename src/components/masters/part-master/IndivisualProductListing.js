@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
-import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
+import { getProductDataList, deleteProduct, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
@@ -15,7 +14,6 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull } from '../../../helper';
 import { ComponentPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -61,7 +59,7 @@ class IndivisualProductListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
-        this.props.getPartDataList((res) => {
+        this.props.getProductDataList((res) => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -107,7 +105,11 @@ class IndivisualProductListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePart(ID, (res) => {
+        let obj = {
+            ProductId: ID,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.deleteProduct(obj, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.getTableListData();
@@ -380,77 +382,38 @@ class IndivisualProductListing extends Component {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && (
-                                                 <button
-                                                 type="button"
-                                                 className={'user-btn mr5'}
-                                                 title="Add"
-                                                 onClick={this.formToggle}>
-                                                 <div className={'plus mr-0'}></div></button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        title="Add"
+                                        onClick={this.formToggle}>
+                                        <div className={'plus mr-0'}></div></button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
 
-                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                    </button>}>
+                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                {/* DOWNLOAD */}
+                                            </button>}>
 
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
 
-                                                </>
+                                    </>
 
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
 
                             </div>
                         </div>
                     </Col>
                 </Row>
-
-
-                {/* <BootstrapTable
-                    data={this.props.newPartsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${ComponentPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
-
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -458,14 +421,13 @@ class IndivisualProductListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
-                            rowData={this.props.newPartsListing}
+                            rowData={this.props.productDataList}
                             pagination={true}
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
@@ -477,14 +439,14 @@ domLayout='autoHeight'
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
-                            <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+
+                            <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
+                            <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action"  type="rightAligned"   cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -517,10 +479,10 @@ domLayout='autoHeight'
 * @param {*} state
 */
 function mapStateToProps({ part, auth }) {
-    const { newPartsListing } = part
+    const { newPartsListing, productDataList } = part
     const { initialConfiguration } = auth;
 
-    return { newPartsListing, initialConfiguration };
+    return { newPartsListing, initialConfiguration, productDataList };
 }
 
 /**
@@ -531,8 +493,8 @@ function mapStateToProps({ part, auth }) {
 */
 
 export default connect(mapStateToProps, {
-    getPartDataList,
-    deletePart,
+    getProductDataList,
+    deleteProduct,
     activeInactivePartStatus,
     checkStatusCodeAPI,
 })(IndivisualProductListing);

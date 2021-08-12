@@ -606,10 +606,12 @@ function ApprovalListing(props) {
                   </div>
                   <div
                     className="ag-theme-material"
+                    style={{ height: '100%', width: '100%' }}
                   >
                     <AgGridReact
                       style={{ height: '100%', width: '100%' }}
                       defaultColDef={defaultColDef}
+domLayout='autoHeight'
                       domLayout='autoHeight'
                       // columnDefs={c}
                       rowData={approvalList}
@@ -644,9 +646,7 @@ function ApprovalListing(props) {
                       <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
                       <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
                       <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                      {!isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-
-
+                      {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                     </AgGridReact>
 
                     <div className="paging-container d-inline-block float-right">

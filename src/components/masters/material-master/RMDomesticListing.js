@@ -187,6 +187,10 @@ class RMDomesticListing extends Component {
                 this.setState({
                     tableData: Data,
                     maxRange: DynamicData.MaxRange,
+                }, () => {
+                    if (isSimulation) {
+                        this.props.apply()
+                    }
                 })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [], maxRange: 0, })
@@ -201,11 +205,10 @@ class RMDomesticListing extends Component {
     * @description edit material type
     */
     editItemDetails = (Id, rowData = {}) => {
-
         let data = {
             isEditFlag: true,
             Id: Id,
-            IsVendor: rowData.CostingHead,
+            IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         this.props.getDetails(data);
     }
@@ -943,7 +946,6 @@ class RMDomesticListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
@@ -962,23 +964,24 @@ class RMDomesticListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}>
                                     <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Category"></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
-                                    <AgGridColumn field="VendorName"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
+                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
+                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
