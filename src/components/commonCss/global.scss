@@ -2754,6 +2754,30 @@ body {
   border: none;
 }
 
+@media(max-width:1600px){
+  .content-page,:not(.content-page){
+    .tab-pane,:not(.tab-pane){
+      .ag-grid-react{
+        .ag-grid-wrapper{
+          min-height: calc(100vh - 300px);
+          height: auto !important;
+          &.add-volume-table{
+            min-height: calc(100vh - 250px);
+            height: auto !important;
+          }
+        }
+      }
+      .ag-grid-react{
+        .sm-edit-page{
+          .ag-grid-wrapper{
+            min-height: calc(100vh - 274px);
+            height: auto !important;
+          }
+        }  
+      }
+    }
+  }
+}
 
 @media(max-width:1366px){
   /* Drawer Css */
