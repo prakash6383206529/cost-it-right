@@ -639,7 +639,7 @@ function ApproveRejectDrawer(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                              selected={simulationDetail?.EffectiveDate && moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
                               // onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
@@ -688,437 +688,440 @@ function ApproveRejectDrawer(props) {
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
 
-                <div className="col-md-12 drawer-attachment">
-                  <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Attachment 1</h6></Col>
-                    <Col md="4" className="text-right p-0">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
-                        {acc1 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </div>
-                  <div className="d-flex w-100 flex-wrap pt-2">
-                    {acc1 && <>
-                      <Col md="12" className="p-0">
-                        <label>Upload Attachment (upload up to 4 files)</label>
-                        {files && files.length >= 4 ? (
-                          <div class="alert alert-danger" role="alert">
-                            Maximum file upload limit has been reached.
-                          </div>
-                        ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="*"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                <div className="text-center">
-                                  <i className="text-primary fa fa-cloud-upload"></i>
-                                  <span className="d-block">
-                                    Drag and Drop or{" "}
-                                    <span className="text-primary">Browse</span>
-                                    <br />
+                {
+                  isSimulation && (type === 'Approve' || type === 'Sender') && !IsFinalLevel &&
+                  <>
+                    <div className="col-md-12 drawer-attachment">
+                      <div className="d-flex w-100 flex-wrap">
+                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 1</h6></Col>
+                        <Col md="4" className="text-right p-0">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                            {acc1 ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}
+                          </button>
+                        </Col>
+                      </div>
+                      <div className="d-flex w-100 flex-wrap pt-2">
+                        {acc1 && <>
+                          <Col md="12" className="p-0">
+                            <label>Upload Attachment (upload up to 4 files)</label>
+                            {files && files.length >= 4 ? (
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={getUploadParams}
+                                onChangeStatus={handleChangeStatus}
+                                PreviewComponent={Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="*"
+                                initialFiles={initialFiles}
+                                maxFiles={4}
+                                maxSizeBytes={2000000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">Browse</span>
+                                        <br />
                                         file to upload
                                     </span>
-                                </div>
-                              )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            classNames="draper-drop"
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        )}
-                      </Col>
-                      <div className="w-100">
-                        <div className={"attachment-wrapper mt-0 mb-3"}>
-                          {files &&
-                            files.map((f) => {
-                              const withOutTild = f.FileURL.replace("~", "");
-                              const fileURL = `${FILE_URL}${withOutTild}`;
-                              return (
-                                <div className={"attachment images"}>
-                                  <a href={fileURL} target="_blank">
-                                    {f.OriginalFileName}
-                                  </a>
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                    src={redcrossImg}
-                                  ></img>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      </div>
-                    </>
-                    }
-                  </div>
-                </div>
-
-                <div className="col-md-12 drawer-attachment">
-                  <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Attachment 2</h6></Col>
-                    <Col md="4" className="text-right p-0">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
-                        {acc2 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </div>
-                  <div className="d-flex w-100 flex-wrap pt-2">
-                    {acc2 && <>
-                      <Col md="12" className="p-0">
-                        <label>Upload Attachment (upload up to 4 files)</label>
-                        {files && files.length >= 4 ? (
-                          <div class="alert alert-danger" role="alert">
-                            Maximum file upload limit has been reached.
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                                disabled={CostingViewMode ? true : false}
+                              />
+                            )}
+                          </Col>
+                          <div className="w-100">
+                            <div className={"attachment-wrapper mt-0 mb-3"}>
+                              {files &&
+                                files.map((f) => {
+                                  const withOutTild = f.FileURL.replace("~", "");
+                                  const fileURL = `${FILE_URL}${withOutTild}`;
+                                  return (
+                                    <div className={"attachment images"}>
+                                      <a href={fileURL} target="_blank">
+                                        {f.OriginalFileName}
+                                      </a>
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)}
+                                        src={redcrossImg}
+                                      ></img>
+                                    </div>
+                                  );
+                                })}
+                            </div>
                           </div>
-                        ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="*"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                <div className="text-center">
-                                  <i className="text-primary fa fa-cloud-upload"></i>
-                                  <span className="d-block">
-                                    Drag and Drop or{" "}
-                                    <span className="text-primary">Browse</span>
-                                    <br />
+                        </>
+                        }
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 drawer-attachment">
+                      <div className="d-flex w-100 flex-wrap">
+                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 2</h6></Col>
+                        <Col md="4" className="text-right p-0">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                            {acc2 ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}
+                          </button>
+                        </Col>
+                      </div>
+                      <div className="d-flex w-100 flex-wrap pt-2">
+                        {acc2 && <>
+                          <Col md="12" className="p-0">
+                            <label>Upload Attachment (upload up to 4 files)</label>
+                            {files && files.length >= 4 ? (
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={getUploadParams}
+                                onChangeStatus={handleChangeStatus}
+                                PreviewComponent={Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="*"
+                                initialFiles={initialFiles}
+                                maxFiles={4}
+                                maxSizeBytes={2000000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">Browse</span>
+                                        <br />
                                         file to upload
                                     </span>
-                                </div>
-                              )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            className="draper-drop"
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        )}
-                      </Col>
-                      <div className="w-100">
-                        <div className={"attachment-wrapper mt-0 mb-3"}>
-                          {files &&
-                            files.map((f) => {
-                              const withOutTild = f.FileURL.replace("~", "");
-                              const fileURL = `${FILE_URL}${withOutTild}`;
-                              return (
-                                <div className={"attachment images"}>
-                                  <a href={fileURL} target="_blank">
-                                    {f.OriginalFileName}
-                                  </a>
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                    src={redcrossImg}
-                                  ></img>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      </div>
-                    </>
-                    }
-                  </div>
-                </div>
-
-                <div className="col-md-12 drawer-attachment">
-                  <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Attachment 3</h6></Col>
-                    <Col md="4" className="text-right p-0">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
-                        {acc3 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </div>
-                  <div className="d-flex w-100 flex-wrap pt-2">
-                    {acc3 && <>
-                      <Col md="12" className="p-0">
-                        <label>Upload Attachment (upload up to 4 files)</label>
-                        {files && files.length >= 4 ? (
-                          <div class="alert alert-danger" role="alert">
-                            Maximum file upload limit has been reached.
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                className="draper-drop"
+                                disabled={CostingViewMode ? true : false}
+                              />
+                            )}
+                          </Col>
+                          <div className="w-100">
+                            <div className={"attachment-wrapper mt-0 mb-3"}>
+                              {files &&
+                                files.map((f) => {
+                                  const withOutTild = f.FileURL.replace("~", "");
+                                  const fileURL = `${FILE_URL}${withOutTild}`;
+                                  return (
+                                    <div className={"attachment images"}>
+                                      <a href={fileURL} target="_blank">
+                                        {f.OriginalFileName}
+                                      </a>
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)}
+                                        src={redcrossImg}
+                                      ></img>
+                                    </div>
+                                  );
+                                })}
+                            </div>
                           </div>
-                        ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="*"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                <div className="text-center">
-                                  <i className="text-primary fa fa-cloud-upload"></i>
-                                  <span className="d-block">
-                                    Drag and Drop or{" "}
-                                    <span className="text-primary">Browse</span>
-                                    <br />
+                        </>
+                        }
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 drawer-attachment">
+                      <div className="d-flex w-100 flex-wrap">
+                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 3</h6></Col>
+                        <Col md="4" className="text-right p-0">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
+                            {acc3 ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}
+                          </button>
+                        </Col>
+                      </div>
+                      <div className="d-flex w-100 flex-wrap pt-2">
+                        {acc3 && <>
+                          <Col md="12" className="p-0">
+                            <label>Upload Attachment (upload up to 4 files)</label>
+                            {files && files.length >= 4 ? (
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={getUploadParams}
+                                onChangeStatus={handleChangeStatus}
+                                PreviewComponent={Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="*"
+                                initialFiles={initialFiles}
+                                maxFiles={4}
+                                maxSizeBytes={2000000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">Browse</span>
+                                        <br />
                                         file to upload
                                     </span>
-                                </div>
-                              )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            className="draper-drop"
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        )}
-                      </Col>
-                      <div className="w-100">
-                        <div className={"attachment-wrapper mt-0 mb-3"}>
-                          {files &&
-                            files.map((f) => {
-                              const withOutTild = f.FileURL.replace("~", "");
-                              const fileURL = `${FILE_URL}${withOutTild}`;
-                              return (
-                                <div className={"attachment images"}>
-                                  <a href={fileURL} target="_blank">
-                                    {f.OriginalFileName}
-                                  </a>
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                    src={redcrossImg}
-                                  ></img>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      </div>
-                    </>
-                    }
-                  </div>
-                </div>
-
-                <div className="col-md-12 drawer-attachment">
-                  <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Attachment 4</h6></Col>
-                    <Col md="4" className="text-right p-0">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
-                        {acc4 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </div>
-                  <div className="d-flex w-100 flex-wrap pt-2">
-                    {acc4 && <>
-                      <Col md="12" className="p-0">
-                        <label>Upload Attachment (upload up to 4 files)</label>
-                        {files && files.length >= 4 ? (
-                          <div class="alert alert-danger" role="alert">
-                            Maximum file upload limit has been reached.
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                className="draper-drop"
+                                disabled={CostingViewMode ? true : false}
+                              />
+                            )}
+                          </Col>
+                          <div className="w-100">
+                            <div className={"attachment-wrapper mt-0 mb-3"}>
+                              {files &&
+                                files.map((f) => {
+                                  const withOutTild = f.FileURL.replace("~", "");
+                                  const fileURL = `${FILE_URL}${withOutTild}`;
+                                  return (
+                                    <div className={"attachment images"}>
+                                      <a href={fileURL} target="_blank">
+                                        {f.OriginalFileName}
+                                      </a>
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)}
+                                        src={redcrossImg}
+                                      ></img>
+                                    </div>
+                                  );
+                                })}
+                            </div>
                           </div>
-                        ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="*"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                <div className="text-center">
-                                  <i className="text-primary fa fa-cloud-upload"></i>
-                                  <span className="d-block">
-                                    Drag and Drop or{" "}
-                                    <span className="text-primary">Browse</span>
-                                    <br />
+                        </>
+                        }
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 drawer-attachment">
+                      <div className="d-flex w-100 flex-wrap">
+                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 4</h6></Col>
+                        <Col md="4" className="text-right p-0">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+                            {acc4 ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}
+                          </button>
+                        </Col>
+                      </div>
+                      <div className="d-flex w-100 flex-wrap pt-2">
+                        {acc4 && <>
+                          <Col md="12" className="p-0">
+                            <label>Upload Attachment (upload up to 4 files)</label>
+                            {files && files.length >= 4 ? (
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={getUploadParams}
+                                onChangeStatus={handleChangeStatus}
+                                PreviewComponent={Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="*"
+                                initialFiles={initialFiles}
+                                maxFiles={4}
+                                maxSizeBytes={2000000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">Browse</span>
+                                        <br />
                                         file to upload
                                     </span>
-                                </div>
-                              )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            className="draper-drop"
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        )}
-                      </Col>
-                      <div className="w-100">
-                        <div className={"attachment-wrapper mt-0 mb-3"}>
-                          {files &&
-                            files.map((f) => {
-                              const withOutTild = f.FileURL.replace("~", "");
-                              const fileURL = `${FILE_URL}${withOutTild}`;
-                              return (
-                                <div className={"attachment images"}>
-                                  <a href={fileURL} target="_blank">
-                                    {f.OriginalFileName}
-                                  </a>
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                    src={redcrossImg}
-                                  ></img>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      </div>
-                    </>
-                    }
-                  </div>
-                </div>
-
-                <div className="col-md-12 drawer-attachment">
-                  <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Attachment 5</h6></Col>
-                    <Col md="4" className="text-right p-0">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
-                        {acc5 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </div>
-                  <div className="d-flex w-100 flex-wrap pt-2">
-                    {acc5 && <>
-                      <Col md="12" className="p-0">
-                        <label>Upload Attachment (upload up to 4 files)</label>
-                        {files && files.length >= 4 ? (
-                          <div class="alert alert-danger" role="alert">
-                            Maximum file upload limit has been reached.
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                className="draper-drop"
+                                disabled={CostingViewMode ? true : false}
+                              />
+                            )}
+                          </Col>
+                          <div className="w-100">
+                            <div className={"attachment-wrapper mt-0 mb-3"}>
+                              {files &&
+                                files.map((f) => {
+                                  const withOutTild = f.FileURL.replace("~", "");
+                                  const fileURL = `${FILE_URL}${withOutTild}`;
+                                  return (
+                                    <div className={"attachment images"}>
+                                      <a href={fileURL} target="_blank">
+                                        {f.OriginalFileName}
+                                      </a>
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)}
+                                        src={redcrossImg}
+                                      ></img>
+                                    </div>
+                                  );
+                                })}
+                            </div>
                           </div>
-                        ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="*"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                <div className="text-center">
-                                  <i className="text-primary fa fa-cloud-upload"></i>
-                                  <span className="d-block">
-                                    Drag and Drop or{" "}
-                                    <span className="text-primary">Browse</span>
-                                    <br />
+                        </>
+                        }
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 drawer-attachment">
+                      <div className="d-flex w-100 flex-wrap">
+                        <Col md="8" className="p-0"><h6 className="mb-0">Attachment 5</h6></Col>
+                        <Col md="4" className="text-right p-0">
+                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
+                            {acc5 ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}
+                          </button>
+                        </Col>
+                      </div>
+                      <div className="d-flex w-100 flex-wrap pt-2">
+                        {acc5 && <>
+                          <Col md="12" className="p-0">
+                            <label>Upload Attachment (upload up to 4 files)</label>
+                            {files && files.length >= 4 ? (
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={getUploadParams}
+                                onChangeStatus={handleChangeStatus}
+                                PreviewComponent={Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="*"
+                                initialFiles={initialFiles}
+                                maxFiles={4}
+                                maxSizeBytes={2000000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">Browse</span>
+                                        <br />
                                         file to upload
                                     </span>
-                                </div>
-                              )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            className="draper-drop"
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        )}
-                      </Col>
-                      <div className="w-100">
-                        <div className={"attachment-wrapper mt-0 mb-3"}>
-                          {files &&
-                            files.map((f) => {
-                              const withOutTild = f.FileURL.replace("~", "");
-                              const fileURL = `${FILE_URL}${withOutTild}`;
-                              return (
-                                <div className={"attachment images"}>
-                                  <a href={fileURL} target="_blank">
-                                    {f.OriginalFileName}
-                                  </a>
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                    src={redcrossImg}
-                                  ></img>
-                                </div>
-                              );
-                            })}
-                        </div>
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                className="draper-drop"
+                                disabled={CostingViewMode ? true : false}
+                              />
+                            )}
+                          </Col>
+                          <div className="w-100">
+                            <div className={"attachment-wrapper mt-0 mb-3"}>
+                              {files &&
+                                files.map((f) => {
+                                  const withOutTild = f.FileURL.replace("~", "");
+                                  const fileURL = `${FILE_URL}${withOutTild}`;
+                                  return (
+                                    <div className={"attachment images"}>
+                                      <a href={fileURL} target="_blank">
+                                        {f.OriginalFileName}
+                                      </a>
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)}
+                                        src={redcrossImg}
+                                      ></img>
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          </div>
+                        </>
+                        }
                       </div>
-                    </>
-                    }
-                  </div>
-                </div>
-
-
+                    </div>
+                  </>
+                }
 
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
