@@ -120,7 +120,7 @@ function RunSimulationDrawer(props) {
                 >
                     <Container>
                         <div className={"drawer-wrapper"}>
-                            <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                            <form noValidate className="form" onSubmit={handleSubmit(SimulationRun)}>
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={"header-wrapper left"}>
@@ -200,24 +200,25 @@ function RunSimulationDrawer(props) {
                                 </Row>
 
 
-                            </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-md-12 px-3">
-                                    <div className="text-right px-3">
-                                        <button onClick={SimulationRun} type="submit" className="user-btn mr5 save-btn">
-                                            <div className={"Run-icon"}>
-                                            </div>{" "}
-                                            {"RUN SIMULATION"}
-                                        </button>
-                                        <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
-                                            <div className={"cross-icon"}>
-                                                <div className="cancel-icon"></div>
-                                            </div>{" "}
-                                            {"Cancel"}
-                                        </button>
+
+                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                    <div className="col-md-12 px-3">
+                                        <div className="text-right px-3">
+                                            <button type="submit" className="user-btn mr5 save-btn">
+                                                <div className={"Run-icon"}>
+                                                </div>{" "}
+                                                {"RUN SIMULATION"}
+                                            </button>
+                                            <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
+                                                <div className={"cross-icon"}>
+                                                    <div className="cancel-icon"></div>
+                                                </div>{" "}
+                                                {"Cancel"}
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            </Row>
+                                </Row>
+                            </form>
                         </div>
                     </Container>
                 </Drawer>
