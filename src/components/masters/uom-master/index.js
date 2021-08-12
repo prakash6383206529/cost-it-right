@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
-import { UOM, UomMaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -56,26 +56,7 @@ class UOMMaster extends Component {
    * @description  called before rendering the component
    */
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === UOM)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-          })
-        }
-      }
-    })
-
+    this.applyPermission(this.props.topAndLeftMenuData)
     this.getUOMDataList()
   }
 
@@ -86,6 +67,35 @@ class UOMMaster extends Component {
         this.setState({ dataList: Data })
       }
     });
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find(el => el.PageName === UOM)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
+      }
+
+    }
   }
 
   /**
@@ -347,19 +357,19 @@ class UOMMaster extends Component {
               </>
             )}
             <Col md={6} className="text-right search-user-block pr-0">
-            {
-              DownloadAccessibility &&
-              <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
-                  <div className="download mr-0" title="Download"></div></button>}>
-                  {this.onBtExport()}
-                </ExcelFile>
-              </>
-              //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-            }
+              {
+                DownloadAccessibility &&
+                <>
+                  <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                    <div className="download mr-0" title="Download"></div></button>}>
+                    {this.onBtExport()}
+                  </ExcelFile>
+                </>
+                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+              }
 
               <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                  <div className="refresh mr-0"></div>
+                <div className="refresh mr-0"></div>
               </button>
             </Col>
           </Row>
@@ -410,7 +420,7 @@ class UOMMaster extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}
@@ -460,11 +470,11 @@ domLayout='autoHeight'
 * @method mapStateToProps
 * @description return state to component as props
 * @param {*} state
-        */
+*/
 function mapStateToProps({ unitOfMeasrement, auth }) {
   const { unitOfMeasurementList, loading, } = unitOfMeasrement;
-  const { leftMenuData } = auth;
-  return { unitOfMeasurementList, leftMenuData, loading }
+  const { leftMenuData, topAndLeftMenuData } = auth;
+  return { unitOfMeasurementList, leftMenuData, loading, topAndLeftMenuData }
 }
 
 export default connect(
