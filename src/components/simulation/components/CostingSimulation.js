@@ -81,7 +81,7 @@ function CostingSimulation(props) {
                 })
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
-                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn })
+                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
                 setLoader(false)
             }
         }))
@@ -101,44 +101,7 @@ function CostingSimulation(props) {
         })
     }, [costingList])
 
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
 
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
-
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const NewPO = () => {
-        return <>PO Price <br />New </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldRM = () => {
-        return <>RM Cost<br /> Old</>
-    }
-
-    const renderNewRM = () => {
-        return <>RM Cost<br /> New</>
-    }
 
     const runCostingDetailSimulation = () => {
         setCostingDetailDrawer(true)
@@ -535,40 +498,41 @@ function CostingSimulation(props) {
                                                     onSelectionChanged={onRowSelect}
                                                 // isRowSelectable={isRowSelectable}
                                                 >
-                                                        <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
-                                                        <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
-                                                        <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                        <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
+                                                    <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                    <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                    <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                                    </AgGridReact>
+                                                </AgGridReact>
 
-                                                    <div className="paging-container d-inline-block float-right">
-                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                            <option value="10" selected={true}>10</option>
-                                                            <option value="50">50</option>
-                                                            <option value="100">100</option>
-                                                        </select>
-                                                    </div>
+                                                <div className="paging-container d-inline-block float-right">
+                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                        <option value="10" selected={true}>10</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
                                                 </div>
                                             </div>
+                                        </div>
                                     </Col>
                                 </Row>
                             </div>
