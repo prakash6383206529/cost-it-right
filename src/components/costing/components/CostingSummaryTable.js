@@ -55,6 +55,7 @@ const CostingSummaryTable = (props) => {
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
+  const [rmMBDetail, setrmMBDetail] = useState({})
 
 
   const [flag, setFlag] = useState(false)
@@ -140,6 +141,12 @@ const CostingSummaryTable = (props) => {
     setIsViewRM(true)
     setIndex(index)
     setViewRMData(data)
+    setrmMBDetail({
+      MasterBatchTotal: viewCostingData[index].masterBatchTotal,
+      MasterBatchRMPrice: viewCostingData[index].masterBatchRMPrice,
+      MasterBatchPercentage: viewCostingData[index].masterBatchPercentage,
+      IsApplyMasterBatch: viewCostingData[index].isApplyMasterBatch
+    })
   }
 
   /**
@@ -1271,6 +1278,7 @@ const CostingSummaryTable = (props) => {
           anchor={'right'}
           index={index}
           technologyId={technologyId}
+          rmMBDetail={rmMBDetail}
         />
       )}
       {isViewOverheadProfit && (

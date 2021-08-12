@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
-//import Pipe from '../WeightCalculatorDrawer/Pipe';
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull } from '../../../../helper';
-
+import { Container, Row, Col, Table } from 'reactstrap'
+import NoContentFound from '../../../common/NoContentFound';
+import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_GUID } from '../../../../config/constants';
 
 function ViewRM(props) {
 
-  const { viewRMData } = props
+  const { viewRMData, rmMBDetail } = props
   /*
   * @method toggleDrawer
   * @description closing drawer
@@ -23,11 +24,14 @@ function ViewRM(props) {
     reValidateMode: 'onChange',
 
   });
-  const [viewRM, setViewRM] = useState({})
+  const [viewRM, setViewRM] = useState(viewRMData)
+  const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
+  const [calciData, setCalciData] = useState({})
+
   useEffect(() => {
-    const [rm] = viewRMData
-    setViewRM(rm)
+
+    setViewRM(viewRMData)
   }, [])
 
   const dispatch = useDispatch()
@@ -35,17 +39,19 @@ function ViewRM(props) {
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  const getWeightData = () => {
-    if (viewRM.WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
+  const getWeightData = (index) => {
+    setIndex(index)
+    if (viewRM[index].WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
       toastr.warning('Data is not avaliabe for calculator')
       return false
     }
     const tempData = viewCostingData[props.index]
 
-    dispatch(getRawMaterialCalculationByTechnology(tempData.CostingId, tempData.netRMCostView[0].RawMaterialId, tempData.netRMCostView[0].WeightCalculationId, tempData.technologyId, res => {
+    dispatch(getRawMaterialCalculationByTechnology(tempData.CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].WeightCalculationId, tempData.technologyId, res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
-        setViewRM(prevState => ({ ...prevState, WeightCalculatorRequest: data }))
+        setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
+        // setViewRM(prevState => ({ ...prevState, WeightCalculatorRequest: data }))
         setWeightCalculatorDrawer(true)
         // tempData = { ...tempData, WeightCalculatorRequest: data, }
         // tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -82,7 +88,7 @@ function ViewRM(props) {
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={"drawer-wrapper"}>
+          <div className={"drawer-wrapper drawer-1500px"}>
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
@@ -94,7 +100,54 @@ function ViewRM(props) {
                 ></div>
               </Col>
             </Row>
-            <form>
+            <Col>
+              <Table className="table cr-brdr-main" size="sm">
+                <thead>
+                  <tr>
+                    <th>{`RM Name -Grade`}</th>
+                    <th>{`RM Rate`}</th>
+                    <th>{`Scrap Rate`}</th>
+                    <th>{`Gross Weight(Kg)`}</th>
+                    <th>{`Finish Weight(Kg)`}</th>
+                    <th>{`Calculator`}</th>
+                    <th>{`Freight Cost`}</th>
+                    <th>{`Shearing Cost`}</th>
+                    <th className="costing-border-right">{`Net RM Cost`}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>{item.RMName}</td>
+                        <td>{item.RMRate}</td>
+                        <td>{item.ScrapRate}</td>
+                        <td>{item.GrossWeight}</td>
+                        <td>{item.FinishWeight}</td>
+                        <td><button
+                          className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                          type={"button"}
+                          disabled={item.WeightCalculationId === EMPTY_GUID}
+                          onClick={() => { getWeightData(index) }}
+                        /></td>
+                        <td>{item.RMFreightCost ? item.RMFreightCost : '-'}</td>
+                        <td>{item.RMShearingCost ? item.RMShearingCost : '-'}</td>
+                        <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+
+                      </tr>
+                    )
+                  })}
+                  {viewRM.length === 0 && (
+                    <tr>
+                      <td colSpan={9}>
+                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </Col>
+            {/* <form>
               <Row className="pl-3">
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextFieldHookForm
@@ -145,18 +198,18 @@ function ViewRM(props) {
                     disabled={true}
                   />
                 </div>
-                {/* {
+                {
                   viewRM && viewRM.WeightCalculationId !== '00000000-0000-0000-0000-000000000000' &&
 
                   <div className="input-group form-group col-md-12 input-withouticon">
-                      <label>Calculator</label>
-                      <button
-                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-                        type={"button"}
-                        onClick={() => { getWeightData() }}
-                      />
+                    <label>Calculator</label>
+                    <button
+                      className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                      type={"button"}
+                      onClick={() => { getWeightData() }}
+                    />
                   </div>
-                } */}
+                }
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextFieldHookForm
                     label="Gross Weight(Kg)"
@@ -206,15 +259,18 @@ function ViewRM(props) {
                   />
                 </div>
               </Row>
-            </form>
+            </form> */}
             {weightCalculatorDrawer && (
               <WeightCalculator
-                rmRowData={viewRM !== undefined ? viewRM : {}}
+                rmRowData={viewRM !== undefined ? calciData : {}}
                 anchor={`right`}
                 isEditFlag={false}
                 isOpen={weightCalculatorDrawer}
                 closeDrawer={closeWeightDrawer}
                 technology={props.technologyId}
+                isSummary={true}
+                rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
+                CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
               />
             )}
           </div>
