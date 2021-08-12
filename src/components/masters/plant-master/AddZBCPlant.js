@@ -375,7 +375,7 @@ class AddZBCPlant extends Component {
                       <Field
                         name="CompanyName"
                         type="text"
-                        label="Company Name"
+                        label="Purchase Group"
                         component={searchableSelect}
                         placeholder={"Select"}
                         options={this.selectType("Company")}
@@ -424,7 +424,7 @@ class AddZBCPlant extends Component {
                       </Col>
                     </Row>
                   </Col>
-                
+
                   <Col md="6">
                     <Field
                       label="Address 1"
@@ -453,7 +453,7 @@ class AddZBCPlant extends Component {
                       customClassName={"withBorder"}
                     />
                   </Col>
-                
+
                   <Col md="6">
                     <Field
                       name="CountryId"
@@ -496,7 +496,7 @@ class AddZBCPlant extends Component {
                       />
                     </Col>
                   )}
-                
+
                   <Col md="6">
                     <Field
                       name="CityId"

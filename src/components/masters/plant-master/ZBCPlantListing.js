@@ -600,11 +600,11 @@ class ZBCPlantListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
@@ -620,12 +620,12 @@ domLayout='autoHeight'
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
-                            <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
+                            <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
