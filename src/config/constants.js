@@ -16,10 +16,10 @@ export const config = {
 
 
 // DEVELOPMENT MIL URL
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = "http://10.10.1.100:10132/api/v1";
 
 //DEVELOPMENT MIL URL
-export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
+export const FILE_URL = "http://10.10.1.100:10132/";
 
 /** Export API */
 export const API = {
@@ -818,6 +818,8 @@ export const API = {
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
+  getAmmendentStatus: `${BASE_URL}/sap-sync/get-ammendent-status`,
+
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1355,6 +1357,8 @@ export const SET_SELECTED_MASTER_SIMULATION = 'SET_SELECTED_MASTER_SIMULATION'
 export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_HEAD'
 export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMULATION'
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
+export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
+
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'

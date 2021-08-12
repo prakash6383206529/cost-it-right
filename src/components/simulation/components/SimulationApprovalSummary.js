@@ -12,7 +12,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getAmmendentStatus } from '../actions/Simulation'
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -71,6 +71,9 @@ function SimulationApprovalSummary(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
+    const [status, setStatus] = useState('')
+    const [isSuccessfullyUpdated, setIsSuccessfullyUpdated] = useState(false)
+    const [noContent, setNoContent] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -92,7 +95,7 @@ function SimulationApprovalSummary(props) {
     })
 
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
-
+    let a
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
@@ -114,6 +117,20 @@ function SimulationApprovalSummary(props) {
             setShowPushButton(IsPushedButtonShow)
             setLoader(false)
         }))
+
+        const obj = {
+            approvalTokenNumber: approvalNumber
+        }
+        dispatch(getAmmendentStatus(obj, res => {
+            setNoContent(res.status === 204 ? true : false)
+
+            if (res.status !== 204) {
+                const { Status, IsSuccessfullyUpdated } = res.data.DataList[0]
+                setStatus(Status)
+                setIsSuccessfullyUpdated(IsSuccessfullyUpdated)
+            }
+        }))
+
     }, [])
 
     const closeViewDrawer = (e = '') => {
@@ -488,8 +505,6 @@ function SimulationApprovalSummary(props) {
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
     };
 
-
-
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(value));
@@ -528,13 +543,22 @@ function SimulationApprovalSummary(props) {
 
     };
 
+    const errorBoxClass = () => {
+        let temp
+        temp = isSuccessfullyUpdated === false ? '' : 'success'
+        if (noContent === true) {
+            temp = 'd-none'
+        }
+        return temp
+    }
+
     return (
         <>
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
                     <div className="container-fluid  smh-approval-summary-page">
-                        <Errorbox customClass="d-none" errorText="There is some error in your page" />
+                        <Errorbox customClass={errorBoxClass()} errorText={status} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
                             <Col md="8">
