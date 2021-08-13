@@ -14,7 +14,8 @@ import {
     config,
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
-    GET_SELECTED_COSTING_STATUS
+    GET_SELECTED_COSTING_STATUS,
+    GET_AMMENDENT_STATUS_COSTING
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -469,4 +470,24 @@ export function deleteDraftSimulation(data, callback) {
                 dispatch({ type: API_FAILURE });
             });
     };
+}
+
+export function getAmmendentStatus(params, callback) {
+    return (dispatch) => {
+        // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
+        const queryParameter = `${params.approvalTokenNumber}`;
+        const request = axios.get(`${API.getAmmendentStatus}?tokenNumber=${queryParameter}`, headers)
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_AMMENDENT_STATUS_COSTING,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
