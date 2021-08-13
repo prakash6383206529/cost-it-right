@@ -114,8 +114,7 @@ class RMImportListing extends Component {
   getInitialRange = () => {
     const { value } = this.state;
     const { filteredRMData, isSimulation } = this.props
-    // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
-    console.log('filteredRMData: ', filteredRMData);
+
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
       plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,

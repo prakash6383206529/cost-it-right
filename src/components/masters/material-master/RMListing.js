@@ -206,7 +206,6 @@ class RMListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
         data && data.map((item => {
             tempArr.push(item.data)
         }))

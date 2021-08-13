@@ -84,7 +84,7 @@ function RunSimulationDrawer(props) {
         obj.IsPaymentTerms = PaymentTerms
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         temp.push(obj)
-        console.log('temp: ', temp);
+
 
         //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
         dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {

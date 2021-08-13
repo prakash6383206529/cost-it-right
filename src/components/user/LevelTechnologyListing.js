@@ -169,8 +169,6 @@ class LevelTechnologyListing extends Component {
 	};
 
 	onFilterTextBoxChanged1(e) {
-		console.log(this.state.gridApi, "this.state.gridApi");
-		console.log('e: ', e);
 		this.state.gridApi.setQuickFilter(e.target.value);
 	}
 
@@ -232,10 +230,10 @@ class LevelTechnologyListing extends Component {
 							title="Add"
 							onClick={this.props.mappingToggler}>
 							<div className={'plus mr-0'}></div>
-							</button>}
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+						</button>}
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+							<div className="refresh mr-0"></div>
+						</button>
 					</Col>
 				</Row>
 				<Row className="levellisting-page">
@@ -263,11 +261,11 @@ class LevelTechnologyListing extends Component {
 							</div>
 							<div
 								className="ag-theme-material"
-								
+
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
-domLayout='autoHeight'
+									domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}
@@ -284,7 +282,7 @@ domLayout='autoHeight'
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -315,8 +313,8 @@ domLayout='autoHeight'
 							<div className={'plus'}></div>
 							{'Add'}</button>} */}
 						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+							<div className="refresh mr-0"></div>
+						</button>
 					</Col>
 				</Row>
 
@@ -345,11 +343,11 @@ domLayout='autoHeight'
 							</div>
 							<div
 								className="ag-theme-material"
-								
+
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
-domLayout='autoHeight'
+									domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.props.simulationLevelDataList}
 									pagination={true}
@@ -366,7 +364,7 @@ domLayout='autoHeight'
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action"  type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">

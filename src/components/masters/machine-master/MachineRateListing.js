@@ -316,7 +316,6 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        console.log(props?.value, 'props?.valueprops?.valueprops?.value')
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue ? 'Vendor Based' : 'Zero Based';
     }

@@ -446,7 +446,6 @@ class VendorListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
         data && data.map((item => {
             tempArr.push(item.data)
         }))
@@ -695,11 +694,11 @@ class VendorListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.supplierDataList}
                             pagination={true}
@@ -720,7 +719,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

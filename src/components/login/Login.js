@@ -28,7 +28,6 @@ class Login extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    console.log('login')
     const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn');
     if (isLoggedIn === true) {
       this.setState({

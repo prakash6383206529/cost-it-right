@@ -124,7 +124,6 @@ class Level extends Component {
   */
   searchableSelectType = (label) => {
     const { technologyList, levelList, simulationTechnologyList } = this.props;
-    console.log(this.state.levelType, "this.state.levelType");
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -466,8 +465,8 @@ class Level extends Component {
                           type="submit"
                           disabled={isSubmitted ? true : false}
                           className="user-btn save-btn"
-                        >	
-                        <div className={"save-icon"}></div>
+                        >
+                          <div className={"save-icon"}></div>
                           {this.state.isEditFlag ? 'Update' : 'Save'}
                         </button>
 
@@ -549,8 +548,8 @@ class Level extends Component {
                             type="submit"
                             disabled={isSubmitted ? true : false}
                             className="btn-primary save-btn"
-                          >	
-                          <div className={"save-icon"}></div>
+                          >
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? 'Update' : 'Save'}
                           </button>
                         </div>

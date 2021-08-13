@@ -837,6 +837,7 @@ export const API = {
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
   simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
+  simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
