@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -64,6 +64,9 @@ function SimulationApprovalSummary(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
+    const [status, setStatus] = useState('')
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(false)
+    const [noContent, setNoContent] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -106,6 +109,18 @@ function SimulationApprovalSummary(props) {
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
             setLoader(false)
+        }))
+        const obj = {
+            approvalTokenNumber: approvalNumber
+        }
+        dispatch(getAmmendentStatus(obj, res => {
+            setNoContent(res.status === 204 ? true : false)
+
+            if (res.status !== 204) {
+                const { RecordInsertStatus, IsSuccessfullyInsert } = res.data.DataList[0]
+                setStatus(RecordInsertStatus)
+                setIsSuccessfullyInsert(IsSuccessfullyInsert)
+            }
         }))
     }, [])
 
@@ -433,13 +448,22 @@ function SimulationApprovalSummary(props) {
 
     };
 
+    const errorBoxClass = () => {
+        let temp
+        temp = isSuccessfullyInsert === false ? '' : 'success'
+        if (noContent === true) {
+            temp = 'd-none'
+        }
+        return temp
+    }
+
     return (
         <>
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
                     <div className="container-fluid  smh-approval-summary-page">
-                        <Errorbox customClass="d-none" errorText="There is some error in your page" />
+                        <Errorbox customClass={errorBoxClass()} errorText={status} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <Row>
                             <Col md="8">
