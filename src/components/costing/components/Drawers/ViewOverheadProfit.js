@@ -39,7 +39,6 @@ function ViewOverheadProfit(props) {
     props.closeDrawer('')
   }
 
-  console.log(rejectData, "viewOverheadData");
   return (
     <>
       <Drawer

@@ -316,7 +316,7 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        console.log(props?.value, 'props?.valueprops?.valueprops?.value')
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue ? 'Vendor Based' : 'Zero Based';
     }
@@ -832,7 +832,7 @@ class MachineRateListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}

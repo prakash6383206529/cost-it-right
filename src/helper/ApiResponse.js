@@ -113,7 +113,6 @@ export function formatGetPlanResult(result) {
 
 
 export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
-    console.log('selectedRowData: ', selectedRowData);
 
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []

@@ -783,7 +783,7 @@ class AddMachineRate extends Component {
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-    console.log('DropdownChange: ', DropdownChange);
+
 
 
     if (isViewFlag) {
@@ -1133,9 +1133,9 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"

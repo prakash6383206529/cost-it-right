@@ -82,7 +82,6 @@ function RMSimulation(props) {
         obj.VendorId = list[0].VendorId
         let tempArr = []
         list && list.map(item => {
-            console.log('item: ', item);
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead
@@ -163,11 +162,10 @@ function RMSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
-        console.log('value: ', value);
+
         // costFormatter(props)
         gridApi && gridApi.redrawRows({ force: true })
         if (value) {
-            console.log("Value updated");
             setTimeout(() => {
 
                 setUpdate(!update)
@@ -182,7 +180,7 @@ function RMSimulation(props) {
 
 
     useEffect(() => {
-        console.log("Update?");
+
     }, [update])
 
     const newScrapRateFormatter = (props) => {
@@ -245,7 +243,6 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        console.log(props, "PROPS IN new cost formatter");
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
@@ -451,7 +448,7 @@ function RMSimulation(props) {
                                         <AgGridReact
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                            domLayout='autoHeight'
                                             domLayout='autoHeight'
                                             // columnDefs={c}
                                             rowData={list}
