@@ -679,6 +679,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
+  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -1296,6 +1297,7 @@ export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SU
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS'
 export const GET_LEFT_MENU_BY_MODULE_ID_AND_USER = 'GET_LEFT_MENU_BY_MODULE_ID_AND_USER'
 export const GET_MENU_BY_MODULE_ID_AND_USER = 'GET_MENU_BY_MODULE_ID_AND_USER'
+export const GET_TOP_AND_LEFT_MENU_DATA = 'GET_TOP_AND_LEFT_MENU_DATA'
 
 //REASON
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS'

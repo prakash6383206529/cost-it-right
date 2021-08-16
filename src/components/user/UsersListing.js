@@ -53,30 +53,25 @@ class UsersListing extends Component {
 		}
 	}
 
-	UNSAFE_componentWillMount() {
-
-		let ModuleId = reactLocalStorage.get('ModuleId');
-		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-			const { leftMenuData } = this.props;
-			if (leftMenuData !== undefined) {
-				let Data = leftMenuData;
-				const userPermissions = Data && Data.find(el => el.PageName === USER)
-				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-
-				if (permmisionData !== undefined) {
-					this.setState({
-						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-					})
-				}
-			}
-		})
-	}
-
 	componentDidMount() {
 		this.getUsersListData(null, null);
+
+		const { topAndLeftMenuData } = this.props;
+		if (topAndLeftMenuData !== undefined) {
+
+			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+			const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
+			const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+
+			if (permmisionData !== undefined) {
+				this.setState({
+					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+					ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+				})
+			}
+		}
 
 		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
@@ -105,7 +100,7 @@ class UsersListing extends Component {
 				})
 			}
 		})
-		//this.props.onRef(this)
+
 	}
 
 
@@ -405,17 +400,9 @@ class UsersListing extends Component {
 			this.getUsersListData(filterDepartment, filterRole)
 		})
 	}
+
 	formToggle = () => {
 		this.props.formToggle()
-	}
-
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
-	onSubmit(values) {
 	}
 
 	onPageSizeChanged = (newPageSize) => {
@@ -426,7 +413,6 @@ class UsersListing extends Component {
 	onFilterTextBoxChanged = (e) => {
 		this.state.gridApi.setQuickFilter(e.target.value);
 	}
-
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
@@ -440,6 +426,14 @@ class UsersListing extends Component {
 		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
 		//if resolution greater than 1920 table listing fit to 100%
 	};
+
+	/**
+	* @name onSubmit
+	* @param values
+	* @desc Submit the signup form values.
+	* @returns {{}}
+	*/
+	onSubmit(values) { }
 
 	/**
 	* @method render
@@ -673,9 +667,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading } = auth;
+	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
 
-	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading };
+	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
 }
 
 
