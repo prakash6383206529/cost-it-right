@@ -7,12 +7,12 @@ import {
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
-    SIMULATION_LEVEL_DATALIST_API,
-    GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
 import { MESSAGES } from "../../config/message";
+import { loggedInUserId } from '../../helper/auth';
 
 
 /**
@@ -1559,6 +1559,7 @@ export function getSimualationLevelByTechnology(technologyId, callback) {
         }
     };
 }
+
 /**
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
@@ -1570,6 +1571,29 @@ export function getUsersSimulationTechnologyLevelAPI(UserId, callback) {
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getTopAndLeftMenuData
+ * @description GET ALL MENU DATA AND LEFT MENU DATA
+ */
+export function getTopAndLeftMenuData(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getTopAndLeftMenuData}/${loggedInUserId()}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TOP_AND_LEFT_MENU_DATA,
+                    payload: response.data.Data,
+                });
                 callback(response);
             }
         }).catch((error) => {
