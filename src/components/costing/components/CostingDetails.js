@@ -13,9 +13,9 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING } from '../../../config/constants';
 import {
-  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+  getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology,
@@ -24,8 +24,6 @@ import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
-import { getLeftMenu } from '../../../actions/auth/AuthActions';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 
@@ -82,7 +80,6 @@ function CostingDetails(props) {
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   // client based costing
 
   const fieldValues = useWatch({
@@ -92,11 +89,18 @@ function CostingDetails(props) {
 
   const dispatch = useDispatch()
 
+  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
+  const partInfo = useSelector((state) => state.costing.partInfo)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
+  const partNumber = useSelector(state => state.costing.partNo);
+  const { topAndLeftMenuData } = useSelector(state => state.auth);
+
   useEffect(() => {
     setValue('Technology', '')
     setValue('Part', '')
     reset()
-    InjectRolePermission()
+    applyPermission(topAndLeftMenuData, technology.label)
     dispatch(storePartNumber(''))
     dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
@@ -105,34 +109,28 @@ function CostingDetails(props) {
     dispatch(gridDataAdded(false))
   }, [])
 
-  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
-  const partInfo = useSelector((state) => state.costing.partInfo)
-  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
-  const partNumber = useSelector(state => state.costing.partNo);
-  const leftMenuData = useSelector(state => state.auth.leftMenuData);
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData, technology.label)
+  }, [topAndLeftMenuData, technology])
 
   /**
-   * @method InjectRolePermission
-   * @description SET ROLE AND PERMISSION
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
   */
-  const InjectRolePermission = (selectedTechnology) => {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    dispatch(getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
-        const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
-        if (permmisionData !== undefined) {
-          // setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
-          // setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
-          // setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
-          // setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
-          // setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
-          // setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
-        }
+  const applyPermission = (topAndLeftMenuData, selectedTechnology) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === COSTING);
+      const accessData = Data && Data.Pages.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
+      const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
+      if (permmisionData !== undefined) {
+        setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
+        setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
+        setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
+        setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
+        setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+        setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
       }
-    }))
+    }
   }
 
   useEffect(() => {
@@ -149,7 +147,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
-      InjectRolePermission(partNumber.technologyName)
+      applyPermission(topAndLeftMenuData, technology.label)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
       setTimeout(() => {
@@ -177,9 +175,7 @@ function CostingDetails(props) {
   }, [partNumber])
 
   useEffect(() => {
-
     if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
-      // InjectRolePermission()
       nextToggle()
     }
   }, [technology])
@@ -245,7 +241,7 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
       setShowNextBtn(false)
-      InjectRolePermission(newValue.label)
+      applyPermission(topAndLeftMenuData, technology.label)
       reset({
         Part: '',
       })
@@ -1321,9 +1317,6 @@ function CostingDetails(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => { }
-
-  // const [isOpenDrawer] = 
-
 
   return (
     <>

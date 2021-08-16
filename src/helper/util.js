@@ -752,3 +752,16 @@ export function isRMDivisorApplicable(technology) {
   const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
   return allowedTechnologyForRMDivisor.includes(technology);
 }
+
+export function findLostWeight(tableVal) {
+  let sum = 0
+  tableVal && tableVal.map(item => {
+    console.log('item: ', item);
+    if (item.LossOfType === 2) {
+      return false
+    } else {
+      sum = sum + item.LossWeight
+    }
+  })
+  return sum
+}

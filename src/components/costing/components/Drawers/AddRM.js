@@ -492,8 +492,8 @@ domLayout='autoHeight'
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
-                        <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="EntryType" headerName="RM Type"  ></AgGridColumn>
+                        <AgGridColumn  field="RawMaterialId" hide={true}></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>
                         <AgGridColumn field="RawMaterial" headerName="RM Name"></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                         <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
