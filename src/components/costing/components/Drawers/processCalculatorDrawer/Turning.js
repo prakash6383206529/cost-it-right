@@ -58,7 +58,7 @@ function Turning(props) {
   const trim = trimValue.NoOfDecimalForInputOutput
 
   const { technology, process, calculateMachineTime } = props
-  const [totalMachiningTime, setTotalMachiningTime] = useState('')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
 
   const onTurningLength = () => {
@@ -164,7 +164,8 @@ function Turning(props) {
     obj.Doc = value.doc
     obj.FeedRev = value.feedRev
     obj.MachineRate = props.calculatorData.MHR
-    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
+    obj.TotalMachiningTime = totalMachiningTime
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity

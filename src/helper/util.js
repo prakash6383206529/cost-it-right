@@ -48,6 +48,9 @@ const handleHTTPStatus = (response) => {
     case 400:
       return toastr.error('Bad Request. Please contact your IT Team.')
     case 401:
+      reactLocalStorage.setObject("isUserLoggedIn", false);
+      reactLocalStorage.setObject("userDetail", {});
+      reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
       return toastr.error('Authentication error. Please contact your IT Team.')
     case 403:

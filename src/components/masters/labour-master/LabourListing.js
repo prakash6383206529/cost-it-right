@@ -62,6 +62,7 @@ class LabourListing extends Component {
   }
 
   componentDidMount() {
+    this.applyPermission(this.props.topAndLeftMenuData)
     setTimeout(() => {
       this.props.getZBCPlantList(() => { })
       this.props.getStateSelectList(() => { })

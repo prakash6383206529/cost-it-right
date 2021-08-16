@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -114,7 +114,7 @@ class OperationListing extends Component {
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
-            technology_id: technology_id,
+            technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
         this.props.getOperationsDataList(filterData, res => {
@@ -349,38 +349,7 @@ class OperationListing extends Component {
         )
     }
 
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        let currentPage = this.refs.table.state.currPage;
-        let sizePerPage = this.refs.table.state.sizePerPage;
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
 
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
-
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-    renderOperationName = () => {
-        return <>Operation <br />Name </>
-    }
-    renderOperationCode = () => {
-        return <>Operation <br />Code </>
-    }
-    renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
 
     /**
     * @method costingHeadFormatter
@@ -400,14 +369,6 @@ class OperationListing extends Component {
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
-    onExportToCSV = (row) => {
-        // ...
-        return this.state.userData; // must return the data which you want to be exported
-    }
-
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -548,20 +509,7 @@ class OperationListing extends Component {
                 />
             )
         }
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.operationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
 
-        };
 
         const defaultColDef = {
             resizable: true,
@@ -585,9 +533,12 @@ class OperationListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
-                        <Row>
-                            <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                        </Row>
+                        {
+                            !this.props.isSimulation &&
+                            <Row>
+                                <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
+                            </Row>
+                        }
                         <Row className="pt-4 filter-row-large blue-before">
                             {this.state.shown &&
                                 <Col md="12" lg="10" className="filter-block operation-filer-block ">
@@ -740,33 +691,6 @@ class OperationListing extends Component {
                             </Col>
                         </Row>
                     </form>
-                    {/* <BootstrapTable
-                        data={this.props.operationList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        exportCSV={DownloadAccessibility}
-                        csvFileName={`${OperationMaster}.csv`}
-                        //ignoreSinglePage
-                        ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass='my-custom-header'
-                        pagination> */}
-                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn searchable={false} dataField="CostingHead" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="Technology" width={150} columnTitle={true} dataAlign="left" >{'Technology'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="OperationName" columnTitle={true} dataAlign="left" >{this.renderOperationName()}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="OperationCode" columnTitle={true} dataAlign="left" >{this.renderOperationCode()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="Plants" width={150} columnTitle={true} dataAlign="left" dataFormat={this.renderPlantFormatter} >{'Plant'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" >{this.renderVendorName()}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="UnitOfMeasurement" columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" >{'Rate'}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={120} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable> */}
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
@@ -801,10 +725,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                {/* <AgGridColumn field="IsActive" headerName="Status"
-                                cellRenderer={'statusButtonFormatter'} 
-                                ></AgGridColumn> */}
-                                <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
