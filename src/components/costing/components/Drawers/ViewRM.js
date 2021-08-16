@@ -107,6 +107,7 @@ function ViewRM(props) {
                     <th>{`RM Name -Grade`}</th>
                     <th>{`RM Rate`}</th>
                     <th>{`Scrap Rate`}</th>
+                    <th>{`Scrap Recovery %`}</th>
                     <th>{`Gross Weight(Kg)`}</th>
                     <th>{`Finish Weight(Kg)`}</th>
                     <th>{`Calculator`}</th>
@@ -122,6 +123,7 @@ function ViewRM(props) {
                         <td>{item.RMName}</td>
                         <td>{item.RMRate}</td>
                         <td>{item.ScrapRate}</td>
+                        <td>{item.ScrapRecoveryPercentage}</td>
                         <td>{item.GrossWeight}</td>
                         <td>{item.FinishWeight}</td>
                         <td><button
@@ -130,8 +132,8 @@ function ViewRM(props) {
                           disabled={item.WeightCalculationId === EMPTY_GUID}
                           onClick={() => { getWeightData(index) }}
                         /></td>
-                        <td>{item.RMFreightCost ? item.RMFreightCost : '-'}</td>
-                        <td>{item.RMShearingCost ? item.RMShearingCost : '-'}</td>
+                        <td>{item.FreightCost ? item.FreightCost : '-'}</td>
+                        <td>{item.ShearingCost ? item.ShearingCost : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
                       </tr>
