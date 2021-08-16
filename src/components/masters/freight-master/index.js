@@ -6,7 +6,7 @@ import AddFreight from './AddFreight';
 import AddPackaging from './AddPackaging';
 import FreightListing from './FreightListing';
 import PackagListing from './PackagListing';
-import { FREIGHT } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -31,27 +31,36 @@ class FreightMaster extends Component {
     }
 
     componentDidMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === FREIGHT)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
 
-                    })
-                }
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === FREIGHT)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                })
             }
-        })
+        }
     }
 
     /**
@@ -144,7 +153,7 @@ class FreightMaster extends Component {
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Manage Freight
-                                </NavLink>
+                                    </NavLink>
                                 </NavItem>
                                 {/* <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
@@ -192,8 +201,8 @@ class FreightMaster extends Component {
 */
 function mapStateToProps({ boughtOutparts, auth }) {
     const { BOPListing, loading } = boughtOutparts;
-    const { leftMenuData } = auth;
-    return { BOPListing, leftMenuData, loading }
+    const { leftMenuData, topAndLeftMenuData } = auth;
+    return { BOPListing, leftMenuData, loading, topAndLeftMenuData }
 }
 
 

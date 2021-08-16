@@ -6,10 +6,8 @@ import AddOverhead from './AddOverhead';
 import AddProfit from './AddProfit';
 import OverheadListing from './OverheadListing';
 import ProfitListing from './ProfitListing';
-import { OVERHEAD_AND_PROFIT } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, OVERHEAD_AND_PROFIT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 
 class OverheadProfit extends Component {
@@ -24,30 +22,41 @@ class OverheadProfit extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
-      DownloadAccessibility: false
+      DownloadAccessibility: false,
     }
   }
 
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === OVERHEAD_AND_PROFIT)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+    this.applyPermission(this.props.topAndLeftMenuData)
+  }
 
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false
-          })
-        }
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find(el => el.PageName === OVERHEAD_AND_PROFIT)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
       }
-    })
+
+    }
   }
 
   /**
@@ -186,8 +195,8 @@ class OverheadProfit extends Component {
 */
 function mapStateToProps({ overheadProfit, auth }) {
   const { loading } = overheadProfit;
-  const { leftMenuData } = auth;
-  return { loading, leftMenuData }
+  const { leftMenuData, topAndLeftMenuData } = auth;
+  return { loading, leftMenuData, topAndLeftMenuData }
 }
 
 

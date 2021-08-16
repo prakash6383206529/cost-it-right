@@ -8,16 +8,14 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
 import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
 import { getMachineTypeSelectList, } from '../actions/MachineMaster';
 import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { LABOUR, LabourMaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
@@ -64,46 +62,6 @@ class LabourListing extends Component {
   }
 
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId')
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData
-        const accessData = Data && Data.find((el) => el.PageName === LABOUR)
-        const permmisionData =
-          accessData &&
-          accessData.Actions &&
-          checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility:
-              permmisionData && permmisionData.View
-                ? permmisionData.View
-                : false,
-            AddAccessibility:
-              permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility:
-              permmisionData && permmisionData.Edit
-                ? permmisionData.Edit
-                : false,
-            DeleteAccessibility:
-              permmisionData && permmisionData.Delete
-                ? permmisionData.Delete
-                : false,
-            BulkUploadAccessibility:
-              permmisionData && permmisionData.BulkUpload
-                ? permmisionData.BulkUpload
-                : false,
-            DownloadAccessibility:
-              permmisionData && permmisionData.Download
-                ? permmisionData.Download
-                : false,
-          })
-        }
-      }
-    })
-
     setTimeout(() => {
       this.props.getZBCPlantList(() => { })
       this.props.getStateSelectList(() => { })
@@ -113,10 +71,38 @@ class LabourListing extends Component {
     }, 500);
   }
 
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === LABOUR)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
+      }
+    }
+  }
+
   componentWillUnmount() {
     this.props.getLabourDataList(false, {}, (res) => { })
   }
-
 
   /**
    * @method getTableListData
@@ -925,7 +911,7 @@ class LabourListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
@@ -947,7 +933,7 @@ domLayout='autoHeight'
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -985,7 +971,7 @@ function mapStateToProps({ labour, auth, fuel, machine }) {
   const { loading, labourTypeByPlantSelectList, labourDataList } = labour
   const { plantSelectList, stateSelectList } = fuel
   const { machineTypeSelectList } = machine
-  const { leftMenuData, initialConfiguration } = auth
+  const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth
   return {
     loading,
     leftMenuData,
@@ -994,7 +980,8 @@ function mapStateToProps({ labour, auth, fuel, machine }) {
     labourTypeByPlantSelectList,
     machineTypeSelectList,
     labourDataList,
-    initialConfiguration
+    initialConfiguration,
+    topAndLeftMenuData,
   }
 }
 
