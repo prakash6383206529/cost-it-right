@@ -546,7 +546,7 @@ function ApproveRejectDrawer(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                              selected={simulationDetail?.EffectiveDate && moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
                               // onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

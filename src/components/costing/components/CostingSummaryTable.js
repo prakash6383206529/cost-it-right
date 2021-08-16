@@ -1180,7 +1180,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <div>
                                 <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.currency.currencyTitle : ''}</span> {' '}
-                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                             </td>
                           )

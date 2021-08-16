@@ -65,6 +65,7 @@ import {
   BOP_DRAWER_LIST,
   SET_CUTOFF_RMC,
   GET_COSTING_SPECIFIC_TECHNOLOGY,
+  SET_PLASTIC_ARR,
 } from '../../../config/constants';
 
 const initialState = {
@@ -536,6 +537,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         costingSpecifiTechnology: action.payload
+      }
+    case SET_PLASTIC_ARR:
+      return {
+        ...state,
+        loading: false,
+        getPlasticData: action.payload
       }
     default:
       return state

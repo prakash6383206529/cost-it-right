@@ -2244,6 +2244,8 @@ export const ENDMILL = 'End Mill'
 
 export const getTechnology = [1, 8, 7, 2, 4]
 export const technologyForDensity = [1, 7]
+export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
+export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
 
 
 export const CostingSimulationDownload = [

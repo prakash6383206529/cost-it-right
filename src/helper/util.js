@@ -48,6 +48,9 @@ const handleHTTPStatus = (response) => {
     case 400:
       return toastr.error('Bad Request. Please contact your IT Team.')
     case 401:
+      reactLocalStorage.setObject("isUserLoggedIn", false);
+      reactLocalStorage.setObject("userDetail", {});
+      reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
       return toastr.error('Authentication error. Please contact your IT Team.')
     case 403:
@@ -749,4 +752,17 @@ export function getTechnologyPermission(technology) {
 export function isRMDivisorApplicable(technology) {
   const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
   return allowedTechnologyForRMDivisor.includes(technology);
+}
+
+export function findLostWeight(tableVal) {
+  let sum = 0
+  tableVal && tableVal.map(item => {
+    console.log('item: ', item);
+    if (item.LossOfType === 2) {
+      return false
+    } else {
+      sum = sum + item.LossWeight
+    }
+  })
+  return sum
 }
