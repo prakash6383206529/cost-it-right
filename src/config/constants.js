@@ -1581,13 +1581,15 @@ export const STD = 'STD'
 
 
 //SIMULATION MASTER NAME
-export const RMDOMESTIC = 'RM Domestic'
-export const RMIMPORT = 'RM Import'
-export const BOPDOMESTIC = 'BOP (Domestic)'
-export const BOPIMPORT = 'BOP (Import)'
-export const PROCESS = 'Process'
-export const OPERATIONSIM = 'Operation'
-export const SURFACETREATMENT = 'SURFACE TREATMENT'
+export const RMDOMESTIC = '1'
+export const RMIMPORT = '2'
+export const PROCESS = '3'
+export const BOPDOMESTIC = '4'
+export const BOPIMPORT = '5'
+export const OPERATIONS = '6'
+export const SURFACETREATMENT = '7'
+export const EXCHNAGERATE = '8'
+export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
 // export constse

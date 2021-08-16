@@ -8,7 +8,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
@@ -17,7 +16,6 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -188,30 +186,11 @@ class ExchangeRateListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+    effectiveDateFormatter = (cell) => {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
-    renderEffectiveDate = () => {
-        return <> Effective Date </>
-    }
-    renderExchangeRate = () => {
-        return <> Exchange <br /> Rate(INR) </>
-    }
-    renderBankRate = () => {
-        return <> Bank <br /> Rate(INR) </>
-    }
 
-    renderBankCommision = () => {
-        return <> Bank <br /> Commission % </>
-    }
-
-    renderCustomrate = () => {
-        return <> Custom <br /> Rate(INR)</>
-    }
-    renderDateOfModification = () => {
-        return <> Date of <br /> Modification</>
-    }
 
     /**
     * @method buttonFormatter
@@ -243,38 +222,6 @@ class ExchangeRateListing extends Component {
         }
     };
 
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        let currentPage = this.refs.table.state.currPage;
-        let sizePerPage = this.refs.table.state.sizePerPage;
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
-
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
-    }
-
-    onExportToCSV = (row) => {
-        // ...
-        return this.state.userData; // must return the data which you want to be exported
-    }
-
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
 
     /**
     * @method filterList
@@ -331,9 +278,9 @@ class ExchangeRateListing extends Component {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-        
-        window.screen.width <= 1366 ?  params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
-        
+
+        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -434,9 +381,12 @@ class ExchangeRateListing extends Component {
                     <div className="container-fluid">
                         {/* {this.props.loading && <Loader />} */}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                            <Row>
-                                <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
-                            </Row>
+                            {!this.props.isSimulation &&
+                                <Row>
+                                    <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
+                                </Row>
+                            }
+
                             <Row className="pt-4 blue-before">
                                 {this.state.shown && (
                                     <Col md="7" className="filter-block">
@@ -488,8 +438,8 @@ class ExchangeRateListing extends Component {
                                                     <div className="cancel-icon-white"></div></button>
                                             ) : (
                                                 <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                        <div className="filter mr-0"></div>
-                                                    </button>
+                                                    <div className="filter mr-0"></div>
+                                                </button>
                                             )}
                                             {AddAccessibility && <button
                                                 type="button"
@@ -501,7 +451,7 @@ class ExchangeRateListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
                                                     <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                        <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                                                         {this.onBtExport()}
                                                     </ExcelFile>
                                                 </>
@@ -516,31 +466,7 @@ class ExchangeRateListing extends Component {
                                     </div>
                                 </Col>
                             </Row>
-
                         </form>
-                        {/*<BootstrapTable
-                            data={this.props.exchangeRateDataList}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${ExchangeMaster}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-header'
-                            pagination>
-                            <TableHeaderColumn dataField="Currency" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" >{this.renderExchangeRate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" >{this.renderBankRate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" >{this.renderBankCommision()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" >{this.renderCustomrate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="DateOfModification" width={130} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable> */}
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
@@ -564,13 +490,13 @@ class ExchangeRateListing extends Component {
                                     frameworkComponents={this.frameworkComponents}
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                    <AgGridColumn  suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="BankRate" headerName="Bank Rate(INR)"></AgGridColumn>
-                                    <AgGridColumn  suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
                                     <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                    <AgGridColumn  suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                    <AgGridColumn  suppressSizeToFit="true" field="ExchangeRateId" headerName="Action"  type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
