@@ -576,7 +576,7 @@ function CostingSimulation(props) {
                                 simulationDetail={simulationDetail}
                                 selectedRowData={selectedRowData}
                                 costingArr={costingArr}
-                                master={selectedMasterForSimulation ? selectedMasterForSimulation.label : master}
+                                master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
                             // isSaveDone={isSaveDone}
