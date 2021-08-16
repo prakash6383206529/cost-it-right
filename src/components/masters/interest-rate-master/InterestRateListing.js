@@ -64,15 +64,9 @@ class InterestRateListing extends Component {
   }
 
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
 
-      }
-    })
+    this.applyPermission(this.props.topAndLeftMenuData)
 
-    // this.props.getVendorListByVendorType(true, () => { })
     setTimeout(() => {
       this.props.getVendorWithVendorCodeSelectList()
       this.props.getICCAppliSelectList(() => { })
