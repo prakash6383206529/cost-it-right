@@ -526,7 +526,15 @@ function CostingSummary(props) {
           </Col>
         </Row>
       </div>
-      {partNumber !== "" && <CostingSummaryTable resetData={resetData} showDetail={props.showDetail} technologyId={TechnologyId} showWarningMsg={showWarningMsg} />}
+
+      {partNumber !== "" && <CostingSummaryTable
+        resetData={resetData}
+        showDetail={props.showDetail}
+        technologyId={TechnologyId}
+        showWarningMsg={showWarningMsg}
+        selectedTechnology={technology.label}
+      />}
+
       {IsBulkOpen && <BOMUpload
         isOpen={IsBulkOpen}
         closeDrawer={closeBulkUploadDrawer}

@@ -9,12 +9,10 @@ import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -55,40 +53,44 @@ class ReasonListing extends Component {
     }
   }
 
-
-
-  UNSAFE_componentWillMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId')
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData
-        const accessData = Data && Data.find((el) => el.PageName === REASON)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-          })
-        }
-      }
-
-
-    })
-  }
-
   componentWillUnmount() {
     this.props.getAllReasonAPI(false, (res) => { })
   }
 
   componentDidMount() {
+    this.applyPermission(this.props.topAndLeftMenuData)
     setTimeout(() => {
       this.getTableListData()
     }, 2000);
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === REASON)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
+      }
+
+    }
   }
 
   // Get updated Supplier's list after any action performed.
@@ -369,13 +371,13 @@ class ReasonListing extends Component {
                     DownloadAccessibility &&
                     <>
 
-                        <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
+                      <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                        {/* DOWNLOAD */}
+                          {/* DOWNLOAD */}
                         </button>}>
 
-                            {this.onBtExport()}
-                        </ExcelFile>
+                        {this.onBtExport()}
+                      </ExcelFile>
 
                     </>
 
@@ -384,8 +386,8 @@ class ReasonListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                    <div className="refresh mr-0"></div>
+                  </button>
 
                 </div>
               </div>
@@ -446,7 +448,7 @@ class ReasonListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}
@@ -462,7 +464,7 @@ domLayout='autoHeight'
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
                 <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                <AgGridColumn field="ReasonId" headerName="Actions"  type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -497,8 +499,8 @@ domLayout='autoHeight'
  */
 function mapStateToProps({ reason, auth }) {
   const { loading, reasonDataList } = reason
-  const { leftMenuData } = auth
-  return { loading, leftMenuData, reasonDataList }
+  const { leftMenuData, topAndLeftMenuData } = auth
+  return { loading, leftMenuData, reasonDataList, topAndLeftMenuData }
 }
 
 /**

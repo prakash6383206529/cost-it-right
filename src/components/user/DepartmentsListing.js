@@ -42,32 +42,25 @@ class DepartmentsListing extends Component {
     }
   }
 
-  UNSAFE_componentWillMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData != undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName == DEPARTMENT)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData != undefined) {
-          this.setState({
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          })
-        }
-      }
-    })
-  }
-
   componentDidMount() {
-    setTimeout(() => {
+    const { topAndLeftMenuData } = this.props;
+    if (topAndLeftMenuData !== undefined) {
+      const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+      const accessData = userMenu && userMenu.Pages.find(el => el.PageName === DEPARTMENT)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
+      if (permmisionData !== undefined) {
+        this.setState({
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+        })
+      }
+    }
+
+    setTimeout(() => {
       this.getDepartmentListData();
     }, 500);
-    //this.props.onRef(this)
   }
 
   getDepartmentListData = () => {
@@ -245,8 +238,8 @@ class DepartmentsListing extends Component {
                 </>
               )}
               <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                <div className="refresh mr-0"></div>
+              </button>
             </Col>
 
           </Row>
@@ -280,7 +273,7 @@ class DepartmentsListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -297,7 +290,7 @@ domLayout='autoHeight'
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
                     {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
-                    <AgGridColumn field="DepartmentId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -334,9 +327,9 @@ domLayout='autoHeight'
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-  const { departmentList, leftMenuData, loading } = auth;
+  const { departmentList, leftMenuData, loading, topAndLeftMenuData } = auth;
 
-  return { departmentList, leftMenuData, loading };
+  return { departmentList, leftMenuData, loading, topAndLeftMenuData };
 }
 
 export default connect(mapStateToProps,
