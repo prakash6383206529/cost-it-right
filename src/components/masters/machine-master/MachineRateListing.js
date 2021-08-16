@@ -13,7 +13,6 @@ import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -67,7 +66,7 @@ class MachineRateListing extends Component {
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '') => {
         const filterData = {
             costing_head: costing_head,
-            technology_id: technology_id,
+            technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
             machine_type_id: machine_type_id,
             process_id: process_id,
@@ -353,44 +352,7 @@ class MachineRateListing extends Component {
         return serialNumber;
     }
 
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
 
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-
-    renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    renderMachineNo = () => {
-        return <>Machine<br /> Number </>
-    }
-
-    renderMachineType = () => {
-        return <>Machine<br /> Type </>
-    }
-
-    renderMachineTonage = () => {
-        return <>Machine<br /> Tonnage </>
-    }
-
-    renderProcessName = () => {
-        return <>Process<br /> Name </>
-    }
-
-    renderMachineRate = () => {
-        return <>Machine<br /> Rate </>
-    }
-
-    renderPlantFormatter = (cell, row, enumObject, rowIndex) => {
-        return row.IsVendor ? row.DestinationPlant : row.Plants
-    }
-
-    renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
-    }
 
     /**
   * @method effectiveDateFormatter
@@ -420,7 +382,7 @@ class MachineRateListing extends Component {
         this.setState({ isLoader: true })
 
         const costingId = costingHead ? costingHead.value : '';
-        const technologyId = technology ? technology.value : 0;
+        const technologyId = this.props.isSimulation ? this.props.technology : technology ? technology.value : 0;
         const vendorId = vendorName ? vendorName.value : '';
         const machineTypeId = machineType ? machineType.value : 0;
         const processId = processName ? processName.value : '';
@@ -463,55 +425,6 @@ class MachineRateListing extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => { }
-
-    // returnExcelColumn = (data = [], TempData) => {
-    //     const ExcelFile = ReactExport.ExcelFile;
-    //     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-    //     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-    //     let temp = []
-    //     temp = TempData.map((item) => {
-    //         if (item.ClientName === null) {
-    //             item.ClientName = ' '
-    //         }
-    //         return item
-    //     })
-
-    //     return (<ExcelSheet data={temp} name={`${MachineRate}`}>
-    //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-    //         }
-    //     </ExcelSheet>);
-    // }
-    // renderColumn = (fileName) => {
-    //     let arr = this.props.machineDatalist && this.props.machineDatalist.length > 0 ? this.props.machineDatalist : []
-    //     if (arr != []) {
-    //         arr && arr.map(item => {
-    //             let len = Object.keys(item).length
-    //             for (let i = 0; i < len; i++) {
-    //                 // let s = Object.keys(item)[i]
-    //                 if (item.MachineTonnage === null) {
-    //                     item.MachineTonnage = ' '
-    //                 } else if (item.EffectiveDate === null) {
-    //                     item.EffectiveDate = ' '
-    //                 } else if (item.IsVendor === true) {
-    //                     item.IsVendor = 'VBC'
-    //                 } else if (item.IsVendor === false) {
-    //                     item.IsVendor = 'ZBC'
-    //                 } else if (item.Plants === '-') {
-    //                     item.Plants = ' '
-    //                 } else if (item.MachineTypeName === '-') {
-    //                     item.MachineTypeName = ' '
-    //                 } else if (item.VendorName === '-') {
-    //                     item.VendorName = ' '
-    //                 } else {
-    //                     return false
-    //                 }
-    //             }
-    //         })
-    //     }
-    //     return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, arr)
-    // }
-
-
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData.map((item) => {
@@ -575,17 +488,7 @@ class MachineRateListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload, isLoader } = this.state;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.machineDatalist === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
 
-        };
         const defaultColDef = {
             resizable: true,
             filter: true,
@@ -619,9 +522,6 @@ class MachineRateListing extends Component {
                                             placeholder={'Costing Head'}
                                             isClearable={false}
                                             options={this.renderListing('costingHead')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.costingHead == null || this.state.costingHead.length == 0) ? [required] : []}
-                                            //required={true}
                                             handleChangeDescription={this.handleHeadChange}
                                             valueDescription={this.state.costingHead}
                                         />
@@ -635,9 +535,6 @@ class MachineRateListing extends Component {
                                             placeholder={'Plant'}
                                             isClearable={false}
                                             options={this.renderListing('plant')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                                            //required={true}
                                             handleChangeDescription={this.handlePlant}
                                             valueDescription={this.state.plant}
                                         />
@@ -651,9 +548,6 @@ class MachineRateListing extends Component {
                                             placeholder={'Technology'}
                                             isClearable={false}
                                             options={this.renderListing('technology')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                                            //required={true}
                                             handleChangeDescription={this.handleTechnology}
                                             valueDescription={this.state.technology}
                                         />
@@ -667,9 +561,6 @@ class MachineRateListing extends Component {
                                             placeholder={'Vendor'}
                                             isClearable={false}
                                             options={this.renderListing('VendorNameList')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.vendorName == null || this.state.vendorName.length == 0) ? [required] : []}
-                                            //required={true}
                                             handleChangeDescription={this.handleVendorName}
                                             valueDescription={this.state.vendorName}
                                             disabled={false}
@@ -685,9 +576,6 @@ class MachineRateListing extends Component {
                                             placeholder={'Machine'}
                                             isClearable={false}
                                             options={this.renderListing('MachineTypeList')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                                            //required={true}
                                             handleChangeDescription={this.handleMachineType}
                                             valueDescription={this.state.machineType}
                                             disabled={false}
@@ -702,9 +590,6 @@ class MachineRateListing extends Component {
                                             placeholder={'Process'}
                                             isClearable={false}
                                             options={this.renderListing('ProcessNameList')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                            //required={true}
                                             handleChangeDescription={this.handleProcessName}
                                             valueDescription={this.state.processName}
                                             disabled={false}
@@ -713,7 +598,6 @@ class MachineRateListing extends Component {
                                     <div className="flex-fill w-180">
                                         <button
                                             type="button"
-                                            //disabled={pristine || submitting}
                                             onClick={this.resetFilter}
                                             className="reset mr10"
                                         >
@@ -722,7 +606,6 @@ class MachineRateListing extends Component {
 
                                         <button
                                             type="button"
-                                            //disabled={pristine || submitting}
                                             onClick={this.filterList}
                                             className="user-btn"
                                         >
@@ -795,31 +678,6 @@ class MachineRateListing extends Component {
                 <Row>
                     <Col>
                         {isLoader && <LoaderCustom />}
-                        {/* <BootstrapTable
-                            data={this.props.machineDatalist}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${MachineRate}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            pagination>
-                            <TableHeaderColumn dataField="IsVendor" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Technologies" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Technology'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.renderPlantFormatter} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineNumber" searchable={true} width={120} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineNo()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineTypeName" width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineType()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProcessName" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable> */}
-
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
@@ -855,7 +713,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

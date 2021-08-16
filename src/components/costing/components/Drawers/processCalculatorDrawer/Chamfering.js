@@ -19,7 +19,7 @@ function Chamfering(props) {
     cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
     rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
     feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
-    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.TotalCutTime !== undefined ? WeightCalculatorRequest.TotalCutTime : '',
     numberOfPasses: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPasses !== undefined ? WeightCalculatorRequest.NumberOfPasses : '',
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
     clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
@@ -56,7 +56,7 @@ function Chamfering(props) {
 
 
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
-  const [totalMachiningTime, setTotalMachiningTime] = useState('')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const [dataToSend, setDataToSend] = useState({})
 
   const onTurningLength = () => {
@@ -135,7 +135,7 @@ function Chamfering(props) {
     obj.Rpm = dataToSend.rpm
     obj.FeedRev = formValue.feedRev
     obj.FeedMin = dataToSend.feedMin
-    obj.CutTime = dataToSend.tCut
+    obj.TotalCutTime = dataToSend.tCut
     obj.NumberOfPasses = formValue.numberOfPasses
     obj.ClampingPercentage = formValue.clampingPercentage
     obj.ClampingValue = dataToSend.clampingValue
@@ -144,7 +144,7 @@ function Chamfering(props) {
     obj.TurningLength = formValue.turningLength
     obj.TotalMachiningTime = totalMachiningTime
     obj.MachineRate = props.calculatorData.MHR
-    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity

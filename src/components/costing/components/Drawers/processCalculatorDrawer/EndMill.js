@@ -20,7 +20,7 @@ function EndMill(props) {
     rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
     feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
     feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
-    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.TotalCutTime !== undefined ? WeightCalculatorRequest.TotalCutTime : '',
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
     clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
     cutterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.CutterDiameter !== undefined ? WeightCalculatorRequest.CutterDiameter : '',
@@ -31,6 +31,8 @@ function EndMill(props) {
     cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
     toothFeed: WeightCalculatorRequest && WeightCalculatorRequest.ToothFeed !== undefined ? WeightCalculatorRequest.ToothFeed : '',
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+
+
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
@@ -51,7 +53,7 @@ function EndMill(props) {
   }, [fieldValues])
   const { technology, process, calculateMachineTime } = props
   const isEditFlag = WeightCalculatorRequest ? true : false
-  const [totalMachiningTime, setTotalMachiningTime] = useState('')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const [dataToSend, setDataToSend] = useState({})
 
@@ -129,7 +131,7 @@ function EndMill(props) {
     obj.Rpm = dataToSend.rpm
     obj.FeedRev = dataToSend.feedRev
     obj.FeedMin = dataToSend.feedMin
-    obj.CutTime = dataToSend.tCut
+    obj.TotalCutTime = dataToSend.tCut
     obj.ClampingPercentage = value.clampingPercentage
     obj.ClampingValue = dataToSend.clampingValue
     obj.CutterDiameter = value.cutterDiameter
@@ -140,9 +142,9 @@ function EndMill(props) {
     obj.CuttingSpeed = value.cuttingSpeed
     obj.ToothFeed = value.toothFeed
     obj.ToothNo = value.toothNo
-    obj.ClampingPercentage = value.clampingPercentage
     obj.MachineRate = props.calculatorData.MHR
-    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    obj.TotalMachiningTime = totalMachiningTime
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity

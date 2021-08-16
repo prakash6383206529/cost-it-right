@@ -19,7 +19,7 @@ function Drilling(props) {
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
     clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
     cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
-    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.TotalCutTime !== undefined ? WeightCalculatorRequest.TotalCutTime : '',
     cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
     feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
     feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
@@ -46,7 +46,7 @@ function Drilling(props) {
 
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const { calculateMachineTime } = props
-  const [totalMachiningTime, setTotalMachiningTime] = useState('')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const [dataToSend, setDataToSend] = useState({})
 
 
@@ -102,7 +102,7 @@ function Drilling(props) {
     obj.ClampingPercentage = value.clampingPercentage
     obj.ClampingValue = dataToSend.clampingValue
     obj.CutLength = value.cutLength
-    obj.CutTime = dataToSend.tCut
+    obj.TotalCutTime = dataToSend.tCut
     obj.CuttingSpeed = value.cuttingSpeed
     obj.FeedMin = dataToSend.feedMin
     obj.FeedRev = value.feedRev
@@ -111,7 +111,7 @@ function Drilling(props) {
     obj.TurningDiameter = value.turningDiameter
     obj.TurningLength = value.turningLength
     obj.MachineRate = props.calculatorData.MHR
-    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity

@@ -7,13 +7,19 @@ import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
+import { getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
+import WarningMessage from '../../common/WarningMessage';
+import MachineRateListing from '../../masters/machine-master/MachineRateListing';
+import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing';
+import BOPImportListing from '../../masters/bop-master/BOPImportListing';
+import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
+import OperationListing from '../../masters/operation/OperationListing';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -34,6 +40,7 @@ function Simulation(props) {
     const [isbulkUpload, setIsBulkUpload] = useState(false)
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
+    const [editWarning, setEditWarning] = useState(true)
 
     const dispatch = useDispatch()
 
@@ -50,8 +57,9 @@ function Simulation(props) {
 
     const handleMasterChange = (value) => {
         setMaster(value)
+        setShowMasterList(false)
         dispatch(setMasterForSimulation(value))
-        if (value !== '' && Object.keys(technology).length > 0) {
+        if (value !== '' && (Object.keys(technology).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setShowMasterList(true)
         }
     }
@@ -59,6 +67,7 @@ function Simulation(props) {
     const handleTechnologyChange = (value) => {
         setTechnology(value)
         dispatch(setTechnologyForSimulation(value))
+
         if (value !== '' && Object.keys(master).length > 0) {
             setShowMasterList(true)
         }
@@ -75,17 +84,32 @@ function Simulation(props) {
             return item
         })
 
+        // if (rmDomesticListing && rmDomesticListing.length > 0 || rmImportListing && rmImportListing.length > 0) {
+        //     const edit = editTable()
+
+        // }
+
         return (<ExcelSheet data={temp} name={master.label}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
 
     const renderModule = (value) => {
-        switch (value.label) {
+        switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case MACHINERATE:
+                return (<MachineRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case BOPDOMESTIC:
+                return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case BOPIMPORT:
+                return (<BOPImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case EXCHNAGERATE:
+                return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case OPERATIONS:
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -147,35 +171,40 @@ function Simulation(props) {
     }
 
     const editTable = () => {
+        // alert('Hello')
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        switch (master.label) {
+        switch (master.value) {
             case RMDOMESTIC:
 
                 rmDomesticListing && rmDomesticListing.forEach((element, index) => {
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
-                            toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            //     toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            setEditWarning(true);
                             flag = false
                             return false
                         }
                         if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-                            toastr.warning('Please select one vendor at a time.')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
                             vendorFlag = false
                             return false
                         }
                         if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
-                            toastr.warning('Please select one Plant at a time.')
+                            // toastr.warning('Please select one Plant at a time.')
+                            setEditWarning(true);
                             plantFlag = false
                             return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setShowEditTable(true)
+                    // setShowEditTable(true)
+                    setEditWarning(false)
                 }
                 break;
             case RMIMPORT:
@@ -183,24 +212,28 @@ function Simulation(props) {
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmImportListing[index - 1].CostingHead) {
-                            toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            // toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            setEditWarning(true);
                             flag = false
                             return false
                         }
                         if (element.VendorName !== rmImportListing[index - 1].VendorName) {
-                            toastr.warning('Please select one vendor at a time.')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
                             vendorFlag = false
                             return false
                         }
-                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
-                            toastr.warning('Please select one Plant at a time.')
+                        if (element.PlantId !== rmImportListing[index - 1].PlantId) {
+                            // toastr.warning('Please select one Plant at a time.')
+                            setEditWarning(true);
                             plantFlag = false
                             return false
                         }
                     }
                 })
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setShowEditTable(true)
+                    // setShowEditTable(true)
+                    setEditWarning(false);
                 }
                 break;
 
@@ -209,6 +242,11 @@ function Simulation(props) {
         }
 
     }
+
+    const openEditPage = () => {
+        setShowEditTable(true)
+    }
+
 
     const editMasterPage = (page) => {
         switch (page) {
@@ -266,26 +304,28 @@ function Simulation(props) {
                                     />
                                 </div>
                             </div>
-
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Technology:</div>
-                                <div className="flex-fills hide-label pl-0">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Technology'}
-                                        placeholder={'Technology'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('technology')}
-                                        mandatory={false}
-                                        handleChange={handleTechnologyChange}
-                                        errors={errors.Masters}
-                                    />
+                            {
+                                getTechnologyForSimulation.includes(master.value) &&
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Technology:</div>
+                                    <div className="flex-fills hide-label pl-0">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Technology'}
+                                            placeholder={'Technology'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('technology')}
+                                            mandatory={false}
+                                            handleChange={handleTechnologyChange}
+                                            errors={errors.Masters}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </Col>
                     </Row>
 
@@ -295,19 +335,23 @@ function Simulation(props) {
                     {showMasterList &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2">
-                                    <div>
-                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false}>
-                                            <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0) ? true : false} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                            {renderColumn(master.label)}
-                                        </ExcelFile>
-                                        <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
-                                        {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
-                                    </div>
+                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
+                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant and Vendor from the filters before editing'} />}
+                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
+                                        <div className={"edit-icon"}></div>  {"EDIT"} </button>
+                                    <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                        {/* {true ? '' : renderColumn(master.label)} */}
+                                        {!editWarning ? renderColumn(master.value) : ''}
+                                    </ExcelFile>
+                                    <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                    {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
+
+
                                 </div>
                             </div>
-                        </Row>}
+                        </Row>
+                    }
+
 
                     {showUploadDrawer &&
                         <SimulationUploadDrawer
@@ -318,7 +362,7 @@ function Simulation(props) {
                 </div>
             }
             <div className="simulation-edit">
-                {showEditTable && editMasterPage(master.label)}
+                {showEditTable && editMasterPage(master.value)}
             </div>
         </div>
     );

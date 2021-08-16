@@ -21,7 +21,7 @@ function SlotCutting(props) {
     rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
     feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
     feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
-    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.TotalCutTime !== undefined ? WeightCalculatorRequest.TotalCutTime : '',
     numberOfPasses: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPasses !== undefined ? WeightCalculatorRequest.NumberOfPasses : '',
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
     clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
@@ -58,7 +58,7 @@ function SlotCutting(props) {
   const trimValue = getConfigurationKey()
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const { technology, process, calculateMachineTime } = props
-  const [totalMachiningTime, setTotalMachiningTime] = useState('')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const [dataToSend, setDataToSend] = useState({})
 
 
@@ -152,7 +152,7 @@ function SlotCutting(props) {
     obj.Rpm = dataToSend.rpm
     obj.FeedRev = dataToSend.feedRev
     obj.FeedMin = dataToSend.feedMin
-    obj.CutTime = dataToSend.tCut
+    obj.TotalCutTime = dataToSend.tCut
     obj.NumberOfPasses = value.numberOfPasses
     obj.ClampingPercentage = value.clampingPercentage
     obj.ClampingValue = dataToSend.clampingValue
@@ -166,7 +166,7 @@ function SlotCutting(props) {
     obj.ToothFeed = value.toothFeed
     obj.ToothNo = value.toothNo
     obj.MachineRate = props.calculatorData.MHR
-    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
