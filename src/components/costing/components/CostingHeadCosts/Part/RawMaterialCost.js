@@ -14,7 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { EMPTY_GUID, G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
+import { getTechnology, getTechnologyForRecoveryPercent, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 
 let counter = 0;
@@ -48,6 +48,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
+  const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
 
   const dispatch = useDispatch()
 
@@ -511,6 +512,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
+    console.log('weightData: ', weightData);
 
     let tempArr = []
     let tempData = gridData[editIndex]
@@ -531,10 +533,12 @@ function RawMaterialCost(props) {
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+      const RecoveryPercentage = weightData.RecoveryPercentage
 
       const scrapWeight = checkForNull(GrossWeight - FinishWeight);
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+
 
       tempData = {
         ...tempData,
@@ -545,6 +549,7 @@ function RawMaterialCost(props) {
         WeightCalculationId: weightData.WeightCalculationId,
         IsCalculatedEntry: true,
         CutOffRMC: CutOffRMC,
+        ScrapRecoveryPercentage: RecoveryPercentage
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -552,6 +557,7 @@ function RawMaterialCost(props) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING
       }, 500)
@@ -798,12 +804,13 @@ function RawMaterialCost(props) {
                       <th>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
-                      {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>}
-                      <th style={{ width: "220px" }}>{`Gross Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Finish Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Scrap Recovery %`}</th>
-                      <th style={{ width: "220px" }}>{`Scrap Weight`}</th>
-                      <th style={{ width: "220px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+                      <th>{`UOM`}</th>
+                      {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
+                      <th style={{ width: "190px" }}>{`Gross Weight`}</th>
+                      <th style={{ width: "190px" }}>{`Finish Weight`}</th>
+                      {isScrapRecoveryPercentageApplied && <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>}
+                      <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
+                      <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -854,6 +861,7 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
+
                             <td>
                               <NumberFieldHookForm
                                 label=""
@@ -880,36 +888,39 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
-                            <td>
-                              {item.IsScrapRecoveryPercentageApplied && <NumberFieldHookForm
-                                label=""
-                                name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^\d*\.?\d*$/,
-                                    message: 'Invalid Number.',
-                                  },
-                                  max: {
-                                    value: 100,
-                                    message: 'Percentage should be less than 100'
-                                  },
-                                }}
-                                defaultValue={item.ScrapRecoveryPercentage}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleScrapRecoveryChange(e, index)
-                                }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                disabled={CostingViewMode ? true : false}
-                              />}
-                            </td>
+                            {
+                              isScrapRecoveryPercentageApplied &&
+                              <td>
+                                <NumberFieldHookForm
+                                  label=""
+                                  name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: true,
+                                    pattern: {
+                                      value: /^\d*\.?\d*$/,
+                                      message: 'Invalid Number.',
+                                    },
+                                    max: {
+                                      value: 100,
+                                      message: 'Percentage should be less than 100'
+                                    },
+                                  }}
+                                  defaultValue={item.ScrapRecoveryPercentage}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleScrapRecoveryChange(e, index)
+                                  }}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
+                                  disabled={CostingViewMode ? true : false}
+                                />
+                              </td>
+                            }
                             <td>{checkForDecimalAndNull(item.FinishWeight ? (item.GrossWeight - item.FinishWeight) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
