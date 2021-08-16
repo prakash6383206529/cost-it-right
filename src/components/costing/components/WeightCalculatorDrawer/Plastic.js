@@ -4,11 +4,12 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
+import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary } = props
@@ -27,12 +28,13 @@ function Plastic(props) {
     }
   } else {
     totalRM = Number(rmRowData.RMRate)
-    console.log('totalRM: ', totalRM);
   }
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
+  const { getPlasticData } = useSelector(state => state.costing)
+  console.log('getPlasticData: ', getPlasticData);
 
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
@@ -43,6 +45,7 @@ function Plastic(props) {
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? (WeightCalculatorRequest.BurningValue * checkForNull(totalRM)) : ''
 
   }
 
@@ -54,6 +57,7 @@ function Plastic(props) {
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : ''
   })
 
 
@@ -75,11 +79,11 @@ function Plastic(props) {
   const dropDown = [
     {
       label: 'Processing Loss',
-      value: 'processingLost',
+      value: 1,
     },
     {
       label: 'Burning Loss',
-      value: 'burningLoss',
+      value: 2
     },
   ]
 
@@ -87,6 +91,13 @@ function Plastic(props) {
     calculateGrossWeight()
     calculateRemainingCalculation(lostWeight)
   }, [fieldValues])
+
+  useEffect(() => {
+    calculateGrossWeight()
+    calculateRemainingCalculation()
+  }, [getPlasticData])
+
+
 
 
 
@@ -99,7 +110,7 @@ function Plastic(props) {
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
 
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostWeight
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData))
     setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
     let updatedValue = dataToSend
@@ -111,27 +122,25 @@ function Plastic(props) {
    * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
-
-
     let scrapWeight = 0
-
     const netWeight = Number(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
     const runnerWeight = Number(getValues('runnerWeight'))
     const finishedWeight = Number(getValues('finishedWeight'))
 
 
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostSum //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+
     // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
     if (finishedWeight > grossWeight) {
       toastr.warning('Finish Weight should not be greater than gross weight')
       return false
     }
     if (finishedWeight !== 0) {
-
       scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
-    const rmCost = checkForNull(grossWeight) * checkForNull(totalRM) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
+    const rmCost = (checkForNull(grossWeight) + getValues('burningAllownace')) * checkForNull(totalRM) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
+    console.log('rmCost: ', rmCost);
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -185,6 +194,7 @@ function Plastic(props) {
     obj.RMCost = dataToSend.rmCost
     obj.ScrapCost = dataToSend.scrapCost
     obj.NetRMCost = dataToSend.materialCost
+    obj.BurningValue = dataToSend.burningValue
     obj.LoggedInUserId = loggedInUserId()
     let tempArr = []
     tableVal && tableVal.map(item => {
@@ -197,6 +207,7 @@ function Plastic(props) {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         toastr.success("Calculation saved successfully")
+        dispatch(setPlasticArray([]))
         props.toggleDrawer('', obj)
       }
     }))
@@ -207,12 +218,20 @@ function Plastic(props) {
    * @description on cancel close the drawer
    */
   const onCancel = () => {
+    dispatch(setPlasticArray([]))
     props.toggleDrawer('')
   }
 
   const tableData = (value = []) => {
-
     setTableVal(value)
+  }
+
+  const setBurningAllowance = (value) => {
+    const burningAllownace = value * checkForNull(totalRM)
+    setValue('burningAllownace', checkForDecimalAndNull(burningAllownace, getConfigurationKey().NoOfDecimalForInputOutput))
+    const updatedValue = dataToSend
+    updatedValue.burningValue = value
+    setDataToSend(updatedValue)
   }
   return (
     <Fragment>
@@ -283,107 +302,6 @@ function Plastic(props) {
                   />
                 </Col>
 
-                {/* <Col md="2">
-                  <TextFieldHookForm
-                    label={`Sacle Loss`}
-                    name={'sacleLoss'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={true}
-                    // rules={{
-                    //   required: false,
-                    //   pattern: {
-                    //     value: /^[0-9\b]+$/i,
-                    //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.sacleLoss}
-                    disabled={false}
-                  />
-                </Col> */}
-
-                {/* <Col md="2">
-                    <TextFieldHookForm
-                      label={`Trimming Loss`}
-                      name={'trimmingLoss'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      // rules={{
-                      //   required: false,
-                      //   pattern: {
-                      //     //value: /^[0-9]*$/i,
-                      //     value: /^[0-9]\d*(\.\d+)?$/i,
-                      //     message: 'Invalid Number.',
-                      //   },
-                      //   // maxLength: 4,
-                      // }}
-                      handleChange={() => {}}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.trimmingLoss}
-                      disabled={true}
-                    />
-                  </Col> */}
-                {/* <Col md="2">
-                    <TextFieldHookForm
-                      label={`Bar Cutting Allowance`}
-                      name={'barCutting'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      // rules={{
-                      //   required: true,
-                      //   pattern: {
-                      //     //value: /^[0-9]*$/i,
-                      //     value: /^[0-9]\d*(\.\d+)?$/i,
-                      //     message: 'Invalid Number.',
-                      //   },
-                      //   // maxLength: 4,
-                      // }}
-                      handleChange={() => {}}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.barCutting}
-                      disabled={true}
-                    />
-                  </Col> */}
-                {/* <Col md="2">
-                    <TextFieldHookForm
-                      label={`Billet Heating Loss`}
-                      name={'billetLoss'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      // rules={{
-                      //   required: true,
-                      //   pattern: {
-                      //     //value: /^[0-9]*$/i,
-                      //     value: /^[0-9]\d*(\.\d+)?$/i,
-                      //     message: 'Invalid Number.',
-                      //   },
-                      //   // maxLength: 4,
-                      // }}
-                      handleChange={() => {}}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.billetLoss}
-                      disabled={true}
-                    />
-                  </Col> */}
               </Row>
 
               <LossStandardTable
@@ -394,6 +312,9 @@ function Plastic(props) {
                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
                 tableValue={tableData}
                 CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                burningLoss={setBurningAllowance}
+                burningValue={WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== null ? WeightCalculatorRequest.BurningValue : ''}
+                isPlastic={true}
               />
 
               <Row className={'mt25'}>
@@ -472,6 +393,22 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.scrapWeight}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Burning Allowance`}
+                    name={'burningAllownace'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.burningAllownace}
                     disabled={true}
                   />
                 </Col>

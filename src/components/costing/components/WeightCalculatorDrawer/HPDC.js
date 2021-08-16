@@ -67,16 +67,16 @@ function HPDC(props) {
     // })
     const dropDown = [
         {
-            label: 'Machining Loss',
-            value: 'MachiningLoss',
+            label: 'Processing Allowance',
+            value: 1,
         },
         {
-            label: 'Processing Allowance',
-            value: 'ProcessingAllowance',
+            label: 'Machining Loss',
+            value: 3,
         },
         {
             label: 'Rejection Allowance',
-            value: 'RejectionAllowance',
+            value: 4,
         },
     ]
 
