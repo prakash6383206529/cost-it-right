@@ -775,9 +775,9 @@ class VendorListing extends Component {
 function mapStateToProps({ comman, supplier, auth, }) {
     const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList } = supplier;
     const { countryList } = comman;
-    const { leftMenuData } = auth;
+    const { leftMenuData, topAndLeftMenuData } = auth;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, topAndLeftMenuData };
 }
 
 /**
