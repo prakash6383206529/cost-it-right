@@ -7,7 +7,7 @@ import {
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
-    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA,
+    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST,
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -1595,6 +1595,32 @@ export function getTopAndLeftMenuData(callback) {
                     payload: response.data.Data,
                 });
                 callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSimulationTechnologySelectList
+ * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
+ */
+export function getMastersSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMastersSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MASTER_SELECT_LIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

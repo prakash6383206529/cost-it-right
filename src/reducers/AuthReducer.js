@@ -33,6 +33,7 @@ import {
     SIMULATION_LEVEL_DATALIST_API,
     GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
     GET_TOP_AND_LEFT_MENU_DATA,
+    GET_MASTER_SELECT_LIST
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -294,6 +295,13 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 topAndLeftMenuData: action.payload
+            }
+        case GET_MASTER_SELECT_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                masterList: action.payload
             }
         default:
             return state;
