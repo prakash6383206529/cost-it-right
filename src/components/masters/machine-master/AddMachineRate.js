@@ -1134,9 +1134,9 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
