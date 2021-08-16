@@ -8,10 +8,9 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
-import { ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -31,7 +30,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
 
 class ExchangeRateListing extends Component {
     constructor(props) {
@@ -56,49 +54,52 @@ class ExchangeRateListing extends Component {
         }
     }
 
-    UNSAFE_componentWillMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === EXCHANGE_RATE)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                    }, () => {
-                        setTimeout(() => {
-
-                            this.props.getCurrencySelectList(() => { })
-                            this.getTableListData()
-                        }, 500);
-                    })
-                }
-            }
-        })
-
-    }
-
     componentDidMount() {
+        this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
-
             this.props.getCurrencySelectList(() => { })
             this.getTableListData()
         }, 500);
     }
 
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === EXCHANGE_RATE)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                }, () => {
+                    setTimeout(() => {
+                        this.props.getCurrencySelectList(() => { })
+                        this.getTableListData()
+                    }, 500);
+                })
+            }
+
+        }
+    }
 
     componentWillUnmount() {
         this.props.getExchangeRateDataList(false, {}, (res) => { })
     }
-
 
     /**
     * @method getTableListData
@@ -595,8 +596,8 @@ class ExchangeRateListing extends Component {
 */
 function mapStateToProps({ exchangeRate, auth }) {
     const { currencySelectList, exchangeRateDataList } = exchangeRate;
-    const { leftMenuData, initialConfiguration } = auth;
-    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration };
+    const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
+    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration, topAndLeftMenuData };
 }
 
 /**

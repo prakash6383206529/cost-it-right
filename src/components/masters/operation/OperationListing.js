@@ -9,7 +9,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
     getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
@@ -18,7 +17,7 @@ import {
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { OPERATION, OperationMaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -64,32 +63,42 @@ class OperationListing extends Component {
     }
 
     componentDidMount() {
-
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === OPERATION)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                    })
-                }
-            }
-        })
-
+        this.applyPermission(this.props.topAndLeftMenuData)
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
+    }
+
+
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === OPERATION)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                })
+            }
+
+        }
     }
 
     // Get updated Supplier's list after any action performed.
@@ -769,7 +778,7 @@ class OperationListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
@@ -795,7 +804,7 @@ domLayout='autoHeight'
                                 {/* <AgGridColumn field="IsActive" headerName="Status"
                                 cellRenderer={'statusButtonFormatter'} 
                                 ></AgGridColumn> */}
-                                <AgGridColumn field="OperationId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -829,8 +838,8 @@ domLayout='autoHeight'
 */
 function mapStateToProps({ otherOperation, auth }) {
     const { loading, filterOperation, operationList } = otherOperation;
-    const { leftMenuData, initialConfiguration } = auth;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration };
+    const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData };
 }
 
 /**
