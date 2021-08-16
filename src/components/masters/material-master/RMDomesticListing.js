@@ -28,6 +28,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
+import { userDetails } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -99,6 +100,7 @@ class RMDomesticListing extends Component {
                 vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
                 technology: [],
                 value: { min: 0, max: 0 },
+                companyCode: isSimulation ? userDetails().DepartmentCode : null
             }, () => {
                 this.getInitialRange()
                 this.getDataList(null)
@@ -126,6 +128,7 @@ class RMDomesticListing extends Component {
             technologyId: this.props.isSimulation ? this.props.technology : 0,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
+            companyCode: isSimulation ? userDetails().DepartmentCode : null
         }
         this.props.getRMDomesticDataList(filterData, (res) => {
             if (res && res.status === 200) {
@@ -178,6 +181,7 @@ class RMDomesticListing extends Component {
             technologyId: this.props.isSimulation ? this.props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
+            companyCode: isSimulation ? userDetails().DepartmentCode : null
         }
         this.props.getRMDomesticDataList(filterData, (res) => {
             if (res && res.status === 200) {
@@ -971,6 +975,7 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                                    <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
