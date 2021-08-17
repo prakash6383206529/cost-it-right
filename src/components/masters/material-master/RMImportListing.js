@@ -98,7 +98,7 @@ class RMImportListing extends Component {
         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
         technology: [],
-        companyCode: isSimulation ? userDetails().DepartmentCode : null,
+        departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
         value: { min: 0, max: 0 },
       }, () => {
         this.getInitialRange()
@@ -127,7 +127,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      companyCode: isSimulation ? userDetails().DepartmentCode : null
+      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -172,7 +172,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      companyCode: isSimulation ? userDetails().DepartmentCode : null
+      departmentCode: isSimulation ? userDetails().DepartmentCode : null
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -250,6 +250,12 @@ class RMImportListing extends Component {
     const { initialConfiguration } = this.props
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+  }
+
+  companyFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return `${cellValue}(${rowData.DepartmentCode})`
   }
 
 
@@ -690,7 +696,8 @@ class RMImportListing extends Component {
       customNoRowsOverlay: NoContentFound,
       freightCostFormatter: this.freightCostFormatter,
       shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
+      costFormatter: this.costFormatter,
+      companyFormatter: this.companyFormatter
     };
 
 
@@ -1004,7 +1011,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                  <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>
+                  <AgGridColumn field="DepartmentName" headerName="Company Name" cellRenderer='companyFormatter'></AgGridColumn>
                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
