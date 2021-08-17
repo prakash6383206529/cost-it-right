@@ -16,7 +16,6 @@ import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -516,6 +515,11 @@ class InterestRateListing extends Component {
   }
 
 
+  plantFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return (cellValue != null && cellValue !== '-') ? `${cellValue}(${rowData.PlantCode})` : '-';
+  }
 
 
 
@@ -548,22 +552,10 @@ class InterestRateListing extends Component {
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
-      hyphenFormatter: this.hyphenFormatter
+      hyphenFormatter: this.hyphenFormatter,
+      plantFormatter: this.plantFormatter
     };
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.interestRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    };
 
     return (
       <>
@@ -719,35 +711,6 @@ class InterestRateListing extends Component {
               </Col>
             </Row>
           </form>
-          {/* <BootstrapTable
-            data={this.props.interestRateDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${InterestMaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass='my-custom-header'
-            pagination>
-            <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="ICCApplicability" columnTitle={true} dataAlign="left" >{this.renderIccApp()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="ICCPercent" columnTitle={true} dataAlign="left" >{this.renderAnnualIcc()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="PaymentTermApplicability" columnTitle={true} dataAlign="left" >{this.renderPaymentTerm()}</TableHeaderColumn>
-            <TableHeaderColumn width={110} dataField="RepaymentPeriod" columnTitle={true} dataAlign="left" >{this.renderRepayment()}</TableHeaderColumn>
-            <TableHeaderColumn width={130} dataField="PaymentTermPercent" columnTitle={true} dataAlign="left" >{this.renderInterestRate()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="EffectiveDate" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataAlign="right" searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-          </BootstrapTable> */}
-
-
-
-
-
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
@@ -775,6 +738,7 @@ class InterestRateListing extends Component {
               >
                 <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="PlantName" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability"></AgGridColumn>

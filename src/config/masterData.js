@@ -430,6 +430,8 @@ export const Overhead = [
     { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'PlantName', value: 'PlantName' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'Remarks', value: 'Remarks', },
 ]
 
@@ -444,6 +446,8 @@ export const OverheadTempData = [
         'OverheadRMPercentage': '10',
         'VendorName': 'Vendor123',
         'VendorCode': 'Vendor Code1',
+        "PlantName": '1511',
+        "PlantCode": '1511',
         'Remarks': 'Remark Text',
     }
 ]
@@ -535,6 +539,8 @@ export const Profit = [
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'PlantName', value: 'PlantName' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'Remarks', value: 'Remarks', },
 ]
 
@@ -549,6 +555,8 @@ export const ProfitTempData = [
         'ProfitRMPercentage': '10',
         'VendorName': 'Vendor Name',
         'VendorCode': 'Vendor Code123',
+        "PlantName": '1511',
+        "PlantCode": '1511',
         'Remarks': 'Remark Text',
     }
 ]
@@ -1311,6 +1319,8 @@ export const ZBCInterestRateTempData = [
 export const VBCInterestRate = [
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'PlantName', value: 'PlantName' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
     { label: 'ICCPercent', value: 'ICCPercent', }, //*
     { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
@@ -1323,6 +1333,8 @@ export const VBCInterestRateTempData = [
     {
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
+        'PlantName': '1511',
+        "PlantCode": '1511',
         'ICCApplicability': 'RM+CC',
         'ICCPercent': '10   ',
         'PaymentTermApplicability': 'RM',
@@ -2358,7 +2370,8 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "PaymentTermApplicability", value: "PaymentTermApplicability", },
     { label: "RepaymentPeriod", value: "RepaymentPeriod", },
     { label: "PaymentTermPercent", value: "PaymentTermPercent", },
-    { label: "EffectiveDate", value: "EffectiveDate", }
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "PlantName", value: "PlantName" }
 ]
 
 export const LABOUR_DOWNLOAD_EXCEl = [
@@ -2465,6 +2478,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "OverheadBOPPercentage", value: "OverheadBOPPercentage", },
     { label: "OverheadMachiningCCPercentage", value: "OverheadMachiningCCPercentage", },
     { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "PlantName", value: "PlantName" }
 ]
 
 export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
