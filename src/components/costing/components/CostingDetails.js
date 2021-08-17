@@ -1027,11 +1027,11 @@ function CostingDetails(props) {
     setStepOne(true);
     setStepTwo(false);
     setZBCPlantGrid([])
+    setVBCVendorGrid([])
     nextToggle()
-    // 
+
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
-      //setPart({ label: part.label, value: part.value })
       setValue('PartName', Data.PartName)
       setValue("Description", Data.Description)
       setValue("ECNNumber", Data.ECNNumber)
@@ -1349,6 +1349,7 @@ function CostingDetails(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
+              {/* BASIS OF TECHNOLOGY AND PART GET THE DETAILS OF PART.  */}
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 {stepOne && (
                   <>
@@ -1545,8 +1546,9 @@ function CostingDetails(props) {
                               <div className={"plus"}></div>ADD PLANT
                             </button>
                           </Col>
-                          {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
+
+                        {/* ZBC PLANT GRID FOR COSTING */}
                         <Row>
                           <Col md="12">
                             <Table
@@ -1682,8 +1684,9 @@ function CostingDetails(props) {
                               ""
                             )}
                           </Col>
-                          {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
+
+                        {/* VBC PLANT GRID FOR COSTING */}
                         <Row>
                           <Col md="12">
                             <Table
@@ -1713,13 +1716,9 @@ function CostingDetails(props) {
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
-                                  //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
-                                  //AS OF NOW 25-03-2021
-
                                   return (
                                     <tr key={index}>
                                       <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {/* {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>} */}
                                       {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
@@ -1803,13 +1802,6 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
-
-                          {/* client based costing button */}
-                          {/* <button type={"button"} className="reset-btn w-auto px-3 mr5" onClick={toggleCLientCosting} >{"Client based costing"}</button> */}
-                          {/* client based costing button */}
-
-
-
                           <button type={"button"} className="reset-btn" onClick={cancel} >
                             <div className="cancel-icon"></div>
                             {"Clear"}

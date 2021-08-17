@@ -202,9 +202,9 @@ function CostingHeaderTabs(props) {
   }, [effectiveDate])
 
   /**
-* @method closeVisualDrawer
-* @description CLOSE VISUAL AD DRAWER
-*/
+  * @method closeVisualDrawer
+  * @description CLOSE VISUAL AD DRAWER
+  */
   const closeVisualDrawer = () => {
     setIsOpenViewHirarchy(false)
   }
@@ -332,6 +332,7 @@ function CostingHeaderTabs(props) {
           </TabContent>
         </div>
       </div >
+
       {IsOpenViewHirarchy && <BOMViewer
         isOpen={IsOpenViewHirarchy}
         closeDrawer={closeVisualDrawer}
@@ -341,6 +342,7 @@ function CostingHeaderTabs(props) {
         isFromVishualAd={true}
         NewAddedLevelOneChilds={[]}
       />}
+
     </ >
   );
 }
