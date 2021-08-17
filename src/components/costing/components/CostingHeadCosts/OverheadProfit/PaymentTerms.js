@@ -69,7 +69,8 @@ function PaymentTerms(props) {
         if (IsPaymentTermsApplicable === true) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                IsVendor: costData.IsVendor
+                IsVendor: costData.IsVendor,
+                Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
             }
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
 

@@ -50,7 +50,8 @@ function Icc(props) {
         if (IsInventoryApplicable === true) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                IsVendor: costData.IsVendor
+                IsVendor: costData.IsVendor,
+                Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
