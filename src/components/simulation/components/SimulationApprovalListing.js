@@ -189,8 +189,8 @@ function SimulationApprovalListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="View mr5" type={'button'} onClick={() => viewDetails(row)} />
-                {row.Status === DRAFT && <button className="Delete" type={'button'} onClick={() => deleteItem(row)} />}
+                <button className="View" type={'button'} onClick={() => viewDetails(row)} />
+                {row.Status === DRAFT && <button className="Delete ml-1" type={'button'} onClick={() => deleteItem(row)} />}
             </>
         )
     }
