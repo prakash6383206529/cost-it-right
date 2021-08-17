@@ -366,22 +366,17 @@ function LossStandardTable(props) {
 
             {/* <span className="col-sm-4 ">{'30'}</span> */}
           </Table>
-          {
-            props.isPlastic &&
             <div className="col-md-12 text-right bluefooter-butn border">
-              <span className="w-100">
+            {props.isPlastic &&
+              <span className="w-50 d-inline-block text-left">
                 {`Burning Loss Weight:`}
                 {checkForDecimalAndNull(burningWeight, trim)}
+              </span>}
+              <span className="w-50 d-inline-block">
+                {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight:`}
+                {checkForDecimalAndNull(findLostWeight(tableData), trim)}
               </span>
             </div>
-          }
-          <div className="col-md-12 text-right bluefooter-butn border">
-            <span className="w-100">
-              {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight:`}
-              {checkForDecimalAndNull(findLostWeight(tableData), trim)}
-            </span>
-          </div>
-
         </Col>
 
         {/* <Row>
