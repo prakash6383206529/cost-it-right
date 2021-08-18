@@ -116,7 +116,6 @@ class RMDomesticListing extends Component {
     getInitialRange = () => {
         const { value } = this.state;
         const { filteredRMData, isSimulation } = this.props
-        console.log(userDetails().DepartmentCode, "userDetails().DepartmentCode");
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
@@ -180,7 +179,7 @@ class RMDomesticListing extends Component {
             technologyId: this.props.isSimulation ? this.props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
-            departmentCode: isSimulation ? userDetails().DepartmentCode : ''
+            departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
         }
         this.props.getRMDomesticDataList(filterData, (res) => {
             if (res && res.status === 200) {
@@ -292,10 +291,13 @@ class RMDomesticListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
+
+
     companyFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return `${cellValue}(${rowData.DepartmentCode})`
+
+        return (cellValue !== null && cellValue !== '-') ? `${cellValue}(${rowData.DepartmentCode !== null ? rowData.DepartmentCode : '-'})` : '-'
     }
 
     /**
@@ -945,7 +947,7 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                                    <AgGridColumn field="DepartmentName" headerName="Company Name" cellRenderer='companyFormatter'></AgGridColumn>
+                                    <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
                                     {/* <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn> */}
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>

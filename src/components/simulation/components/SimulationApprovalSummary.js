@@ -543,10 +543,10 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Technology:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{'121'}</span>
-                                            </th>
+                                            </th> */}
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
@@ -572,14 +572,14 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
                                                 <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
                                                 <span className="d-block">{'120'}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
                                                 <span className="d-block">{'12001'}</span>
-                                            </th>
+                                            </th> */}
                                         </tr>
                                     </thead>
                                 </Table>

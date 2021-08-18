@@ -901,7 +901,7 @@ class AddRMImport extends Component {
         SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
@@ -914,7 +914,7 @@ class AddRMImport extends Component {
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
-        JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -978,7 +978,7 @@ class AddRMImport extends Component {
         SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -995,7 +995,7 @@ class AddRMImport extends Component {
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
-        JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -1541,8 +1541,8 @@ class AddRMImport extends Component {
                             <>
                               <Col md="4">
                                 <Field
-                                  label={`Jali Scrap Cost  (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label}) `}
-                                  name={"JaliScrapCost"}
+                                  label={`Circle Scrap Cost  (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label}) `}
+                                  name={"CircleScrapCost"}
                                   type="text"
                                   placeholder={""}
                                   validate={[maxLength15, decimalLengthsix]}
@@ -1555,8 +1555,8 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="4">
                                 <Field
-                                  label={`Circle Scrap Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
-                                  name={"CircleScrapCost"}
+                                  label={`Jali Scrap Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                  name={"JaliScrapCost"}
                                   type="text"
                                   placeholder={""}
                                   validate={[required, maxLength15, decimalLengthsix]}

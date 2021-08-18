@@ -172,7 +172,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      departmentCode: isSimulation ? userDetails().DepartmentCode : null
+      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -255,9 +255,9 @@ class RMImportListing extends Component {
   companyFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return `${cellValue}(${rowData.DepartmentCode})`
-  }
 
+    return (cellValue !== null && cellValue !== '-') ? `${cellValue}(${rowData.DepartmentCode !== null ? rowData.DepartmentCode : '-'})` : '-'
+  }
 
 
   /**
@@ -316,69 +316,7 @@ class RMImportListing extends Component {
   }
 
 
-  /**
-  * @method indexFormatter
-  * @description Renders serial number
-  */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = this.refs;
-    let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    let serialNumber = '';
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1;
-    } else {
-      serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    }
-    return serialNumber;
-  }
 
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
-
-  renderCostingHead = () => {
-    return <>Costing <br />Head </>
-  }
-
-  renderRawMaterial = () => {
-    return <>Raw <br />Material </>
-  }
-
-  renderRMGrade = () => {
-    return <>RM <br />Grade </>
-  }
-
-  renderRMSpec = () => {
-    return <>RM <br />Spec </>
-  }
-
-  renderVendorLocation = () => {
-    return <>Vendor <br />Location </>
-  }
-
-  renderBasicRate = () => {
-    return <>Basic <br />Rate(INR) </>
-  }
-
-  rendorFreightRate = () => {
-    return <>RM Freight <br /> Cost(INR)</>
-  }
-
-  renderShearingCost = () => {
-    return <>Shearing <br /> Cost(INR)</>
-  }
-  renderScrapRate = () => {
-    return <>Scrap <br />Rate(INR) </>
-  }
-
-  renderNetCost = () => {
-    return <>Net <br />Cost(INR) </>
-  }
-
-  renderEffectiveDate = () => {
-    return <>Effective <br />Date</>
-  }
 
   /**
   * @method renderListing
@@ -941,43 +879,7 @@ class RMImportListing extends Component {
         </form>
         <Row>
           <Col>
-            {/*
-            <BootstrapTable
-              data={this.props.rmImportDataList}
-              striped={false}
-              bordered={false}
-              hover={false}
-              options={options}
-              search
-              //ignoreSinglePage
-              ref={'table'}
-              // exportCSV={DownloadAccessibility}
-              exportCSV={this.props.isSimulation ? false : true}
-              csvFileName={`${RmImport}.csv`}
-              pagination>
-         
-              <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="MaterialType" width={100} columnTitle={true} dataAlign="left" >{'Material'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="Plant" searchable={false} >{'Plant'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate"  >{this.renderBasicRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={this.freightCostFormatter} searchable={false}>{this.rendorFreightRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={this.shearingCostFormatter} searchable={false}>{this.renderShearingCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCostConversion" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-              {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
-              {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
 
-            </BootstrapTable> */}
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
@@ -1011,7 +913,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                  <AgGridColumn field="DepartmentName" headerName="Company Name" cellRenderer='companyFormatter'></AgGridColumn>
+                  <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>

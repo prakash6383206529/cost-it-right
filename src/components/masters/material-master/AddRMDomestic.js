@@ -920,7 +920,7 @@ class AddRMDomestic extends Component {
       BasicRatePerUOM: values.BasicRate,
       RMFreightCost: values.FrieghtCharge,
       RMShearingCost: values.ShearingCost,
-      ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
+      ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
       NetLandedCost: netLandedCost,
       LoggedInUserId: loggedInUserId(),
       EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
@@ -930,7 +930,7 @@ class AddRMDomestic extends Component {
       CutOffPrice: values.cutOffPrice,
       IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
       RawMaterialCode: values.Code,
-      JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
+      JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
     }
     if (isEditFlag) {
 
@@ -1000,7 +1000,7 @@ class AddRMDomestic extends Component {
         BasicRatePerUOM: values.BasicRate,
         RMFreightCost: values.FrieghtCharge,
         RMShearingCost: values.ShearingCost,
-        ScrapRate: this.state.showExtraCost ? values.CircleScrapCost : values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: values.NetLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         Remark: remarks,
@@ -1013,7 +1013,7 @@ class AddRMDomestic extends Component {
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
         RawMaterialCode: values.Code,
-        JaliScrapCost: values.JaliScrapCost ? values.JaliScrapCost : ''
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -1529,8 +1529,8 @@ class AddRMDomestic extends Component {
                             <>
                               <Col md="4">
                                 <Field
-                                  label={`Jali Scrap Cost  (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
-                                  name={"JaliScrapCost"}
+                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
+                                  name={"CircleScrapCost"}
                                   type="text"
                                   placeholder={""}
                                   validate={[maxLength15, decimalLengthsix]}
@@ -1543,8 +1543,8 @@ class AddRMDomestic extends Component {
                               </Col>
                               <Col md="4">
                                 <Field
-                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
-                                  name={"CircleScrapCost"}
+                                  label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                                  name={"JaliScrapCost"}
                                   type="text"
                                   placeholder={""}
                                   validate={[required, maxLength15, decimalLengthsix]}
