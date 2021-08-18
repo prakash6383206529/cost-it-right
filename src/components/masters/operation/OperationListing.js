@@ -529,7 +529,7 @@ class OperationListing extends Component {
         };
 
         return (
-            <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
@@ -747,7 +747,7 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </ >
+            </div>
         );
     }
 }
