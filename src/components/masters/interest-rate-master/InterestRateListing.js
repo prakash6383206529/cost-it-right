@@ -214,9 +214,11 @@ class InterestRateListing extends Component {
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
+
 
   renderEffectiveDate = () => {
     return <> Effective Date </>
@@ -301,7 +303,7 @@ class InterestRateListing extends Component {
   statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <label htmlFor="normal-switch"  className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}

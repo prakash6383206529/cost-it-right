@@ -222,9 +222,11 @@ class PowerListing extends Component {
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
+
 
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
@@ -705,7 +707,7 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -722,14 +724,14 @@ domLayout='autoHeight'
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="PowerId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
 
                 {this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}
@@ -746,7 +748,7 @@ domLayout='autoHeight'
                     <AgGridColumn field="VendorName"></AgGridColumn>
                     <AgGridColumn field="VendorPlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
-                    <AgGridColumn field="PowerDetailId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

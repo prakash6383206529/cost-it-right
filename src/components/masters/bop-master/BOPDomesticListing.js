@@ -239,8 +239,9 @@ class BOPDomesticListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -617,7 +618,7 @@ class BOPDomesticListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    domLayout='autoHeight'
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopDomesticList}

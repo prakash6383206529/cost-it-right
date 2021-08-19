@@ -172,9 +172,11 @@ class FuelListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
+
 
     renderEffectiveDate = () => {
         return <>Effective Date</>
@@ -528,7 +530,7 @@ class FuelListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.fuelDataList}
                                     pagination={true}
@@ -548,7 +550,7 @@ domLayout='autoHeight'
                                     <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="FuelDetailId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

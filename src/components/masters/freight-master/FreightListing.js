@@ -240,9 +240,11 @@ class FreightListing extends Component {
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
+
 
   /**
   * @method renderListing
@@ -614,7 +616,7 @@ class FreightListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.freightDetail}
                   pagination={true}
@@ -633,7 +635,7 @@ domLayout='autoHeight'
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

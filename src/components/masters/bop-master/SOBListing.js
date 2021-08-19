@@ -381,7 +381,6 @@ class SOBListing extends Component {
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateFormatter: this.effectiveDateFormatter
     };
 
     return (
@@ -500,7 +499,7 @@ class SOBListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   domLayout='autoHeight'
                   rowData={this.props.bopSobList}
