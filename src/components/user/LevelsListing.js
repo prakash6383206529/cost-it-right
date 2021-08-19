@@ -425,28 +425,6 @@ class LevelsListing extends Component {
 									<Row>
 										<Col className="mt-0 level-table" md="12">
 
-											{/* <BootstrapTable
-											data={this.props.usersListByTechnologyAndLevel}
-											striped={false}
-											bordered={false}
-											hover={false}
-											options={options}
-											search
-											ignoreSinglePage
-											ref={'table'}
-											trClassName={'userlisting-row'}
-											tableHeaderClass={'my-custom-header'}
-											pagination>
-											<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-											<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-											<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
-													<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
-
-													{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
-											{/* </BootstrapTable> */}
-
 											<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 												<div className="ag-grid-header">
 													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -472,7 +450,7 @@ class LevelsListing extends Component {
 														frameworkComponents={frameworkComponents}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="180" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads"></AgGridColumn>
+														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads/Masters"></AgGridColumn>
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>

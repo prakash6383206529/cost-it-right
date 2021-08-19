@@ -12,7 +12,7 @@ import { renderPasswordInputField, focusOnError, renderEmailInputField, renderTe
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
-  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI
+  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId
 } from "../../actions/auth/AuthActions";
 import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -55,7 +55,7 @@ class UserRegistration extends Component {
       UserId: '',
       acc1: false,
       acc2: false,
-
+      acc3: false,
       IsShowAdditionalPermission: false,
       Modules: [],
       oldModules: [],
@@ -74,6 +74,12 @@ class UserRegistration extends Component {
       oldHeadLevelGrid: [],
       simulationLevelEditIndex: '',
       isSimulationEditIndex: false,
+      master: [],
+      masterLevel: [],
+      masterLevelGrid: [],
+      oldMasterLevelGrid: [],
+      masterLevelEditIndex: '',
+      isMasterEditIndex: false,
     };
   }
 
@@ -94,6 +100,7 @@ class UserRegistration extends Component {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
     this.props.getSimulationTechnologySelectList(() => { })
+    this.props.getMastersSelectList(() => { })
   }
 
   /**
@@ -180,7 +187,7 @@ class UserRegistration extends Component {
   * @description Used show listing
   */
   searchableSelectType = (label) => {
-    const { roleList, departmentList, cityList, technologyList, levelSelectList, simulationTechnologyList, simulationLevelSelectList } = this.props;
+    const { roleList, departmentList, cityList, technologyList, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterLevelSelectList, masterList } = this.props;
     const temp = [];
 
     if (label === 'role') {
@@ -224,6 +231,14 @@ class UserRegistration extends Component {
       });
       return temp;
     }
+    if (label === 'masters') {
+      masterList && masterList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
 
     if (label === 'level') {
       levelSelectList && levelSelectList.map(item => {
@@ -240,6 +255,15 @@ class UserRegistration extends Component {
       })
       return temp;
     }
+
+    if (label === 'masterLevel') {
+      masterLevelSelectList && masterLevelSelectList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+      })
+      return temp;
+    }
+
 
     if (label === 'multiDepartment') {
       departmentList && departmentList.map((item) => {
@@ -344,6 +368,7 @@ class UserRegistration extends Component {
 
           this.getUsersTechnologyLevelData(data.UserId)
           this.getUsersSimulationTechnologyLevelData(data.UserId)
+          this.getUsersMasterLevelData(data.UserId)
           if (data.passwordFlag) {
             $('input[type="password"]').get(0).focus()
           }
@@ -402,6 +427,25 @@ class UserRegistration extends Component {
         this.setState({
           HeadLevelGrid: TechnologySimulationLevels,
           oldHeadLevelGrid: TechnologySimulationLevels,
+        })
+      }
+    })
+  }
+
+
+  /**
+ * @method getUsersMasterLevelData
+ * @description used to get users MASTER level listing
+ */
+  getUsersMasterLevelData = (UserId) => {
+    this.props.getUsersMasterLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let masterSimulationLevel = Data.MasterLevels;
+
+        this.setState({
+          masterLevelGrid: masterSimulationLevel,
+          oldMasterLevelGrid: masterSimulationLevel,
         })
       }
     })
@@ -499,10 +543,28 @@ class UserRegistration extends Component {
   };
 
 
+  /**
+   * @method headHandler
+   * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
+  */
+
   headHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ simulationHeads: newValue, simualtionLevel: [] });
       this.props.getSimualationLevelByTechnology(newValue.value, res => { })
+    } else {
+      this.setState({ simulationHeads: [] });
+    }
+  };
+
+  /**
+   * @method masterHandler
+   * @description USED TO HANLE MASTER AND CALL MASTER LEVEL API
+  */
+  masterHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ master: newValue, masterLevel: [] });
+      this.props.getMasterLevelByMasterId(newValue.value, res => { })
     } else {
       this.setState({ simulationHeads: [] });
     }
@@ -523,14 +585,25 @@ class UserRegistration extends Component {
 
 
   /**
-  * @method levelHandler
-  * @description Used to handle 
+  * @method simualtionLevelHandler
+  * @description Used to handle  simulation level handler
   */
   simualtionLevelHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ simualtionLevel: newValue });
     } else {
       this.setState({ simualtionLevel: [] });
+    }
+  };
+  /**
+  * @method masterLevelHandler
+  * @description Used to handle  master level
+  */
+  masterLevelHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ masterLevel: newValue });
+    } else {
+      this.setState({ master: [] });
     }
   };
 
@@ -613,7 +686,7 @@ class UserRegistration extends Component {
 
 
   /**
-   * @method setTechnologyLevel
+   * @method setSimualtionHeadLevel
    * @description Used to handle setTechnologyLevel
    */
   setSimualtionHeadLevel = () => {
@@ -652,7 +725,7 @@ class UserRegistration extends Component {
   };
 
   /**
-  * @method updateTechnologyLevel
+  * @method updateSimualtionHeadLevel
   * @description Used to handle updateTechnologyLevel
   */
   updateSimualtionHeadLevel = () => {
@@ -679,8 +752,8 @@ class UserRegistration extends Component {
   };
 
   /**
-  * @method resetTechnologyLevel
-  * @description Used to handle setTechnologyLevel
+  * @method resetSimualtionHeadLevel
+  * @description Used to handle simulation data
   */
   resetSimualtionHeadLevel = () => {
     this.setState({
@@ -695,7 +768,7 @@ class UserRegistration extends Component {
 
   /**
   * @method editItemDetails
-  * @description used to Reset form
+  * @description used to edit costing technology and level
   */
   editItemDetails = (index) => {
     const { TechnologyLevelGrid } = this.state;
@@ -730,7 +803,7 @@ class UserRegistration extends Component {
 
   /**
  * @method editItemDetails
- * @description used to Reset form
+ * @description used to edit simulation head and level
  */
   editSimulationItemDetails = (index) => {
     const { HeadLevelGrid } = this.state;
@@ -746,7 +819,7 @@ class UserRegistration extends Component {
 
   /**
   * @method deleteItem
-  * @description used to Reset form
+  * @description used to DELETE form
   */
   deleteSimulationItem = (index) => {
     const { HeadLevelGrid } = this.state;
@@ -759,6 +832,119 @@ class UserRegistration extends Component {
 
     this.setState({
       HeadLevelGrid: tempData
+    })
+  }
+
+  /***********MASTER LEVEL STARTS HERE**************/
+  /**
+   * @method setMasterLevel
+   * @description Used to handle master level
+   */
+  setMasterLevel = () => {
+    const { master, masterLevel, masterLevelGrid } = this.state;
+    const tempArray = [];
+
+    if (master.length === 0 || masterLevel.length === 0) {
+      toastr.warning('Please select master and level')
+      return false;
+    }
+
+    const isExistTechnology = masterLevelGrid && masterLevelGrid.findIndex(el => {
+      return Number(el.MasterId) === Number(master.value)
+    })
+
+
+    if (isExistTechnology !== -1) {
+      // toastr.warning('Technology and Level already allowed.')
+      toastr.warning('A master cannot have multiple level.')
+      return false;
+    }
+
+    tempArray.push(...masterLevelGrid, {
+      Master: master.label,
+      MasterId: master.value,
+      Level: masterLevel.label,
+      LevelId: masterLevel.value,
+    })
+
+    this.setState({
+      masterLevelGrid: tempArray,
+      masterLevel: [],
+      master: [],
+    });
+  };
+
+  /**
+  * @method updateMasterLevel
+  * @description Used to handle update Master and it's level
+  */
+  updateMasterLevel = () => {
+    const { master, masterLevel, masterLevelGrid, masterLevelEditIndex } = this.state;
+    let tempArray = [];
+
+    let tempData = masterLevelGrid[masterLevelEditIndex];
+    tempData = {
+      Master: master.label,
+      MasterId: master.value,
+      Level: masterLevel.label,
+      LevelId: masterLevel.value,
+    }
+
+    tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
+
+    this.setState({
+      masterLevelGrid: tempArray,
+      masterLevel: [],
+      master: [],
+      masterLevelEditIndex: '',
+      isMasterEditIndex: false,
+    });
+  };
+
+  /**
+  * @method resetMasterLevel
+  * @description Used to reset master data
+  */
+  resetMasterLevel = () => {
+    this.setState({
+      masterLevel: [],
+      master: [],
+      masterLevelEditIndex: '',
+      isMasterEditIndex: false,
+    });
+  };
+
+  /**
+ * @method editMasterItem
+ * @description used to edit master detail form
+ */
+  editMasterItem = (index) => {
+    const { masterLevelGrid } = this.state;
+    const tempData = masterLevelGrid[index];
+    this.props.getMasterLevelByMasterId(tempData.MasterId, res => { })
+    this.setState({
+      masterLevelEditIndex: index,
+      isMasterEditIndex: true,
+      master: { label: tempData.Master, value: tempData.MasterId },
+      masterLevel: { label: tempData.Level, value: tempData.LevelId },
+    })
+  }
+
+  /**
+  * @method deleteItem
+  * @description used to delete master item 
+  */
+  deleteMasterItem = (index) => {
+    const { masterLevelGrid } = this.state;
+    let tempData = masterLevelGrid.filter((item, i) => {
+      if (i === index) {
+        return false;
+      }
+      return true;
+    });
+
+    this.setState({
+      masterLevelGrid: tempData
     })
   }
 
@@ -822,19 +1008,13 @@ class UserRegistration extends Component {
 
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
-      oldTechnologyLevelGrid, UserId, HeadLevelGrid, oldHeadLevelGrid } = this.state;
+      oldTechnologyLevelGrid, UserId, HeadLevelGrid, oldHeadLevelGrid, masterLevelGrid } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
     if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
       toastr.warning('Users technology level should not be empty.')
       return false;
     }
-    // if (HeadLevelGrid && HeadLevelGrid.length === 0) {
-    //   toastr.warning('Users head level should not be empty.')
-    //   return false
-    // }
-
-    //this.setState({ isSubmitted: true })
 
     let tempTechnologyLevelArray = []
 
@@ -859,6 +1039,16 @@ class UserRegistration extends Component {
 
       })
       return null
+    })
+
+    let tempMasterLevelArray = []
+    masterLevelGrid && masterLevelGrid.map((item, index) => {
+      tempMasterLevelArray.push({
+        MasterId: item.MasterId,
+        LevelId: item.LevelId,
+        Master: item.Master,
+        Level: item.Level,
+      })
     })
 
     let multiDeptArr = []
@@ -913,7 +1103,8 @@ class UserRegistration extends Component {
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
-        SimulationTechnologyLevels: tempHeadLevelArray
+        SimulationTechnologyLevels: tempHeadLevelArray,
+        MasterLevels: tempMasterLevelArray
       }
 
       const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
@@ -985,7 +1176,8 @@ class UserRegistration extends Component {
         TechnologyLevels: tempTechnologyLevelArray,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
-        SimulationTechnologyLevels: tempHeadLevelArray
+        SimulationTechnologyLevels: tempHeadLevelArray,
+        MasterLevels: tempMasterLevelArray
       }
       this.props.registerUserAPI(userData, res => {
         this.setState({ isSubmitted: false, })
@@ -1574,10 +1766,110 @@ class UserRegistration extends Component {
                         </div>
                       </>
                     }
+                    <Row>
+                      <Col md="8">
+                        <HeaderTitle title={'Masters & Level:'} customClass={''} />
+                      </Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
+
+                          {this.state.acc2 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    {this.state.acc3 &&
+                      <>
+                        <div className="row form-group">
+                          <div className="col-md-3">
+                            <Field
+                              name="Master"
+                              type="text"
+                              label="Master"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('masters')}
+                              handleChangeDescription={this.masterHandler}
+                              valueDescription={this.state.master}
+                            />
+                          </div>
+                          <div className="col-md-3">
+                            <Field
+                              name="masterLevel"
+                              type="text"
+                              label="Level"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('masterLevel')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.masterLevelHandler}
+                              valueDescription={this.state.masterLevel}
+                            />
+                          </div>
+                          <div className="col-md-3 btn-mr-rate d-flex">
+                            {this.state.isMasterEditIndex ?
+                              <>
+                                <button
+                                  type="button"
+                                  className={'btn btn-primary add-button-big'}
+                                  onClick={this.updateMasterLevel}
+                                >Update</button>
+
+                                <button
+                                  type="button"
+                                  className={'reset-btn ml-2'}
+                                  onClick={this.resetMasterLevel}
+                                >Cancel</button>
+                              </>
+                              :
+                              <button
+                                type="button"
+                                className={'user-btn add-button-big ml-2'}
+                                onClick={this.setMasterLevel}
+                              ><div className={'plus'}></div>ADD</button>}
+                          </div>
+                        </div>
+
+                        <div className="row form-group">
+                          <div className="col-md-12">
+                            <Table className="table" size="sm" >
+                              <thead>
+                                <tr>
+                                  <th>{`Master`}</th>
+                                  <th>{`Level`}</th>
+                                  <th className="text-right">{`Action`}</th>
+                                </tr>
+                              </thead>
+                              <tbody >
+                                {
+                                  this.state.masterLevelGrid &&
+                                  this.state.masterLevelGrid.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <td>{item.Master}</td>
+                                        <td>{item.Level}</td>
+                                        <td className="text-right">
+                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editMasterItem(index)} />
+                                          <button className="Delete" type={'button'} onClick={() => this.deleteMasterItem(index)} />
+                                        </td>
+                                      </tr>
+                                    )
+                                  })
+                                }
+                              </tbody>
+                            </Table>
+                            {this.state.masterLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                          </div>
+                        </div>
+                      </>
+                    }
 
                     {/* ////////////////////////////////////////////////////
                       ////////////////////////////////////////////////////
-                      /////////////// User's SIMULATION level END ////////
+                      /////////////// User's MASTER level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
 
@@ -1650,7 +1942,7 @@ function validate(values) {
 */
 const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
-    initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList } = auth;
+    initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList } = auth;
   const { cityList } = comman;
 
   let initialValues = {};
@@ -1675,7 +1967,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList
   };
 };
 
@@ -1697,7 +1989,6 @@ export default connect(mapStateToProps, {
   setEmptyUserDataAPI,
   getRoleDataAPI,
   getAllTechnologyAPI,
-
   getPermissionByUser,
   getUsersTechnologyLevelAPI,
   setUserAdditionalPermission,
@@ -1708,7 +1999,11 @@ export default connect(mapStateToProps, {
   getAllCity,
   getSimulationTechnologySelectList,
   getSimualationLevelByTechnology,
-  getUsersSimulationTechnologyLevelAPI
+  getUsersSimulationTechnologyLevelAPI,
+  getMastersSelectList,
+  getMasterLevelDataList,
+  getUsersMasterLevelAPI,
+  getMasterLevelByMasterId
 })(reduxForm({
   validate,
   form: 'Signup',
