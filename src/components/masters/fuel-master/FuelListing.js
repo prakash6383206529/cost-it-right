@@ -178,9 +178,6 @@ class FuelListing extends Component {
     }
 
 
-    renderEffectiveDate = () => {
-        return <>Effective Date</>
-    }
 
     /**
     * @method renderListing

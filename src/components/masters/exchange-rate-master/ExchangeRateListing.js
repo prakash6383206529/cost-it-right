@@ -195,6 +195,7 @@ class ExchangeRateListing extends Component {
 
 
 
+
     /**
     * @method buttonFormatter
     * @description Renders buttons

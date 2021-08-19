@@ -364,8 +364,6 @@ class MachineRateListing extends Component {
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
-
-
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }

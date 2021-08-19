@@ -185,10 +185,56 @@ class ProfitListing extends Component {
         return cellValue != null ? cellValue : '-';
     }
 
-    plantFormatter = (props) => {
+    /**
+  * @method effectiveDateFormatter
+  * @description Renders buttons
+  */
+    effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cellValue != null && cellValue !== '-') ? `${cellValue}(${rowData.PlantCode})` : '-';
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    }
+    renderVendor = () => {
+        return <>Vendor <br />Name </>
+    }
+    renderClient = () => {
+        return <>Client <br />Name </>
+    }
+    renderModelType = () => {
+        return <>Model <br />Type </>
+    }
+    renderOverheadAppli = () => {
+        return <>Profit  <br />Applicability</>
+    }
+    renderOverheadAppliPercent = () => {
+        return <>Profit  <br />Applicability (%)</>
+    }
+    renderOverheadCC = () => {
+        return <>Profit  <br />on CC (%)</>
+    }
+    renderOverheadRM = () => {
+        return <>Profit  <br />on RM (%)</>
+    }
+    renderOverheadBOP = () => {
+        return <>Profit  <br />on BOP (%)</>
+    }
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date</>
+    }
+    /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
+    indexFormatter = (cell, row, enumObject, rowIndex) => {
+        const { table } = this.refs;
+        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+        let serialNumber = '';
+        if (currentPage === 1) {
+            serialNumber = rowIndex + 1;
+        } else {
+            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+        }
+        return serialNumber;
     }
 
     effectiveDateFormatter = (props) => {
