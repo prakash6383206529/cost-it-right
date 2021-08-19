@@ -886,7 +886,8 @@ class UserRegistration extends Component {
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
-        SimulationTechnologyLevels: tempHeadLevelArray
+        SimulationTechnologyLevels: tempHeadLevelArray,
+        MasterLevels: []
       }
 
       const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
@@ -956,7 +957,8 @@ class UserRegistration extends Component {
         TechnologyLevels: tempTechnologyLevelArray,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
-        SimulationTechnologyLevels: tempHeadLevelArray
+        SimulationTechnologyLevels: tempHeadLevelArray,
+        MasterLevels: []
       }
       this.props.registerUserAPI(userData, res => {
         this.setState({ isSubmitted: false, })
