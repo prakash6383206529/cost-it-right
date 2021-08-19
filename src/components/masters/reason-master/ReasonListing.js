@@ -165,7 +165,7 @@ class ReasonListing extends Component {
     const { EditAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />} */}
       </>
     )
@@ -180,7 +180,7 @@ class ReasonListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <label htmlFor="normal-switch">
+        <label htmlFor="normal-switch"  className="normal-switch">
           <Switch
             onChange={() => this.handleChange(cellValue, rowData)}
             checked={cellValue}

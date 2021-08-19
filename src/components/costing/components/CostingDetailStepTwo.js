@@ -311,6 +311,7 @@ function CostingDetailStepTwo(props) {
                 </Col>
               </Row>
 
+              {/* RENDER TOP HEADER VIEW */}
               <Row className="sticky-top-0 mb-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
@@ -324,6 +325,8 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>
+
+                  {/* RENDER TOP HEADER VIEW WITH HEADS AND DYNAMIC VALUES */}
                   <div class="table-responsive">
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>

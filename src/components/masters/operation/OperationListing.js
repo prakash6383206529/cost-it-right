@@ -332,7 +332,7 @@ class OperationListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <label htmlFor="normal-switch">
+                <label htmlFor="normal-switch"  className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cellValue, rowData)}
@@ -529,7 +529,7 @@ class OperationListing extends Component {
         };
 
         return (
-            <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
@@ -747,7 +747,7 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </ >
+            </div>
         );
     }
 }

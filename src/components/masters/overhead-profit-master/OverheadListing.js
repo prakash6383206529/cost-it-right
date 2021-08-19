@@ -287,7 +287,7 @@ class OverheadListing extends Component {
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <label htmlFor="normal-switch">
+                <label htmlFor="normal-switch"  className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
