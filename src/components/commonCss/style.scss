@@ -2880,16 +2880,6 @@ button:disabled{pointer-events: none;}
       right: -40px;
       background-color: #edf0f5;
     }
-    // &::after{
-    //   content: "";
-    //   position: absolute;
-    //   top: -1px;
-    //   bottom: -1px;
-    //   left: -30px;
-    //   right: -30px;
-    //   border-top: 1px solid #ececec;
-    //   border-bottom: 1px solid #ececec;
-    // }
   }
   .costing-table-next{
     tbody{
@@ -5696,6 +5686,12 @@ body{
     html {
       body {
         .costing-details-page,.costing-summary-page {
+          .sepration-box{
+            &::before{
+              left: -30px;
+              right: -30px;
+            }
+          }
           .btn-row{
             .reset-btn{
               min-width: calc(96px * 80 /100);
