@@ -34,7 +34,6 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
-  console.log('getPlasticData: ', getPlasticData);
 
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
@@ -136,11 +135,10 @@ function Plastic(props) {
       return false
     }
     if (finishedWeight !== 0) {
-      scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+      scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
     const rmCost = (checkForNull(grossWeight) + getValues('burningAllownace')) * checkForNull(totalRM) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
-    console.log('rmCost: ', rmCost);
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 

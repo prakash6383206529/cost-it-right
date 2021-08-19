@@ -122,7 +122,7 @@ function ReportListing(props) {
             isSortByOrderAsc: true,
         }
         var t0 = performance.now();
-        console.log('t0: ', t0);
+        // console.log('t0: ', t0);
         dispatch(getReportListing(filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 

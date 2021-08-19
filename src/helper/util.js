@@ -756,7 +756,6 @@ export function isRMDivisorApplicable(technology) {
 export function findLostWeight(tableVal) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    console.log('item: ', item);
     if (item.LossOfType === 2) {
       return false
     } else {
