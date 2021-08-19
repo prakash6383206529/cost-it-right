@@ -29,6 +29,15 @@ import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 
 export const ViewCostingContext = React.createContext()
 
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
+  })
+
+  return values;
+}
+
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
@@ -82,10 +91,7 @@ function CostingDetails(props) {
   const [clientDrawer, setClientDrawer] = useState(false)
   // client based costing
 
-  const fieldValues = useWatch({
-    control,
-    name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
-  })
+  const fieldValues = IsolateReRender(control);
 
   const dispatch = useDispatch()
 
@@ -398,13 +404,9 @@ function CostingDetails(props) {
 
     if (index > zbcPlantOldArray.length - 1) {
       return false
-    } else if (
-      parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent
-    ) {
+    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent) {
       return false
-    } else if (
-      parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent
-    ) {
+    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent) {
       return true
     }
   }
@@ -530,16 +532,16 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const checkSOBTotal = () => {
-    const { zbcPlantGridFields, vbcGridFields } = fieldValues
+    // const { zbcPlantGridFields, vbcGridFields } = fieldValues
 
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
-    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields.length > 0 && zbcPlantGridFields.reduce((accummlator, el) => {
+    NetZBCSOB = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ShareOfBusinessPercent)
     }, 0)
 
-    NetVBCSOB = vbcGridFields && vbcGridFields.length > 0 && vbcGridFields.reduce((accummlator, el) => {
+    NetVBCSOB = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ShareOfBusinessPercent)
     }, 0)
 
