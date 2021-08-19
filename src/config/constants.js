@@ -21,6 +21,8 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 //DEVELOPMENT MIL URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
+
+
 /** Export API */
 export const API = {
 
