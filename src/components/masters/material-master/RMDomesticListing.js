@@ -89,24 +89,23 @@ class RMDomesticListing extends Component {
     UNSAFE_componentWillMount() {
         this.getInitialRange()
         const { filteredRMData, isSimulation } = this.props
-        if (this.props.isSimulation) {
+        // if (this.props.isSimulation) {
 
-            this.setState({
-                costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
-                plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
-                RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
-                RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
-                vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-                technology: [],
-                value: { min: 0, max: 0 },
-                departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
-            }, () => {
-                this.getInitialRange()
-                this.getDataList(null)
+        //     this.setState({
+        //         costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
+        //         plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
+        //         RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
+        //         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
+        //         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
+        //         technology: [],
+        //         value: { min: 0, max: 0 },
+        //     }, () => {
+        //     })
+        // }
+        this.getInitialRange()
+        this.getDataList(null)
 
-                this.props.getRawMaterialFilterSelectList(() => { })
-            })
-        }
+        this.props.getRawMaterialFilterSelectList(() => { })
     }
 
     /**
@@ -116,6 +115,7 @@ class RMDomesticListing extends Component {
     getInitialRange = () => {
         const { value } = this.state;
         const { filteredRMData, isSimulation } = this.props
+        // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
@@ -245,28 +245,6 @@ class RMDomesticListing extends Component {
     }
 
     /**
-    * @method renderPaginationShowsTotal
-    * @description Pagination
-    */
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    // buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    //     const { EditAccessibility, DeleteAccessibility } = this.props;
-    //     return (
-    //         <>
-    //             {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
-    //             {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
-    //         </>
-    //     )
-    // }
-
-    /**
     * @method buttonFormatter
     * @description Renders buttons
     */
@@ -317,51 +295,9 @@ class RMDomesticListing extends Component {
         return serialNumber;
     }
 
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
 
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-
-    renderRawMaterial = () => {
-        return <>Raw <br />Material </>
-    }
-
-    renderRMGrade = () => {
-        return <>RM <br />Grade </>
-    }
-
-    renderRMSpec = () => {
-        return <>RM <br />Spec </>
-    }
-
-    renderVendorLocation = () => {
-        return <>Vendor <br />Location </>
-    }
-
-    renderBasicRate = () => {
-        return <>Basic <br />Rate(INR) </>
-    }
-
-    rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost(INR)</>
-    }
-
-    renderShearingCost = () => {
-        return <>Shearing <br /> Cost(INR)</>
-    }
-
-    renderScrapRate = () => {
-        return <>Scrap <br />Rate(INR) </>
-    }
-
-    renderNetCost = () => {
-        return <>Net <br />Cost(INR) </>
-    }
-
-    costFormatter = (cell, row, enumObject, rowIndex) => {
+    costFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
@@ -379,7 +315,8 @@ class RMDomesticListing extends Component {
   * @method shearingCostFormatter
   * @description Renders buttons
   */
-    shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
+    shearingCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
 
@@ -387,13 +324,11 @@ class RMDomesticListing extends Component {
     * @method freightCostFormatter
     * @description Renders buttons
     */
-    freightCostFormatter = (cell, row, enumObject, rowIndex) => {
+    freightCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
 
-    renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
-    }
 
     /**
     * @method renderListing
@@ -675,17 +610,6 @@ class RMDomesticListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility } = this.props;
         const { isBulkUpload, } = this.state;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-            exportCSVBtn: this.createCustomExportCSVButton,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
 
         const defaultColDef = {
             resizable: true,
@@ -699,7 +623,10 @@ class RMDomesticListing extends Component {
             costingHeadRenderer: this.costingHeadFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            companyFormatter: this.companyFormatter
+            costFormatter: this.costFormatter,
+            freightCostFormatter: this.freightCostFormatter,
+            shearingCostFormatter: this.shearingCostFormatter
+
         };
 
         return (
@@ -914,7 +841,6 @@ class RMDomesticListing extends Component {
                 </form >
                 <Row>
                     <Col>
-
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -952,14 +878,11 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>
                                     <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" cellRenderer={'freightCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                    <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
-                                    {/* {this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
-                                    {/* {this.props.isSimulation && <AgGridColumn width={160} type="rightAligned" field="RawMaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>

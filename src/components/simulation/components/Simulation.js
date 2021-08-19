@@ -21,6 +21,7 @@ import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing';
 import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
+import { setFilterForRM } from '../../masters/actions/Material';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,6 +58,7 @@ function Simulation(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
 
     const handleMasterChange = (value) => {
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setMaster(value)
         setShowMasterList(false)
         dispatch(setMasterForSimulation(value))
@@ -66,6 +68,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
         dispatch(setTechnologyForSimulation(value))
 
