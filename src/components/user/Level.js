@@ -8,7 +8,8 @@ import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
   addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI, setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
-  getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList, addSimulationLevel, updateSimulationLevel, getSimulationLevel, getMastersSelectList
+  getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList, addSimulationLevel, updateSimulationLevel, getSimulationLevel, getMastersSelectList,
+  addMasterLevel, updateMasterLevel, getMasterLevel
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { loggedInUserId } from "../../helper/auth";
@@ -115,6 +116,30 @@ class Level extends Component {
         }
       })
     }
+
+    // WHEN MASTER LEVEL DETAILS GET
+    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Master') {
+      this.props.getMasterLevel(LevelId, (res) => {
+        const { masterList, levelList } = this.props;
+
+        if (res && res.data && res.data.Data) {
+          let Data = res.data.Data;
+
+          setTimeout(() => {
+            let technologyObj = masterList && masterList.filter(item => Number(item.Value) === Data.MasterId)
+            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
+            this.setState({
+              isEditMappingFlag: true,
+              LevelId: LevelId,
+              isShowTechnologyForm: true,
+              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
+              level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              levelType: isEditedlevelType,
+            })
+          }, 500)
+        }
+      })
+    }
   }
 
   /**
@@ -123,7 +148,6 @@ class Level extends Component {
   */
   searchableSelectType = (label) => {
     const { technologyList, levelList, simulationTechnologyList, masterList } = this.props;
-    console.log(this.state.levelType, "this.state.levelType");
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -350,6 +374,25 @@ class Level extends Component {
             this.setState({ isLoader: false, })
           })
         }
+        if (this.state.levelType === 'Master') {
+          // UPDATE SIMULATION LEVEL
+          let formReq = {
+            MasterId: technology.value,
+            LevelId: level.value,
+            Master: technology.value,
+            Level: level.label,
+            ModifiedBy: loggedInUserId()
+          }
+
+          this.props.updateMasterLevel(formReq, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+            }
+            this.toggleDrawer('')
+            reset();
+            this.setState({ isLoader: false, })
+          })
+        }
 
       } else {
 
@@ -376,6 +419,26 @@ class Level extends Component {
         if (this.state.levelType === 'Simulation') {
           // ADD SIMULATION NEW LEVEL
           this.props.addSimulationLevel(formData, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+            }
+            this.props.reset();
+            this.setState({
+              isLoader: false,
+              technology: [],
+              level: [],
+            })
+            this.toggleDrawer('')
+          })
+        }
+        if (this.state.levelType === 'Master') {
+          let masterData = {
+            LevelId: level.value,
+            MasterId: technology.value,
+            UserId: loggedInUserId()
+          }
+          // ADD MASTER NEW LEVEL
+          this.props.addMasterLevel(masterData, (res) => {
             if (res && res.data && res.data.Result) {
               toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
             }
@@ -635,7 +698,10 @@ export default connect(mapStateToProps, {
   addSimulationLevel,
   updateSimulationLevel,
   getSimulationLevel,
-  getMastersSelectList
+  getMastersSelectList,
+  addMasterLevel,
+  updateMasterLevel,
+  getMasterLevel
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,

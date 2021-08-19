@@ -595,7 +595,9 @@ export const API = {
   getUserByTechnologyAndLevel: `${BASE_URL}/user/get-users-technology-wise-level`,
   getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
   getSimulationLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-simulation-technology`,
+  getMasterLevelByMasterId: `${BASE_URL}/configuration/select-list-get-level-by-master`,
   getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
+  getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
 
   //ROLES API
@@ -626,7 +628,11 @@ export const API = {
   updateSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/update`,
   getSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get`,
   getSimulationTechnologySelectList: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
+
   getMastersSelectList: `${BASE_URL}/configuration/select-list-get-master`,
+  addMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/create`,
+  getMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/get`,
+  updateMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/update`,
 
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
@@ -634,6 +640,7 @@ export const API = {
   getAllLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get-all`,
   updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
   getSimulationLevelDataList: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get-all`,
+  getMasterLevelDataList: `${BASE_URL}/costing-old/approval-level-for-master/get-all`,
 
 
 
@@ -1259,6 +1266,7 @@ export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
 export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
+export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1271,6 +1279,7 @@ export const GET_UNIT_LEVEL_DATA_SUCCESS = 'GET_UNIT_LEVEL_DATA_SUCCESS'
 export const LEVEL_MAPPING_API = 'LEVEL_MAPPING_API'
 export const SIMULATION_LEVEL_DATALIST_API = 'SIMULATION_LEVEL_DATALIST_API'
 export const GET_MASTER_SELECT_LIST = 'GET_MASTER_SELECT_LIST'
+export const MASTER_LEVEL_DATALIST_API = 'MASTER_LEVEL_DATALIST_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
