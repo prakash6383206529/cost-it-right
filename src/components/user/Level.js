@@ -573,17 +573,17 @@ class Level extends Component {
                             />{' '}
                             <span>Simulation Level</span>
                           </Label>
+                          <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block  w-auto'} check>
+                            <input
+                              type="radio"
+                              name="levelType"
+                              checked={this.state.levelType === 'Master' ? true : false}
+                              onClick={() => this.onPressRadioLevel('Master')}
+                              disabled={this.props.isEditFlag}
+                            />{' '}
+                            <span>Master Level</span>
+                          </Label>
                         </Col>
-                        <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
-                          <input
-                            type="radio"
-                            name="levelType"
-                            checked={this.state.levelType === 'Master' ? true : false}
-                            onClick={() => this.onPressRadioLevel('Master')}
-                            disabled={this.props.isEditFlag}
-                          />{' '}
-                          <span>Master Level</span>
-                        </Label>
                       </Row>
                       <div className="row pr-0">
                         <div className="input-group  form-group col-md-12 input-withouticon" >
