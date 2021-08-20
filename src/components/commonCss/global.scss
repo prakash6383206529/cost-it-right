@@ -2861,17 +2861,15 @@ body {
     }
   }
 
-  
-
   // ag-grid-react start
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
       .ag-grid-wrapper{
-        min-height: auto;
+        min-height: calc(100vh - 245px);
         height: auto !important;
         &.add-volume-table{
-          min-height: auto;
+          min-height: calc(100vh - 245px);
           height: auto !important;
         }
       }
