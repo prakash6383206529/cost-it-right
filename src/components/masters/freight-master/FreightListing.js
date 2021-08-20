@@ -236,13 +236,6 @@ class FreightListing extends Component {
   }
 
 
-  /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-  }
 
   /**
   * @method renderListing
@@ -549,7 +542,7 @@ class FreightListing extends Component {
                       <div className="cancel-icon-white"></div></button>
                   ) : (
                     <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
+                      <div className="filter mr-0"></div>
                     </button>
                   )}
                   {AddAccessibility && (
@@ -566,7 +559,7 @@ class FreightListing extends Component {
                     DownloadAccessibility &&
                     <>
                       <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                        <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -574,7 +567,7 @@ class FreightListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
+                    <div className="refresh mr-0"></div>
                   </button>
 
                 </div>
@@ -613,7 +606,7 @@ class FreightListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.freightDetail}
                   pagination={true}
@@ -632,7 +625,7 @@ domLayout='autoHeight'
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

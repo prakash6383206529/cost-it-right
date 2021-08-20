@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, getZBCCostingByCostingId
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
@@ -26,6 +26,8 @@ function CostingDetailStepTwo(props) {
     setTimeout(() => {
       dispatch(hideLoader())
     }, 4000)
+
+    // return dispatch(getZBCCostingByCostingId('', res => { }))
 
   }, []);
 

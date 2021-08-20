@@ -136,7 +136,7 @@ function Plastic(props) {
       return false
     }
     if (finishedWeight !== 0) {
-      scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+      scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
     const rmCost = (checkForNull(grossWeight) + getValues('burningAllownace')) * checkForNull(totalRM) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))

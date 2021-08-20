@@ -3,14 +3,13 @@ import { Field, reduxForm } from "redux-form";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, number, checkWhiteSpaces, alphaNumeric, notSingleSpecialCharacter, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
-  addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI,
-  setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
-  getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList,
-  addSimulationLevel, updateSimulationLevel, getSimulationLevel,
+  addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI, setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
+  getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList, addSimulationLevel, updateSimulationLevel, getSimulationLevel, getMastersSelectList,
+  addMasterLevel, updateMasterLevel, getMasterLevel
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { loggedInUserId } from "../../helper/auth";
@@ -48,6 +47,7 @@ class Level extends Component {
     this.getLevelDetail()
     this.getLevelMappingDetail()
     this.props.getSimulationTechnologySelectList(() => { })
+    this.props.getMastersSelectList(() => { })
   }
 
   /**
@@ -116,6 +116,30 @@ class Level extends Component {
         }
       })
     }
+
+    // WHEN MASTER LEVEL DETAILS GET
+    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Master') {
+      this.props.getMasterLevel(LevelId, (res) => {
+        const { masterList, levelList } = this.props;
+
+        if (res && res.data && res.data.Data) {
+          let Data = res.data.Data;
+
+          setTimeout(() => {
+            let technologyObj = masterList && masterList.filter(item => Number(item.Value) === Data.MasterId)
+            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
+            this.setState({
+              isEditMappingFlag: true,
+              LevelId: LevelId,
+              isShowTechnologyForm: true,
+              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
+              level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              levelType: isEditedlevelType,
+            })
+          }, 500)
+        }
+      })
+    }
   }
 
   /**
@@ -123,8 +147,7 @@ class Level extends Component {
   * @description Used show listing of unit of measurement
   */
   searchableSelectType = (label) => {
-    const { technologyList, levelList, simulationTechnologyList } = this.props;
-    console.log(this.state.levelType, "this.state.levelType");
+    const { technologyList, levelList, simulationTechnologyList, masterList } = this.props;
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -144,6 +167,15 @@ class Level extends Component {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
+      return temp;
+    }
+
+    if (label === 'technology' && this.state.levelType === 'Master') {
+      masterList && masterList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      })
       return temp;
     }
 
@@ -342,6 +374,25 @@ class Level extends Component {
             this.setState({ isLoader: false, })
           })
         }
+        if (this.state.levelType === 'Master') {
+          // UPDATE SIMULATION LEVEL
+          let formReq = {
+            MasterId: technology.value,
+            LevelId: level.value,
+            Master: technology.value,
+            Level: level.label,
+            ModifiedBy: loggedInUserId()
+          }
+
+          this.props.updateMasterLevel(formReq, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+            }
+            this.toggleDrawer('')
+            reset();
+            this.setState({ isLoader: false, })
+          })
+        }
 
       } else {
 
@@ -368,6 +419,26 @@ class Level extends Component {
         if (this.state.levelType === 'Simulation') {
           // ADD SIMULATION NEW LEVEL
           this.props.addSimulationLevel(formData, (res) => {
+            if (res && res.data && res.data.Result) {
+              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+            }
+            this.props.reset();
+            this.setState({
+              isLoader: false,
+              technology: [],
+              level: [],
+            })
+            this.toggleDrawer('')
+          })
+        }
+        if (this.state.levelType === 'Master') {
+          let masterData = {
+            LevelId: level.value,
+            MasterId: technology.value,
+            UserId: loggedInUserId()
+          }
+          // ADD MASTER NEW LEVEL
+          this.props.addMasterLevel(masterData, (res) => {
             if (res && res.data && res.data.Result) {
               toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
             }
@@ -466,8 +537,8 @@ class Level extends Component {
                           type="submit"
                           disabled={isSubmitted ? true : false}
                           className="user-btn save-btn"
-                        >	
-                        <div className={"save-icon"}></div>
+                        >
+                          <div className={"save-icon"}></div>
                           {this.state.isEditFlag ? 'Update' : 'Save'}
                         </button>
 
@@ -482,7 +553,7 @@ class Level extends Component {
                     <>
                       <Row>
                         <Col md="12">
-                          <Label  className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <Label className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -492,7 +563,7 @@ class Level extends Component {
                             />{' '}
                             <span>Costing Level</span>
                           </Label>
-                          <Label  className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -503,6 +574,16 @@ class Level extends Component {
                             <span>Simulation Level</span>
                           </Label>
                         </Col>
+                        <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <input
+                            type="radio"
+                            name="levelType"
+                            checked={this.state.levelType === 'Master' ? true : false}
+                            onClick={() => this.onPressRadioLevel('Master')}
+                            disabled={this.props.isEditFlag}
+                          />{' '}
+                          <span>Master Level</span>
+                        </Label>
                       </Row>
                       <div className="row pr-0">
                         <div className="input-group  form-group col-md-12 input-withouticon" >
@@ -549,13 +630,15 @@ class Level extends Component {
                             type="submit"
                             disabled={isSubmitted ? true : false}
                             className="btn-primary save-btn"
-                          >	
-                          <div className={"save-icon"}></div>
+                          >
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? 'Update' : 'Save'}
                           </button>
                         </div>
                       </div>
                     </>}
+
+
                 </div>
 
               </form>
@@ -582,7 +665,7 @@ class Level extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-  const { levelDetail, technologyList, levelList, simulationTechnologyList } = auth;
+  const { levelDetail, technologyList, levelList, simulationTechnologyList, masterList } = auth;
   let initialValues = {};
 
   if (levelDetail && levelDetail !== undefined) {
@@ -592,7 +675,7 @@ const mapStateToProps = ({ auth }) => {
     }
   }
 
-  return { levelDetail, technologyList, levelList, simulationTechnologyList, initialValues };
+  return { levelDetail, technologyList, levelList, simulationTechnologyList, initialValues, masterList };
 };
 
 /**
@@ -615,6 +698,10 @@ export default connect(mapStateToProps, {
   addSimulationLevel,
   updateSimulationLevel,
   getSimulationLevel,
+  getMastersSelectList,
+  addMasterLevel,
+  updateMasterLevel,
+  getMasterLevel
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,

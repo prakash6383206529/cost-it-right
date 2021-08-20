@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
-import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList } from '../../actions/auth/AuthActions';
+import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { CONSTANT } from '../../helper/AllConastant';
@@ -33,6 +33,7 @@ class LevelTechnologyListing extends Component {
 	componentDidMount() {
 		this.getLevelsListData();
 		this.getSimulationDataList();
+		this.getMasterDataList()
 		this.props.onRef(this);
 	}
 
@@ -54,6 +55,9 @@ class LevelTechnologyListing extends Component {
 	getSimulationDataList = () => {
 		this.props.getSimulationLevelDataList(res => { })
 	}
+	getMasterDataList = () => {
+		this.props.getMasterLevelDataList(res => { })
+	}
 
 	/**
 	* @method getUpdatedData
@@ -62,6 +66,7 @@ class LevelTechnologyListing extends Component {
 	getUpdatedData = () => {
 		this.getLevelsListData()
 		this.getSimulationDataList()
+		this.getMasterDataList()
 	}
 
 	/**
@@ -125,6 +130,22 @@ class LevelTechnologyListing extends Component {
 		return (
 			<>
 				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
+			</>
+		)
+	}
+	/**
+	* @method masterButtonFormatter
+	* @description Renders buttons
+	*/
+	masterButtonFormatter = (props) => {
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+
+		const { EditAccessibility } = this.props;
+		return (
+			<>
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -211,7 +232,8 @@ class LevelTechnologyListing extends Component {
 			totalValueRenderer: this.buttonFormatter,
 			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound,
-			simulationButtonFormatter: this.simulationButtonFormatter
+			simulationButtonFormatter: this.simulationButtonFormatter,
+			masterButtonFormatter: this.masterButtonFormatter
 		};
 
 		return (
@@ -230,42 +252,25 @@ class LevelTechnologyListing extends Component {
 							title="Add"
 							onClick={this.props.mappingToggler}>
 							<div className={'plus mr-0'}></div>
-							</button>}
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+						</button>}
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+							<div className="refresh mr-0"></div>
+						</button>
 					</Col>
 				</Row>
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12">
-						{/* <BootstrapTable
-							data={this.state.tableData}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
 						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 							</div>
 							<div
 								className="ag-theme-material"
-								
+
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
-domLayout='autoHeight'
+									domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}
@@ -282,7 +287,7 @@ domLayout='autoHeight'
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -306,48 +311,25 @@ domLayout='autoHeight'
 				<Row className="levellisting-page">
 					<Col md="6" className=""></Col>
 					<Col md="6" className="text-right search-user-block mb-3">
-						{/* {AddAccessibility && <button
-							type="button"
-							className={'user-btn'}
-							onClick={this.props.mappingToggler}>
-							<div className={'plus'}></div>
-							{'Add'}</button>} */}
 						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+							<div className="refresh mr-0"></div>
+						</button>
 					</Col>
 				</Row>
 
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12 ">
-						{/* <BootstrapTable
-							data={this.props.simulationLevelDataList}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.simulationButtonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
 						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
 							<div
 								className="ag-theme-material"
-								
+
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
-domLayout='autoHeight'
+									domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.props.simulationLevelDataList}
 									pagination={true}
@@ -364,7 +346,65 @@ domLayout='autoHeight'
 									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 									<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
 									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action"  type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+								</AgGridReact>
+								<div className="paging-container d-inline-block float-right">
+									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
+										<option value="5" selected={true}>5</option>
+										<option value="20">20</option>
+										<option value="50">50</option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+
+					</Col>
+				</Row>
+				<Row className="levellisting-page mt20">
+					<Col md="12">
+						<h2 className="manage-level-heading">{`Master Level Mapping`}</h2>
+					</Col>
+				</Row>
+				<Row className="levellisting-page">
+					<Col md="6" className=""></Col>
+					<Col md="6" className="text-right search-user-block mb-3">
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+							<div className="refresh mr-0"></div>
+						</button>
+					</Col>
+				</Row>
+
+				<Row className="levellisting-page">
+					<Col className="level-table" md="12 ">
+						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+							<div className="ag-grid-header">
+								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
+							</div>
+							<div
+								className="ag-theme-material"
+
+							>
+								<AgGridReact
+									defaultColDef={defaultColDef}
+									domLayout='autoHeight'
+									// columnDefs={c}
+									rowData={this.props.masterLevelDataList}
+									pagination={true}
+									paginationPageSize={5}
+									onGridReady={this.onGridReady1}
+									gridOptions={gridOptions}
+									loadingOverlayComponent={'customLoadingOverlay'}
+									noRowsOverlayComponent={'customNoRowsOverlay'}
+									noRowsOverlayComponentParams={{
+										title: CONSTANT.EMPTY_DATA,
+									}}
+									frameworkComponents={frameworkComponents}
+								>
+									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+									<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
+									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" cellRenderer={'masterButtonFormatter'}></AgGridColumn>
 								</AgGridReact>
 								<div className="paging-container d-inline-block float-right">
 									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
@@ -390,9 +430,9 @@ domLayout='autoHeight'
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { loading, levelMappingList, simulationLevelDataList } = auth;
+	const { loading, levelMappingList, simulationLevelDataList, masterLevelDataList } = auth;
 
-	return { loading, levelMappingList, simulationLevelDataList };
+	return { loading, levelMappingList, simulationLevelDataList, masterLevelDataList };
 }
 
 
@@ -401,5 +441,6 @@ export default connect(mapStateToProps,
 		getAllLevelMappingAPI,
 		deleteUserLevelAPI,
 		getSimulationLevelDataList,
+		getMasterLevelDataList
 	})(LevelTechnologyListing);
 
