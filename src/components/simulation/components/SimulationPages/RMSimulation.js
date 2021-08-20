@@ -46,6 +46,8 @@ function RMSimulation(props) {
 
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+
+    const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
         setValue('NoOfCorrectRow', rowCount.correctRow)
         setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
@@ -82,6 +84,7 @@ function RMSimulation(props) {
         obj.VendorId = list[0].VendorId
         obj.TechnologyId = list[0].TechnologyId
         obj.VendorId = list[0].VendorId
+        obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         let tempArr = []
         list && list.map(item => {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
@@ -407,7 +410,7 @@ function RMSimulation(props) {
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
-                                    <div className="ag-theme-material" style={{width:'100%'}}>
+                                    <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
