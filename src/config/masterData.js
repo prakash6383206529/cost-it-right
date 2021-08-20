@@ -2283,9 +2283,23 @@ export const CostingSimulationDownload = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "NOldDiscountCostewRMPrice" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
     { label: "Variance", value: "Variance" }
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [

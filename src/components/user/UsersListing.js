@@ -12,7 +12,7 @@ import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -240,6 +240,17 @@ class UsersListing extends Component {
 		return cellValue != null ? cellValue : '-';
 	}
 
+	departmentFormatter = (props) => {
+		console.log('props: ', props);
+		const cellValue = props?.data?.Departments
+		console.log('cellValue: ', cellValue);
+		let temp = ''
+		cellValue && cellValue.map(dept => {
+			temp = temp + ',' + dept.DepartmentName
+		})
+		return temp.split(',')[1];
+	}
+
 	handleChange = (cell, row) => {
 		let data = {
 			Id: row.UserId,
@@ -289,7 +300,7 @@ class UsersListing extends Component {
 		if (ActivateAccessibility) {
 			return (
 				<>
-					<label htmlFor="normal-switch"  className="normal-switch">
+					<label htmlFor="normal-switch" className="normal-switch">
 						{/* <span>Switch with default style</span> */}
 						<Switch
 							onChange={() => this.handleChange(cellValue, rowData)}
@@ -465,7 +476,8 @@ class UsersListing extends Component {
 			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound,
 			statusButtonFormatter: this.statusButtonFormatter,
-			hyphenFormatter: this.hyphenFormatter
+			hyphenFormatter: this.hyphenFormatter,
+			departmentFormatter: this.departmentFormatter,
 		};
 
 		return (
@@ -562,40 +574,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					{/* <BootstrapTable
-					data={this.props.userDataList}
-					striped={false}
-					bordered={false}
-					hover={false}
-					options={options}
-					search
-					// exportCSV
-					// ignoreSinglePage
 
-					ref={"table"}
-					trClassName={"userlisting-row"}
-					tableHeaderClass="my-custom-header"
-					pagination
-				> */}
-					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField="FullName" csvHeader="Full-Name" dataFormat={this.linkableFormatter} dataAlign="left" dataSort={true}>Name</TableHeaderColumn>
-					{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
-						<TableHeaderColumn dataField="UserName" width={"150"} dataSort={true}>User name</TableHeaderColumn>
-					) : null}
-					<TableHeaderColumn dataField="EmailAddress" columnTitle width={"220"} dataSort={true}>Email Id </TableHeaderColumn>
-					<TableHeaderColumn dataField="Mobile" width={"110"} dataSort={false}>Mobile No.</TableHeaderColumn>
-					<TableHeaderColumn dataField="PhoneNumber" width={"110"} dataSort={false}>Phone No.</TableHeaderColumn>
-					<TableHeaderColumn dataField="DepartmentName" dataSort={true}>Company</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
-                                		filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField="RoleName" dataSort={true}>Role</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
-                                filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter} width={80}>Status</TableHeaderColumn>
-					<TableHeaderColumn width={80} className="action" dataField="UserId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-				</BootstrapTable> */}
 
 					<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 						<div className="ag-grid-header">
@@ -630,7 +609,8 @@ class UsersListing extends Component {
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								<AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
+								{getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
+								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
