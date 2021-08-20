@@ -573,6 +573,16 @@ class Level extends Component {
                             />{' '}
                             <span>Simulation Level</span>
                           </Label>
+                          <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block  w-auto'} check>
+                            <input
+                              type="radio"
+                              name="levelType"
+                              checked={this.state.levelType === 'Master' ? true : false}
+                              onClick={() => this.onPressRadioLevel('Master')}
+                              disabled={this.props.isEditFlag}
+                            />{' '}
+                            <span>Master Level</span>
+                          </Label>
                         </Col>
                         {
                           getConfigurationKey().IsMasterApprovalAppliedConfigure &&
