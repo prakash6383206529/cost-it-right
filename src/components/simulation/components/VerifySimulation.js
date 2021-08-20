@@ -37,6 +37,7 @@ function VerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const { filteredRMData } = useSelector(state => state.material)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -52,7 +53,8 @@ function VerifySimulation(props) {
     }, [])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
-        dispatch(getVerifySimulationList(props.token, plantId, rawMatrialId, (res) => {
+        const plant = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const data = res.data.Data
                 if (data.SimulationImpactedCostings.length === 0) {
