@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, number, checkWhiteSpaces, alphaNumeric, notSingleSpecialCharacter, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
@@ -47,6 +47,7 @@ class Level extends Component {
     this.getLevelDetail()
     this.getLevelMappingDetail()
     this.props.getSimulationTechnologySelectList(() => { })
+    this.props.getMastersSelectList(() => { })
   }
 
   /**
@@ -166,6 +167,15 @@ class Level extends Component {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
+      return temp;
+    }
+
+    if (label === 'technology' && this.state.levelType === 'Master') {
+      masterList && masterList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      })
       return temp;
     }
 
@@ -564,6 +574,16 @@ class Level extends Component {
                             <span>Simulation Level</span>
                           </Label>
                         </Col>
+                        <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <input
+                            type="radio"
+                            name="levelType"
+                            checked={this.state.levelType === 'Master' ? true : false}
+                            onClick={() => this.onPressRadioLevel('Master')}
+                            disabled={this.props.isEditFlag}
+                          />{' '}
+                          <span>Master Level</span>
+                        </Label>
                       </Row>
                       <div className="row pr-0">
                         <div className="input-group  form-group col-md-12 input-withouticon" >
@@ -617,6 +637,8 @@ class Level extends Component {
                         </div>
                       </div>
                     </>}
+
+
                 </div>
 
               </form>
@@ -643,7 +665,7 @@ class Level extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-  const { levelDetail, technologyList, levelList, simulationTechnologyList } = auth;
+  const { levelDetail, technologyList, levelList, simulationTechnologyList, masterList } = auth;
   let initialValues = {};
 
   if (levelDetail && levelDetail !== undefined) {
@@ -653,7 +675,7 @@ const mapStateToProps = ({ auth }) => {
     }
   }
 
-  return { levelDetail, technologyList, levelList, simulationTechnologyList, initialValues };
+  return { levelDetail, technologyList, levelList, simulationTechnologyList, initialValues, masterList };
 };
 
 /**
