@@ -8,7 +8,7 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -276,7 +276,7 @@ class LevelsListing extends Component {
 		// if (ActivateAccessibility) {
 		return (
 			<>
-				<label htmlFor="normal-switch"  className="normal-switch">
+				<label htmlFor="normal-switch" className="normal-switch">
 					{/* <span>Switch with default style</span> */}
 					<Switch
 						onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -450,7 +450,7 @@ class LevelsListing extends Component {
 														frameworkComponents={frameworkComponents}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads/Masters"></AgGridColumn>
+														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Tehnology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>

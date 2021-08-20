@@ -183,6 +183,14 @@ export const API = {
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
+  //RM APPROVAL API'S
+  getRMApprovalList: `${BASE_URL}`,
+  getAllMasterApprovalDepartment: `${BASE_URL}`,
+  getAllMasterApprovalUserByDepartment: `${BASE_URL}`,
+  masterSendToApprover: `${BASE_URL}`,
+  approveMasterByApprover: `${BASE_URL}`,
+  rejectMasterByApprover: `${BASE_URL}`,
+
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
   updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
@@ -959,6 +967,12 @@ export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
+
+
+//RAW MATERIAL APPROVAL
+export const GET_RM_APPROVAL_LIST = 'GET_RM_APPROVAL_LIST'
+export const GET_ALL_MASTER_APPROVAL_DEPARTMENT = 'GET_ALL_MASTER_APPROVAL_DEPARTMENT'
+export const GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT'
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
