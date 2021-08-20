@@ -12,7 +12,7 @@ import {
   addMasterLevel, updateMasterLevel, getMasterLevel
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { loggedInUserId } from "../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 
@@ -563,6 +563,19 @@ class Level extends Component {
                             />{' '}
                             <span>Simulation Level</span>
                           </Label>
+                          {
+                            getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                            <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                              <input
+                                type="radio"
+                                name="levelType"
+                                checked={this.state.levelType === 'Master' ? true : false}
+                                onClick={() => this.onPressRadioLevel('Master')}
+                                disabled={this.props.isEditFlag}
+                              />{' '}
+                              <span>Master Level</span>
+                            </Label>
+                          }
                         </Col>
                       </Row>
                       <div className="row pr-0">
