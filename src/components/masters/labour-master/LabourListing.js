@@ -342,7 +342,7 @@ class LabourListing extends Component {
   statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <label htmlFor="normal-switch">
+        <label htmlFor="normal-switch"  className="normal-switch">
           <Switch
             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
             checked={cell}

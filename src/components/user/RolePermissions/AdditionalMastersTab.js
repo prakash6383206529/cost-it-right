@@ -182,7 +182,7 @@ class AdditionalMastersTab extends Component {
                 return (
                     <td className="text-center">
                         {
-                            <label htmlFor="normal-switch">
+                            <label htmlFor="normal-switch"  className="normal-switch">
                                 <Switch
                                     onChange={() => this.actionCheckHandler(parentIndex, index)}
                                     checked={item.IsChecked}

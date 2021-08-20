@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
-import CostingSummaryTable from './CostingSummaryTable';
 import CostingSummary from './CostingSummary';
 import { storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -13,10 +12,8 @@ function Costing(props) {
 
   let history = useHistory();
   const [activeTab, setActiveTab] = useState('1');
-  const [hideRow, setHideRow] = useState(false)
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
-  const partNumber = useSelector(state => state.costing.partNo);
 
   /**
   * @method toggle
@@ -25,7 +22,6 @@ function Costing(props) {
   const toggle = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      // history.push('/costing')
     }
   }
 
@@ -33,10 +29,8 @@ function Costing(props) {
   useEffect(() => {
     dispatch(storePartNumber(''))
     if (reactLocalStorage.get('location') === '/costing-summary') {
-      //setActiveTab("2")
       toggle("2");
     } else {
-      //setActiveTab("1")
       toggle("1");
     }
   }, [])
@@ -45,7 +39,6 @@ function Costing(props) {
     setPartInfo(partInfo)
     setCostingData(costingInfo)
     toggle("1");
-    // history.push("/costing");
   }
 
   /**
@@ -68,7 +61,7 @@ function Costing(props) {
                 }}
               >
                 Costing Details
-                </NavLink>
+              </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
@@ -79,21 +72,10 @@ function Costing(props) {
                 }}
               >
                 Costing Summary
-                </NavLink>
+              </NavLink>
             </NavItem>
-            {/* <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "3" })}
-                  onClick={() => {
-                    toggle("3");
-                  }}
-                >
-                  Insights
-                </NavLink>
-              </NavItem> */}
           </Nav>
           <TabContent activeTab={activeTab}>
-            {/* {activeTab === "1" && ( */}
             <TabPane tabId="1">
               <CostingDetails
                 partInfoStepTwo={partInfoStepTwo}
@@ -101,17 +83,9 @@ function Costing(props) {
                 toggle={toggle}
               />
             </TabPane>
-            {/* )} */}
-            {/* {activeTab === "2" && ( */}
             <TabPane tabId="2">
               <CostingSummary activeTab={activeTab} showDetail={showDetail} />
-              {
-                // <CostingSummaryTable />
-              }
-              {/* {partNumber !== "" && <CostingSummaryTable hideUpperRow={(value) => hideUpperRow(value)} />} */}
             </TabPane>
-            {/* )} */}
-            {/* {activeTab === "3" && <TabPane tabId="3">{"Insights"}</TabPane>} */}
           </TabContent>
         </div>
       </div>

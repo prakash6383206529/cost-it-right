@@ -29,8 +29,6 @@ function PartCompoment(props) {
   const netPOPrice = useContext(NetPOPriceContext);
 
   const toggle = (BOMLevel, PartNumber) => {
-    // let IsLocked = true;
-    // if (IsLocked) return false;
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {

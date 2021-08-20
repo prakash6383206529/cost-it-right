@@ -180,7 +180,7 @@ class ReasonListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <label htmlFor="normal-switch">
+        <label htmlFor="normal-switch"  className="normal-switch">
           <Switch
             onChange={() => this.handleChange(cellValue, rowData)}
             checked={cellValue}
