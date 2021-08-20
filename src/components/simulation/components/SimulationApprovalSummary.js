@@ -1,14 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
-import HeaderTitle from '../../common/HeaderTitle';
 import moment from 'moment'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
-import SimulationApprovalListing from './SimulationApprovalListing'
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
@@ -16,18 +13,14 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getAm
 import { ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { runVerifySimulation } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
-import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
-import { toastr } from 'react-redux-toastr';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -99,18 +92,23 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
+        getSimulationApprovalSummary()
 
+    }, [])
+
+
+    const getSimulationApprovalSummary = () => {
         const reqParams = {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason, ImpactedMasterDataList, MaterialGroup, PurchasingGroup } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason })
+            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList, MaterialGroup: MaterialGroup, PurchasingGroup: PurchasingGroup })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -131,7 +129,7 @@ function SimulationApprovalSummary(props) {
             }
         }))
 
-    }, [])
+    }
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -145,6 +143,7 @@ function SimulationApprovalSummary(props) {
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
+            getSimulationApprovalSummary()
         }
     }
 
@@ -155,6 +154,7 @@ function SimulationApprovalSummary(props) {
             setRejectDrawer(false)
         } else {
             setPushButton(false)
+            getSimulationApprovalSummary()
         }
     }
 
@@ -270,60 +270,6 @@ function SimulationApprovalSummary(props) {
             setIsVerifyImpactDrawer(false);
         }
     }
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
-
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
-
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const renderRMName = () => {
-        return <>Raw Material<br />-Grade</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const NewPO = () => {
-        return <>PO Price <br />New </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldRM = () => {
-        return <>RM Cost<br /> Old</>
-    }
-
-    const renderNewRM = () => {
-        return <>RM Cost<br /> New</>
-    }
-
-    const renderRM = () => {
-        return <>Raw Material</>
-    }
-
-    const descriptionFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell && cell !== null ? cell : '-'
-    }
-
-    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
-    }
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -387,21 +333,7 @@ function SimulationApprovalSummary(props) {
         )
     }
 
-    const renderCostingHead = () => {
-        return <>Costing Head </>
-    }
 
-    const renderRawMaterial = () => {
-        return <>Raw Material </>
-    }
-
-    const renderRMGrade = () => {
-        return <>RM Grade </>
-    }
-
-    const renderRMSpec = () => {
-        return <>RM Spec </>
-    }
 
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -460,9 +392,6 @@ function SimulationApprovalSummary(props) {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
-    const renderShearingCost = () => {
-        return <>Shearing <br /> Cost</>
-    }
 
     const renderEffectiveDate = () => {
         return <>Effective <br /> Date</>
@@ -614,10 +543,10 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Technology:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{'121'}</span>
-                                            </th>
+                                            </th> */}
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
@@ -643,14 +572,14 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
                                                 <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
                                                 <span className="d-block">{'120'}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
                                                 <span className="d-block">{'12001'}</span>
-                                            </th>
+                                            </th> */}
                                         </tr>
                                     </thead>
                                 </Table>
@@ -671,10 +600,6 @@ function SimulationApprovalSummary(props) {
                                     </button>
                                 </div>
                             </Col>
-                            {showImpactedData &&
-                                <div className="accordian-content w-100">
-                                    <div className={`ag-grid-react`}>
-
 
                                         <Col md="12" className="mb-3">
                                             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -688,6 +613,7 @@ function SimulationApprovalSummary(props) {
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                                         // columnDefs={c}
                                                         rowData={rmDomesticListing}
                                                         pagination={true}
@@ -726,15 +652,7 @@ function SimulationApprovalSummary(props) {
 
                                                     </AgGridReact>
 
-                                                    <div className="paging-container d-inline-block float-right">
-                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                            <option value="10" selected={true}>10</option>
-                                                            <option value="50">50</option>
-                                                            <option value="100">100</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            </div>
 
                                         </Col>
                                     </div>
@@ -892,6 +810,7 @@ function SimulationApprovalSummary(props) {
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
+                                                                domLayout='autoHeight'
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -918,9 +837,9 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
                                                                 <AgGridColumn width={140} field="Variance" cellRenderer="varianceFormatter" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
-                                                                <AgGridColumn field="SimulationId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn> */}
+                                                                <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
                                                             </AgGridReact>
                                                             <div className="paging-container d-inline-block float-right">
@@ -982,6 +901,7 @@ function SimulationApprovalSummary(props) {
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                                                         // columnDefs={c}
                                                         rowData={rmDomesticListing}
                                                         pagination={true}
@@ -1054,12 +974,12 @@ function SimulationApprovalSummary(props) {
                                         {'Approve'}
                                     </button>
 
-                                    {showFinalLevelButtons &&
+                                    {/* {showFinalLevelButtons &&
                                         <button
                                             type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                                             <div className={'save-icon'}></div>
                                             {'Approve & Push'}
-                                        </button>}
+                                        </button>} */}
                                 </Fragment>
                             </div>
                         </Row>
@@ -1096,6 +1016,7 @@ function SimulationApprovalSummary(props) {
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
                 IsPushDrawer={showPushDrawer}
+                showFinalLevelButtons={showFinalLevelButtons}
             // dataSend={[approvalDetails, partDetail]}
             />}
 

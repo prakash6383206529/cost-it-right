@@ -55,34 +55,30 @@ class LevelsListing extends Component {
 		}
 	}
 
-	UNSAFE_componentWillMount() {
-		let ModuleId = reactLocalStorage.get('ModuleId');
-		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-			const { leftMenuData } = this.props;
-			if (leftMenuData !== undefined) {
-				let Data = leftMenuData;
-				const accessData = Data && Data.find(el => el.PageName === LEVELS)
-				const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-				if (permmisionData !== undefined) {
-					this.setState({
-						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-					})
-				}
-			}
-		})
-	}
-
 	componentDidMount() {
+		const { topAndLeftMenuData } = this.props;
+		if (topAndLeftMenuData !== undefined) {
+			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+			const accessData = userMenu && userMenu.Pages.find(el => el.PageName === LEVELS)
+			const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+			if (permmisionData !== undefined) {
+				this.setState({
+					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+				})
+			}
+		}
+
 		this.getLevelsListData();
 		this.props.getUsersByTechnologyAndLevel(() => { })
-		//this.props.onRef(this);
 	}
+
 	UNSAFE_componentWillUpdate() {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 	}
+
 	getLevelsListData = () => {
 		this.props.getAllLevelAPI(res => {
 			if (res && res.data && res.data.DataList) {
@@ -280,7 +276,7 @@ class LevelsListing extends Component {
 		// if (ActivateAccessibility) {
 		return (
 			<>
-				<label htmlFor="normal-switch">
+				<label htmlFor="normal-switch"  className="normal-switch">
 					{/* <span>Switch with default style</span> */}
 					<Switch
 						onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -461,6 +457,7 @@ class LevelsListing extends Component {
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
+														domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}
 														pagination={true}
@@ -476,7 +473,7 @@ class LevelsListing extends Component {
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 														<AgGridColumn width="180" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads"></AgGridColumn>
-														<AgGridColumn width="100" field="Level"  suppressSizeToFit={true} headerName="Level"></AgGridColumn>
+														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
 													<div className="paging-container d-inline-block float-right">
@@ -533,9 +530,9 @@ class LevelsListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { levelList, leftMenuData, loading, usersListByTechnologyAndLevel } = auth;
+	const { levelList, leftMenuData, loading, usersListByTechnologyAndLevel, topAndLeftMenuData } = auth;
 
-	return { levelList, leftMenuData, loading, usersListByTechnologyAndLevel };
+	return { levelList, leftMenuData, loading, usersListByTechnologyAndLevel, topAndLeftMenuData };
 }
 
 

@@ -15,11 +15,10 @@ import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
 import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, FACING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
 import HPDC from '../../WeightCalculatorDrawer/HPDC'
+import { HOUR, TIME } from '../../../../../config/constants'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
-  console.log('technology: ', technology);
-
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
@@ -69,90 +68,15 @@ function VariableMhrDrawer(props) {
 
   const getProcessComponent = (process) => {
     if (technology === MACHINING) {
+      return (
+        <SheetMetalBaicDrawer
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
 
-      switch (process) {
-        case FACING:
-          return (
-            <Facing
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case DRILLING:
-          return (
-            <Drilling
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case TURNING:
-          return (
-            <Turning
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case CHAMFERING:
-          return (
-            <Chamfering
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case FACEMILING:
-          return (
-            <FaceMilling
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case SIDEFACEMILING:
-          return (
-            <SideFaceMiling
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case SLOTCUTTING:
-          return (
-            <SlotCutting
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case CHAMFERINGMILLER:
-          return (
-            <ChamferingMiller
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        case ENDMILL:
-          return (
-            <EndMill
-              calculateMachineTime={calculateMachineTime}
-              technology={technology}
-              calculatorData={calculatorData}
-            />
-          )
-        default:
-          return (
-            <SheetMetalBaicDrawer
-              calculateMachineTime={calculateMachineTime}
-              tonnage={tonnage}
-              rmFinishWeight={props.rmFinishWeight}
-              calculatorData={calculatorData}
-            />
-          )
-      }
     } else if (technology === SHEETMETAL) {
       switch (process) {
         case 'Facing':

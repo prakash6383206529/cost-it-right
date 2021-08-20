@@ -13,7 +13,9 @@ import {
     GET_BOUGHTOUT_PART_SELECTLIST,
     GET_DRAWER_CHILD_PART_DATA,
     SET_ACTUAL_BOM_DATA,
-    config
+    config,
+    GET_PRODUCT_DATA_LIST,
+    GET_PRODUCT_UNIT_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -584,6 +586,132 @@ export function BOMUploadPart(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error);
+        });
+    };
+}
+
+/**
+ * @method getPartDataList
+ * @description get Parts
+ */
+export function getProductDataList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductDataList}`, headers);
+        request.then((response) => {
+            if (response.data.Result === true) {
+                dispatch({
+                    type: GET_PRODUCT_DATA_LIST,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method createProduct
+ * @description create New Product
+ */
+export function createProduct(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createProduct, data, headers);
+        request.then((response) => {
+            if (response.data.Result === true) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method updateProduct
+ * @description update Product
+ */
+export function updateProduct(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateProduct}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method getPartData
+ * @description get Part Data
+ */
+export function getProductData(ProductId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        if (ProductId !== '') {
+            axios.get(`${API.getProductById}?productid=${ProductId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_PRODUCT_UNIT_DATA,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_PRODUCT_UNIT_DATA,
+                payload: {},
+            });
+            callback({});
+        }
+    };
+}
+
+
+
+/**
+ * @method deletePart
+ * @description delete part
+ */
+export function deleteProduct(obj, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteProduct}`, obj, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method fileUploadProduct
+ * @description File Upload INDIVIDUAL PRODUCT
+ */
+export function fileUploadProduct(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.productAttachment, data, headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
         });
     };
 }

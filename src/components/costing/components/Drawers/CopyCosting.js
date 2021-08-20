@@ -48,7 +48,7 @@ function CopyCosting(props) {
   const [destinationPlant, setDestinationPlant] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [minDate, setMinDate] = useState('')
-  console.log('minDate: ', minDate);
+
 
   const [fromtype, setFromType] = useState(type === ZBC ? false : true)
   const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
@@ -101,7 +101,7 @@ function CopyCosting(props) {
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    console.log('date: ', date);
+
     setMinDate(date[0].EffectiveDate)
   }, [])
 
@@ -240,7 +240,6 @@ function CopyCosting(props) {
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
-    console.log('value: ', value);
     getVendorPlantDropdown(value.value, 'to')
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       getDestinationPlant(value, 'to')

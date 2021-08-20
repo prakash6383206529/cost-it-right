@@ -475,6 +475,7 @@ function AddRM(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={rmDrawerList}
                         pagination={true}
@@ -492,8 +493,8 @@ function AddRM(props) {
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
-                        <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="EntryType" headerName="RM Type"  ></AgGridColumn>
+                        <AgGridColumn  field="RawMaterialId" hide={true}></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>
                         <AgGridColumn field="RawMaterial" headerName="RM Name"></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                         <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>

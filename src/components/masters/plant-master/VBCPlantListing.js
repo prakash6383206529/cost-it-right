@@ -156,7 +156,7 @@ class VBCPlantListing extends Component {
         // if (ActivateAccessibility) {
         //     return (
         //         <>
-        //             <label htmlFor="normal-switch">
+        //             <label htmlFor="normal-switch"  className="normal-switch">
         //                 {/* <span>Switch with default style</span> */}
         //                 <Switch
         //                     onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -352,6 +352,8 @@ class VBCPlantListing extends Component {
     }
 
     onGridReady = (params) => {
+        this.gridApi = params.api;
+        this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -580,6 +582,7 @@ class VBCPlantListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
@@ -599,8 +602,8 @@ class VBCPlantListing extends Component {
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

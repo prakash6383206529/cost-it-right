@@ -442,6 +442,20 @@ export function getSimulationStatus(callback) {
 }
 
 
+export function deleteDraftSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.delete(`${API.deleteDraftSimulation}/${data.simulationId}/${data.loggedInUser}`, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                callback(error.response);
+                //apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
 export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
         // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;

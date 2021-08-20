@@ -381,7 +381,6 @@ class SOBListing extends Component {
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateFormatter: this.effectiveDateFormatter
     };
 
     return (
@@ -500,7 +499,9 @@ class SOBListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  domLayout='autoHeight'
                   // columnDefs={c}
+                  domLayout='autoHeight'
                   rowData={this.props.bopSobList}
                   pagination={true}
                   paginationPageSize={10}
@@ -522,8 +523,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                  {/* <AgGridColumn field="BoughtOutPartNumber"  headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn> */}
+                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

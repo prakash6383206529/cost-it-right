@@ -10,6 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import WarningMessagge from '../../../../common/WarningMessage'
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -221,8 +222,9 @@ function OperationCostExcludedOverhead(props) {
         <div>
           <Row className="align-items-center">
             <Col md="8">
-              <div className="left-border">
+              <div className="left-border d-flex align-items-center">
                 {'Other Operation Cost:'}
+                <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
             </Col>
             <Col md={'4'}>

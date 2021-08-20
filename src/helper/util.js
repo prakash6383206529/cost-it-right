@@ -48,6 +48,9 @@ const handleHTTPStatus = (response) => {
     case 400:
       return toastr.error('Bad Request. Please contact your IT Team.')
     case 401:
+      reactLocalStorage.setObject("isUserLoggedIn", false);
+      reactLocalStorage.setObject("userDetail", {});
+      reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
       return toastr.error('Authentication error. Please contact your IT Team.')
     case 403:
@@ -531,7 +534,6 @@ export function formViewData(costingSummary) {
   let dataFromAPI = costingSummary
   let obj = {}
   let type = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : 'other'
-  console.log('type: ', type);
 
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
@@ -646,7 +648,11 @@ export function formViewData(costingSummary) {
   obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
   obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
-  console.log('obj: ', obj);
+  obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
+  obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
+  obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
+  obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
+
 
 
   // temp = [...temp, obj]
@@ -745,4 +751,16 @@ export function getTechnologyPermission(technology) {
 export function isRMDivisorApplicable(technology) {
   const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
   return allowedTechnologyForRMDivisor.includes(technology);
+}
+
+export function findLostWeight(tableVal) {
+  let sum = 0
+  tableVal && tableVal.map(item => {
+    if (item.LossOfType === 2) {
+      return false
+    } else {
+      sum = sum + item.LossWeight
+    }
+  })
+  return sum
 }

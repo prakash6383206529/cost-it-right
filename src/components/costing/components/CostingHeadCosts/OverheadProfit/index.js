@@ -11,6 +11,9 @@ import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../.
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 import TooltipCustom from '../../../../common/Tooltip';
+import Rejection from './Rejection';
+import Icc from './Icc';
+import PaymentTerms from './PaymentTerms';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -58,23 +61,10 @@ function OverheadProfit(props) {
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
-  const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
-  const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
-  const [PaymentTermObj, setPaymentTermObj] = useState(PaymentTermDetail)
+
 
   const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails.ModelType !== null ? { label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
 
-  const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
-  const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
-
-  const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
-  const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
-
-  const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
-
-  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.NetPaymentTermCost === 0 ? false : true)
-  const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
-  const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
   const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
 
@@ -155,11 +145,6 @@ function OverheadProfit(props) {
       handleModelTypeChange(modelType, false)
     }
 
-    if (applicability && applicability.value !== undefined) {
-      setApplicability(applicability)
-      checkRejectionApplicability(applicability.label)
-    }
-
   }, [headerCosts.NetTotalRMBOPCC])
 
   /**
@@ -175,19 +160,9 @@ function OverheadProfit(props) {
     name: 'OverheadFixedPercentage',
   });
 
-  const interestRateValues = useWatch({
-    control,
-    name: ['InterestRatePercentage',],
-  });
-
   const profitFixedFieldValues = useWatch({
     control,
     name: 'ProfitFixedPercentage',
-  });
-
-  const rejectionFieldValues = useWatch({
-    control,
-    name: ['RejectionPercentage', 'Applicability'],
   });
 
   useEffect(() => {
@@ -199,7 +174,7 @@ function OverheadProfit(props) {
 
         "IsOverheadCombined": overheadObj && overheadObj.IsOverheadCombined,
         "OverheadPercentage": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadPercentage') : '',
-        "OverheadCombinedCost": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadCombinedCost') : '',
+        "OverheadCombinedCost": overheadObj && overheadObj.IsOverheadCombined ? checkForDecimalAndNull(getValues('OverheadCombinedCost'), initialConfiguration.NoOfDecimalForPrice) : '',
         "OverheadCombinedTotalCost": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadCombinedTotalCost') : '',
 
         "IsOverheadCCApplicable": overheadObj && overheadObj.IsOverheadCCApplicable,
@@ -266,88 +241,7 @@ function OverheadProfit(props) {
   }, [overheadObj, profitObj]);
 
   useEffect(() => {
-    checkRejectionApplicability(applicability.label)
-    setTimeout(() => {
-      let tempObj = {
-        "RejectionApplicabilityId": applicability ? applicability.value : '',
-        "RejectionApplicability": applicability ? applicability.label : '',
-        "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-        "RejectionCost": applicability ? getValues('RejectionCost') : '',
-        "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
-        "IsSurfaceTreatmentApplicable": true,
-      }
-
-      if (!CostingViewMode) {
-        props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-      }
-    }, 200)
-
-  }, [rejectionFieldValues]);
-
-  const ICCFieldValues = useWatch({
-    control,
-    name: ['ICCApplicability',],
-  });
-
-  useEffect(() => {
-    checkInventoryApplicability(ICCapplicability?.label)
-
-    setTimeout(() => {
-      let tempObj = {
-        "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
-        "IccDetailId": InventoryObj ? InventoryObj.InterestRateId : '',
-        "ICCApplicability": Object.keys(ICCapplicability).length > 0 ? ICCapplicability.label : '',
-        "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
-        "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
-        "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
-        "EffectiveDate": "",
-      }
-
-      if (!CostingViewMode) {
-        props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-      }
-    }, 200)
-  }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability]);
-
-  const PaymentTermsFieldValues = useWatch({
-    control,
-    name: ['RepaymentPeriodCost'],
-  });
-
-  const PaymentTermsFixedFieldValues = useWatch({
-    control,
-    name: ['RepaymentPeriodPercentage'],
-  });
-
-  useEffect(() => {
-    setTimeout(() => {
-      let tempObj = {
-        "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
-        "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
-        "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability.label : '',
-        "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
-        "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
-        "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',
-        "EffectiveDate": ""
-      }
-
-      if (!CostingViewMode) {
-        props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-      }
-    }, 200)
-  }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues, paymentTermsApplicability]);
-
-  // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
-  useEffect(() => {
-    if (paymentTermsApplicability && paymentTermsApplicability.label === 'Fixed') {
-      setValue('RepaymentPeriodCost', getValues('RepaymentPeriodPercentage'))
-    }
-  }, [PaymentTermsFixedFieldValues])
-
-  useEffect(() => {
     dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
-    dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
-    dispatch(getICCAppliSelectListKeyValue((res) => { }))
     dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
   }, []);
 
@@ -358,9 +252,6 @@ function OverheadProfit(props) {
   }, [overheadFixedFieldValues, profitFixedFieldValues]);
 
   const modelTypes = useSelector(state => state.comman.modelTypes)
-  const costingHead = useSelector(state => state.comman.costingHead)
-  const iccApplicabilitySelectList = useSelector(state => state.comman.iccApplicabilitySelectList)
-  const paymentTermsSelectList = useSelector(state => state.comman.paymentTermsSelectList)
 
   /**
   * @method calculateOverheadFixedTotalCost
@@ -553,6 +444,7 @@ function OverheadProfit(props) {
   * @description PROFIT RM APPLICABILITY CALCULATION
   */
   const checkIsProfitRMApplicable = () => {
+
     if (headerCosts !== undefined && profitObj && profitObj.IsProfitRMApplicable) {
       const { ProfitRMPercentage } = profitObj;
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
@@ -593,137 +485,10 @@ function OverheadProfit(props) {
     }
   }
 
-  /**
-    * @method checkRejectionApplicability
-    * @description REJECTION APPLICABILITY CALCULATION
-    */
-  const checkRejectionApplicability = (Text) => {
-    if (headerCosts && Text !== '') {
-      const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-      const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal : RMBOPCC;
-
-      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
-      const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
-      const RejectionPercentage = getValues('RejectionPercentage')
-
-      switch (Text) {
-        case 'RM':
-          setValue('RejectionCost', headerCosts.NetRawMaterialsCost)
-          setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: headerCosts.NetRawMaterialsCost,
-            RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'BOP':
-          setValue('RejectionCost', headerCosts.NetBoughtOutPartCost)
-          setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: headerCosts.NetBoughtOutPartCost,
-            RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'CC':
-          setValue('RejectionCost', headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal)
-          setValue('RejectionTotalCost', checkForDecimalAndNull(((headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal,
-            RejectionTotalCost: checkForDecimalAndNull(((headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('RejectionCost', checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: CutOffRMBOPCCTotal,
-            RejectionTotalCost: checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + BOP':
-          setValue('RejectionCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull((RMBOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: RMBOP,
-            RejectionTotalCost: checkForDecimalAndNull((RMBOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + CC':
-          setValue('RejectionCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull((RMCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: RMCC,
-            RejectionTotalCost: checkForDecimalAndNull((RMCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'BOP + CC':
-          setValue('RejectionCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull((BOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: BOPCC,
-            RejectionTotalCost: checkForDecimalAndNull((BOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'Fixed':
-          setValue('RejectionCost', '-')
-          setValue('RejectionTotalCost', checkForDecimalAndNull(RejectionPercentage, initialConfiguration.NoOfDecimalForPrice))
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionApplicabilityId: applicability.value,
-            RejectionApplicability: applicability.label,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: '-',
-            RejectionTotalCost: checkForDecimalAndNull(RejectionPercentage, initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        default:
-          break;
-      }
-    }
-  }
-
-
 
   /**
   * @method renderListing
-  * @description RENDER LISTING
+  * @description RENDER LISTING (NEED TO BREAK THIS)
   */
   const renderListing = (label) => {
 
@@ -731,33 +496,6 @@ function OverheadProfit(props) {
 
     if (label === 'ModelType') {
       modelTypes && modelTypes.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
-    if (label === 'Applicability') {
-      costingHead && costingHead.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
-    if (label === 'ICCApplicability') {
-      iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
-    if (label === 'PaymentTermsApplicability') {
-      paymentTermsSelectList && paymentTermsSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -777,13 +515,13 @@ function OverheadProfit(props) {
       setProfitObj({})
       setOverheadValues({}, true)
       setProfitValues({}, true)
-      setRejectionObj({})
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
         setModelType(newValue)
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+          Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
         }
@@ -842,7 +580,7 @@ function OverheadProfit(props) {
       const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
       const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + (headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) : RMBOPCC; //NEED TO ASK FOR YHIS PART
       setValue('OverheadPercentage', dataObj.IsOverheadCombined ? dataObj.OverheadPercentage : '')
-      setValue('OverheadCombinedCost', headerCosts && CutOffRMBOPCCTotal)
+      setValue('OverheadCombinedCost', checkForDecimalAndNull((headerCosts && CutOffRMBOPCCTotal), initialConfiguration.NoOfDecimalForPrice))
       setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(dataObj.OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice))
     }
 
@@ -906,223 +644,10 @@ function OverheadProfit(props) {
   }
 
   /**
-    * @method handleApplicabilityChange
-    * @description  USED TO HANDLE APPLICABILITY CHANGE
-    */
-  const handleApplicabilityChange = (newValue) => {
-    if (newValue && newValue !== '') {
-      setValue('RejectionPercentage', '')
-      setApplicability(newValue)
-      checkRejectionApplicability(newValue.label)
-      setIsChangedApplicability(!IsChangedApplicability)
-    } else {
-      setApplicability([])
-      checkRejectionApplicability('')
-    }
-  }
-
-  /**
-   * @method onPressInventory
-   * @description  USED TO HANDLE INVENTORY CHANGE
-   */
-  const onPressInventory = () => {
-    setIsInventoryApplicable(!IsInventoryApplicable)
-    dispatch(gridDataAdded(true))
-  }
-
-  useEffect(() => {
-    if (IsInventoryApplicable === true) {
-      const reqParams = {
-        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-        IsVendor: costData.IsVendor
-      }
-      dispatch(getInventoryDataByHeads(reqParams, res => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setValue('InterestRatePercentage', Data.InterestRate)
-          setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
-          setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
-          setInventoryObj(Data)
-          checkInventoryApplicability(Data.ICCApplicability)
-
-        } else if (res && res.status === 204) {
-          setValue('InterestRatePercentage', '')
-          setValue('InterestRateCost', '')
-          setValue('NetICCTotal', '')
-          checkInventoryApplicability('')
-          setICCapplicability([])
-          setInventoryObj({})
-        }
-
-      }))
-    } else {
-      setICCapplicability([])
-      if (!CostingViewMode) {
-        props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-      }
-    }
-  }, [IsInventoryApplicable])
-
-  /**
-  * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
-  */
-  useEffect(() => {
-    if (ICCapplicability && ICCapplicability.label === 'Fixed') {
-      setValue('NetICCTotal', getValues('InterestRatePercentage'))
-    }
-  }, [interestRateValues])
-
-  /**
-    * @method checkInventoryApplicability
-    * @description INVENTORY APPLICABILITY CALCULATION
-    */
-  const checkInventoryApplicability = (Text) => {
-    if (headerCosts !== undefined && Text !== '') {
-
-      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
-      const InterestRatePercentage = getValues('InterestRatePercentage')
-
-      switch (Text) {
-        case 'RM':
-          setValue('InterestRateCost', headerCosts.NetRawMaterialsCost)
-          setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'RM + CC':
-          setValue('InterestRateCost', RMCC)
-          setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'RM + BOP':
-          setValue('InterestRateCost', RMBOP)
-          setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('InterestRateCost', (RMBOPCC)) //NEED TO ASK HERE ALSO
-          setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'Fixed':
-          setValue('InterestRateCost', '-')
-          setValue('NetICCTotal', checkForDecimalAndNull(InterestRatePercentage, initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'Annual ICC (%)':
-          setValue('InterestRateCost', RMBOPCC) // NEED TO ASK HERE ALSO
-          setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'Net Cost':
-          setValue('InterestRateCost', RMBOPCC) //NEED TO ASK HERE ALSO
-          setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        default:
-          break;
-      }
-    }
-  }
-
-  /**
-   * @method onPressPaymentTerms
-   * @description  USED TO HANDLE INVENTORY CHANGE
-   */
-  const onPressPaymentTerms = () => {
-    setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
-    dispatch(gridDataAdded(true))
-  }
-
-  useEffect(() => {
-    if (IsPaymentTermsApplicable === true) {
-      const reqParams = {
-        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-        IsVendor: costData.IsVendor
-      }
-      dispatch(getPaymentTermsDataByHeads(reqParams, res => {
-
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-          setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-          setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-          checkPaymentTermApplicability(Data.PaymentTermApplicability)
-          setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-          setPaymentTermObj(Data)
-        } else if (res.status === 204) {
-          setValue('RepaymentPeriodDays', '')
-          setValue('RepaymentPeriodPercentage', '')
-          setValue('RepaymentPeriodCost', '')
-          checkPaymentTermApplicability('')
-          setPaymentTermsApplicability([])
-          setPaymentTermObj({})
-        }
-
-      }))
-    } else {
-      setPaymentTermsApplicability([])
-      if (!CostingViewMode) {
-        props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-      }
-    }
-  }, [IsPaymentTermsApplicable])
-
-  /**
-    * @method checkPaymentTermApplicability
-    * @description PAYMENT TERMS APPLICABILITY CALCULATION
-    */
-  const checkPaymentTermApplicability = (Text) => {
-    if (headerCosts !== undefined && Text !== '') {
-      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
-      const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
-      const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
-      const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
-
-      switch (Text) {
-        case 'RM':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'RM + CC':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'RM + BOP':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'Fixed':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RepaymentPeriodPercentage, initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        case 'Annual ICC (%)':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
-          break;
-
-        case 'Net Cost':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-          break;
-
-        default:
-          break;
-      }
-    }
-  }
-
-  /**
   * @method IncludeSurfaceTreatmentCall
   * @description INCLUDE SURFACE TREATMENT IN TO OVERHEAD AND PROFIT
   */
 
-  //NEED TO ASK HERE ALSO
   const IncludeSurfaceTreatmentCall = () => {
 
     const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
@@ -1192,12 +717,12 @@ function OverheadProfit(props) {
       switch (OverheadApplicability) {
         case 'RM + CC + BOP':
           setValue('OverheadPercentage', OverheadPercentage)
-          setValue('OverheadCombinedCost', CutOffRMBOPCCTotal + NetSurfaceTreatmentCost)
+          setValue('OverheadCombinedCost', checkForDecimalAndNull((CutOffRMBOPCCTotal + NetSurfaceTreatmentCost), initialConfiguration.NoOfDecimalForPrice))
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal + NetSurfaceTreatmentCost) * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
           setIsSurfaceTreatmentAdded(true)
           setOverheadObj({
             ...overheadObj,
-            OverheadCombinedCost: checkForNull(getValues('OverheadCombinedCost')),
+            OverheadCombinedCost: checkForDecimalAndNull(getValues('OverheadCombinedCost'), initialConfiguration.NoOfDecimalForPrice),
             OverheadCombinedTotalCost: checkForDecimalAndNull((checkForNull(getValues('OverheadCombinedCost')) * calculatePercentage(OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice),
           })
           break;
@@ -1236,12 +761,12 @@ function OverheadProfit(props) {
       switch (OverheadApplicability) {
         case 'RM + CC + BOP':
           setValue('OverheadPercentage', OverheadPercentage)
-          setValue('OverheadCombinedCost', CutOffRMBOPCCTotal)
+          setValue('OverheadCombinedCost', checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration.NoOfDecimalForPrice))
           setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice))
           setIsSurfaceTreatmentAdded(false)
           setOverheadObj({
             ...overheadObj,
-            OverheadCombinedCost: getValues('OverheadCombinedCost'),
+            OverheadCombinedCost: checkForDecimalAndNull(getValues('OverheadCombinedCost'), initialConfiguration.NoOfDecimalForPrice),
             OverheadCombinedTotalCost: checkForDecimalAndNull((getValues('OverheadCombinedCost') * calculatePercentage(OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice),
           })
           break;
@@ -2146,348 +1671,51 @@ function OverheadProfit(props) {
               </Col>
             </Row>
 
+            {/* THIS IS REJECTION SECTION */}
+            <Rejection
+              Controller={Controller}
+              control={control}
+              //  rules={rules}
+              register={register}
+              defaultValue={defaultValues}
+              setValue={setValue}
+              getValues={getValues}
+              errors={errors}
+              useWatch={useWatch}
+              CostingRejectionDetail={CostingRejectionDetail}
+              data={data}
+              setRejectionDetail={props.setRejectionDetail}
+            />
 
+            <Icc
+              Controller={Controller}
+              control={control}
+              //  rules={rules}
+              register={register}
+              defaultValue={defaultValues}
+              setValue={setValue}
+              getValues={getValues}
+              errors={errors}
+              useWatch={useWatch}
+              CostingInterestRateDetail={CostingInterestRateDetail}
+              data={data}
+              setICCDetail={props.setICCDetail}
+            />
 
-            <Row>
-              <Col md="12" className="pt-3">
-                <div className="left-border">
-                  {'Rejection:'}
-                </div>
-              </Col>
-            </Row>
-            <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
-              <Col md="3">
-                <SearchableSelectHookForm
-                  label={'Applicability'}
-                  name={'Applicability'}
-                  placeholder={'-Select-'}
-                  Controller={Controller}
-                  control={control}
-                  rules={{ required: false }}
-                  register={register}
-                  defaultValue={applicability.length !== 0 ? applicability : ''}
-                  options={renderListing('Applicability')}
-                  mandatory={false}
-                  disabled={CostingViewMode ? true : false}
-                  handleChange={handleApplicabilityChange}
-                  errors={errors.Applicability}
-                />
-              </Col>
-              <Col md="3">
-                {applicability.label !== 'Fixed' ?
-                  <NumberFieldHookForm
-                    label={`Rejection (%)`}
-                    name={'RejectionPercentage'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{
-                      required: false,
-                      pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                      max: { value: 100, message: 'Percentage cannot be greater than 100' },
-                    }}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.RejectionPercentage}
-                    disabled={CostingViewMode ? true : false}
-                  />
-                  :
-                  //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
-                  <NumberFieldHookForm
-                    label={`Rejection`}
-                    name={'RejectionPercentage'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{
-                      required: false,
-                      pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                    }}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.RejectionPercentage}
-                    disabled={CostingViewMode ? true : false}
-                  />}
-              </Col>
-              {applicability.label !== 'Fixed' &&
-                <Col md="3">
-                  <TextFieldHookForm
-                    label="Cost(Applicability)"
-                    name={'RejectionCost'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.RejectionCost}
-                    disabled={true}
-                  />
-                </Col>}
-              <Col md="3">
-                <TextFieldHookForm
-                  label="Net Rejection"
-                  name={'RejectionTotalCost'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.RejectionTotalCost}
-                  disabled={true}
-                />
-              </Col>
-            </Row>
-
-
-
-
-            <Row className="mt-15 pt-15">
-              <Col md="12" className="switch mb-2">
-                <label className="switch-level">
-                  <Switch
-                    onChange={onPressInventory}
-                    checked={IsInventoryApplicable}
-                    id="normal-switch"
-                    disabled={CostingViewMode ? true : false}
-                    background="#4DC771"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#CCC"
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    height={20}
-                    width={46}
-                  />
-                  <div className={'right-title'}>Inventory Carrying Cost</div>
-                </label>
-              </Col>
-            </Row>
-            {IsInventoryApplicable &&
-              <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
-                <>
-                  <Col md="3">
-                    <label className="col-label">
-                      {ICCapplicability.label}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    {ICCapplicability.label !== 'Fixed' ?
-                      <NumberFieldHookForm
-                        label={`Interest Rate (%)`}
-                        name={'InterestRatePercentage'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: 'Invalid Number.'
-                          },
-                          max: {
-                            value: 100,
-                            message: 'Percentage cannot be greater than 100'
-                          },
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.InterestRatePercentage}
-                        disabled={(CostingViewMode || ICCapplicability.label !== 'Fixed') ? true : false}
-                      />
-                      :
-                      <NumberFieldHookForm
-                        label={`Interest Rate`}
-                        name={'InterestRatePercentage'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: 'Invalid Number.'
-                          },
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.InterestRatePercentage}
-                        disabled={CostingViewMode ? true : false}
-                      />}
-                  </Col>
-                  {ICCapplicability.label !== 'Fixed' &&
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label="Cost(Applicability)"
-                        name={'InterestRateCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.InterestRateCost}
-                        disabled={true}
-                      />
-                    </Col>}
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label="Net ICC"
-                      name={'NetICCTotal'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.NetICCTotal}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              </Row>
-            }
-
-
-
-
-
-            <Row className="mt-15 pt-15">
-              <Col md="12" className="switch mb-2">
-                <label className="switch-level">
-                  <Switch
-                    onChange={onPressPaymentTerms}
-                    checked={IsPaymentTermsApplicable}
-                    id="normal-switch"
-                    disabled={CostingViewMode ? true : false}
-                    background="#4DC771"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#CCC"
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    height={20}
-                    width={46}
-                  />
-                  <div className={'right-title'}>Payment Terms</div>
-                </label>
-              </Col>
-            </Row>
-            {IsPaymentTermsApplicable &&
-              <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing mb-4">
-                <>
-                  <Col md="3">
-                    <label className="col-label">
-                      {paymentTermsApplicability.label}
-                    </label>
-                  </Col>
-                  {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
-                    <TextFieldHookForm
-                      label="Repayment Period(No. of Days)"
-                      name={'RepaymentPeriodDays'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.RepaymentPeriodDays}
-                      disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                    />
-                  </Col>}
-                  <Col md="3">
-                    {paymentTermsApplicability.label !== 'Fixed' ?
-                      <NumberFieldHookForm
-                        label={`Interest Rate(%)`}
-                        name={'RepaymentPeriodPercentage'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: 'Invalid Number.'
-                          },
-                          max: {
-                            value: 100,
-                            message: 'Percentage cannot be greater than 100'
-                          },
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RepaymentPeriodPercentage}
-                        disabled={CostingViewMode ? true : false}
-                      />
-                      :
-                      <NumberFieldHookForm
-                        label={`Interest Rate}`}
-                        name={'RepaymentPeriodPercentage'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: 'Invalid Number.'
-                          },
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RepaymentPeriodPercentage}
-                        disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                      />}
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label="Cost"
-                      name={'RepaymentPeriodCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.RepaymentPeriodCost}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              </Row>
-            }
-
+            <PaymentTerms
+              Controller={Controller}
+              control={control}
+              //  rules={rules}
+              register={register}
+              defaultValue={defaultValues}
+              setValue={setValue}
+              getValues={getValues}
+              errors={errors}
+              useWatch={useWatch}
+              PaymentTermDetail={PaymentTermDetail}
+              data={data}
+              setPaymentTermsDetail={props.setPaymentTermsDetail}
+            />
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">

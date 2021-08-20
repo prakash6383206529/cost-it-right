@@ -379,8 +379,9 @@ function VerifySimulation(props) {
                                             style={{ height: '100%', width: '100%' }}
                                         >
                                             <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
+                                                // style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
+                                                domLayout='autoHeight'
                                                 // columnDefs={c}
                                                 rowData={verifyList}
                                                 pagination={true}
@@ -442,14 +443,6 @@ function VerifySimulation(props) {
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
-                            {/* <button class="user-btn approval-btn mr-3" onClick={() => { }}>
-                        <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
-                        {'Send For Approval'}
-                    </button>
-                    <button type="submit" className="user-btn mr5 save-btn">
-                        <div className={"save-icon"}></div>{" "}
-                        {"Save Simulation"}
-                    </button> */}
                         </div>
                     </Row>
                 </>

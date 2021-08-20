@@ -21,6 +21,8 @@ const BASE_URL = "http://10.10.1.100:10132/api/v1";
 //DEVELOPMENT MIL URL
 export const FILE_URL = "http://10.10.1.100:10132/";
 
+
+
 /** Export API */
 export const API = {
 
@@ -107,6 +109,15 @@ export const API = {
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
+
+  // PRODUCT MASTER 
+  getProductDataList: `${BASE_URL}/masters-product/get-all`,
+  getProductById: `${BASE_URL}/masters-product/get-by-id`,
+  createProduct: `${BASE_URL}/masters-product/create`,
+  updateProduct: `${BASE_URL}/masters-product/update`,
+  deleteProduct: `${BASE_URL}/masters-product/delete`,
+  productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
+  bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -517,6 +528,7 @@ export const API = {
   getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
   saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
 
+
   // PROCESS COST CALCULATION
   getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
@@ -585,7 +597,9 @@ export const API = {
   getUserByTechnologyAndLevel: `${BASE_URL}/user/get-users-technology-wise-level`,
   getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
   getSimulationLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-simulation-technology`,
+  getMasterLevelByMasterId: `${BASE_URL}/configuration/select-list-get-level-by-master`,
   getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
+  getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
 
   //ROLES API
@@ -617,6 +631,10 @@ export const API = {
   getSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get`,
   getSimulationTechnologySelectList: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
 
+  getMastersSelectList: `${BASE_URL}/configuration/select-list-get-master`,
+  addMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/create`,
+  getMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/get`,
+  updateMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/update`,
 
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
@@ -624,6 +642,9 @@ export const API = {
   getAllLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get-all`,
   updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
   getSimulationLevelDataList: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get-all`,
+  getMasterLevelDataList: `${BASE_URL}/costing-old/approval-level-for-master/get-all`,
+
+
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-vendor`,
@@ -671,6 +692,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
+  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -818,6 +840,7 @@ export const API = {
   getSelectListOfSimulationApplicability: `${BASE_URL}/simulation/select-list-get-simulation-heads`,
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
+  deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
   getAmmendentStatus: `${BASE_URL}/sap-sync/get-ammendent-status`,
 
 
@@ -891,6 +914,10 @@ export const GET_ALL_PARTS_FAILURE = 'GET_ALL_PARTS_FAILURE'
 export const GET_MATERIAL_TYPE_SUCCESS = 'GET_MATERIAL_TYPE_SUCCESS'
 export const GET_DRAWER_CHILD_PART_DATA = 'GET_DRAWER_CHILD_PART_DATA'
 export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
+
+//PRODUCT MASTER
+export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
+export const GET_PRODUCT_UNIT_DATA = 'GET_PRODUCT_UNIT_DATA'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
@@ -1156,6 +1183,7 @@ export const SET_IS_TOOLCOST_USED = 'SET_IS_TOOLCOST_USED';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
+export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1242,6 +1270,7 @@ export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
 export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
+export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1253,6 +1282,8 @@ export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS'
 export const GET_UNIT_LEVEL_DATA_SUCCESS = 'GET_UNIT_LEVEL_DATA_SUCCESS'
 export const LEVEL_MAPPING_API = 'LEVEL_MAPPING_API'
 export const SIMULATION_LEVEL_DATALIST_API = 'SIMULATION_LEVEL_DATALIST_API'
+export const GET_MASTER_SELECT_LIST = 'GET_MASTER_SELECT_LIST'
+export const MASTER_LEVEL_DATALIST_API = 'MASTER_LEVEL_DATALIST_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
@@ -1273,6 +1304,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+export const SET_SAP_DATA = 'SET_SAP_DATA'
 
 
 //PRIVILEGE
@@ -1283,6 +1315,7 @@ export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SU
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS'
 export const GET_LEFT_MENU_BY_MODULE_ID_AND_USER = 'GET_LEFT_MENU_BY_MODULE_ID_AND_USER'
 export const GET_MENU_BY_MODULE_ID_AND_USER = 'GET_MENU_BY_MODULE_ID_AND_USER'
+export const GET_TOP_AND_LEFT_MENU_DATA = 'GET_TOP_AND_LEFT_MENU_DATA'
 
 //REASON
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS'
@@ -1455,7 +1488,7 @@ export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
 export const FASTNERS = 'Fastners';
-export const RIVETS = 'Rivets';
+export const RIVETS = 'Rivet';
 
 export const USER = 'User'
 export const ROLE = 'Role'
@@ -1561,13 +1594,15 @@ export const DIMENSIONLESS = 'Dimensionless'
 export const STD = 'STD'
 
 //SIMULATION MASTER NAME
-export const RMDOMESTIC = 'RM Domestic'
-export const RMIMPORT = 'RM Import'
-export const BOPDOMESTIC = 'BOP (Domestic)'
-export const BOPIMPORT = 'BOP (Import)'
-export const PROCESS = 'Process'
-export const OPERATIONSIM = 'Operation'
-export const SURFACETREATMENT = 'SURFACE TREATMENT'
+export const RMDOMESTIC = '1'
+export const RMIMPORT = '2'
+export const PROCESS = '3'
+export const BOPDOMESTIC = '4'
+export const BOPIMPORT = '5'
+export const OPERATIONS = '6'
+export const SURFACETREATMENT = '7'
+export const EXCHNAGERATE = '8'
+export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
 // export constse

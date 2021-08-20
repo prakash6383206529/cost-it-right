@@ -48,6 +48,7 @@ export function formatLoginResult(res) {
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
             Department: res.Department,
+            DepartmentCode: res.DepartmentCode,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
             Role: res.Role
@@ -112,7 +113,6 @@ export function formatGetPlanResult(result) {
 
 
 export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
-    console.log('selectedRowData: ', selectedRowData);
 
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []

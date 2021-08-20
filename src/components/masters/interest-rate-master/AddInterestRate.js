@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -17,6 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { ZBC } from '../../../config/constants';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -34,7 +35,8 @@ class AddInterestRate extends Component {
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      plant: []
     }
   }
   /**
@@ -54,6 +56,7 @@ class AddInterestRate extends Component {
     this.props.getICCAppliSelectList(() => { })
     this.props.getVendorWithVendorCodeSelectList()
     this.props.getPaymentTermsAppliSelectList(() => { })
+    this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetail()
   }
 
@@ -76,7 +79,7 @@ class AddInterestRate extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
     const temp = [];
     if (label === 'VendorNameList') {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
@@ -98,6 +101,15 @@ class AddInterestRate extends Component {
         temp.push({ label: item.Text, value: item.Value })
       });
       return temp;
+    }
+    if (label === 'plant') {
+      plantSelectList &&
+        plantSelectList.map((item) => {
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
     }
 
   }
@@ -121,6 +133,15 @@ class AddInterestRate extends Component {
       this.setState({ vendorName: [], })
     }
   };
+
+  handlePlant = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ plant: newValue });
+    } else {
+      this.setState({ plant: [] })
+    }
+    this.setState({ DropdownChanged: false })
+  }
 
   /**
   * @method handleICCApplicability
@@ -175,11 +196,12 @@ class AddInterestRate extends Component {
           this.setState({ Data: Data })
           this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
+            const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
 
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorIdRef)
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
+            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
 
             this.setState({
               isEditFlag: true,
@@ -188,7 +210,8 @@ class AddInterestRate extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -231,7 +254,7 @@ class AddInterestRate extends Component {
 
   onSubmit = (values) => {
 
-    const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
     const userDetail = userDetails()
 
     /** Update existing detail of supplier master **/
@@ -264,6 +287,7 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
+        PlantId: plant.value
       }
       if (this.state.isEditFlag) {
         const toastrConfirmOptions = {
@@ -277,7 +301,7 @@ class AddInterestRate extends Component {
             });
           },
           onCancel: () => { },
-          component:()=> <ConfirmComponent/>
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -296,7 +320,8 @@ class AddInterestRate extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         IsActive: true,
         CreatedDate: '',
-        CreatedBy: loggedInUserId()
+        CreatedBy: loggedInUserId(),
+        PlantId: plant.value
       }
       this.props.reset()
       this.props.createInterestRate(formData, (res) => {
@@ -374,33 +399,56 @@ class AddInterestRate extends Component {
                     </Row>
                     <Row>
                       {this.state.IsVendor && (
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                name="VendorName"
-                                type="text"
-                                label="Vendor Name"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.vendorName == null ||
-                                    this.state.vendorName.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleVendorName
-                                }
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
-                              />
+                        <>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="VendorName"
+                                  type="text"
+                                  label="Vendor Name"
+                                  component={searchableSelect}
+                                  placeholder={"Select"}
+                                  options={this.renderListing("VendorNameList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.vendorName == null ||
+                                      this.state.vendorName.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleVendorName
+                                  }
+                                  valueDescription={this.state.vendorName}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        </Col>
+                          </Col>
+                          <Col md="3" >
+                            <Field
+                              name="Plant"
+                              type="text"
+                              label={"Plant"}
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("plant")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.plant == null ||
+                                  this.state.plant.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={this.handlePlant}
+                              valueDescription={this.state.plant}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                        </>
                       )}
                     </Row>
 
@@ -598,7 +646,7 @@ function mapStateToProps(state) {
 
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
-  const { vendorWithVendorCodeSelectList } = comman;
+  const { vendorWithVendorCodeSelectList, plantSelectList } = comman;
 
   let initialValues = {};
   if (interestRateData && interestRateData !== undefined) {
@@ -611,7 +659,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj
+    paymentTermsSelectList, iccApplicabilitySelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, plantSelectList
   }
 }
 
@@ -628,7 +676,8 @@ export default connect(mapStateToProps, {
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
   getVendorListByVendorType,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  getPlantSelectListByType
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,

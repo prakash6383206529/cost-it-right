@@ -29,6 +29,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { userDetails } from '../../../helper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -97,6 +98,7 @@ class RMImportListing extends Component {
         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
         technology: [],
+        departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
         value: { min: 0, max: 0 },
       }, () => {
         this.getInitialRange()
@@ -114,8 +116,7 @@ class RMImportListing extends Component {
   getInitialRange = () => {
     const { value } = this.state;
     const { filteredRMData, isSimulation } = this.props
-    // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
-    console.log('filteredRMData: ', filteredRMData);
+
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
       plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
@@ -126,6 +127,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
+      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -170,6 +172,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
+      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -178,6 +181,10 @@ class RMImportListing extends Component {
         this.setState({
           tableData: Data,
           maxRange: DynamicData.MaxRange,
+        }, () => {
+          if (isSimulation) {
+            this.props.apply()
+          }
         })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [], maxRange: 0, })
@@ -195,7 +202,7 @@ class RMImportListing extends Component {
     let data = {
       isEditFlag: true,
       Id: Id,
-      IsVendor: rowData.CostingHead == 'Vendor Based' ? true : false,
+      IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     this.props.getDetails(data);
   }
@@ -245,6 +252,12 @@ class RMImportListing extends Component {
     return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
+  companyFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    return (cellValue !== null && cellValue !== '-') ? `${cellValue}(${rowData.DepartmentCode !== null ? rowData.DepartmentCode : '-'})` : '-'
+  }
 
 
   /**
@@ -303,69 +316,7 @@ class RMImportListing extends Component {
   }
 
 
-  /**
-  * @method indexFormatter
-  * @description Renders serial number
-  */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = this.refs;
-    let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    let serialNumber = '';
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1;
-    } else {
-      serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    }
-    return serialNumber;
-  }
 
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
-
-  renderCostingHead = () => {
-    return <>Costing <br />Head </>
-  }
-
-  renderRawMaterial = () => {
-    return <>Raw <br />Material </>
-  }
-
-  renderRMGrade = () => {
-    return <>RM <br />Grade </>
-  }
-
-  renderRMSpec = () => {
-    return <>RM <br />Spec </>
-  }
-
-  renderVendorLocation = () => {
-    return <>Vendor <br />Location </>
-  }
-
-  renderBasicRate = () => {
-    return <>Basic <br />Rate(INR) </>
-  }
-
-  rendorFreightRate = () => {
-    return <>RM Freight <br /> Cost(INR)</>
-  }
-
-  renderShearingCost = () => {
-    return <>Shearing <br /> Cost(INR)</>
-  }
-  renderScrapRate = () => {
-    return <>Scrap <br />Rate(INR) </>
-  }
-
-  renderNetCost = () => {
-    return <>Net <br />Cost(INR) </>
-  }
-
-  renderEffectiveDate = () => {
-    return <>Effective <br />Date</>
-  }
 
   /**
   * @method renderListing
@@ -683,7 +634,8 @@ class RMImportListing extends Component {
       customNoRowsOverlay: NoContentFound,
       freightCostFormatter: this.freightCostFormatter,
       shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
+      costFormatter: this.costFormatter,
+      companyFormatter: this.companyFormatter
     };
 
 
@@ -927,43 +879,7 @@ class RMImportListing extends Component {
         </form>
         <Row>
           <Col>
-            {/*
-            <BootstrapTable
-              data={this.props.rmImportDataList}
-              striped={false}
-              bordered={false}
-              hover={false}
-              options={options}
-              search
-              //ignoreSinglePage
-              ref={'table'}
-              // exportCSV={DownloadAccessibility}
-              exportCSV={this.props.isSimulation ? false : true}
-              csvFileName={`${RmImport}.csv`}
-              pagination>
-         
-              <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="MaterialType" width={100} columnTitle={true} dataAlign="left" >{'Material'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="Plant" searchable={false} >{'Plant'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate"  >{this.renderBasicRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={this.freightCostFormatter} searchable={false}>{this.rendorFreightRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={this.shearingCostFormatter} searchable={false}>{this.renderShearingCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCostConversion" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-              {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
-              {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
 
-            </BootstrapTable> */}
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
@@ -971,10 +887,10 @@ class RMImportListing extends Component {
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.rmImportDataList}
                   pagination={true}
@@ -988,24 +904,25 @@ class RMImportListing extends Component {
                   }}
                   frameworkComponents={frameworkComponents}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                   <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                   <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-                  <AgGridColumn field="MaterialType" headerName="Material" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                  <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                  <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                  <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                  <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn>
-                  <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" cellRenderer={'totalValueRenderer'} ></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {/* {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

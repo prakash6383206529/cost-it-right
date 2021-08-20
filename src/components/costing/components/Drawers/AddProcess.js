@@ -278,6 +278,7 @@ function AddProcess(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={processDrawerList}
                         pagination={true}
@@ -296,7 +297,7 @@ function AddProcess(props) {
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="ProcessName" headerName="Process Name"  ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
                         <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                         <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
                         <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
