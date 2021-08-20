@@ -235,14 +235,6 @@ class BOPDomesticListing extends Component {
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
-    /**
-    * @method effectiveDateFormatter
-    * @description Renders buttons
-    */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-    }
-
 
     renderPlant = (cell, row, enumObject, rowIndex) => {
         return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
