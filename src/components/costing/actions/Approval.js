@@ -432,13 +432,6 @@ export function getSelectedCostingList(callback) {
   }
 }
 
-<<<<<<< HEAD
-/**
- * @method createRawMaterialSAP
- * @description create Raw Material SAP 
- */
- export function createRawMaterialSAP(data, callback) {
-=======
 
 
 
@@ -447,7 +440,6 @@ export function getSelectedCostingList(callback) {
  * @description create Raw Material SAP 
  */
 export function createRawMaterialSAP(data, callback) {
->>>>>>> 7b503a79e8a2e6065b436965c4891fee1b6863a1
   return (dispatch) => {
     const request = axios.post(API.createRawMaterialSAP, data, headers)
     request
@@ -461,9 +453,6 @@ export function createRawMaterialSAP(data, callback) {
         apiErrors(error)
       })
   }
-<<<<<<< HEAD
-}
-=======
 }
 
 /**
@@ -486,4 +475,3 @@ export function approvalPushedOnSap(data, callback) {
       })
   }
 }
->>>>>>> 7b503a79e8a2e6065b436965c4891fee1b6863a1
