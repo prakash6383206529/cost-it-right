@@ -59,6 +59,16 @@ function CostingSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
+    const [hideDataColumn, setHideDataColumn] = useState({
+        hideOverhead: false,
+        hideProfit: false,
+        hideRejection: false,
+        hideICC: false,
+        hidePayment: false,
+        hideOtherCost: false,
+        hideDiscount: false,
+        hideOveheadAndProfit: false
+    })
 
     const dispatch = useDispatch()
 
@@ -96,9 +106,12 @@ function CostingSimulation(props) {
     const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
     useEffect(() => {
+        hideColumn()
         costingList && costingList.map(item => {
             item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
         })
+
+
     }, [costingList])
 
 
@@ -165,55 +178,6 @@ function CostingSimulation(props) {
 
     }
 
-    // const onSelectAll = (isSelected, rows) => {
-    //     if (isSelected) {
-    //         let temp = []
-    //         let temp1 = []
-    //         costingArr && costingArr.map((item => {
-    //             if (item.IsLockedBySimulation) {
-    //                 temp1.push(item.CostingNumber)
-    //             }
-    //             else {
-    //                 temp.push({ ...item, IsChecked: true })
-    //             }
-    //         }))
-    //         if (temp1.length > 0) {
-    //             setSelectedRowData([])
-    //             toastr.warning(`Costings ${temp1.map(item => item)} is already sent for approval through another token number.`)
-    //             return false
-    //         }
-    //         setCostingArr(temp)
-    //         setSelectedRowData(rows)
-    //     } else {
-    //         let temp = []
-    //         costingArr && costingArr.map((item => {
-    //             temp.push({ ...item, IsChecked: false })
-    //         }))
-    //         setCostingArr(temp)
-    //         setSelectedRowData([])
-    //     }
-    // }
-
-    const renderDropdownListing = (label) => {
-        let temp = []
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-        if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-    }
-
     const onSaveSimulation = () => {
 
         // const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
@@ -242,9 +206,6 @@ function CostingSimulation(props) {
         // }
         setShowApprovalHistory(true)
     }
-
-
-
 
     const VerifyImpact = () => {
         setIsVerifyImpactDrawer(true)
@@ -327,11 +288,71 @@ function CostingSimulation(props) {
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+    const overheadFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOverheadCost > row.OldOverheadCost) ? 'red-value form-control' : (row.NewOverheadCost < row.OldOverheadCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const profitFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewProfitCost > row.OldProfitCost) ? 'red-value form-control' : (row.NewProfitCost < row.OldProfitCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const rejectionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewRejectionCost > row.OldRejectionCost) ? 'red-value form-control' : (row.NewRejectionCost < row.OldRejectionCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const costICCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewICCCost > row.OldICCCost) ? 'red-value form-control' : (row.NewICCCost < row.OldICCCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const paymentTermFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewPaymentTermsCost > row.OldPaymentTermsCost) ? 'red-value form-control' : (row.NewPaymentTermsCost < row.OldPaymentTermsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const otherCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOtherCost > row.OldOtherCost) ? 'red-value form-control' : (row.NewOtherCost < row.OldOtherCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const discountCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewDiscountCost > row.OldDiscountCost) ? 'red-value form-control' : (row.NewDiscountCost < row.OldDiscountCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const netOverheadAndProfitFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetOverheadAndProfitCost > row.OldNetOverheadAndProfitCost) ? 'red-value form-control' : (row.NewNetOverheadAndProfitCost < row.OldNetOverheadAndProfitCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
 
     const varianceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell
+    }
+    const hideColumn = (props) => {
+        setHideDataColumn({
+            hideOverhead: costingList && costingList[0].NewOverheadCost === 0 ? true : false,
+            hideProfit: costingList && costingList[0].NewProfitCost === 0 ? true : false,
+            hideRejection: costingList && costingList[0].NewRejectionCost === 0 ? true : false,
+            hideICC: costingList && costingList[0].NewICCCost === 0 ? true : false,
+            hidePayment: costingList && costingList[0].NewPaymentTermsCost === 0 ? true : false,
+            hideOtherCost: costingList && costingList[0].NewOtherCost === 0 ? true : false,
+            hideDiscount: costingList && costingList[0].NewDiscountCost === 0 ? true : false,
+            hideOveheadAndProfit: costingList && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
+        })
     }
 
 
@@ -428,7 +449,16 @@ function CostingSimulation(props) {
         newRMFormatter: newRMFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        varianceFormatter: varianceFormatter
+        varianceFormatter: varianceFormatter,
+        overheadFormatter: overheadFormatter,
+        profitFormatter: profitFormatter,
+        rejectionFormatter: rejectionFormatter,
+        costICCFormatter: costICCFormatter,
+        paymentTermFormatter: paymentTermFormatter,
+        otherCostFormatter: otherCostFormatter,
+        discountCostFormatter: discountCostFormatter,
+        netOverheadAndProfitFormatter: netOverheadAndProfitFormatter,
+        hideColumn: hideColumn
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -519,7 +549,24 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
+
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
 
@@ -556,10 +603,10 @@ function CostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
 
-                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
-                                    </button>
+                                    </button> */}
 
 
 

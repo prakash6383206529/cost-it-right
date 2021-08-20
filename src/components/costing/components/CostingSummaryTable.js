@@ -992,13 +992,13 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : 'red-row' : '-'}`}>
                       <th>Net Overhead & Profits</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              <span>{checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
                                 data.CostingHeading !== VARIANCE &&
                                 <button
@@ -1188,7 +1188,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class="background-light-blue">
+                      <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : 'red-row' : '-'}`}>
                         <th>Net PO Price (in Currency)</th>
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
