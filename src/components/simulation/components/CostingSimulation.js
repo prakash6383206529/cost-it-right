@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
@@ -342,16 +342,67 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell
     }
+
+    const NewOverheadCostReducer = (array) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewOverheadCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewProfitCostReducer = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewProfitCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewRejectionCost = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewRejectionCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewICCCostReducer = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewICCCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewPaymentTermsCostReducer = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewPaymentTermsCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewOtherCostReducer = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewOtherCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewDiscountCostReducer = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewDiscountCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+    const NewNetOverheadAndProfitCostReducer = (array, type) => {
+        const arr = array.reduce((accumulator, currentValue) => {
+            return accumulator + checkForNull(currentValue.NewNetOverheadAndProfitCost)
+        }, 0)
+        return arr === 0 ? true : false
+    }
+
+
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && costingList[0].NewOverheadCost === 0 ? true : false,
-            hideProfit: costingList && costingList[0].NewProfitCost === 0 ? true : false,
-            hideRejection: costingList && costingList[0].NewRejectionCost === 0 ? true : false,
-            hideICC: costingList && costingList[0].NewICCCost === 0 ? true : false,
-            hidePayment: costingList && costingList[0].NewPaymentTermsCost === 0 ? true : false,
-            hideOtherCost: costingList && costingList[0].NewOtherCost === 0 ? true : false,
-            hideDiscount: costingList && costingList[0].NewDiscountCost === 0 ? true : false,
-            hideOveheadAndProfit: costingList && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
+            hideOverhead: costingList && NewOverheadCostReducer(costingList, 'NewOverheadCost'),
+            hideProfit: costingList && NewProfitCostReducer(costingList, 'NewProfitCost'),
+            hideRejection: costingList && NewRejectionCost(costingList, 'NewRejectionCost'),
+            hideICC: costingList && NewICCCostReducer(costingList, 'NewICCCost'),
+            hidePayment: costingList && NewPaymentTermsCostReducer(costingList, 'NewPaymentTermsCost'),
+            hideOtherCost: costingList && NewOtherCostReducer(costingList, 'NewOtherCost'),
+            hideDiscount: costingList && NewDiscountCostReducer(costingList, 'NewDiscountCost'),
+            hideOveheadAndProfit: costingList && NewNetOverheadAndProfitCostReducer(costingList, 'NewNetOverheadAndProfitCost')
         })
     }
 
