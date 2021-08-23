@@ -38,6 +38,7 @@ function TabOverheadProfit(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
+
     let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
@@ -47,6 +48,7 @@ function TabOverheadProfit(props) {
         checkForNull(TopHeaderValues.PaymentTermCost))
     }
     props.setHeaderCost(topHeaderData)
+
   }, [OverheadProfitTabData]);
 
   const filteredUsers = React.useMemo(() => {

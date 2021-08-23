@@ -158,7 +158,7 @@ function OverheadProfit(props) {
       handleModelTypeChange(modelType, false)
     }
 
-  }, [headerCosts.NetTotalRMBOPCC])
+  }, [headerCosts && headerCosts.NetTotalRMBOPCC])
 
   /**
   * @method useEffect
@@ -1059,7 +1059,7 @@ function OverheadProfit(props) {
                             // },
                           }}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadFixedPercentage !== null ? overheadObj.OverheadFixedPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedPercentage}
@@ -1075,7 +1075,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadFixedCost !== null ? overheadObj.OverheadFixedCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedCost}
@@ -1091,7 +1091,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadFixedTotalCost !== null ? overheadObj.OverheadFixedTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedTotalCost}
@@ -1185,7 +1185,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadRMPercentage !== null ? overheadObj.OverheadRMPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadRMPercentage}
@@ -1206,7 +1206,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={''}
+                            defaultValue={overheadObj.OverheadRMCost !== null ? overheadObj.OverheadRMCost : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.OverheadRMCost}
@@ -1222,7 +1222,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadRMTotalCost !== null ? overheadObj.OverheadRMTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadRMTotalCost}
@@ -1250,7 +1250,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadBOPPercentage !== null ? overheadObj.OverheadBOPPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPPercentage}
@@ -1266,7 +1266,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadBOPCost !== null ? overheadObj.OverheadBOPCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPCost}
@@ -1282,7 +1282,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadBOPTotalCost !== null ? overheadObj.OverheadBOPTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPTotalCost}
@@ -1309,7 +1309,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadCCPercentage !== null ? overheadObj.OverheadCCPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCPercentage}
@@ -1325,7 +1325,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadCCCost !== null ? overheadObj.OverheadCCCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCCost}
@@ -1341,7 +1341,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={overheadObj.OverheadCCTotalCost !== null ? overheadObj.OverheadCCTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCTotalCost}
@@ -1411,7 +1411,7 @@ function OverheadProfit(props) {
                             // },
                           }}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitFixedPercentage !== null ? profitObj.ProfitFixedPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitFixedPercentage}
@@ -1427,7 +1427,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitFixedCost !== null ? profitObj.ProfitFixedCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitFixedCost}
@@ -1443,7 +1443,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitFixedTotalCost !== null ? profitObj.ProfitFixedTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitFixedTotalCost}
@@ -1537,7 +1537,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitRMPercentage !== null ? profitObj.ProfitRMPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitRMPercentage}
@@ -1559,7 +1559,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={''}
+                            defaultValue={profitObj.ProfitRMCost !== null ? profitObj.ProfitRMCost : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.ProfitRMCost}
@@ -1575,7 +1575,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitRMTotalCost !== null ? profitObj.ProfitRMTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitRMTotalCost}
@@ -1602,7 +1602,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitBOPPercentage !== null ? profitObj.ProfitBOPPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitBOPPercentage}
@@ -1618,7 +1618,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitBOPCost !== null ? profitObj.ProfitBOPCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitBOPCost}
@@ -1634,7 +1634,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitBOPTotalCost !== null ? profitObj.ProfitBOPTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitBOPTotalCost}
@@ -1661,7 +1661,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitCCPercentage !== null ? profitObj.ProfitCCPercentage : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitCCPercentage}
@@ -1677,7 +1677,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitCCCost !== null ? profitObj.ProfitCCCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitCCCost}
@@ -1693,7 +1693,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={''}
+                          defaultValue={profitObj.ProfitCCTotalCost !== null ? profitObj.ProfitCCTotalCost : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitCCTotalCost}

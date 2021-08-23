@@ -45,7 +45,7 @@ function Rejection(props) {
             setApplicability(applicability)
             checkRejectionApplicability(applicability.label)
         }
-    }, [headerCosts.NetTotalRMBOPCC])
+    }, [headerCosts && headerCosts.NetTotalRMBOPCC])
 
 
     useEffect(() => {
@@ -98,7 +98,7 @@ function Rejection(props) {
         if (headerCosts && Text !== '') {
             const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
             const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-            const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal : RMBOPCC;
+
 
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
@@ -146,15 +146,15 @@ function Rejection(props) {
                     break;
 
                 case 'RM + CC + BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: CutOffRMBOPCCTotal,
-                        RejectionTotalCost: checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionCost: RMBOPCC,
+                        RejectionTotalCost: checkForDecimalAndNull((RMBOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
                     })
                     break;
 
