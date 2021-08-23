@@ -303,7 +303,7 @@ class InterestRateListing extends Component {
   statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <label htmlFor="normal-switch"  className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -337,37 +337,7 @@ class InterestRateListing extends Component {
     return serialNumber;
   }
 
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
 
-  renderCostingHead = () => {
-    return <>Costing <br />Head </>
-  }
-
-  renderVendorName = () => {
-    return <>Vendor <br />Name </>
-  }
-
-  renderIccApp = () => {
-    return <> ICC <br />Applicability</>
-  }
-
-  renderAnnualIcc = () => {
-    return <> Annual <br />ICC(%) </>
-  }
-
-  renderPaymentTerm = () => {
-    return <>Payment Term <br /> Applicability </>
-  }
-
-  renderRepayment = () => {
-    return <> Repayment <br />Period(Days) </>
-  }
-
-  renderInterestRate = () => {
-    return <> Payment Term <br />Interest Rate(%) </>
-  }
 
   /**
   * @method costingHeadFormatter
@@ -480,12 +450,12 @@ class InterestRateListing extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, this.props.interestRateDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
@@ -720,34 +690,6 @@ class InterestRateListing extends Component {
               </Col>
             </Row>
           </form>
-          {/* <BootstrapTable
-            data={this.props.interestRateDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${InterestMaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass='my-custom-header'
-            pagination>
-            <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="ICCApplicability" columnTitle={true} dataAlign="left" >{this.renderIccApp()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="ICCPercent" columnTitle={true} dataAlign="left" >{this.renderAnnualIcc()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="PaymentTermApplicability" columnTitle={true} dataAlign="left" >{this.renderPaymentTerm()}</TableHeaderColumn>
-            <TableHeaderColumn width={110} dataField="RepaymentPeriod" columnTitle={true} dataAlign="left" >{this.renderRepayment()}</TableHeaderColumn>
-            <TableHeaderColumn width={130} dataField="PaymentTermPercent" columnTitle={true} dataAlign="left" >{this.renderInterestRate()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="EffectiveDate" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataAlign="right" searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-          </BootstrapTable> */}
-
-
-
-
 
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>

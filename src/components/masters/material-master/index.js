@@ -16,11 +16,18 @@ import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper';
+import { HISTORY, MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import Insights from './Insights';
 
+import RMApproval from './RMApproval';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 class RowMaterialMaster extends Component {
     constructor(props) {
         super(props);
@@ -47,6 +54,8 @@ class RowMaterialMaster extends Component {
 
         }
     }
+
+
 
     /**
     * @method componentDidMount
@@ -96,6 +105,7 @@ class RowMaterialMaster extends Component {
     * @description toggling the tabs
     */
     toggle = (tab) => {
+
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab
@@ -153,6 +163,8 @@ class RowMaterialMaster extends Component {
         const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility, AddAccessibilityRMANDGRADE,
             EditAccessibilityRMANDGRADE, } = this.state;
 
+        const history = History
+
         if (isRMDomesticForm === true) {
             return <AddRMDomestic
                 data={data}
@@ -204,6 +216,14 @@ class RowMaterialMaster extends Component {
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                                         Manage Material
+                                    </NavLink>
+                                </NavItem>}
+                                {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
+                                {/* uncomment below line after cherry-pick to Minda  TODO */}
+                                {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
+                                {ViewRMAccessibility && <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                                        RM Approval
                                     </NavLink>
                                 </NavItem>}
                             </Nav>
@@ -265,6 +285,22 @@ class RowMaterialMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
+                                    </TabPane>}
+                                {this.state.activeTab == 5 && ViewRMAccessibility &&
+                                    <TabPane tabId="5">
+                                        {
+                                            this.props.history.push({ pathname: '/raw-material-approval' })
+                                        }
+
+                                        {/* <Link to="/raw-material-approval"></Link> */}
+                                        {/* <Route path="/raw-material-approval">
+                                            <RMApproval
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
+                                            />
+                                        </Route> */}
                                     </TabPane>}
 
                             </TabContent>

@@ -299,12 +299,12 @@ class ExchangeRateListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, this.props.exchangeRateDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.BankRate === null) {
                 item.BankRate = ' '
             } else if (item.BankCommissionPercentage === null) {

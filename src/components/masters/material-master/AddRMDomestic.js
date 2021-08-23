@@ -36,6 +36,8 @@ import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval'
 
 
 const selector = formValueSelector('AddRMDomestic')
@@ -90,7 +92,8 @@ class AddRMDomestic extends Component {
       DataToChange: [],
       isDateChange: false,
       isSourceChange: false,
-      source: ''
+      source: '',
+      approveDrawer: false
     }
   }
   /**
@@ -1039,6 +1042,10 @@ class AddRMDomestic extends Component {
     })
   }
 
+  sendForMasterApproval = () => {
+    this.setState({ approveDrawer: true })
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -1685,13 +1692,24 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                          {
+                            CheckApprovalApplicableMaster('1') === true ?
+                              <button type="button"
+                                class="user-btn approval-btn mr5"
+                                onClick={() => this.sendForMasterApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          }
                         </div>
                       </Row>
                     </form>
@@ -1774,6 +1792,18 @@ class AddRMDomestic extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                type={'Sender'}
+                anchor={"right"}
+              />
+            )
+          }
 
           {/* {isVisible && (
             <ImageModel
