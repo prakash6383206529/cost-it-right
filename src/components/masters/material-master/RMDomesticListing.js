@@ -89,19 +89,19 @@ class RMDomesticListing extends Component {
     UNSAFE_componentWillMount() {
         this.getInitialRange()
         const { filteredRMData, isSimulation } = this.props
-        // if (this.props.isSimulation) {
+        if (this.props.isSimulation) {
 
-        //     this.setState({
-        //         costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
-        //         plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
-        //         RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
-        //         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
-        //         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-        //         technology: [],
-        //         value: { min: 0, max: 0 },
-        //     }, () => {
-        //     })
-        // }
+            this.setState({
+                costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
+                plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
+                RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
+                RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
+                vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
+                technology: [],
+                value: { min: 0, max: 0 },
+            }, () => {
+            })
+        }
         this.getInitialRange()
         this.getDataList(null)
 
@@ -161,10 +161,6 @@ class RMDomesticListing extends Component {
         this.getDataList()
     }
 
-    /**
-    * @method hideForm
-    * @description HIDE DOMESTIC, IMPORT FORMS
-    */
     getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
         const { value } = this.state;
         const { filteredRMData, isSimulation } = this.props
@@ -186,6 +182,10 @@ class RMDomesticListing extends Component {
                 this.setState({
                     tableData: Data,
                     maxRange: DynamicData.MaxRange,
+                }, () => {
+                    if (isSimulation) {
+                        this.props.apply()
+                    }
                 })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [], maxRange: 0, })

@@ -202,7 +202,6 @@ function RMSimulation(props) {
 
     const costFormatter = (props) => {
 
-        gridApi && gridOptions.gridApi.redrawRows()
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
