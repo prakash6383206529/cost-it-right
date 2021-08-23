@@ -186,7 +186,7 @@ class RowMaterialMaster extends Component {
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Insights
                                     </NavLink>
-                                </NavItem>} */}
+                                </NavItem> } */}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                         Manage Raw Material (Domestic)
@@ -203,7 +203,7 @@ class RowMaterialMaster extends Component {
                                     </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
@@ -211,8 +211,8 @@ class RowMaterialMaster extends Component {
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => {
-                                        this.toggle('5');
+                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => {
+                                        this.toggle('6');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         RM Approval
@@ -270,8 +270,8 @@ class RowMaterialMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 6 && ViewRMAccessibility &&
-                                    <TabPane tabId="6">
+                                {this.state.activeTab == 5 && ViewRMAccessibility &&
+                                    <TabPane tabId="5">
                                         <RMListing
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
@@ -280,8 +280,8 @@ class RowMaterialMaster extends Component {
 
                                         />
                                     </TabPane>}
-                                {this.state.activeTab == 5 && ViewRMAccessibility &&
-                                    <TabPane tabId="5">
+                                {this.state.activeTab == 6 && ViewRMAccessibility &&
+                                    <TabPane tabId="6">
                                         {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}

@@ -45,7 +45,7 @@ function Insights(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const gradeSelectList = useSelector(state => state.material.gradeSelectList)
     const filterRMSelectList = useSelector(state => state.material.filterRMSelectList.RawMaterials)
-    console.log(filterRMSelectList, 'this is material')
+    // console.log(filterRMSelectList,'this is material')
 
 
     const handleTechnologyChange = (value) => {
@@ -132,7 +132,6 @@ function Insights(props) {
     const renderListing = (label) => {
         let temp = []
         if (label && label !== '') {
-            console.log('not-genrated')
             if (label === 'technology') {
                 technologySelectList && technologySelectList.map((item) => {
                     if (item.Value === '0') return false
@@ -159,7 +158,7 @@ function Insights(props) {
             }
         }
         else {
-            console.log('genrated');
+            // console.log('genrated');
         }
     }
 
@@ -228,13 +227,12 @@ function Insights(props) {
                 maxBarThickness: 25,
             },
         ],
-        borderWidth: 1,
     };
 
 
     return (
         <>
-            <div className="container-fluid">
+            <div className="container-fluid rminsights_page">
                 <form onSubmit={handleSubmit} noValidate >
                     <Row className="pt-4">
                         <Col md="12" className="filter-block">
@@ -308,17 +306,20 @@ function Insights(props) {
                         <Row>
                             <Col md="12">
                                 <div className={`ag-grid-react`}>
-                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                    <div className="ag-grid-wrapper rminsights_table" style={{ width: '100%', height: '100%' }}>
                                         <div className="ag-theme-material">
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 domLayout='autoHeight'
                                                 rowData={rowData}
+                                                rowSelection={'single'}
+                                                onSelectionChanged={onSelectionChanged}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
+                                                // enableCellTextSelection={true}
                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
@@ -326,10 +327,10 @@ function Insights(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >
-                                                <AgGridColumn pinned="left" width="160" field="Specification" />
-                                                <AgGridColumn width="150" field="Minimum" />
-                                                <AgGridColumn width="150" field="Maximum" />
-                                                <AgGridColumn width="150" field="Average" />
+                                                <AgGridColumn pinned="left" width="140" field="Specification" />
+                                                <AgGridColumn pinned="left" width="115" field="Minimum" />
+                                                <AgGridColumn pinned="left" width="115" field="Maximum" />
+                                                <AgGridColumn pinned="left" width="115" field="Average" />
                                                 <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
                                                     <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
