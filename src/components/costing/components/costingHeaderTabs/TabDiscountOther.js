@@ -49,17 +49,20 @@ function TabDiscountOther(props) {
   const { DiscountCostData, ExchangeRateData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
-    if (props.activeTab !== '6') {
-      setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
-      setValue('HundiOrDiscountValue', DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)))
-      setValue('AnyOtherCost', DiscountCostData !== undefined && DiscountCostData.AnyOtherCost)
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      if (props.activeTab !== '6') {
+        setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
+        setValue('HundiOrDiscountValue', DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)))
+        setValue('AnyOtherCost', DiscountCostData !== undefined && DiscountCostData.AnyOtherCost)
 
-      let topHeaderData = {
-        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
-        HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
-        AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        let topHeaderData = {
+          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+          HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
+          AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        }
+        props.setHeaderCost(topHeaderData)
       }
-      props.setHeaderCost(topHeaderData)
     }
   }, [netPOPrice])
 
@@ -674,7 +677,7 @@ function TabDiscountOther(props) {
                         onChange={onPressChangeCurrency}
                       >
                         Change Currency
-                      <input
+                        <input
                           type="checkbox"
                           checked={IsCurrencyChange}
                           disabled={CostingViewMode ? true : false}
@@ -779,8 +782,8 @@ function TabDiscountOther(props) {
                                   Drag and Drop or{" "}
                                   <span className="text-primary">Browse</span>
                                   <br />
-                                        file to upload
-                                    </span>
+                                  file to upload
+                                </span>
                               </div>
                             )
                           }

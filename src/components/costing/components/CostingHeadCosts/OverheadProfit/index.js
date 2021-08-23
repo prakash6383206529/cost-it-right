@@ -241,8 +241,10 @@ function OverheadProfit(props) {
   }, [overheadObj, profitObj]);
 
   useEffect(() => {
-    dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
-    dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
+    if (!CostingViewMode) {
+      dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
+      dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
+    }
   }, []);
 
   //EFFECT CALLED WHEN OVERHEAD OR PROFIT VALUES CHANGED
@@ -511,7 +513,7 @@ function OverheadProfit(props) {
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
-    if (IsDropdownClicked) {
+    if (IsDropdownClicked && !CostingViewMode) {
       setOverheadObj({})
       setProfitObj({})
       setOverheadValues({}, true)
