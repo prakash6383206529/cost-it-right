@@ -315,7 +315,6 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        console.log(props?.value, 'props?.valueprops?.valueprops?.value')
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue ? 'Vendor Based' : 'Zero Based';
     }
@@ -363,6 +362,13 @@ class MachineRateListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
+
+
+    renderPlantFormatter = (props) => {
+        const row = props?.data;
+        return row.IsVendor ? row.DestinationPlant : row.Plants
+    }
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -471,7 +477,7 @@ class MachineRateListing extends Component {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
-        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, this.props.machineDatalist)
     };
 
     onFilterTextBoxChanged(e) {
@@ -502,7 +508,8 @@ class MachineRateListing extends Component {
             costingHeadRenderer: this.costingHeadFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            renderPlantFormatter: this.renderPlantFormatter
         };
 
         return (
@@ -706,7 +713,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                                    <AgGridColumn field="Plants" headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter'></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number"></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
