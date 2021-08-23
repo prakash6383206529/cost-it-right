@@ -727,6 +727,10 @@ a:hover {
           min-height: calc(100vh - 250px);
           height: calc(100vh - 250px) !important;
         }
+        &.rminsights_table{
+          min-height: auto;
+          height: auto !important;
+        }
       }
       .drawer-wrapper{
         .ag-grid-wrapper{
@@ -755,6 +759,7 @@ a:hover {
         .ag-row{
           // border-left: 1px solid #e5eaf9;
           .ag-cell{
+            user-select: text;
             button{
               vertical-align: middle;
             }
