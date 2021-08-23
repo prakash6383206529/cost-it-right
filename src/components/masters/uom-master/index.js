@@ -7,7 +7,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -265,17 +264,7 @@ class UOMMaster extends Component {
   };
 
   returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-    // TempData.map((item) => {
-    //     if (item.RMName === '-') {
-    //         item.RMName = ' '
-    //     } if (item.RMGrade === '-') {
-    //         item.RMGrade = ' '
-    //     } else {
-    //         return false
-    //     }
-    //     return item
-    // })
+
     return (
 
       <ExcelSheet data={TempData} name={UomMaster}>
@@ -291,11 +280,7 @@ class UOMMaster extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
+
 
   /**
   * @method render
@@ -303,20 +288,7 @@ class UOMMaster extends Component {
   */
   render() {
     const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    };
 
     const defaultColDef = {
       resizable: true,
