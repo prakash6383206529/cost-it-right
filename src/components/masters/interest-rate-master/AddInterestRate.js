@@ -513,10 +513,10 @@ class AddInterestRate extends Component {
                           validate={
                             this.state.PaymentTermsApplicability == null ||
                               this.state.PaymentTermsApplicability.length === 0
-                              ? [required]
+                              ? []
                               : []
                           }
-                          required={true}
+                          required={false}
                           handleChangeDescription={
                             this.handlePaymentApplicability
                           }
@@ -532,9 +532,9 @@ class AddInterestRate extends Component {
                           name={"RepaymentPeriod"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, postiveNumber, maxLength10]}
+                          validate={[postiveNumber, maxLength10]}
                           component={renderText}
-                          required={true}
+                          required={false}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"
@@ -546,10 +546,10 @@ class AddInterestRate extends Component {
                           name={"PaymentTermPercent"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
+                          validate={[positiveAndDecimalNumber, decimalLengthThree]}
                           component={renderText}
                           max={100}
-                          required={true}
+                          required={false}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"

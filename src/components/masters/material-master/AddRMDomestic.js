@@ -35,6 +35,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
+import MasterSendForApproval from '../MasterSendForApproval';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -1811,7 +1812,7 @@ class AddRMDomestic extends Component {
               anchor={"right"}
             />
           )}
-          {/* {
+          {
             this.state.approveDrawer && (
               <MasterSendForApproval
                 isOpen={this.state.approveDrawer}
@@ -1822,7 +1823,7 @@ class AddRMDomestic extends Component {
                 anchor={"right"}
               />
             )
-          } */}
+          }
 
           {/* {isVisible && (
             <ImageModel
