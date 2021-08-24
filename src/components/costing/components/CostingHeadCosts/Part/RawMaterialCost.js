@@ -81,6 +81,7 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
 
+      // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
       if (Object.keys(gridData).length > 0 && gridData[0].IsCutOffApplicable) {
         dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
       }
@@ -948,6 +949,7 @@ function RawMaterialCost(props) {
             </Row>
 
             <Row >
+              {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData.TechnologyName === PLASTIC &&
                 <Col md="2" className="py-3 ">
                   <label
@@ -970,6 +972,7 @@ function RawMaterialCost(props) {
                 </Col>
               }
 
+              {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
                   <Col md="2">
