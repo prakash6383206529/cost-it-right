@@ -1722,6 +1722,24 @@ class AddRMImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
+<<<<<<< HEAD
+=======
+                          {/* {
+                            CheckApprovalApplicableMaster('1') === true ?
+                              <button
+                                class="user-btn approval-btn mr15"
+                                onClick={() => { }}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button type="submit" className="user-btn mr5 save-btn">
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          } */}
+>>>>>>> ea12581b3... RM master approval in progress
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"

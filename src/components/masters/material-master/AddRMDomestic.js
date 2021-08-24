@@ -585,6 +585,9 @@ class AddRMDomestic extends Component {
       this.props.getUOMSelectList(() => { })
     })
   }
+  closeApprovalDrawer = (e = '') => {
+    this.setState({ approveDrawer: false })
+  }
 
   /**
    * @method onCancel
@@ -1172,20 +1175,6 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
-                                <div
-                                  className={
-                                    "plus-icon-square blurPlus-icon-square right"
-                                  }
-                                ></div>
-                              ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.gradeToggler}
-                                      className={"plus-icon-square right"}
-                                    ></div>
-                                  )
-                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1207,20 +1196,6 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* {this.state.RawMaterial == null ||                                this.state.RawMaterial.length === 0 ||                                this.state.RMGrade == null ||                                this.state.RMGrade.length === 0 ? (
-                                  <div
-                                    className={
-                                      "plus-icon-square blurPlus-icon-square right"
-                                    }
-                                  ></div>
-                                ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.specificationToggler}
-                                      className={"plus-icon-square  right"}
-                                    ></div>
-                                  )
-                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1729,6 +1704,24 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
+                          {/* {
+                            CheckApprovalApplicableMaster('1') === true ?
+                              <button type="button"
+                                class="user-btn approval-btn mr5"
+                                onClick={this.sendForMasterApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          } */}
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
@@ -1818,6 +1811,18 @@ class AddRMDomestic extends Component {
               anchor={"right"}
             />
           )}
+          {/* {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                ID={""}
+                type={'Sender'}
+                anchor={"right"}
+              />
+            )
+          } */}
 
           {/* {isVisible && (
             <ImageModel
