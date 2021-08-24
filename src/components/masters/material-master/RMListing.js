@@ -210,12 +210,11 @@ class RMListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, this.props.rawMaterialTypeDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {
@@ -225,8 +224,8 @@ class RMListing extends Component {
             }
             return item
         })
-        return (
 
+        return (
             <ExcelSheet data={TempData} name={RmMaterial}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
