@@ -337,37 +337,7 @@ class InterestRateListing extends Component {
     return serialNumber;
   }
 
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
 
-  renderCostingHead = () => {
-    return <>Costing <br />Head </>
-  }
-
-  renderVendorName = () => {
-    return <>Vendor <br />Name </>
-  }
-
-  renderIccApp = () => {
-    return <> ICC <br />Applicability</>
-  }
-
-  renderAnnualIcc = () => {
-    return <> Annual <br />ICC(%) </>
-  }
-
-  renderPaymentTerm = () => {
-    return <>Payment Term <br /> Applicability </>
-  }
-
-  renderRepayment = () => {
-    return <> Repayment <br />Period(Days) </>
-  }
-
-  renderInterestRate = () => {
-    return <> Payment Term <br />Interest Rate(%) </>
-  }
 
   /**
   * @method costingHeadFormatter
@@ -480,12 +450,12 @@ class InterestRateListing extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, this.props.interestRateDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {

@@ -205,7 +205,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <label htmlFor="normal-switch"  className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() =>
@@ -261,7 +261,7 @@ class UOMMaster extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
@@ -376,40 +376,7 @@ class UOMMaster extends Component {
 
           <Row>
             <Col>
-              {/* <BootstrapTable
-                data={this.state.dataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                exportCSV={DownloadAccessibility}
-                csvFileName={`${UomMaster}.csv`}
-                //ignoreSinglePage
-                ref={"table"}
-                trClassName={"userlisting-row"}
-                tableHeaderClass="my-custom-class"
-                pagination
-              >
-                <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}> Unit</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitSymbol" dataAlign="left" dataFormat={this.applySuperScriptFormatter} dataSort={true}>Unit Symbol</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataAlign="left" dataSort={true}>Unit Type</TableHeaderColumn> */}
-              {/* <TableHeaderColumn
-                  dataField="IsActive"
-                  dataFormat={this.statusButtonFormatter}
-                >
-                  Status
-                    </TableHeaderColumn> */}
-              {/* <TableHeaderColumn
-                  width={100}
-                  dataField="Id"
-                  isKey={true}
-                  dataAlign="right"
-                  dataFormat={this.buttonFormatter}
-                >
-                  Actions
-                    </TableHeaderColumn> */}
-              {/* </BootstrapTable> */}
+
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">

@@ -2376,6 +2376,11 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit", }
 ]
 
+export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
+    { label: "VendorName", value: "VendorName" },
+    { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit" },
+]
+
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "IsVendor", value: "IsVendor", },
     { label: "VendorName", value: "VendorName", },
