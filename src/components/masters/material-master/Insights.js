@@ -85,51 +85,51 @@ function Insights (props){
     }
 
     const rowData = [
-        { Specification: 'OP1', Minimum: '100', Maximum: '200', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+        { Specification: 'OP1', Minimum: '100', Maximum: '200', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
         },
         {
-             Specification: 'OP2', Minimum: '50', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP2', Minimum: '50', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
         },
         {
-             Specification: 'OP3', Minimum: '60', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP3', Minimum: '60', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
         },
         {
-             Specification: 'OP4', Minimum: '100', Maximum: '120', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP4', Minimum: '100', Maximum: '120', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
         },
         {
-             Specification: 'OP5', Minimum: '100', Maximum: '120', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP5', Minimum: '100', Maximum: '120', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
         },
         {
-             Specification: 'OP6', Minimum: '20', Maximum: '200', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP6', Minimum: '20', Maximum: '200', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
         },
         {
-             Specification: 'OP7', Minimum: '100', Maximum: '110', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP7', Minimum: '100', Maximum: '110', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
         },
         {
-             Specification: 'OP8', Minimum: '50', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP8', Minimum: '50', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
         },
         {
-             Specification: 'OP9', Minimum: '10', Maximum: '60', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP9', Minimum: '10', Maximum: '60', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
         },
         {
-             Specification: 'OP10', Minimum: '60', Maximum: '80', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP10', Minimum: '60', Maximum: '80', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
         },
         {
-             Specification: 'OP11', Minimum: '100', Maximum: '150', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP11', Minimum: '100', Maximum: '150', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
         },
         {
-             Specification: 'OP12', Minimum: '40', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             Specification: 'OP12', Minimum: '40', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
              graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
         },
     ];
@@ -313,10 +313,10 @@ function Insights (props){
                                             }}
                                             frameworkComponents={frameworkComponents}
                                         >
-                                            <AgGridColumn pinned="left" width="160" field="Specification" />
-                                            <AgGridColumn width="150" field="Minimum" />
-                                            <AgGridColumn width="150" field="Maximum" />
-                                            <AgGridColumn width="150" field="Average" />
+                                            <AgGridColumn pinned="left" width="140" field="Specification" />
+                                            <AgGridColumn pinned="left" width="115" field="Minimum" />
+                                            <AgGridColumn pinned="left" width="115" field="Maximum" />
+                                            <AgGridColumn pinned="left" width="115" field="Average" />
                                             <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
                                                 <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
                                                 <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
