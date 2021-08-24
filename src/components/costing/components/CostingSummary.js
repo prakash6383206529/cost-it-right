@@ -262,13 +262,8 @@ function CostingSummary(props) {
    * @description RESETING FORM AFTER SELECTING RESET BUTTON
   */
   const resetData = () => {
-    reset()
     setPart([])
     setTechnology([])
-    setTimeout(() => {
-      setValue('Technology', '')
-      setValue('Part', '')
-    }, 200);
     setDisabled(false)
     setEffectiveDate('')
     dispatch(storePartNumber(''))
@@ -276,6 +271,16 @@ function CostingSummary(props) {
     setShowWarningMsg(false)
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getPartInfo('', () => { }))
+    reset({
+      Technology: '',
+      Part: '',
+      PartName: '',
+      Description: '',
+      ECNNumber: '',
+      DrawingNumber: '',
+      RevisionNumber: '',
+      ShareOfBusiness: '',
+    })
   }
 
   /**
