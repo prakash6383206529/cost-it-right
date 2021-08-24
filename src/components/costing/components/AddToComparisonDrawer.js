@@ -231,7 +231,7 @@ function AddToComparisonDrawer(props) {
           // let temp = viewCostingData;
           let dataFromAPI = res.data.Data
           let obj = {}
-          obj.zbc = obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
+          obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
           obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked
           obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
           obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
