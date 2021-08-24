@@ -51,6 +51,8 @@ export function formatLoginResult(res) {
             DepartmentCode: res.DepartmentCode,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
+            LoggedInMasterLevel: res.LoggedInMasterLevel,
+            LoggedInMasterLevelId: res.LoggedInMasterLevelId,
             Role: res.Role
         };
         return userObj;
