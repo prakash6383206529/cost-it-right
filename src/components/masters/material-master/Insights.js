@@ -11,6 +11,7 @@ import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
+import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../dashboard/ChartsDashboard';
 
 function Insights (props){
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -26,6 +27,9 @@ function Insights (props){
     const [gradeSelected,setGradeSelected] = useState(false);
 
     const [dynamicGrpahData,setDynamicGrpahData] = useState()
+    const [averageGrpahData,setAverageGrpahData] = useState()
+    const [minimumGrpahData,setMinimumGrpahData] = useState()
+    const [maximumGrpahData,setMaximumGrpahData] = useState()
 
     const gridOptions = {};
 
@@ -77,7 +81,11 @@ function Insights (props){
     const submitDropdown = () => {
         if(techSelected && materialSelected && gradeSelected){
             setShowListing(true)
-            setDynamicGrpahData(rowData[0].graphData)
+            setDynamicGrpahData(rowData[0].graphData);
+            setAverageGrpahData(rowData[0].averageData);
+            setMinimumGrpahData(rowData[0].minimumData);
+            setMaximumGrpahData(rowData[0].maximumData);
+
         }
         else{
             setShowListing(false)
@@ -86,59 +94,66 @@ function Insights (props){
 
     const rowData = [
         { Specification: 'OP1', Minimum: '100', Maximum: '200', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-            graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+            graphData: [20,40,50,40,60,80,60,20],averageData:[12,25,45,32,51,45,36,15],minimumData:[5,10,40,25,45,10,15,10],maximumData:[20,40,50,40,60,80,60,20],
         },
         {
-             Specification: 'OP2', Minimum: '50', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+            Specification: 'OP2', Minimum: '50', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
+            graphData: [40,80,100,80,120,160,120,40],averageData:[22,45,85,62,101,85,66,25],minimumData:[10,20,80,45,85,20,25,20],maximumData:[40,80,100,80,120,160,120,40],
+
         },
         {
-             Specification: 'OP3', Minimum: '60', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+            Specification: 'OP3', Minimum: '60', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
+            graphData: [50,90,110,90,130,170,130,50],averageData:[12,55,65,72,111,45,76,25],minimumData:[20,30,90,55,95,20,35,30],maximumData:[50,90,110,90,130,170,130,50],
         },
         {
              Specification: 'OP4', Minimum: '100', Maximum: '120', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+            graphData: [20,40,50,40,60,80,60,20],averageData:[12,25,45,32,51,45,36,15],minimumData:[5,10,40,25,45,10,15,10],maximumData:[20,40,50,40,60,80,60,20],
         },
         {
              Specification: 'OP5', Minimum: '100', Maximum: '120', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+            graphData: [40,80,100,80,120,160,120,40],averageData:[22,45,85,62,101,85,66,25],minimumData:[10,20,80,45,85,20,25,20],maximumData:[40,80,100,80,120,160,120,40],
         },
         {
              Specification: 'OP6', Minimum: '20', Maximum: '200', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+             graphData: [50,90,110,90,130,170,130,50],averageData:[12,55,65,72,111,45,76,25],minimumData:[20,30,90,55,95,20,35,30],maximumData:[50,90,110,90,130,170,130,50],
         },
         {
              Specification: 'OP7', Minimum: '100', Maximum: '110', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+             graphData: [20,40,50,40,60,80,60,20],averageData:[12,25,45,32,51,45,36,15],minimumData:[5,10,40,25,45,10,15,10],maximumData:[20,40,50,40,60,80,60,20],
         },
         {
              Specification: 'OP8', Minimum: '50', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+             graphData: [40,80,100,80,120,160,120,40],averageData:[22,45,85,62,101,85,66,25],minimumData:[10,20,80,45,85,20,25,20],maximumData:[40,80,100,80,120,160,120,40],
         },
         {
              Specification: 'OP9', Minimum: '10', Maximum: '60', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+             graphData: [50,90,110,90,130,170,130,50],averageData:[12,55,65,72,111,45,76,25],minimumData:[20,30,90,55,95,20,35,30],maximumData:[50,90,110,90,130,170,130,50],
         },
         {
              Specification: 'OP10', Minimum: '60', Maximum: '80', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+             graphData: [20,40,50,40,60,80,60,20],averageData:[12,25,45,32,51,45,36,15],minimumData:[5,10,40,25,45,10,15,10],maximumData:[20,40,50,40,60,80,60,20],
         },
         {
              Specification: 'OP11', Minimum: '100', Maximum: '150', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+             graphData: [40,80,100,80,120,160,120,40],averageData:[22,45,85,62,101,85,66,25],minimumData:[10,20,80,45,85,20,25,20],maximumData:[40,80,100,80,120,160,120,40],
         },
         {
              Specification: 'OP12', Minimum: '40', Maximum: '100', Average: '150',Plant1: '15', Plant2: '22', Plant3: '18',Plant4: '24', Plant5: '8', Plant6: '27',Plant7: '15', Plant8: '38',
-             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+             graphData: [50,90,110,90,130,170,130,50],averageData:[12,55,65,72,111,45,76,25],minimumData:[20,30,90,55,95,20,35,30],maximumData:[50,90,110,90,130,170,130,50],
         },
     ];
 
     const onSelectionChanged = (event) => {
         var rowCount = event.api.getSelectedRows();
         var graphDataNew = rowCount[0].graphData;
-        setDynamicGrpahData(graphDataNew)
-        // console.log(dynamicGrpahData)
+        var avgGraphData = rowCount[0].averageData;
+        var minGraphData = rowCount[0].minimumData;
+        var maxGraphData = rowCount[0].maximumData;
+        setDynamicGrpahData(graphDataNew);
+        setAverageGrpahData(avgGraphData);
+        setMinimumGrpahData(minGraphData);
+        setMaximumGrpahData(maxGraphData);
+        // console.log(rowData);
     }
 
     const renderListing = (label) => {
@@ -201,17 +216,43 @@ function Insights (props){
         customNoRowsOverlay: NoContentFound,
     }
 
-    const color1 = "#73b0f4";
     const data1 = {
-        labels: ['2010', '2011', '2012', '2013', '2014', '2015','2016', '2017', '2018', '2019', '2020', '2021','2022', '2023', '2024', '2025', '2026', '2027','2028', '2029', '2030', '2031', '2032', '2033'],
+        labels: ['vendor1-plant1','vendor1-plant2','vendor2-plant3','vendor2-plant4','vendor2-plant5','vendor3-plant6','vendor3-plant7','vendor3-plant8'],
         datasets: [
-          {
-            label: 'Insights',
-            data: dynamicGrpahData,
+        {
+            type: 'line',
+            label: 'Average',
+            borderColor: graphColor1,
             fill: false,
-            borderColor: color1,
-            backgroundColor:color1,
-          },
+            tension: 0.1,
+            borderDash: [5, 5],
+            data: averageGrpahData,
+        },
+        {
+            type: 'line',
+            label: 'Minimum',
+            borderColor: graphColor6,
+            fill: false,
+            tension: 0.1,
+            borderDash: [5, 5],
+            data: minimumGrpahData,
+        },
+        {
+            type: 'line',
+            label: 'Maximum',
+            borderColor: graphColor3,
+            fill: false,
+            tension: 0.1,
+            borderDash: [5, 5],
+            data: maximumGrpahData,
+        },
+        {
+            type: 'bar',
+            label: 'Plants',
+            backgroundColor: graphColor4,
+            data: dynamicGrpahData,
+            maxBarThickness: 25,
+        },
         ],
     };
     
