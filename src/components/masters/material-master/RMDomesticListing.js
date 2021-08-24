@@ -283,8 +283,8 @@ class RMDomesticListing extends Component {
     statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={row.Status}>{row.DisplayStatus}</div>
-
+        // CHANGE IN STATUS IN AFTER KAMAL SIR API
+        return <div className={row.DisplayStatus}>{row.DisplayStatus}</div>
     }
 
     /**

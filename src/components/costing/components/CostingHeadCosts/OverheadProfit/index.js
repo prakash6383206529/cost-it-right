@@ -86,17 +86,6 @@ function OverheadProfit(props) {
       setProfitValues(CostingProfitDetail, false)
     }
 
-    if (Object.keys(ICCApplicabilityDetail).length > 0) {
-      //setValue('ICCApplicability', ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
-      //setValue('PaymentTermsApplicability', PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
-      //setICCInterestRateId(ICCApplicabilityDetail.InterestRateId)
-    }
-
-    if (Object.keys(PaymentTermDetail).length > 0) {
-      // setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
-      // setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
-    }
-
     setTimeout(() => {
       IncludeSurfaceTreatmentCall()
     }, 3000)
@@ -254,8 +243,10 @@ function OverheadProfit(props) {
   }, [overheadObj, profitObj]);
 
   useEffect(() => {
-    dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
-    dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
+    if (!CostingViewMode) {
+      dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
+      dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
+    }
   }, []);
 
   //EFFECT CALLED WHEN OVERHEAD OR PROFIT VALUES CHANGED
@@ -536,7 +527,6 @@ function OverheadProfit(props) {
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
-
     if (IsDropdownClicked && !CostingViewMode) {
       setOverheadObj({})
       setProfitObj({})

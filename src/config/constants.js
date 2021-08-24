@@ -184,7 +184,7 @@ export const API = {
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
   //RM APPROVAL API'S
-  getRMApprovalList: `${BASE_URL}`,
+  getRMApprovalList: `${BASE_URL}/masters-approval-raw-material/get-master-approvals-by-filter`,
   getAllMasterApprovalDepartment: `${BASE_URL}`,
   getAllMasterApprovalUserByDepartment: `${BASE_URL}`,
   masterSendToApprover: `${BASE_URL}`,
@@ -1497,6 +1497,8 @@ export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
+export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
+export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 
 export const USER = 'User'
 export const ROLE = 'Role'
