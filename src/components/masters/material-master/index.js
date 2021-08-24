@@ -221,11 +221,11 @@ class RowMaterialMaster extends Component {
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
-                                {ViewRMAccessibility && <NavItem>
+                                {/* {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                         RM Approval
                                     </NavLink>
-                                </NavItem>}
+                                </NavItem>} */}
                             </Nav>
 
                             <TabContent activeTab={this.state.activeTab}>

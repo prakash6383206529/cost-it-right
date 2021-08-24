@@ -26,7 +26,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../../helper';
+import { CheckApprovalApplicableMaster } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -284,7 +284,7 @@ class RMDomesticListing extends Component {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // CHANGE IN STATUS IN AFTER KAMAL SIR API
-        return <div className={row.DisplayStatus}>{row.DisplayStatus}</div>
+        return <div className={row.Status}>{row.DisplayStatus}</div>
     }
 
     /**
@@ -783,7 +783,7 @@ class RMDomesticListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
 
-                                                    <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>}>
