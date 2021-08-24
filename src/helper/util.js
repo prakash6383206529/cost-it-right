@@ -5,7 +5,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 
@@ -770,7 +770,11 @@ export function CheckApprovalApplicableMaster(number) {
   // UNCOMMENT IT AFTER DEV IS DONE
   // const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
   const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number)
-  console.log('isApproval: ', isApproval);
   return isApproval
 
+}
+
+export function isMultipleRMAllow(technology) {
+  const allowedMultipleRM = [MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, MACHINING, FORGING, PLASTIC];
+  return allowedMultipleRM.includes(technology);
 }

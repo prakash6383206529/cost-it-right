@@ -1504,6 +1504,8 @@ export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
+export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
+export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 
 export const USER = 'User'
 export const ROLE = 'Role'
