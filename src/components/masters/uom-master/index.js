@@ -7,7 +7,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -205,7 +204,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <label htmlFor="normal-switch"  className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() =>
@@ -261,21 +260,11 @@ class UOMMaster extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-    // TempData.map((item) => {
-    //     if (item.RMName === '-') {
-    //         item.RMName = ' '
-    //     } if (item.RMGrade === '-') {
-    //         item.RMGrade = ' '
-    //     } else {
-    //         return false
-    //     }
-    //     return item
-    // })
+
     return (
 
       <ExcelSheet data={TempData} name={UomMaster}>
@@ -291,11 +280,7 @@ class UOMMaster extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    return (
-      <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    );
-  }
+
 
   /**
   * @method render
@@ -303,20 +288,7 @@ class UOMMaster extends Component {
   */
   render() {
     const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    };
 
     const defaultColDef = {
       resizable: true,
@@ -376,40 +348,7 @@ class UOMMaster extends Component {
 
           <Row>
             <Col>
-              {/* <BootstrapTable
-                data={this.state.dataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                exportCSV={DownloadAccessibility}
-                csvFileName={`${UomMaster}.csv`}
-                //ignoreSinglePage
-                ref={"table"}
-                trClassName={"userlisting-row"}
-                tableHeaderClass="my-custom-class"
-                pagination
-              >
-                <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}> Unit</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitSymbol" dataAlign="left" dataFormat={this.applySuperScriptFormatter} dataSort={true}>Unit Symbol</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataAlign="left" dataSort={true}>Unit Type</TableHeaderColumn> */}
-              {/* <TableHeaderColumn
-                  dataField="IsActive"
-                  dataFormat={this.statusButtonFormatter}
-                >
-                  Status
-                    </TableHeaderColumn> */}
-              {/* <TableHeaderColumn
-                  width={100}
-                  dataField="Id"
-                  isKey={true}
-                  dataAlign="right"
-                  dataFormat={this.buttonFormatter}
-                >
-                  Actions
-                    </TableHeaderColumn> */}
-              {/* </BootstrapTable> */}
+
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
