@@ -70,6 +70,10 @@ function AttachmentSec(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            // let obj={
+            //     file:data,
+
+            // }
             // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
             //   let Data = res.data[0]
             //   files.push(Data)
