@@ -392,12 +392,12 @@ class OverheadListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, this.props.overheadProfitList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } if (item.OverheadPercentage === null) {
@@ -634,8 +634,6 @@ class OverheadListing extends Component {
                 </form>
                 <Row>
                     <Col>
-
-
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -660,7 +658,7 @@ class OverheadListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant" cellRenderer='plantFormatter'></AgGridColumn>
                                     {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}

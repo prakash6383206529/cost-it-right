@@ -193,33 +193,7 @@ class ProfitListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
-    renderVendor = () => {
-        return <>Vendor <br />Name </>
-    }
-    renderClient = () => {
-        return <>Client <br />Name </>
-    }
-    renderModelType = () => {
-        return <>Model <br />Type </>
-    }
-    renderOverheadAppli = () => {
-        return <>Profit  <br />Applicability</>
-    }
-    renderOverheadAppliPercent = () => {
-        return <>Profit  <br />Applicability (%)</>
-    }
-    renderOverheadCC = () => {
-        return <>Profit  <br />on CC (%)</>
-    }
-    renderOverheadRM = () => {
-        return <>Profit  <br />on RM (%)</>
-    }
-    renderOverheadBOP = () => {
-        return <>Profit  <br />on BOP (%)</>
-    }
-    renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
-    }
+
     /**
     * @method indexFormatter
     * @description Renders serial number
@@ -450,12 +424,12 @@ class ProfitListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, this.props.overheadProfitList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === '-') {
                 item.ClientName = ' '
             } if (item.TypeOfHead === 'VBC') {
@@ -736,7 +710,7 @@ class ProfitListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant" cellRenderer='plantFormatter'></AgGridColumn>
                                     {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
