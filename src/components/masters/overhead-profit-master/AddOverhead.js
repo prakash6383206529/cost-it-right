@@ -119,6 +119,7 @@ class AddOverhead extends Component {
         OverheadID: data.Id,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow');
+      this.props.getVendorWithVendorCodeSelectList()
       this.props.getOverheadData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
