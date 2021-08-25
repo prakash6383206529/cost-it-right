@@ -36,6 +36,7 @@ import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import imgRedcross from '../../../assests/images/red-cross.png'
+import MasterSendForApproval from '../MasterSendForApproval'
 
 
 const selector = formValueSelector('AddRMDomestic')
