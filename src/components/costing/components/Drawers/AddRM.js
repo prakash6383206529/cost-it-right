@@ -428,7 +428,7 @@ function AddRM(props) {
                           title: CONSTANT.EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={isMultipleRMAllow(costData.TechnologyName) ? 'multiple' : 'single'}
+                        rowSelection={isMultipleRMAllow(costData.TechnologyName) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
