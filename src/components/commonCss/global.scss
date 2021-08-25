@@ -727,6 +727,10 @@ a:hover {
           min-height: calc(100vh - 250px);
           height: calc(100vh - 250px) !important;
         }
+        &.rminsights_table{
+          min-height: auto;
+          height: auto !important;
+        }
       }
       .drawer-wrapper{
         .ag-grid-wrapper{
@@ -755,6 +759,7 @@ a:hover {
         .ag-row{
           // border-left: 1px solid #e5eaf9;
           .ag-cell{
+            user-select: text;
             button{
               vertical-align: middle;
             }
@@ -2754,10 +2759,10 @@ body {
     .tab-pane,:not(.tab-pane){
       .ag-grid-react{
         .ag-grid-wrapper{
-          min-height: calc(100vh - 300px);
+          min-height: auto;
           height: auto !important;
           &.add-volume-table{
-            min-height: calc(100vh - 250px);
+            min-height: auto;
             height: auto !important;
           }
         }
@@ -2852,24 +2857,22 @@ body {
     }
   }
 
-  
-
   // ag-grid-react start
 .content-page,:not(.content-page){
   .tab-pane,:not(.tab-pane){
     .ag-grid-react{
       .ag-grid-wrapper{
-        min-height: auto;
+        min-height: calc(100vh - 245px);
         height: auto !important;
         &.add-volume-table{
-          min-height: auto;
+          min-height: calc(100vh - 245px);
           height: auto !important;
         }
       }
       .drawer-wrapper{
         .ag-grid-wrapper{
           min-height: calc(100vh - 190px);
-          height: calc(100vh - 190px) !important;
+          height: auto !important;
         } 
       }
       &.no-tab-page{

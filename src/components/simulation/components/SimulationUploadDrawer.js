@@ -175,6 +175,10 @@ class SimulationUploadDrawer extends Component {
         const { fileData } = this.state
         // let data = new FormData()
         // data.append('file', fileData)
+        if (fileData.length === 0) {
+            toastr.warning("Please select a file to upload.")
+            return false
+        }
 
         let obj = {
             file: fileData,

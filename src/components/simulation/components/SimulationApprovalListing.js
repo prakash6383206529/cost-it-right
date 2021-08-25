@@ -178,6 +178,10 @@ function SimulationApprovalListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
+    const reasonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? cell : '-';
+    }
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -189,8 +193,8 @@ function SimulationApprovalListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="View mr5" type={'button'} onClick={() => viewDetails(row)} />
-                {row.Status === DRAFT && <button className="Delete" type={'button'} onClick={() => deleteItem(row)} />}
+                <button className="View" type={'button'} onClick={() => viewDetails(row)} />
+                {row.Status === DRAFT && <button className="Delete ml-1" type={'button'} onClick={() => deleteItem(row)} />}
             </>
         )
     }
@@ -240,17 +244,6 @@ function SimulationApprovalListing(props) {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
-    const renderImpactCost = () => {
-        return <>Impacted <br />Costing</>
-    }
-
-    const renderImpactPart = () => {
-        return <>Impacted <br />Parts</>
-    }
-
-    const renderHead = () => {
-        return <>Costing <br />Head</>
-    }
 
 
 
@@ -370,7 +363,7 @@ function SimulationApprovalListing(props) {
                 state: {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyHead
+                    master: approvalData.SimulationTechnologyId
                 }
             }}
         />
@@ -430,6 +423,7 @@ function SimulationApprovalListing(props) {
         buttonFormatter: buttonFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        reasonFormatter: reasonFormatter
     };
 
 
@@ -487,12 +481,13 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
+                                    <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     <AgGridColumn width={142} field="RequestedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

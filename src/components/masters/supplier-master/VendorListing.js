@@ -9,7 +9,6 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
     getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
@@ -20,8 +19,7 @@ import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { VENDOR, VendorMaster } from '../../../config/constants';
+import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -85,29 +83,37 @@ class VendorListing extends Component {
 
     componentDidMount() {
         this.getTableListData(null, null, null)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === VENDOR)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                        ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-                    })
-                }
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === VENDOR)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+                })
             }
-        })
-        //this.props.onRef(this)
+        }
     }
 
     // Get updated Supplier's list after any action performed.
@@ -313,7 +319,7 @@ class VendorListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch" >
                         <Switch
                             onChange={() => this.handleChange(cellValue, rowData)}
                             checked={cellValue}
@@ -446,17 +452,16 @@ class VendorListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
         data && data.map((item => {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, this.props.supplierDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.Country == 'NA') {
                 item.Country = ' '
             } else if (item.State == 'NA') {
@@ -615,81 +620,57 @@ class VendorListing extends Component {
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
-                                            )}
-                                            {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
+                                            <div className="filter mr-0"></div>
+                                        </button>
+                                    )}
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.formToggle}
+                                            title="Add"
+                                        >
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
+                                        </button>
+                                    )}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
 
-                                                    <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                            <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
-                                                    </button>}>
+                                                </button>}>
 
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
 
-                                                </>
+                                        </>
 
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
                         </Col>
                     </Row>
                 </form>
-                {/* <BootstrapTable
-                    data={this.props.supplierDataList}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV={DownloadAccessibility}
-                    // csvFileName={`${VendorMaster}.csv`}
-                    //ignoreSinglePage
-                    ref={"table"}
-                    trClassName={"userlisting-row"}
-                    tableHeaderClass="my-custom-header"
-                    pagination
-                >
-                    <TableHeaderColumn dataField="VendorType" dataAlign="left" dataSort={true} >Vendor Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" dataAlign="left" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorCode" dataAlign="left" dataSort={true}> Vendor Code </TableHeaderColumn>
-                    <TableHeaderColumn dataField="Country" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" dataAlign="left" dataSort={true}> State </TableHeaderColumn>
-                    <TableHeaderColumn dataField="City" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}> Actions </TableHeaderColumn>
-                </BootstrapTable> */}
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -697,11 +678,11 @@ class VendorListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.supplierDataList}
                             pagination={true}
@@ -722,7 +703,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -769,9 +750,9 @@ domLayout='autoHeight'
 function mapStateToProps({ comman, supplier, auth, }) {
     const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList } = supplier;
     const { countryList } = comman;
-    const { leftMenuData } = auth;
+    const { leftMenuData, topAndLeftMenuData } = auth;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, topAndLeftMenuData };
 }
 
 /**

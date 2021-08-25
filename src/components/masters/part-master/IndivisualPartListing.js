@@ -7,7 +7,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
@@ -174,7 +173,7 @@ class IndivisualPartListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
                             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -289,12 +288,12 @@ class IndivisualPartListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, this.props.newPartsListing)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -385,77 +384,49 @@ class IndivisualPartListing extends Component {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && (
-                                                 <button
-                                                 type="button"
-                                                 className={'user-btn mr5'}
-                                                 title="Add"
-                                                 onClick={this.formToggle}>
-                                                 <div className={'plus mr-0'}></div></button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        title="Add"
+                                        onClick={this.formToggle}>
+                                        <div className={'plus mr-0'}></div></button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
 
-                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                    </button>}>
+                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                {/* DOWNLOAD */}
+                                            </button>}>
 
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
 
-                                                </>
+                                    </>
 
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
 
                             </div>
                         </div>
                     </Col>
                 </Row>
-
-
-                {/* <BootstrapTable
-                    data={this.props.newPartsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    // exportCSV={DownloadAccessibility}
-                    // csvFileName={`${ComponentPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
-
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -463,11 +434,11 @@ class IndivisualPartListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
                             pagination={true}
@@ -488,7 +459,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action"  type="rightAligned"   cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

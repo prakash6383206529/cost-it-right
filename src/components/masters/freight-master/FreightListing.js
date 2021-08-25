@@ -11,8 +11,6 @@ import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
-import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -235,13 +233,6 @@ class FreightListing extends Component {
   }
 
 
-  /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-  }
 
   /**
   * @method renderListing
@@ -335,15 +326,13 @@ class FreightListing extends Component {
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
-    temp = TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.IsVendor === true) {
         item.IsVendor = 'Vendor Based'
       } else if (item.IsVendor === false) {
         item.IsVendor = 'Zero Based'
       } else if (item.VendorName === '-') {
         item.VendorName = ' '
-      } else {
-        return false
       }
       return item
     })
@@ -371,7 +360,7 @@ class FreightListing extends Component {
     data && data.map((item => {
       tempArr.push(item.data)
     }))
-    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, this.props.freightDetail)
   };
 
   onFilterTextBoxChanged(e) {
@@ -382,11 +371,6 @@ class FreightListing extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
-  createCustomExportCSVButton = (onClick) => {
-    // return (
-    //   <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    // );
-  }
 
 
   /**
@@ -397,17 +381,7 @@ class FreightListing extends Component {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    };
 
 
     const defaultColDef = {
@@ -550,7 +524,7 @@ class FreightListing extends Component {
                       <div className="cancel-icon-white"></div></button>
                   ) : (
                     <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
+                      <div className="filter mr-0"></div>
                     </button>
                   )}
                   {AddAccessibility && (
@@ -567,7 +541,7 @@ class FreightListing extends Component {
                     DownloadAccessibility &&
                     <>
                       <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                      <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                        <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -575,7 +549,7 @@ class FreightListing extends Component {
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
+                    <div className="refresh mr-0"></div>
                   </button>
 
                 </div>
@@ -585,26 +559,6 @@ class FreightListing extends Component {
         </form>
         <Row>
           <Col>
-            {/* <BootstrapTable
-              data={this.props.freightDetail}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              // exportCSV={DownloadAccessibility}
-              // csvFileName={`${FreightMaster}.csv`}
-              //ignoreSinglePage
-              ref={'table'}
-              pagination>  */}
-            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="left" dataSort={true} >{'Source City'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
-            <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>  */}
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -614,7 +568,7 @@ class FreightListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.freightDetail}
                   pagination={true}
@@ -633,7 +587,7 @@ domLayout='autoHeight'
                   <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn field="FreightId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="FreightId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

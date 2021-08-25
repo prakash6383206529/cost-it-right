@@ -14,6 +14,7 @@ import {
   SET_CUTOFF_RMC,
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   EMPTY_GUID,
+  SET_PLASTIC_ARR,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2155,5 +2156,14 @@ export function getCostingSpecificTechnology(loggedInUserId, callback) {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
       })
+  }
+}
+
+export function setPlasticArray(array, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PLASTIC_ARR,
+      payload: array
+    })
   }
 }

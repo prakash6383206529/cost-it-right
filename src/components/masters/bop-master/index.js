@@ -6,7 +6,8 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
-import { BOP } from '../../../config/constants';
+import InsightsBop from './InsightsBop';
+import { BOP, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -31,26 +32,36 @@ class BOPMaster extends Component {
   }
 
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === BOP)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+    this.applyPermission(this.props.topAndLeftMenuData)
+  }
 
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-            BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-          })
-        }
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+      const accessData = Data && Data.Pages.find(el => el.PageName === BOP)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
       }
-    })
+    }
   }
 
   /**
@@ -139,6 +150,9 @@ class BOPMaster extends Component {
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0">
+                {/* <NavItem>
+                  <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
+                </NavItem> */}
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -149,7 +163,7 @@ class BOPMaster extends Component {
                     }}
                   >
                     Manage BOP (Domestic)
-                      </NavLink>
+                  </NavLink>
                 </NavItem>
 
                 <NavItem>
@@ -162,18 +176,24 @@ class BOPMaster extends Component {
                     }}
                   >
                     Manage BOP (Import)
-                      </NavLink>
+                  </NavLink>
                 </NavItem>
 
                 <NavItem>
                   <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                     Manage SOB
-                                </NavLink>
+                  </NavLink>
                 </NavItem>
 
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
+                {/* {this.state.activeTab == 1 && (
+                  <TabPane tabId="1">
+                    <InsightsBop />
+                  </TabPane>
+                )} */}
+
                 {this.state.activeTab == 1 && (
                   <TabPane tabId="1">
                     <BOPDomesticListing
@@ -231,8 +251,8 @@ class BOPMaster extends Component {
 */
 function mapStateToProps({ boughtOutparts, auth }) {
   const { BOPListing, loading } = boughtOutparts;
-  const { leftMenuData } = auth;
-  return { BOPListing, leftMenuData, loading }
+  const { leftMenuData, topAndLeftMenuData } = auth;
+  return { BOPListing, leftMenuData, topAndLeftMenuData, loading }
 }
 
 

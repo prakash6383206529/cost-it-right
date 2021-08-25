@@ -37,10 +37,12 @@ import {
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
+import { loggedInUserId } from '../../../helper';
+import { MESSAGES } from '../../../config/message';
 
 const headers = config
 
@@ -1046,7 +1048,6 @@ export function getVendorWithVendorCodeSelectList() {
  * @description Used to get RM Domestic Datalist
  */
 export function getRMDomesticDataList(data, callback) {
-    console.log('data: ', data);
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
@@ -1561,5 +1562,166 @@ export function setFilterForRM(filteredValue) {
             type: SET_FILTERED_RM_DATA,
             payload: filteredValue,
         });
+    }
+}
+
+
+/**
+ * @method getRMApprovalList
+ * @description Used to get RM Approval List
+ */
+export function getRMApprovalList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRMApprovalList}/${loggedInUserId()}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                //
+                dispatch({
+                    type: GET_RM_APPROVAL_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error)
+        });
+    };
+}
+
+
+/**
+ * @method getAllMasterApprovalDepartment
+ * @description get all master approval department
+ */
+export function getAllMasterApprovalDepartment(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllMasterApprovalDepartment}`, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ALL_MASTER_APPROVAL_DEPARTMENT,
+                        payload: response.data.SelectList,
+                    })
+                    callback(response)
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR)
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                callback(error)
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+* @method getAllApprovalUserFilterByDepartment
+* @description GET ALL APPROVAL USERS FILTER BY DEPARTMENT
+*/
+export function getAllMasterApprovalUserByDepartment(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getAllMasterApprovalUserByDepartment}`, data, headers,)
+
+        request
+            .then((response) => {
+
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT,
+                        payload: response.data.DataList,
+                    })
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({
+                    type: API_FAILURE,
+                })
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+ * @method simulationApprovalRequestBySender
+ * @description sending the request to Approver for first time
+ */
+export function masterApprovalRequestBySender(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterSendToApprover, data, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    toastr.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+/**
+ * @method approvalRequestByApprove
+ * @description approving the request by approve
+ */
+export function approvalRequestByMasterApprove(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.approveMasterByApprover, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+/**
+ * @method rejectRequestByApprove
+ * @description rejecting approval Request
+ */
+export function rejectRequestByMasterApprove(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.rejectMasterByApprover, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
     }
 }

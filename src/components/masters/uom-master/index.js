@@ -7,9 +7,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
-import { UOM, UomMaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -56,26 +55,7 @@ class UOMMaster extends Component {
    * @description  called before rendering the component
    */
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === UOM)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-          })
-        }
-      }
-    })
-
+    this.applyPermission(this.props.topAndLeftMenuData)
     this.getUOMDataList()
   }
 
@@ -86,6 +66,35 @@ class UOMMaster extends Component {
         this.setState({ dataList: Data })
       }
     });
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find(el => el.PageName === UOM)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
+      }
+
+    }
   }
 
   /**
@@ -195,7 +204,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <label htmlFor="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() =>
@@ -251,21 +260,11 @@ class UOMMaster extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-    // TempData.map((item) => {
-    //     if (item.RMName === '-') {
-    //         item.RMName = ' '
-    //     } if (item.RMGrade === '-') {
-    //         item.RMGrade = ' '
-    //     } else {
-    //         return false
-    //     }
-    //     return item
-    // })
+
     return (
 
       <ExcelSheet data={TempData} name={UomMaster}>
@@ -281,28 +280,6 @@ class UOMMaster extends Component {
     gridOptions.columnApi.resetColumnState();
   }
 
-  resetState() {
-    gridOptions.columnApi.resetColumnState();
-  }
-
-  returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-    // TempData.map((item) => {
-    //     if (item.RMName === '-') {
-    //         item.RMName = ' '
-    //     } if (item.RMGrade === '-') {
-    //         item.RMGrade = ' '
-    //     } else {
-    //         return false
-    //     }
-    //     return item
-    // })
-    return (
-
-      <ExcelSheet data={TempData} name={UomMaster}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>);
-  }
 
   onFilterTextBoxChanged(e) {
     this.state.gridApi.setQuickFilter(e.target.value);
@@ -319,23 +296,7 @@ class UOMMaster extends Component {
   */
   render() {
     const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
-    const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
 
     const defaultColDef = {
       resizable: true,
@@ -376,59 +337,25 @@ class UOMMaster extends Component {
               </>
             )}
             <Col md={6} className="text-right search-user-block pr-0">
-            {
-              DownloadAccessibility &&
-              <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
-                  <div className="download mr-0" title="Download"></div></button>}>
-                  {this.onBtExport()}
-                </ExcelFile>
-              </>
-              //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-            }
+              {
+                DownloadAccessibility &&
+                <>
+                  <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                    <div className="download mr-0" title="Download"></div></button>}>
+                    {this.onBtExport()}
+                  </ExcelFile>
+                </>
+                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+              }
 
               <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                  <div className="refresh mr-0"></div>
+                <div className="refresh mr-0"></div>
               </button>
             </Col>
           </Row>
 
           <Row>
             <Col>
-              {/* <BootstrapTable
-                data={this.state.dataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                // exportCSV={DownloadAccessibility}
-                // csvFileName={`${UomMaster}.csv`}
-                //ignoreSinglePage
-                ref={"table"}
-                trClassName={"userlisting-row"}
-                tableHeaderClass="my-custom-class"
-                pagination
-              >
-                <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}> Unit</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitSymbol" dataAlign="left" dataFormat={this.applySuperScriptFormatter} dataSort={true}>Unit Symbol</TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataAlign="left" dataSort={true}>Unit Type</TableHeaderColumn> */}
-              {/* <TableHeaderColumn
-                  dataField="IsActive"
-                  dataFormat={this.statusButtonFormatter}
-                >
-                  Status
-                    </TableHeaderColumn> */}
-              {/* <TableHeaderColumn
-                  width={100}
-                  dataField="Id"
-                  isKey={true}
-                  dataAlign="right"
-                  dataFormat={this.buttonFormatter}
-                >
-                  Actions
-                    </TableHeaderColumn> */}
-              {/* </BootstrapTable> */}
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
@@ -439,7 +366,7 @@ class UOMMaster extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}
@@ -489,11 +416,11 @@ domLayout='autoHeight'
 * @method mapStateToProps
 * @description return state to component as props
 * @param {*} state
-        */
+*/
 function mapStateToProps({ unitOfMeasrement, auth }) {
   const { unitOfMeasurementList, loading, } = unitOfMeasrement;
-  const { leftMenuData } = auth;
-  return { unitOfMeasurementList, leftMenuData, loading }
+  const { leftMenuData, topAndLeftMenuData } = auth;
+  return { unitOfMeasurementList, leftMenuData, loading, topAndLeftMenuData }
 }
 
 export default connect(

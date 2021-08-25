@@ -37,6 +37,7 @@ import WarningMessage from '../../common/WarningMessage';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -1086,6 +1087,22 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           <Col md="4">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleTechnologyChange}
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1208,22 +1225,7 @@ class AddRMImport extends Component {
                               disabled={false}
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleTechnologyChange}
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+
                           {(this.state.IsVendor === false && (
                             <Col md="4">
                               <Field
@@ -1679,6 +1681,21 @@ class AddRMImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
+                          {/* {
+                            CheckApprovalApplicableMaster('1') === true ?
+                              <button
+                                class="user-btn approval-btn mr15"
+                                onClick={() => { }}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button type="submit" className="user-btn mr5 save-btn">
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          } */}
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"

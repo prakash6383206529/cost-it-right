@@ -183,6 +183,14 @@ export const API = {
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
+  //RM APPROVAL API'S
+  getRMApprovalList: `${BASE_URL}/masters-approval-raw-material/get-master-approvals-by-filter`,
+  getAllMasterApprovalDepartment: `${BASE_URL}`,
+  getAllMasterApprovalUserByDepartment: `${BASE_URL}`,
+  masterSendToApprover: `${BASE_URL}`,
+  approveMasterByApprover: `${BASE_URL}`,
+  rejectMasterByApprover: `${BASE_URL}`,
+
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
   updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
@@ -526,6 +534,7 @@ export const API = {
   getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
   saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
 
+
   // PROCESS COST CALCULATION
   getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
@@ -594,7 +603,9 @@ export const API = {
   getUserByTechnologyAndLevel: `${BASE_URL}/user/get-users-technology-wise-level`,
   getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
   getSimulationLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-simulation-technology`,
+  getMasterLevelByMasterId: `${BASE_URL}/configuration/select-list-get-level-by-master`,
   getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
+  getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
 
   //ROLES API
@@ -626,6 +637,10 @@ export const API = {
   getSimulationLevel: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get`,
   getSimulationTechnologySelectList: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
 
+  getMastersSelectList: `${BASE_URL}/configuration/select-list-get-master`,
+  addMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/create`,
+  getMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/get`,
+  updateMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/update`,
 
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
@@ -633,6 +648,9 @@ export const API = {
   getAllLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get-all`,
   updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
   getSimulationLevelDataList: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get-all`,
+  getMasterLevelDataList: `${BASE_URL}/costing-old/approval-level-for-master/get-all`,
+
+
 
   //Common API for Plant by supplier
   getPlantBySupplier: `${BASE_URL}/configuration/get-plant-by-vendor`,
@@ -950,6 +968,12 @@ export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 
+
+//RAW MATERIAL APPROVAL
+export const GET_RM_APPROVAL_LIST = 'GET_RM_APPROVAL_LIST'
+export const GET_ALL_MASTER_APPROVAL_DEPARTMENT = 'GET_ALL_MASTER_APPROVAL_DEPARTMENT'
+export const GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT'
+
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
 export const GET_GRADE_DATA_SUCCESS = 'GET_GRADE_DATA_SUCCESS'
@@ -1169,6 +1193,7 @@ export const SET_IS_TOOLCOST_USED = 'SET_IS_TOOLCOST_USED';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
+export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1255,6 +1280,7 @@ export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
 export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
+export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1266,6 +1292,8 @@ export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS'
 export const GET_UNIT_LEVEL_DATA_SUCCESS = 'GET_UNIT_LEVEL_DATA_SUCCESS'
 export const LEVEL_MAPPING_API = 'LEVEL_MAPPING_API'
 export const SIMULATION_LEVEL_DATALIST_API = 'SIMULATION_LEVEL_DATALIST_API'
+export const GET_MASTER_SELECT_LIST = 'GET_MASTER_SELECT_LIST'
+export const MASTER_LEVEL_DATALIST_API = 'MASTER_LEVEL_DATALIST_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
@@ -1469,6 +1497,8 @@ export const RUBBER = 'Rubber';
 export const FORGING = 'Forging';
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
+export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
+export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
 
 export const USER = 'User'
 export const ROLE = 'Role'
@@ -1576,13 +1606,15 @@ export const STD = 'STD'
 
 
 //SIMULATION MASTER NAME
-export const RMDOMESTIC = 'RM Domestic'
-export const RMIMPORT = 'RM Import'
-export const BOPDOMESTIC = 'BOP (Domestic)'
-export const BOPIMPORT = 'BOP (Import)'
-export const PROCESS = 'Process'
-export const OPERATIONSIM = 'Operation'
-export const SURFACETREATMENT = 'SURFACE TREATMENT'
+export const RMDOMESTIC = '1'
+export const RMIMPORT = '2'
+export const PROCESS = '3'
+export const BOPDOMESTIC = '4'
+export const BOPIMPORT = '5'
+export const OPERATIONS = '6'
+export const SURFACETREATMENT = '7'
+export const EXCHNAGERATE = '8'
+export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
 // export constse

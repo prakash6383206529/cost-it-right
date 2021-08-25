@@ -40,33 +40,25 @@ class RolesListing extends Component {
     }
   }
 
-
-  UNSAFE_componentWillMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === ROLE)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          })
-        }
-      }
-    })
-  }
-
   componentDidMount() {
-    setTimeout(() => {
+    const { topAndLeftMenuData } = this.props;
+    if (topAndLeftMenuData !== undefined) {
+      const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+      const accessData = userMenu && userMenu.Pages.find(el => el.PageName === ROLE)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
+      if (permmisionData !== undefined) {
+        this.setState({
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+        })
+      }
+    }
+
+    setTimeout(() => {
       this.getRolesListData()
     }, 500);
-    //this.props.onRef(this)
   }
 
   getRolesListData = () => {
@@ -222,8 +214,8 @@ class RolesListing extends Component {
                   </div>
                 }
                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                  <div className="refresh mr-0"></div>
+                </button>
               </div>
 
 
@@ -256,7 +248,7 @@ class RolesListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -272,7 +264,7 @@ domLayout='autoHeight'
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-                    <AgGridColumn field="RoleId" headerName="Action"  type="rightAligned"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -299,9 +291,9 @@ domLayout='autoHeight'
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-  const { roleList, leftMenuData, loading } = auth;
+  const { roleList, leftMenuData, loading, topAndLeftMenuData } = auth;
 
-  return { roleList, leftMenuData, loading };
+  return { roleList, leftMenuData, loading, topAndLeftMenuData };
 }
 
 

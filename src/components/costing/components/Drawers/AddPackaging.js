@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { getOperationDrawerDataList } from '../../actions/Costing';
 import { netHeadCostContext } from '../CostingDetailStepTwo';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, } from '../../../../helper';
 import Switch from "react-switch";
 
 function IsolateReRender(control) {

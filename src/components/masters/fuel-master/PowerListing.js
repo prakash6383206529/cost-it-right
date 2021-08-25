@@ -21,10 +21,12 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PowerMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { li } from 'react-dom-factories';
+import { getConfigurationKey } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -221,10 +223,10 @@ class PowerListing extends Component {
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
-
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
   }
@@ -372,17 +374,11 @@ class PowerListing extends Component {
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    temp = TempData.map((item) => {
-      if (item.IsVendor === true) {
-        item.IsVendor = 'VBC'
-      } if (item.IsVendor === false) {
-        item.IsVendor = 'ZBV'
-      } if (item.Plants === '-') {
+    temp = TempData && TempData.map((item) => {
+      if (item.Plants === '-') {
         item.Plants = ' '
       } if (item.Vendor === '-') {
         item.Vendor = ' '
-      } else {
-        return false
       }
       return item
     })
@@ -410,7 +406,17 @@ class PowerListing extends Component {
     data && data.map((item => {
       tempArr.push(item.data)
     }))
-    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
+
+    let listing = []
+    let downloadTemp = ''
+    if (this.state.IsVendor) {
+      listing = this.props.vendorPowerDataList
+      downloadTemp = POWERLISTING_VENDOR_DOWNLOAD_EXCEL
+    } else {
+      listing = this.props.powerDataList
+      downloadTemp = POWERLISTING_DOWNLOAD_EXCEl
+    }
+    return this.returnExcelColumn(downloadTemp, listing)
   };
 
   onFilterTextBoxChanged(e) {
@@ -612,40 +618,40 @@ class PowerListing extends Component {
                         <div className="cancel-icon-white"></div></button>
                     ) : (
                       <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
-                                            )}
-                                            {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
+                        <div className="filter mr-0"></div>
+                      </button>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.formToggle}
+                        title="Add"
+                      >
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
+                      </button>
+                    )}
+                    {
+                      DownloadAccessibility &&
+                      <>
 
-                                                    <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                    </button>}>
+                        <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
 
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
+                          {this.onBtExport()}
+                        </ExcelFile>
 
-                                                </>
+                      </>
 
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                    }
+                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                      <div className="refresh mr-0"></div>
+                    </button>
 
                   </>
                 </div>
@@ -656,49 +662,9 @@ class PowerListing extends Component {
         <Row>
           <Col>
 
-            {/* ZBC POWER LISTING */}
-            {/* <BootstrapTable
-                data={this.props.powerDataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                // exportCSV={DownloadAccessibility}
-                // csvFileName={`${PowerMaster}.csv`}
-                //ignoreSinglePage
-                ref={'table'}
-                pagination>
-             
-                <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-              </BootstrapTable>} */}
-            {/* {!this.state.IsVendor && */}
-
-            {/* VENDOR POWER LISTING */}
-            {/* {this.state.IsVendor &&
-              <BootstrapTable
-                data={this.props.vendorPowerDataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                exportCSV={DownloadAccessibility}
-                csvFileName={`${PowerMaster}.csv`}
-                //ignoreSinglePage
-                ref={'table'}
-                pagination>
-          
-                <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>}
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costFormatterForVBC} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-              </BootstrapTable>} */}
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
@@ -708,7 +674,7 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -725,14 +691,14 @@ domLayout='autoHeight'
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="PowerId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
-
+                {/* VBC Listing */}
                 {this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}
@@ -747,9 +713,9 @@ domLayout='autoHeight'
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="VendorName"></AgGridColumn>
-                    <AgGridColumn field="VendorPlantName"></AgGridColumn>
+                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName"></AgGridColumn>}
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
-                    <AgGridColumn field="PowerDetailId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

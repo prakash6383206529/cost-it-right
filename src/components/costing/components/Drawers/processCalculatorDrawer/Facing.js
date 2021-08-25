@@ -33,6 +33,7 @@ function Facing(props) {
     doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
     feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -54,7 +55,7 @@ function Facing(props) {
   }, [fieldValues])
 
 
-  const [totalMachiningTime, setTotalMachiningTime] = useState('0.00')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const isEditFlag = WeightCalculatorRequest ? true : false
   const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const [dataToSend, setDataToSend] = useState({})
@@ -147,7 +148,7 @@ function Facing(props) {
     obj.Doc = formValue.doc
     obj.TotalMachiningTime = totalMachiningTime
     obj.MachineRate = props.calculatorData.MHR
-    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity

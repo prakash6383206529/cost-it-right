@@ -178,9 +178,7 @@ class FuelListing extends Component {
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
-    renderEffectiveDate = () => {
-        return <>Effective Date</>
-    }
+
 
     /**
     * @method renderListing
@@ -282,17 +280,15 @@ class FuelListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'VBC'
             } if (item.IsVendor === false) {
-                item.IsVendor = 'ZBV'
+                item.IsVendor = 'ZBC'
             } if (item.Plants === '-') {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
-            } else {
-                return false
             }
             return item
         })
@@ -320,7 +316,7 @@ class FuelListing extends Component {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
-        return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, this.props.fuelDataList)
     };
 
     onFilterTextBoxChanged(e) {
@@ -500,28 +496,6 @@ class FuelListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        {/*}
-                        <BootstrapTable
-                            data={this.props.fuelDataList}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            // exportCSV={DownloadAccessibility}
-                            // csvFileName={`${FuelMaster}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            pagination>
-                           
-                            <TableHeaderColumn dataField="FuelName" columnTitle={true} dataAlign="left" dataSort={true} >{'Fuel'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UnitOfMeasurementName" columnTitle={true} dataAlign="left" dataSort={true} >{'UOM'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
-                            <TableHeaderColumn width={180} columnTitle={true} dataAlign="left" dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={180} columnTitle={true} dataAlign="left" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable> */}
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -531,7 +505,7 @@ class FuelListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.fuelDataList}
                                     pagination={true}
@@ -551,7 +525,7 @@ domLayout='autoHeight'
                                     <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="FuelDetailId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

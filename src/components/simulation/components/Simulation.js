@@ -7,14 +7,20 @@ import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
+import { getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
 import WarningMessage from '../../common/WarningMessage';
+import MachineRateListing from '../../masters/machine-master/MachineRateListing';
+import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing';
+import BOPImportListing from '../../masters/bop-master/BOPImportListing';
+import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
+import OperationListing from '../../masters/operation/OperationListing';
+import { setFilterForRM } from '../../masters/actions/Material';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,16 +57,20 @@ function Simulation(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
 
     const handleMasterChange = (value) => {
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setMaster(value)
+        setShowMasterList(false)
         dispatch(setMasterForSimulation(value))
-        if (value !== '' && Object.keys(technology).length > 0) {
+        if (value !== '' && (Object.keys(technology).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setShowMasterList(true)
         }
     }
 
     const handleTechnologyChange = (value) => {
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
         dispatch(setTechnologyForSimulation(value))
+
         if (value !== '' && Object.keys(master).length > 0) {
             setShowMasterList(true)
         }
@@ -88,11 +98,21 @@ function Simulation(props) {
     }
 
     const renderModule = (value) => {
-        switch (value.label) {
+        switch (value.value) {
             case RMDOMESTIC:
                 return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case MACHINERATE:
+                return (<MachineRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case BOPDOMESTIC:
+                return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case BOPIMPORT:
+                return (<BOPImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case EXCHNAGERATE:
+                return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            case OPERATIONS:
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -159,7 +179,7 @@ function Simulation(props) {
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        switch (master.label) {
+        switch (master.value) {
             case RMDOMESTIC:
 
                 rmDomesticListing && rmDomesticListing.forEach((element, index) => {
@@ -287,26 +307,28 @@ function Simulation(props) {
                                     />
                                 </div>
                             </div>
-
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Technology:</div>
-                                <div className="flex-fills hide-label pl-0">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Technology'}
-                                        placeholder={'Technology'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('technology')}
-                                        mandatory={false}
-                                        handleChange={handleTechnologyChange}
-                                        errors={errors.Masters}
-                                    />
+                            {
+                                getTechnologyForSimulation.includes(master.value) &&
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Technology:</div>
+                                    <div className="flex-fills hide-label pl-0">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Technology'}
+                                            placeholder={'Technology'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('technology')}
+                                            mandatory={false}
+                                            handleChange={handleTechnologyChange}
+                                            errors={errors.Masters}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </Col>
                     </Row>
 
@@ -322,7 +344,7 @@ function Simulation(props) {
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                         {/* {true ? '' : renderColumn(master.label)} */}
-                                        {!editWarning ? renderColumn(master.label) : ''}
+                                        {!editWarning ? renderColumn(master.value) : ''}
                                     </ExcelFile>
                                     <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
@@ -343,7 +365,7 @@ function Simulation(props) {
                 </div>
             }
             <div className="simulation-edit">
-                {showEditTable && editMasterPage(master.label)}
+                {showEditTable && editMasterPage(master.value)}
             </div>
         </div>
     );

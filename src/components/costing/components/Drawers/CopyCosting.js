@@ -30,7 +30,7 @@ function CopyCosting(props) {
       fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
-      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.DestinationPlantId, vendorId: copyCostingData.VendorId } : '',
     },
   })
 
@@ -278,6 +278,7 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
+    console.log('value: ', value);
 
 
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
@@ -324,7 +325,7 @@ function CopyCosting(props) {
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.value
+      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
       obj.ToVendorname = value.toVendorName && value.toVendorName.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value

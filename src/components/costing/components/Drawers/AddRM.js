@@ -13,7 +13,7 @@ import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, isMultipleRMAllow } from '../../../../helper';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -88,7 +88,7 @@ function AddRM(props) {
   const onRowSelect = (row, isSelected, e) => {
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (costData.TechnologyName === PLASTIC) {
+    if (isMultipleRMAllow(costData.TechnologyName)) {
       var selectedRows = gridApi.getSelectedRows();
       if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
       setSelectedRowData(selectedRows)
@@ -113,7 +113,7 @@ function AddRM(props) {
   }
 
   const onSelectAll = (isSelected, rows) => {
-    if (costData.TechnologyName === PLASTIC) {
+    if (isMultipleRMAllow(costData.TechnologyName)) {
       if (isSelected) {
         setSelectedRowData(rows)
       } else {
@@ -125,7 +125,7 @@ function AddRM(props) {
   }
 
   const selectRowProp = {
-    mode: costData.TechnologyName === PLASTIC ? 'checkbox' : 'radio',
+    mode: isMultipleRMAllow(costData.TechnologyName) ? 'checkbox' : 'radio',
     //onSelect: onRowSelect,
     //mode: 'checkbox',
     clickToSelect: true,
@@ -133,36 +133,6 @@ function AddRM(props) {
     onSelect: onRowSelect,
     onSelectAll: onSelectAll
   };
-
-  const renderBasicRate = () => {
-    return <>Basic Rate /<br />UOM </>
-  }
-  const renderRmType = () => {
-    return <>RM <br />Type</>
-  }
-  const renderRmName = () => {
-    return <>RM <br />Name</>
-  }
-  const renderRmGrade = () => {
-    return <>RM <br />Grade</>
-  }
-  const renderRmSpec = () => {
-    return <>RM <br />Spec</>
-  }
-  const renderVendorLocation = () => {
-    return <>Vendor<br /> Location</>
-  }
-
-  const renderScrapRate = () => {
-    return <>Scrap Rate /<br />UOM </>
-  }
-
-  const renderNetLandedRate = () => {
-    return <>Net Cost<br />INR/UOM</>
-  }
-  const renderNetLandedConversionRate = () => {
-    return <>Net Cost<br />Currency/UOM</>
-  }
 
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -319,7 +289,7 @@ function AddRM(props) {
     resizable: true,
     filter: true,
     sortable: true,
-    headerCheckboxSelection: costData.TechnologyName === PLASTIC ? isFirstColumn : false,
+    headerCheckboxSelection: isMultipleRMAllow(costData.TechnologyName) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -432,35 +402,6 @@ function AddRM(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  {/* <BootstrapTable
-                  data={rmDrawerList}
-                  striped={false}
-                  bordered={false}
-                  hover={false}
-                  options={options}
-                  selectRow={selectRowProp}
-                  search
-                  multiColumnSearch={true}
-                  //exportCSV
-                  //ignoreSinglePage
-                  //ref={'table'}
-                  pagination
-                >
-                  <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMSpec" >{renderRmSpec()}</TableHeaderColumn>
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" dataFormat={currencyFormatter} searchable={false} >Currency</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" searchable={false} >{renderScrapRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
-                </BootstrapTable> */}
                   <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -474,7 +415,7 @@ function AddRM(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={rmDrawerList}
                         pagination={true}
@@ -487,13 +428,13 @@ domLayout='autoHeight'
                           title: CONSTANT.EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={costData.TechnologyName === PLASTIC ? 'multiple' : 'single'}
+                        rowSelection={isMultipleRMAllow(costData.TechnologyName) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="EntryType" headerName="RM Type"  ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>
                         <AgGridColumn field="RawMaterial" headerName="RM Name"></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                         <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>

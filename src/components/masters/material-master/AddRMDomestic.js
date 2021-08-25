@@ -36,6 +36,8 @@ import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval'
 
 
 const selector = formValueSelector('AddRMDomestic')
@@ -90,7 +92,8 @@ class AddRMDomestic extends Component {
       DataToChange: [],
       isDateChange: false,
       isSourceChange: false,
-      source: ''
+      source: '',
+      approveDrawer: false
     }
   }
   /**
@@ -579,6 +582,9 @@ class AddRMDomestic extends Component {
       this.props.getUOMSelectList(() => { })
     })
   }
+  closeApprovalDrawer = (e = '') => {
+    this.setState({ approveDrawer: false })
+  }
 
   /**
    * @method onCancel
@@ -1039,6 +1045,10 @@ class AddRMDomestic extends Component {
     })
   }
 
+  sendForMasterApproval = () => {
+    this.setState({ approveDrawer: true })
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -1101,6 +1111,25 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={
+                                this.handleTechnologyChange
+                              }
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1146,20 +1175,6 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
-                                <div
-                                  className={
-                                    "plus-icon-square blurPlus-icon-square right"
-                                  }
-                                ></div>
-                              ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.gradeToggler}
-                                      className={"plus-icon-square right"}
-                                    ></div>
-                                  )
-                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1181,20 +1196,6 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* {this.state.RawMaterial == null ||                                this.state.RawMaterial.length === 0 ||                                this.state.RMGrade == null ||                                this.state.RMGrade.length === 0 ? (
-                                  <div
-                                    className={
-                                      "plus-icon-square blurPlus-icon-square right"
-                                    }
-                                  ></div>
-                                ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.specificationToggler}
-                                      className={"plus-icon-square  right"}
-                                    ></div>
-                                  )
-                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1230,25 +1231,7 @@ class AddRMDomestic extends Component {
                               disabled={false}
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={
-                                this.handleTechnologyChange
-                              }
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+
                           {(this.state.IsVendor === false && (
                             <Col md="4">
                               <Field
@@ -1684,6 +1667,24 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
+                          {/* {
+                            CheckApprovalApplicableMaster('1') === true ?
+                              <button type="button"
+                                class="user-btn approval-btn mr5"
+                                onClick={this.sendForMasterApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          } */}
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
@@ -1773,6 +1774,18 @@ class AddRMDomestic extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                ID={""}
+                type={'Sender'}
+                anchor={"right"}
+              />
+            )
+          }
 
           {/* {isVisible && (
             <ImageModel
