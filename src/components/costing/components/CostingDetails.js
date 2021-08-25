@@ -1000,10 +1000,17 @@ function CostingDetails(props) {
     setVBCVendorGrid([])
     setIsOpenVendorSOBDetails(false)
     setShowNextBtn(false)
+    setEffectiveDate('')
     dispatch(getPartInfo('', () => { }))
     reset({
       Technology: '',
       Part: '',
+      PartName: '',
+      Description: '',
+      ECNNumber: '',
+      DrawingNumber: '',
+      RevisionNumber: '',
+      ShareOfBusiness: '',
     })
   }
 
@@ -1028,6 +1035,19 @@ function CostingDetails(props) {
     dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
     setStepTwo(false);
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    zbcPlantGrid && zbcPlantGrid.map((el, index) => {
+      setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    vbcVendorGrid && vbcVendorGrid.map((el, index) => {
+      setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
+
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     nextToggle()

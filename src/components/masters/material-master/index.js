@@ -181,11 +181,11 @@ class RowMaterialMaster extends Component {
                     <Col>
                         <div>
                             <Nav tabs className="subtabs mt-0">
-                                {ViewRMAccessibility && <NavItem>
+                                {/* {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Insights
                                     </NavLink>
-                                </NavItem> }
+                                </NavItem> } */}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                         Manage Raw Material (Domestic)
@@ -201,18 +201,21 @@ class RowMaterialMaster extends Component {
                                         Manage Specification
                                     </NavLink>
                                 </NavItem>}
-                                {ViewRMAccessibility && <NavItem>
+                                {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
+                                {/* uncomment below line after cherry-pick to Minda  TODO */}
+                                {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
+                                {/* {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                         Manage Material
                                     </NavLink>
-                                </NavItem>}
+                                </NavItem>} */}
                             </Nav>
 
                             <TabContent activeTab={this.state.activeTab}>
 
                                 {this.state.activeTab == 1 && ViewRMAccessibility &&
                                     <TabPane tabId="1">
-                                        <Insights/>
+                                        <Insights />
                                     </TabPane>}
 
                                 {this.state.activeTab == 2 && ViewRMAccessibility &&
