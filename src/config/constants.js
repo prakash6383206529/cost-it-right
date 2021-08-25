@@ -183,7 +183,7 @@ export const API = {
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
   //RM APPROVAL API'S
-  getRMApprovalList: `${BASE_URL}`,
+  getRMApprovalList: `${BASE_URL}/masters-approval-raw-material/get-master-approvals-by-filter`,
   getAllMasterApprovalDepartment: `${BASE_URL}`,
   getAllMasterApprovalUserByDepartment: `${BASE_URL}`,
   masterSendToApprover: `${BASE_URL}`,

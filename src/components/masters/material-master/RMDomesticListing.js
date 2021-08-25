@@ -290,6 +290,13 @@ class RMDomesticListing extends Component {
         return cell != null ? cell : '-';
     }
 
+    statusFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // CHANGE IN STATUS IN AFTER KAMAL SIR API
+        return <div className={row.DisplayStatus}>{row.DisplayStatus}</div>
+    }
+
     /**
     * @method freightCostFormatter
     * @description Renders buttons
