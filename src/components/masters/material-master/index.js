@@ -181,28 +181,28 @@ class RowMaterialMaster extends Component {
                     <Col>
                         <div>
                             <Nav tabs className="subtabs mt-0">
-                                {/* {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
-                                        Insights
-                                    </NavLink>
-                                </NavItem> } */}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Insights
+                                    </NavLink>
+                                </NavItem> }
+                                {ViewRMAccessibility && <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                         Manage Raw Material (Domestic)
                                     </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                         Manage Raw Material (Import)
                                     </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                                         Manage Specification
                                     </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
@@ -210,13 +210,13 @@ class RowMaterialMaster extends Component {
 
                             <TabContent activeTab={this.state.activeTab}>
 
-                                {/* {this.state.activeTab == 5 && ViewRMAccessibility &&
-                                    <TabPane tabId="5">
-                                        <Insights/>
-                                    </TabPane>} */}
-
                                 {this.state.activeTab == 1 && ViewRMAccessibility &&
                                     <TabPane tabId="1">
+                                        <Insights/>
+                                    </TabPane>}
+
+                                {this.state.activeTab == 2 && ViewRMAccessibility &&
+                                    <TabPane tabId="2">
                                         <RMDomesticListing
                                             formToggle={this.displayDomesticForm}
                                             getDetails={this.getDetails}
@@ -229,8 +229,8 @@ class RowMaterialMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 2 && ViewRMAccessibility &&
-                                    <TabPane tabId="2">
+                                {this.state.activeTab == 3 && ViewRMAccessibility &&
+                                    <TabPane tabId="3">
                                         <RMImportListing
                                             formToggle={this.displayImportForm}
                                             getDetails={this.getDetailsImport}
@@ -243,8 +243,8 @@ class RowMaterialMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 3 && ViewRMAccessibility &&
-                                    <TabPane tabId="3">
+                                {this.state.activeTab == 4 && ViewRMAccessibility &&
+                                    <TabPane tabId="4">
                                         <SpecificationListing
                                             toggle={this.toggle}
                                             AddAccessibility={this.state.AddAccessibility}
@@ -257,8 +257,8 @@ class RowMaterialMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 4 && ViewRMAccessibility &&
-                                    <TabPane tabId="4">
+                                {this.state.activeTab == 5 && ViewRMAccessibility &&
+                                    <TabPane tabId="5">
                                         <RMListing
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}

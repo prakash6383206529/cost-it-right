@@ -57,16 +57,19 @@ function TabToolCost(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
-    //setTimeout(() => {
-    let topHeaderData = {
-      ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
-      IsApplicableProcessWise: IsApplicableProcessWise,
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
+      //setTimeout(() => {
+      let topHeaderData = {
+        ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
+        IsApplicableProcessWise: IsApplicableProcessWise,
+      }
+      if (props.activeTab === '5') {
+        props.setHeaderCost(topHeaderData)
+      }
+      //}, 1500)
     }
-    if (props.activeTab === '5') {
-      props.setHeaderCost(topHeaderData)
-    }
-    //}, 1500)
   }, [ToolTabData]);
 
   /**

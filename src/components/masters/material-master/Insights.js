@@ -21,9 +21,11 @@ function Insights (props){
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showListing,setShowListing] = useState(false);
 
-    const [techSelected,setTechSelected] = useState(false)
-    const [materialSelected,setMaterialSelected] = useState(false)
-    const [gradeSelected,setGradeSelected] = useState(false)
+    const [techSelected,setTechSelected] = useState(false);
+    const [materialSelected,setMaterialSelected] = useState(false);
+    const [gradeSelected,setGradeSelected] = useState(false);
+
+    const [dynamicGrpahData,setDynamicGrpahData] = useState()
 
     const gridOptions = {};
 
@@ -39,7 +41,7 @@ function Insights (props){
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const gradeSelectList = useSelector(state => state.material.gradeSelectList)
     const filterRMSelectList = useSelector(state=> state.material.filterRMSelectList.RawMaterials)
-    console.log(filterRMSelectList,'this is material')
+    // console.log(filterRMSelectList,'this is material')
 
     
     const handleTechnologyChange = (value) => {
@@ -75,6 +77,7 @@ function Insights (props){
     const submitDropdown = () => {
         if(techSelected && materialSelected && gradeSelected){
             setShowListing(true)
+            setDynamicGrpahData(rowData[0].graphData)
         }
         else{
             setShowListing(false)
@@ -82,24 +85,65 @@ function Insights (props){
     }
 
     const rowData = [
-        { Specification: 'OP1', Minimum: '100', Maximum: '200', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP2', Minimum: '50', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP3', Minimum: '60', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP4', Minimum: '100', Maximum: '120', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP5', Minimum: '100', Maximum: '120', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP6', Minimum: '20', Maximum: '200', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP7', Minimum: '100', Maximum: '110', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP8', Minimum: '50', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP9', Minimum: '10', Maximum: '60', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP10', Minimum: '60', Maximum: '80', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP11', Minimum: '100', Maximum: '150', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},
-        { Specification: 'OP12', Minimum: '40', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8'},        
+        { Specification: 'OP1', Minimum: '100', Maximum: '200', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+            graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+        },
+        {
+             Specification: 'OP2', Minimum: '50', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+        },
+        {
+             Specification: 'OP3', Minimum: '60', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+        },
+        {
+             Specification: 'OP4', Minimum: '100', Maximum: '120', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+        },
+        {
+             Specification: 'OP5', Minimum: '100', Maximum: '120', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+        },
+        {
+             Specification: 'OP6', Minimum: '20', Maximum: '200', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+        },
+        {
+             Specification: 'OP7', Minimum: '100', Maximum: '110', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+        },
+        {
+             Specification: 'OP8', Minimum: '50', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+        },
+        {
+             Specification: 'OP9', Minimum: '10', Maximum: '60', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+        },
+        {
+             Specification: 'OP10', Minimum: '60', Maximum: '80', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4]
+        },
+        {
+             Specification: 'OP11', Minimum: '100', Maximum: '150', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [12, 44, 45, 30, 5, 4, 8, 10,12, 70, 40, 30, 5, 2, 4, 6,2, 14, 12, 3, 5, 2, 26, 4,2, 24, 30, 2, 5, 2, 26, 44]
+        },
+        {
+             Specification: 'OP12', Minimum: '40', Maximum: '100', Average: '150',Plant1: 'P1', Plant2: 'P2', Plant3: 'P3',Plant4: 'P4', Plant5: 'P5', Plant6: 'P6',Plant7: 'P7', Plant8: 'P8',
+             graphData: [22, 42, 52, 3, 5, 4, 8, 50,12, 7, 4, 3, 52, 2, 14, 6,2, 4, 1, 3, 5, 2, 6, 14,2, 4, 3, 12, 5, 42, 6, 44]
+        },
     ];
+
+    const onSelectionChanged = (event) => {
+        var rowCount = event.api.getSelectedRows();
+        var graphDataNew = rowCount[0].graphData;
+        setDynamicGrpahData(graphDataNew)
+        // console.log(dynamicGrpahData)
+    }
 
     const renderListing = (label) => {
         let temp = []
         if ( label && label !== ''){
-            console.log('not-genrated')
             if (label === 'technology') {
                 technologySelectList && technologySelectList.map((item) => {
                     if (item.Value === '0') return false
@@ -126,7 +170,7 @@ function Insights (props){
             }
         }
         else{
-            console.log('genrated');
+            // console.log('genrated');
         }
     }
 
@@ -163,19 +207,18 @@ function Insights (props){
         datasets: [
           {
             label: 'Insights',
-            data: [2, 4, 5, 3, 5, 4, 8, 10,12, 7, 4, 3, 5, 2, 4, 6,2, 4, 1, 3, 5, 2, 6, 4,2, 4, 3, 2, 5, 2, 6, 4],
+            data: dynamicGrpahData,
             fill: false,
             borderColor: color1,
             backgroundColor:color1,
           },
         ],
-        borderWidth: 1,
     };
     
 
     return(
         <>
-            <div className="container-fluid">
+            <div className="container-fluid rminsights_page">
                 <form onSubmit={handleSubmit} noValidate >
                     <Row className="pt-4">
                         <Col md="12" className="filter-block">
@@ -249,17 +292,20 @@ function Insights (props){
                     <Row>
                         <Col md="12">
                             <div className={`ag-grid-react`}>
-                                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                <div className="ag-grid-wrapper rminsights_table" style={{ width: '100%', height: '100%' }}>
                                     <div className="ag-theme-material">
                                         <AgGridReact
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
                                             domLayout='autoHeight'
                                             rowData={rowData}
+                                            rowSelection={'single'}
+                                            onSelectionChanged={onSelectionChanged}
                                             pagination={true}
                                             paginationPageSize={10}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
+                                            // enableCellTextSelection={true}
                                             loadingOverlayComponent={'customLoadingOverlay'}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
                                             noRowsOverlayComponentParams={{
