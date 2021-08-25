@@ -332,7 +332,7 @@ class OperationListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <label htmlFor="normal-switch"  className="normal-switch">
+                <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cellValue, rowData)}
@@ -456,12 +456,12 @@ class OperationListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, this.props.operationList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
             } else if (item.CostingHead === true) {
@@ -472,8 +472,6 @@ class OperationListing extends Component {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
-            } else {
-                return false
             }
             return item
         })
