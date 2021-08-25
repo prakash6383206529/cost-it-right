@@ -101,9 +101,9 @@ function OperationCostExcludedOverhead(props) {
   */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OperationId) === false) {
+      if (Ids.includes(el.OtherOperationId) === false) {
         let selectedIds = Ids;
-        selectedIds.push(el.OperationId)
+        selectedIds.push(el.OtherOperationId)
         setIds(selectedIds)
       }
       return null;
@@ -224,7 +224,7 @@ function OperationCostExcludedOverhead(props) {
             <Col md="8">
               <div className="left-border">
                 {'Other Operation Cost:'}
-                <WarningMessagge  dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations"/>
+                <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
             </Col>
             <Col md={'4'}>
