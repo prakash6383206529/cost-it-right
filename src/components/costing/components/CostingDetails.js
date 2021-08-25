@@ -943,7 +943,7 @@ function CostingDetails(props) {
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)
-        setValue(`zbcPlantGridFields[${index}]CostingVersion`, '')
+        setValue(`zbcPlantGridFields.${index}.CostingVersion`, '')
       }
 
       if (type === VBC) {
@@ -960,7 +960,7 @@ function CostingDetails(props) {
         }
         tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
         setVBCVendorGrid(tempArray)
-        setValue(`vbcGridFields[${index}]CostingVersion`, '')
+        setValue(`vbcGridFields.${index}.CostingVersion`, '')
       }
     }))
   }
