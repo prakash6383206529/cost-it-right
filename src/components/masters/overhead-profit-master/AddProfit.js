@@ -720,7 +720,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -733,7 +733,7 @@ class AddProfit extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Client Based</span>
-                          </Label>
+                          </Label> */}
                         </Col>
                       </Row>
                       <Row>
