@@ -813,36 +813,6 @@ class VolumeListing extends Component {
               </Col>
             </Row>
           </form>
-<<<<<<< HEAD
-          {/* <BootstrapTable
-            data={this.props.volumeDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            // exportCSV={DownloadAccessibility}
-            // csvFileName={`${VolumeMaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass="my-custom-header"
-            pagination
-          >
-            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter} >{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Year'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Month'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'Part No.'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true} >{'Part Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="left" dataFormat={this.plantFormatter} dataSort={true}>{'Plant'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="BudgetedQuantity" width={150} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="ApprovedQuantity" width={150} columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
-            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-          </BootstrapTable> */}
-=======
-
->>>>>>> fd6aa919ddd379274596a75247c0e90a1c5dccc8
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
