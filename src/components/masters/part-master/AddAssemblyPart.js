@@ -241,9 +241,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined ||
-      fieldsObj.AssemblyPartNumber === undefined ||
-      fieldsObj.AssemblyPartName === undefined) {
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {
       return false;
     } else {
       return true;
