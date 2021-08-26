@@ -945,3 +945,17 @@ export function plasticBulkUploadCosting(data, callback) {
     });
   };
 }
+export function machiningBulkUploadCosting(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.uploadMachiningCosting, data, headers);
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      //apiErrors(error);
+    });
+  };
+}
