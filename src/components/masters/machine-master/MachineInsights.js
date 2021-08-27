@@ -42,8 +42,8 @@ function Insights (props){
     },[]);
 
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
-    const processSelectList = useSelector(state => state.process.filterSelectList.processList)
-    // console.log(processSelectList,'this is material')
+    const processSelectList = useSelector(state => state.machine.processSelectList)
+    console.log(processSelectList,'this is material')
 
     
     const handleTechnologyChange = (value) => {
