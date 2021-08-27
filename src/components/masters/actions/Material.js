@@ -41,7 +41,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
-import { loggedInUserId } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 
 const headers = config
@@ -1571,15 +1571,18 @@ export function setFilterForRM(filteredValue) {
  * @description Used to get RM Approval List
  */
 export function getRMApprovalList(callback) {
+
     return (dispatch) => {
+
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMApprovalList}/${loggedInUserId()}`, headers);
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
                 dispatch({
                     type: GET_RM_APPROVAL_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList
+                    // payload: JSON.data.DataList
                 })
                 callback(response);
             }
@@ -1717,6 +1720,35 @@ export function rejectRequestByMasterApprove(data, callback) {
                     if (response.data.Message) {
                         toastr.error(response.data.Message)
                     }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+
+/**
+ * @method getApprovalSummary
+ * @description getting summary of approval by approval id
+ */
+
+export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
+    return (dispatch) => {
+        const request = axios.get(
+            `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_RM_DOMESTIC_LIST,
+                        payload: response.data.Data.ImpactedMasterDataList,
+                    })
+                    callback(response)
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR)
                 }
             })
             .catch((error) => {

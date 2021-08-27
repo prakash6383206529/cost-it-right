@@ -250,7 +250,12 @@ class RMImportListing extends Component {
     return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
-
+  statusFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    // CHANGE IN STATUS IN AFTER KAMAL SIR API
+    return <div className={row.Status}>{row.DisplayStatus}</div>
+  }
 
   /**
   * @method effectiveDateFormatter
@@ -608,7 +613,8 @@ class RMImportListing extends Component {
       customNoRowsOverlay: NoContentFound,
       freightCostFormatter: this.freightCostFormatter,
       shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
+      costFormatter: this.costFormatter,
+      statusFormatter: this.statusFormatter
     };
 
 
