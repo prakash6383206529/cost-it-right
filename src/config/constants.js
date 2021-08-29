@@ -185,11 +185,12 @@ export const API = {
 
   //RM APPROVAL API'S
   getRMApprovalList: `${BASE_URL}/masters-approval-raw-material/get-master-approvals-by-filter`,
-  getAllMasterApprovalDepartment: `${BASE_URL}`,
-  getAllMasterApprovalUserByDepartment: `${BASE_URL}`,
-  masterSendToApprover: `${BASE_URL}`,
-  approveMasterByApprover: `${BASE_URL}`,
-  rejectMasterByApprover: `${BASE_URL}`,
+  getAllMasterApprovalDepartment: `${BASE_URL}/masters-approval-raw-material/get-all-master-approval-department`,
+  getAllMasterApprovalUserByDepartment: `${BASE_URL}/masters-approval-raw-material/get-all-master-approval-users-level-filter-by-department`,
+  masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
+  approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
+  rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
+  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -568,6 +569,7 @@ export const API = {
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
+  uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
 
 

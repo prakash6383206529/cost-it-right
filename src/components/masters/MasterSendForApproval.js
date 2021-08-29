@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
-import { approvalRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, rejectRequestByMasterApprove } from './actions/Material';
+import { approvalRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender, rejectRequestByMasterApprove } from './actions/Material';
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
 import { Container, Row, Col } from 'reactstrap'
@@ -11,11 +11,13 @@ import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFie
 import { toastr } from 'react-redux-toastr'
 import { getReasonSelectList } from '../costing/actions/Approval';
 import moment from 'moment'
-
+import DatePicker from "react-datepicker";
+import { EMPTY_GUID } from '../../config/constants';
+import PushSection from '../common/PushSection';
 
 
 function MasterSendForApproval(props) {
-    const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone } = props
+    const { type, tokenNo, IsFinalLevel, IsPushDrawer, reasonId, simulationDetail, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -55,13 +57,12 @@ function MasterSendForApproval(props) {
             let obj = {
                 LoggedInUserId: loggedInUserId(),
                 DepartmentId: departObj[0].Value,
-                TechnologyId: approvalData[0].TechnologyId,
+                MasterId: masterId,
                 ReasonId: reasonId
             }
 
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-
                 setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
                 setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
 
@@ -100,7 +101,8 @@ function MasterSendForApproval(props) {
         let obj = {
             LoggedInUserId: loggedInUserId(), // user id
             DepartmentId: value.value,
-            TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+            MasterId: masterId,
+            ReasonId: ''
         }
         dispatch(
             getAllMasterApprovalUserByDepartment(obj, (res) => {
@@ -131,9 +133,10 @@ function MasterSendForApproval(props) {
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}
-            senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
+            senderObj.ApprovalId = EMPTY_GUID
             senderObj.ReasonId = reason ? reason.value : ''
             senderObj.Reason = reason ? reason.label : ''
+            senderObj.IsFinalApproved = false
             // senderObj.ApprovalToken = 0
             senderObj.DepartmentId = userDetails().DepartmentId
             senderObj.DepartmentName = userDetails().Department
@@ -146,12 +149,24 @@ function MasterSendForApproval(props) {
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = userDetails().LoggedInMasterLevel
             senderObj.SenderRemark = remark
-            senderObj.EffectiveDate = moment(effectiveDate).local().format('YYYY/MM/DD HH:mm')
             senderObj.LoggedInUserId = loggedInUserId()
+            senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
+            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : moment(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
+            senderObj.PurchasingGroup = ''
+            senderObj.MaterialGroup = ''
+            let tempArray = []
+            if (isBulkUpload) {
+                approvalData && approvalData.map(item => {
+                    tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                })
+            } else {
+                tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
+            }
+            senderObj.EntityList = tempArray
             // senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
 
             //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-            dispatch(approvalRequestByMasterApprove(senderObj, res => {
+            dispatch(masterApprovalRequestBySender(senderObj, res => {
                 if (res.data.Result) {
                     toastr.success('Token has been sent for approval.')
                     props.closeDrawer('', 'submit')
@@ -159,29 +174,27 @@ function MasterSendForApproval(props) {
             }))
         }
         else {
-
-
-            let Data = []
-            approvalData.map(ele => {
-                Data.push({
-                    ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
-                    ApprovalToken: ele.ApprovalNumber,
-                    LoggedInUserId: loggedInUserId(),
-                    SenderLevelId: userDetails().LoggedInLevelId,
-                    SenderLevel: userDetails().LoggedInLevel,
-                    ApproverDepartmentId: dept && dept.value ? dept.value : '',
-                    ApproverDepartmentName: dept && dept.label ? dept.label : '',
-                    Approver: approver && approver.value ? approver.value : '',
-                    ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
-                    ApproverLevel: approver && approver.levelName ? approver.levelName : '',
-                    Remark: remark,
-                    IsApproved: type === 'Approve' ? true : false,
-                    IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
-                })
-            })
+            let obj = {}
+            obj.ApprovalProcessSummaryId = approvalDetails.MasterApprovalProcessSummaryId
+            obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
+            obj.ApprovalToken = approvalDetails.Token
+            obj.LoggedInUserId = loggedInUserId()
+            obj.SenderLevelId = userDetails().LoggedInMasterLevelId
+            obj.SenderId = loggedInUserId()
+            obj.SenderLevel = userDetails().LoggedInMasterLevel
+            obj.SenderDepartmentId = userDetails().DepartmentId
+            obj.SenderDepartmentName = userDetails().Department
+            obj.ApproverId = approver && approver.value ? approver.value : ''
+            obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
+            obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
+            obj.Remark = remark
+            obj.IsApproved = type === 'Approve' ? true : false
+            obj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
+            obj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
+            obj.IsFinalApprovalProcess = false
             if (type === 'Approve') {
                 reset()
-                dispatch(approvalRequestByMasterApprove(Data, res => {
+                dispatch(approvalRequestByMasterApprove(obj, res => {
                     if (res.data.Result) {
                         if (IsPushDrawer) {
                             toastr.success('The token has been approved')
@@ -194,7 +207,7 @@ function MasterSendForApproval(props) {
                 }))
             } else {
                 // REJECT CONDITION
-                dispatch(rejectRequestByMasterApprove(Data, res => {
+                dispatch(rejectRequestByMasterApprove(obj, res => {
                     if (res.data.Result) {
                         toastr.success('Token Rejected')
                         props.closeDrawer('', 'submit')
@@ -230,7 +243,7 @@ function MasterSendForApproval(props) {
                             </Row>
 
                             <Row className="ml-0">
-                                {type === 'Approve' && IsFinalLevel && (
+                                {!IsFinalLevelButtonShow && (
                                     <>
                                         <div className="input-group form-group col-md-12 input-withouticon">
                                             <SearchableSelectHookForm
@@ -246,7 +259,7 @@ function MasterSendForApproval(props) {
                                                 mandatory={false}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={true}
+                                                disabled={false}
                                             />
                                         </div>
                                         <div className="input-group form-group col-md-12 input-withouticon">
@@ -262,7 +275,7 @@ function MasterSendForApproval(props) {
                                                 options={approvalDropDown}
                                                 mandatory={false}
                                                 handleChange={() => { }}
-                                                disabled={true}
+                                                disabled={false}
                                                 errors={errors.approver}
                                             />
                                         </div>
@@ -272,83 +285,127 @@ function MasterSendForApproval(props) {
 
                                     (type === 'Sender' && !IsFinalLevel) &&
                                     <>
-                                        <>
-                                            <div className="input-group form-group col-md-12">
-                                                <SearchableSelectHookForm
-                                                    label={'Reason'}
-                                                    name={'reason'}
-                                                    placeholder={'-Select-'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    register={register}
-                                                    //defaultValue={isEditFlag ? plantName : ''}
-                                                    options={renderDropdownListing('reasons')}
-                                                    mandatory={true}
-                                                    handleChange={() => { }}
-                                                    errors={errors.reason}
-                                                />
-                                            </div>
-                                            <div className="input-group form-group col-md-12">
-                                                <div className="inputbox date-section">
-                                                    <DatePickerHookForm
-                                                        name={`EffectiveDate`}
-                                                        label={'Effective Date'}
-                                                        selected={effectiveDate}
-                                                        handleChange={(date) => {
-                                                            handleEffectiveDateChange(date);
-                                                        }}
-                                                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                                        rules={{ required: true }}
+
+                                        <div className="input-group form-group col-md-12">
+                                            <SearchableSelectHookForm
+                                                label={'Reason'}
+                                                name={'reason'}
+                                                placeholder={'-Select-'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                //defaultValue={isEditFlag ? plantName : ''}
+                                                options={renderDropdownListing('reasons')}
+                                                mandatory={true}
+                                                handleChange={() => { }}
+                                                errors={errors.reason}
+                                            />
+                                        </div>
+                                        {
+                                            !isBulkUpload &&
+                                            <>
+                                                <div className="input-group form-group col-md-12">
+                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={moment(approvalObj.EffectiveDate).isValid ? moment(approvalObj.EffectiveDate)._d : ''}
+                                                            // onChange={handleEffectiveDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Basic Rate"
+                                                        name={'basicRate'}
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        showMonthDropdown
-                                                        showYearDropdown
-                                                        dateFormat="aa/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        customClassName="withBorder"
-                                                        className="withBorder"
-                                                        autoComplete={"off"}
-                                                        disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
-                                                        mandatory={true}
-                                                        errors={errors.EffectiveDate}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.basicRate}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRatePerUOM : ''}
+                                                        disabled={true}
                                                     />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
                                                 </div>
-                                            </div>
-                                            <div className="input-group form-group col-md-12">
-                                                <TextFieldHookForm
-                                                    label="Basic Rate"
-                                                    name={'basicRate'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.basicRate}
-                                                    disabled={false}
-                                                />
-                                                {/* {showError && <span className="text-help">This is required field</span>} */}
-                                            </div>
-                                            <div className="input-group form-group col-md-12">
-                                                <TextAreaHookForm
-                                                    label="Scrap Rate"
-                                                    name={'scrapRate'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.scrapRate}
-                                                    disabled={false}
-                                                />
-                                                {/* {showError && <span className="text-help">This is required field</span>} */}
-                                            </div>
-                                        </>
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Scrap Rate"
+                                                        name={'scrapRate'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.basicRate}
+                                                        disabled={true}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.ScrapRate : ''}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="RM Freight Cost"
+                                                        name={'freightCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.freightCost}
+                                                        disabled={true}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMFreightCost : ''}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Shearing Cost"
+                                                        name={'shearingCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.shearingCost}
+                                                        disabled={true}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMShearingCost : ''}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Net Cost"
+                                                        name={'netCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.netCost}
+                                                        disabled={true}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.NetLandedCost : ''}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+                                                {/* <PushSection /> */}
+                                            </>
+                                        }
+
 
 
                                     </>
@@ -362,6 +419,7 @@ function MasterSendForApproval(props) {
                                         register={register}
                                         mandatory={type === 'Approve' ? false : true}
                                         rules={{ required: type === 'Approve' ? false : true }}
+                                        handleChange={() => { }}
                                         //defaultValue={viewRM.RMRate}
                                         className=""
                                         customClassName={'withBorder'}
