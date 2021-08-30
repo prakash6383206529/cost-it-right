@@ -1704,7 +1704,7 @@ class AddRMImport extends Component {
                           {
                             (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
                               <button type="submit"
-                                class="user-btn approval-btn mr5"
+                                class="user-btn approval-btn save-btn mr5"
                               // onClick={this.sendForMasterApproval}
                               >
                                 <div className="send-for-approval"></div>
