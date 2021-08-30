@@ -254,7 +254,7 @@ function ReportListing(props) {
 
         var selectedRows = gridApi.getSelectedRows();
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-
+        var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
 
     }
@@ -403,13 +403,18 @@ function ReportListing(props) {
                         <AgGridColumn field="NetConversionCost" headerName="Net Conversion Cost"></AgGridColumn>
                         <AgGridColumn field="ModelTypeForOverheadAndProfit" headerName="Model Type For Overhead/Profit" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="OverheadOn" headerName="Overhead On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="OverheadCost" headerName="Overhead Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ProfitOn" headerName="Profit On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ProfitCost" headerName="Profit Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RejectOn" headerName="Rejection On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="RejectionCost" headerName="Rejection Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ICCOn" headerName="ICC On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ICCCost" headerName="ICC Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn>
+                        {/* <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn> */}
                         <AgGridColumn field="NetOverheadAndProfitCost" headerName="Net Overhead & Profits"></AgGridColumn>
                         <AgGridColumn field="PackagingCost" headerName="Packaging Cost"></AgGridColumn>
-                        <AgGridColumn field="FreightCost" headerName="Freight"></AgGridColumn>
+                        <AgGridColumn field="FreightCost" headerName="Freight Cost"></AgGridColumn>
                         <AgGridColumn field="NetFreightPackagingCost" headerName="Net Packaging & Freight"></AgGridColumn>
                         <AgGridColumn field="ToolMaintenaceCost" headerName="Tool Maintenance Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ToolPrice" headerName="Tool Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
