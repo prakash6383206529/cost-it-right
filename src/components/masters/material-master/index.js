@@ -20,6 +20,7 @@ import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../con
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import Insights from './Insights';
+import RMApproval from './RMApproval'
 
 class RowMaterialMaster extends Component {
     constructor(props) {
@@ -29,7 +30,7 @@ class RowMaterialMaster extends Component {
             isOpen: false,
             isEditFlag: false,
             Id: '',
-            activeTab: '1',
+            activeTab: '2',
 
             isRMDomesticForm: false,
             isRMImportForm: false,
@@ -210,8 +211,11 @@ class RowMaterialMaster extends Component {
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
-                                        Manage Material
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => {
+                                        this.toggle('5');
+                                        // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                    }}>
+                                        RM Approval
                                     </NavLink>
                                 </NavItem>}
                             </Nav>
@@ -220,7 +224,7 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 1 && ViewRMAccessibility &&
                                     <TabPane tabId="1">
-                                        <Insights/>
+                                        <Insights />
                                     </TabPane>}
 
                                 {this.state.activeTab == 2 && ViewRMAccessibility &&
@@ -268,6 +272,22 @@ class RowMaterialMaster extends Component {
                                 {this.state.activeTab == 6 && ViewRMAccessibility &&
                                     <TabPane tabId="6">
                                         <RMListing
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                                {this.state.activeTab == 5 && ViewRMAccessibility &&
+                                    <TabPane tabId="5">
+                                        {/* {
+                                            this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                        } */}
+
+                                        {/* <Link to="/raw-material-approval"></Link> */}
+                                        {/* <Route path="/raw-material-approval">
+                                        </Route> */}
+                                        <RMApproval
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}

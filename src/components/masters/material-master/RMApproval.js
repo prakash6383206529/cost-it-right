@@ -249,6 +249,12 @@ function RMApproval(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
+        // var allColumnIds = [];
+        // params.columnApi.getAllColumns().forEach(function (column) {
+        //     allColumnIds.push(column.colId);
+        // });
+        // params.columnApi.autoSizeColumns(allColumnIds);
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -338,27 +344,27 @@ function RMApproval(props) {
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
                                 >
-                                    <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                                    <AgGridColumn cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                    <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="Category"></AgGridColumn>
-                                    <AgGridColumn field="MaterialType"></AgGridColumn>
+                                    <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width="145" field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
+                                    <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>
+                                    <AgGridColumn width="145" field="RMGrade"></AgGridColumn>
+                                    <AgGridColumn width="150"field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn width="140" field="Category"></AgGridColumn>
+                                    <AgGridColumn width="140" field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                                    <AgGridColumn field="UOM"></AgGridColumn>
-                                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn field="InitiatedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
-                                    <AgGridColumn field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
+                                    <AgGridColumn width="140" field="UOM"></AgGridColumn>
+                                    <AgGridColumn width="140" field="BasicRate"></AgGridColumn>
+                                    <AgGridColumn width="140" field="ScrapRate"></AgGridColumn>
+                                    <AgGridColumn width="155" field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                    <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                    <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                                    <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn width="150" field="InitiatedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
+                                    <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
 

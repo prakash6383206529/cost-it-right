@@ -54,6 +54,7 @@ import ReportListing from './report/ReportListing'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 import productMaster from './masters/product-master'
+import RMApproval from './masters/material-master/RMApproval'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -314,7 +315,9 @@ class Main extends Component {
 
                     <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
 
-                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+                    <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+
+                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
