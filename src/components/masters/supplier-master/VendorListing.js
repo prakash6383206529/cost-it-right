@@ -462,7 +462,7 @@ class VendorListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.Country == 'NA') {
                 item.Country = ' '
             } else if (item.State == 'NA') {

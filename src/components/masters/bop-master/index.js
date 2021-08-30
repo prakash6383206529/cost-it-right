@@ -18,7 +18,7 @@ class BOPMaster extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: '1',
+      activeTab: '2',
       isBOPDomesticForm: false,
       isBOPImportForm: false,
       data: {},
@@ -151,9 +151,9 @@ class BOPMaster extends Component {
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0">
-                <NavItem>
+                {/* <NavItem>
                   <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
-                </NavItem>
+                </NavItem> */}
                 <NavItem>
                   <NavLink
                     className={classnames({

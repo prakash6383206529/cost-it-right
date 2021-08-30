@@ -640,7 +640,8 @@ class RMDomesticListing extends Component {
             customNoRowsOverlay: NoContentFound,
             costFormatter: this.costFormatter,
             freightCostFormatter: this.freightCostFormatter,
-            shearingCostFormatter: this.shearingCostFormatter
+            shearingCostFormatter: this.shearingCostFormatter,
+            statusFormatter: this.statusFormatter
 
         };
 

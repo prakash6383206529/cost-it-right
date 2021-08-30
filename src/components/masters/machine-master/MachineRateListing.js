@@ -434,7 +434,7 @@ class MachineRateListing extends Component {
     onSubmit = (values) => { }
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.MachineTonnage === null) {
                 item.MachineTonnage = ' '
             } else if (item.EffectiveDate === null) {
