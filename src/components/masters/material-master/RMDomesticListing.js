@@ -614,7 +614,8 @@ class RMDomesticListing extends Component {
             costFormatter: this.costFormatter,
             freightCostFormatter: this.freightCostFormatter,
             shearingCostFormatter: this.shearingCostFormatter,
-            plantFormatter: this.plantFormatter
+            plantFormatter: this.plantFormatter,
+            statusFormatter: this.statusFormatter
 
         };
 
