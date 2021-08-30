@@ -151,22 +151,9 @@ class BOPMaster extends Component {
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0">
-                {/* <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
-                </NavItem> */}
                 <NavItem>
-                  <NavLink
-                    className={classnames({
-                      active: this.state.activeTab === "1",
-                    })}
-                    onClick={() => {
-                      this.toggle("1");
-                    }}
-                  >
-                    Manage BOP (Domestic)
-                  </NavLink>
+                  <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
                 </NavItem>
-
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -176,12 +163,25 @@ class BOPMaster extends Component {
                       this.toggle("2");
                     }}
                   >
+                    Manage BOP (Domestic)
+                  </NavLink>
+                </NavItem>
+
+                <NavItem>
+                  <NavLink
+                    className={classnames({
+                      active: this.state.activeTab === "3",
+                    })}
+                    onClick={() => {
+                      this.toggle("3");
+                    }}
+                  >
                     Manage BOP (Import)
                   </NavLink>
                 </NavItem>
 
                 <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                  <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                     Manage SOB
                   </NavLink>
                 </NavItem>
@@ -189,14 +189,14 @@ class BOPMaster extends Component {
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
-                {/* {this.state.activeTab == 1 && (
+                {this.state.activeTab == 1 && (
                   <TabPane tabId="1">
                     <InsightsBop />
                   </TabPane>
-                )} */}
+                )}
 
-                {this.state.activeTab == 1 && (
-                  <TabPane tabId="1">
+                {this.state.activeTab == 2 && (
+                  <TabPane tabId="2">
                     <BOPDomesticListing
                       displayForm={this.displayDomesticForm}
                       getDetails={this.getDetails}
@@ -209,8 +209,8 @@ class BOPMaster extends Component {
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 2 && (
-                  <TabPane tabId="2">
+                {this.state.activeTab == 3 && (
+                  <TabPane tabId="3">
                     <BOPImportListing
                       displayForm={this.displayImportForm}
                       getDetails={this.getImportDetails}
@@ -223,8 +223,8 @@ class BOPMaster extends Component {
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 3 &&
-                  <TabPane tabId="3">
+                {this.state.activeTab == 4 &&
+                  <TabPane tabId="4">
                     <SOBListing
                       displayForm={this.displayImportForm}
                       getDetails={this.getImportDetails}
