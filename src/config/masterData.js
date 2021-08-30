@@ -75,10 +75,11 @@ export const RMDomesticZBC = [
     { label: "Source", value: "Source" }, //NOUI
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
-    { label: "BasicRate(INR)", value: "BasicRate(INR)" }, //*
-    { label: "ScrapRate(INR)", value: "ScrapRate(INR)" }, //*
-    { label: "RMFreightCost(INR)", value: "RMFreightCost(INR)" },
-    { label: "ShearingCost(INR)", value: "ShearingCost(INR)" },
+    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -98,10 +99,11 @@ export const RMDomesticZBCTempData = [
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Kilogram",
-        "BasicRate(INR)": "100",
-        "ScrapRate(INR)": "10",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -119,10 +121,11 @@ export const RMDomesticZBCTempData = [
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon",
-        "BasicRate(INR)": "500",
-        "ScrapRate(INR)": "50",
-        "RMFreightCost(INR)": "50",
-        "ShearingCost(INR)": "50",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -147,10 +150,8 @@ export const RMDomesticVBC = [
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -171,8 +172,9 @@ export const RMDomesticVBCTempData = [
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Kilogram",
-        "BasicRate": "100",
-        "ScrapRate": "10",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -195,6 +197,7 @@ export const RMDomesticVBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
+        "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
@@ -224,8 +227,9 @@ export const RMImportZBC = [
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "RMFreightCost", value: "RMFreightCost" }, //New Added
-    { label: "ShearingCost", value: "ShearingCost" }, //New Added
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 
@@ -249,9 +253,10 @@ export const RMImportZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Kilogram",
         "Currency": "INR",
-        "BasicRate": "100",
-        "ScrapRate": "10",
-        "RMFreightCost": "10",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -273,7 +278,8 @@ export const RMImportZBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "RMFreightCost": "10",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
         "ShearingCost": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -297,10 +303,11 @@ export const RMImportVBC = [
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
-    { label: "BasicRate", value: "BasicRate" },  //*
+    { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
-    { label: "RMFreightCost", value: "RMFreightCost" },
-    { label: "ShearingCost", value: "ShearingCost" },
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -322,10 +329,11 @@ export const RMImportVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Kilogram",
         "Currency": "INR",
-        "BasicRate(INR)": "100",
-        "ScrapRate(INR)": "10",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
         "DestinationPlant": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
@@ -345,10 +353,11 @@ export const RMImportVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon",
         "Currency": "USD",
-        "BasicRate(INR)": "500",
-        "ScrapRate(INR)": "50",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "CutOffPrice": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
         "DestinationPlant": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
@@ -2303,6 +2312,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "Plant", value: "Plants", },
+    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor", value: "Vendor", },
     { label: "NumberOfPieces", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
@@ -2318,6 +2328,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "Plant", value: "Plants", },
+    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor", value: "Vendor", },
     { label: "NumberOfPieces", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
@@ -2401,6 +2412,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Technologies", value: "Technologies", },
     { label: "VendorName", value: "VendorName", },
     { label: "Plants", value: "Plants", },
+    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName", },
     { label: "MachineTonnage", value: "MachineTonnage", },
@@ -2472,6 +2484,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "OperationName", value: "OperationName", },
     { label: "OperationCode", value: "OperationCode", },
     { label: "Plant", value: "Plants", },
+    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement", },
     { label: "Rate", value: "Rate", },
@@ -2550,6 +2563,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "PartNumber", value: "PartNumber", },
     { label: "PartName", value: "PartName", },
     { label: "Plant", value: "Plant", },
+    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "BudgetedQuantity", value: "BudgetedQuantity", },
     { label: "ApprovedQuantity", value: "ApprovedQuantity", },
 ]
