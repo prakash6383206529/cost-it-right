@@ -232,6 +232,7 @@ class CostingBulkUploadDrawer extends Component {
                 const { files } = this.state
                 files.push(Data)
             })
+            this.cancel()
         }
 
     }
