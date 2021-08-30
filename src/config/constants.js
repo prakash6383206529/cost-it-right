@@ -568,6 +568,7 @@ export const API = {
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
+  uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
 
 

@@ -769,8 +769,8 @@ export function findLostWeight(tableVal) {
 
 export function CheckApprovalApplicableMaster(number) {
   // UNCOMMENT IT AFTER DEV IS DONE
-  // const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
-  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number)
+  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
+  // const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number)
   return isApproval
 
 }

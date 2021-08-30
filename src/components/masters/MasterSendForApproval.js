@@ -17,7 +17,7 @@ import PushSection from '../common/PushSection';
 
 
 function MasterSendForApproval(props) {
-    const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, reasonId, simulationDetail, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow } = props
+    const { type, tokenNo, IsFinalLevel, IsPushDrawer, reasonId, simulationDetail, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -149,15 +149,16 @@ function MasterSendForApproval(props) {
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = userDetails().LoggedInMasterLevel
             senderObj.SenderRemark = remark
-            senderObj.EffectiveDate = moment(effectiveDate).local().format('YYYY/MM/DD HH:mm')
             senderObj.LoggedInUserId = loggedInUserId()
-            senderObj.IsVendor = Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
-            senderObj.EffectiveDate = Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : moment(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
+            senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
+            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : moment(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             let tempArray = []
             if (isBulkUpload) {
-
+                approvalData && approvalData.map(item => {
+                    tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                })
             } else {
                 tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
             }

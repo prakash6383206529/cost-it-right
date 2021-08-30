@@ -1036,18 +1036,7 @@ function CostingDetails(props) {
     setStepOne(true);
     setStepTwo(false);
 
-    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
-    zbcPlantGrid && zbcPlantGrid.map((el, index) => {
-      setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
-      return null;
-    })
-
-    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
-    vbcVendorGrid && vbcVendorGrid.map((el, index) => {
-      setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
-      return null;
-    })
-
+    resetGrid()
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     nextToggle()
@@ -1063,6 +1052,25 @@ function CostingDetails(props) {
       setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
     }))
 
+  }
+
+  /**
+   * @method resetGrid
+   * @description TO RESET THE GRID DATA OF ZBC,VBC AND CBC (COSTING VVERSION RESET)
+   */
+  const resetGrid = () => {
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    zbcPlantGrid && zbcPlantGrid.map((el, index) => {
+      setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    vbcVendorGrid && vbcVendorGrid.map((el, index) => {
+      setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
   }
 
   /**
