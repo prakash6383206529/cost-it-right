@@ -62,7 +62,7 @@ function SummaryDrawer(props) {
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
                 <div className="container-fluid">
-                    <div className={'drawer-wrapper drawer-1500px'}>
+                    <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
