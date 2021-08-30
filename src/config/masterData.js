@@ -144,11 +144,14 @@ export const RMDomesticVBC = [
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
-    { label: "BasicRate(INR)", value: "BasicRate(INR)" }, //*
-    { label: "ScrapRate(INR)", value: "ScrapRate(INR)" }, //*
-    { label: "RMFreightCost(INR)", value: "RMFreightCost(INR)" }, //New Added
-    { label: "ShearingCost(INR)", value: "ShearingCost(INR)" }, //New Added
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -168,11 +171,11 @@ export const RMDomesticVBCTempData = [
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Kilogram",
-        "BasicRate(INR)": "100",
-        "ScrapRate(INR)": "10",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
-        "DestinationPlant": "Manesar",
+        "BasicRate": "100",
+        "ScrapRate": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -190,11 +193,11 @@ export const RMDomesticVBCTempData = [
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon",
-        "BasicRate(INR)": "500",
-        "ScrapRate(INR)": "50",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
-        "DestinationPlant": "Manesar",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",

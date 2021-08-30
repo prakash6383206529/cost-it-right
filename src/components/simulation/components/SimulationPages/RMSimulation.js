@@ -81,7 +81,9 @@ function RMSimulation(props) {
         obj.VendorId = list[0].VendorId
         obj.TechnologyId = list[0].TechnologyId
         obj.VendorId = list[0].VendorId
-        obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        if (filteredRMData.plantId && filteredRMData.plantId.value) {
+            obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        }
         let tempArr = []
         list && list.map(item => {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {

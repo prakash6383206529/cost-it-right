@@ -13,6 +13,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT } from '../../../config/constants';
+import MasterSendForApproval from '../MasterSendForApproval';
 
 
 
@@ -28,6 +29,8 @@ function RMApproval(props) {
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { approvalList } = useSelector((state) => state.material)
+    const [approvalDrawer, setApprovalDrawer] = useState(false)
+    const [approvalObj, setApprovalObj] = useState([])
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -204,6 +207,10 @@ function RMApproval(props) {
         setShowApprovalSummary(false)
         getTableData()
     }
+    const closeApprovalDrawer = (e = '') => {
+        setApprovalDrawer(false)
+        getTableData()
+    }
 
 
 
@@ -222,6 +229,10 @@ function RMApproval(props) {
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
         getTableData()
+    }
+
+    const sendForApproval = () => {
+        setApprovalDrawer(true)
     }
 
 
@@ -286,8 +297,11 @@ function RMApproval(props) {
                             {/* <button title="send-for-approval" class="user-btn approval-btn mr5" onClick={sendForApproval}>
                       <div className="send-for-approval mr-0" ></div>
                     </button> */}
-                            <button type="button" className="user-btn" title="Reset Grid" onClick={resetState}>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
+                            </button>
+                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                                <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
                     </div>
@@ -367,6 +381,19 @@ function RMApproval(props) {
                     closeDrawer={closeDrawer}
                     approvalData={approvalData}
                     anchor={'bottom'}
+                />
+            }
+            {
+                approvalDrawer &&
+                <MasterSendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={1}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    approvalData={selectedRowData}
                 />
             }
         </div>
