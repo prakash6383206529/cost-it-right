@@ -182,7 +182,7 @@ class RowMaterialMaster extends Component {
                         <div>
                             <Nav tabs className="subtabs mt-0">
                                 {/* {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Insights
                                     </NavLink>
                                 </NavItem> } */}
@@ -218,8 +218,8 @@ class RowMaterialMaster extends Component {
 
                             <TabContent activeTab={this.state.activeTab}>
 
-                                {/* {this.state.activeTab == 5 && ViewRMAccessibility &&
-                                    <TabPane tabId="5">
+                                {/* {this.state.activeTab == 1 && ViewRMAccessibility &&
+                                    <TabPane tabId="1">
                                         <Insights/>
                                     </TabPane>} */}
 

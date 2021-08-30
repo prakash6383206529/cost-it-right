@@ -6,6 +6,7 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
+import InsightsBop from './InsightsBop';
 import { BOP, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -150,6 +151,9 @@ class BOPMaster extends Component {
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0">
+                {/* <NavItem>
+                  <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
+                </NavItem> */}
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -185,6 +189,12 @@ class BOPMaster extends Component {
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
+                {/* {this.state.activeTab == 1 && (
+                  <TabPane tabId="1">
+                    <InsightsBop />
+                  </TabPane>
+                )} */}
+
                 {this.state.activeTab == 1 && (
                   <TabPane tabId="1">
                     <BOPDomesticListing
