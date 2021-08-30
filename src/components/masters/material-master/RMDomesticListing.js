@@ -307,6 +307,11 @@ class RMDomesticListing extends Component {
         return cell != null ? cell : '-';
     }
 
+    plantFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? cell : '-';
+    }
+
 
     /**
     * @method renderListing
@@ -601,7 +606,8 @@ class RMDomesticListing extends Component {
             customNoRowsOverlay: NoContentFound,
             costFormatter: this.costFormatter,
             freightCostFormatter: this.freightCostFormatter,
-            shearingCostFormatter: this.shearingCostFormatter
+            shearingCostFormatter: this.shearingCostFormatter,
+            plantFormatter: this.plantFormatter
 
         };
 
@@ -848,7 +854,7 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
                                     <AgGridColumn field="Category"></AgGridColumn>
                                     <AgGridColumn field="MaterialType"></AgGridColumn>
-                                    <AgGridColumn field="Plant"></AgGridColumn>
+                                    <AgGridColumn field="Plant" cellRenderer='plantFormatter'></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                                     <AgGridColumn field="UOM"></AgGridColumn>
                                     <AgGridColumn field="BasicRate"></AgGridColumn>

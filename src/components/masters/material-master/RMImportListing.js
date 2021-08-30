@@ -279,6 +279,12 @@ class RMImportListing extends Component {
   }
 
 
+  plantFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? cell : '-';
+  }
+
+
   /**
 * @method buttonFormatter
 * @description Renders buttons
@@ -686,7 +692,8 @@ class RMImportListing extends Component {
       customNoRowsOverlay: NoContentFound,
       freightCostFormatter: this.freightCostFormatter,
       shearingCostFormatter: this.shearingCostFormatter,
-      costFormatter: this.costFormatter
+      costFormatter: this.costFormatter,
+      plantFormatter: this.plantFormatter
     };
 
 
@@ -1000,7 +1007,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
                   <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
                   <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
-                  <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                  <AgGridColumn field="Plant" cellRenderer='plantFormatter'></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                   <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>

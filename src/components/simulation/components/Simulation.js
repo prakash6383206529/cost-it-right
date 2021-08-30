@@ -183,6 +183,7 @@ function Simulation(props) {
             case RMDOMESTIC:
 
                 rmDomesticListing && rmDomesticListing.forEach((element, index) => {
+                    console.log('element: ', element);
 
                     if (index !== 0) {
                         if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
@@ -197,7 +198,8 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
-                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
+                        // need to apply checks here
+                        if (element.CostingHead === false && element.PlantId !== rmDomesticListing[index - 1].PlantId) {
                             // toastr.warning('Please select one Plant at a time.')
                             setEditWarning(true);
                             plantFlag = false
@@ -226,6 +228,7 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
+
                         if (element.PlantId !== rmImportListing[index - 1].PlantId) {
                             // toastr.warning('Please select one Plant at a time.')
                             setEditWarning(true);
