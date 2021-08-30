@@ -468,6 +468,7 @@ class AssemblyPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            floatingFilter = {true}
 domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}

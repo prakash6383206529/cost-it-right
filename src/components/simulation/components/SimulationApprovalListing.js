@@ -466,6 +466,7 @@ function SimulationApprovalListing(props) {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+                                    floatingFilter = {true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}

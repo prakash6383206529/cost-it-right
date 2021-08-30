@@ -924,6 +924,7 @@ class LabourListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
+                floatingFilter = {true}
 domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.labourDataList}

@@ -410,6 +410,7 @@ class UOMMaster extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
+                    floatingFilter = {true}
 domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.dataList}

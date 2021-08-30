@@ -950,6 +950,7 @@ class RMDomesticListing extends Component {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+                                    floatingFilter = {true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}

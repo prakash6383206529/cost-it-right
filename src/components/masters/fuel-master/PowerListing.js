@@ -704,6 +704,7 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
+                    floatingFilter = {true}
 domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
