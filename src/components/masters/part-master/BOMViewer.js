@@ -241,6 +241,10 @@ class BOMViewer extends Component {
     this.setState({ flowpoints: tempArray, })
   }
 
+  /**
+  * @method toggleDrawer
+  * @description USED TO TOGGLE DRAWER
+  */
   toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -268,7 +272,6 @@ class BOMViewer extends Component {
   onSubmit = (values) => {
     const { flowpoints } = this.state;
     this.setState({ flowpoints, isSaved: true, isCancel: false, }, () => this.toggleDrawer(''))
-
   }
 
   /**
@@ -311,7 +314,7 @@ class BOMViewer extends Component {
                   {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
                     !isFromVishualAd && (
                       <Col md="auto" className="bg-white" >
-                        {  flowpoints.length > 1 &&
+                        {flowpoints.length > 1 &&
                           <>
                             <button
                               type={"button"}
@@ -349,7 +352,7 @@ class BOMViewer extends Component {
                           className={"user-btn mr15 pull-right mt10"}
                         >
                           <div className={"plus"}></div>ADD
-                            </button>
+                        </button>
                       </Col>
                     )}
                 </Row>

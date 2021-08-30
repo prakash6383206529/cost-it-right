@@ -6,7 +6,7 @@ import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
-
+import MachineInsights from './MachineInsights';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
@@ -202,6 +202,11 @@ class MachineMaster extends Component {
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
+                                    {/* <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                            Insights
+                                        </NavLink>
+                                    </NavItem> */}
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
@@ -228,6 +233,11 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
+
+                                    {/* {this.state.activeTab == 3 &&
+                                        <TabPane tabId="3">
+                                            <MachineInsights/>
+                                        </TabPane>} */}
                                 </TabContent>
                             </div>
                         </Col>

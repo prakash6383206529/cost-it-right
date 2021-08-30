@@ -243,9 +243,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined ||
-      fieldsObj.AssemblyPartNumber === undefined ||
-      fieldsObj.AssemblyPartName === undefined) {
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {
       return false;
     } else {
       return true;
@@ -283,6 +281,7 @@ class AddAssemblyPart extends Component {
     //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
     let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
 
+    //BELOW CONDITION WILL PASS WHEN L0 LEVEL IS NOT AVAILABLE
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
         PartType: ASSEMBLY,
@@ -811,7 +810,7 @@ class AddAssemblyPart extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
-                              </button>
+                          </button>
                         </Col>
                       </Row>
 
@@ -861,10 +860,10 @@ class AddAssemblyPart extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
