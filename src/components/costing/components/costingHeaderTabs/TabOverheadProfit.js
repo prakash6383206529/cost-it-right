@@ -36,6 +36,9 @@ function TabOverheadProfit(props) {
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
+  //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
+  const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
+
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -561,7 +564,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode || !IsCheckBoxDisabled ? true : false}
                     />
                     <span
                       className=" before-box"

@@ -129,12 +129,16 @@ class RMDomesticListing extends Component {
             net_landed_max_range: value.max,
             departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
         }
-        this.props.getRMDomesticDataList(filterData, (res) => {
-            if (res && res.status === 200) {
-                let DynamicData = res.data.DynamicData;
-                this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
-            }
-        })
+
+        //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+        if (!this.props.isMasterSummaryDrawer) {
+            this.props.getRMDomesticDataList(filterData, (res) => {
+                if (res && res.status === 200) {
+                    let DynamicData = res.data.DynamicData;
+                    this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
+                }
+            })
+        }
     }
 
     /**
@@ -182,24 +186,27 @@ class RMDomesticListing extends Component {
             net_landed_max_range: value.max,
             departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
         }
-        this.props.getRMDomesticDataList(filterData, (res) => {
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                let DynamicData = res.data.DynamicData;
-                this.setState({
-                    tableData: Data,
-                    maxRange: DynamicData.MaxRange,
-                }, () => {
-                    if (isSimulation) {
-                        this.props.apply()
-                    }
-                })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [], maxRange: 0, })
-            } else {
-                this.setState({ tableData: [], maxRange: 0, })
-            }
-        })
+        //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+        if (!this.props.isMasterSummaryDrawer) {
+            this.props.getRMDomesticDataList(filterData, (res) => {
+                if (res && res.status === 200) {
+                    let Data = res.data.DataList;
+                    let DynamicData = res.data.DynamicData;
+                    this.setState({
+                        tableData: Data,
+                        maxRange: DynamicData.MaxRange,
+                    }, () => {
+                        if (isSimulation) {
+                            this.props.apply()
+                        }
+                    })
+                } else if (res && res.response && res.response.status === 412) {
+                    this.setState({ tableData: [], maxRange: 0, })
+                } else {
+                    this.setState({ tableData: [], maxRange: 0, })
+                }
+            })
+        }
     }
 
     /**
@@ -783,7 +790,8 @@ class RMDomesticListing extends Component {
                             // ) : ("")
                         }
                         {
-                            !this.props.isSimulation &&
+                            // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                            (!this.props.isSimulation && !this.props.isMasterSummaryDrawer) &&
                             <Col md="6" lg="6" className="search-user-block mb-3">
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div>
@@ -890,7 +898,8 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {CheckApprovalApplicableMaster('1') && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                 </AgGridReact>

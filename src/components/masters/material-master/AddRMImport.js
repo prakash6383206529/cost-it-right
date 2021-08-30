@@ -36,6 +36,11 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import WarningMessage from '../../common/WarningMessage';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval';
+
+
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -91,7 +96,8 @@ class AddRMImport extends Component {
       isSourceChange: false,
       source: '',
       showWarning: false,
-      showExtraCost: false
+      showExtraCost: false,
+      approveDrawer: false
     }
   }
 
@@ -604,6 +610,14 @@ class AddRMImport extends Component {
     })
   }
 
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
+    }
+  }
+
   /**
   * @method renderListing
   * @description Used to show type of listing
@@ -996,14 +1010,25 @@ class AddRMImport extends Component {
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+        // RawMaterialCode: values.Code
+
       }
-      this.props.reset()
-      this.props.createRMImport(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-          this.clearForm();
-        }
-      });
+      // let obj
+      // if(CheckApprovalApplicableMaster('1') === true){
+      //   obj = {...formData,IsSendForApproval:true}
+      // }
+      // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
+      if (CheckApprovalApplicableMaster('1') === true) {
+        this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+      } else {
+        this.props.reset()
+        this.props.createRMImport(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
+            this.clearForm();
+          }
+        });
+      }
     }
   }
 
@@ -1722,28 +1747,24 @@ class AddRMImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {/* {
-                            CheckApprovalApplicableMaster('1') === true ?
-                              <button
-                                class="user-btn approval-btn mr15"
-                                onClick={() => { }}
+                          {
+                            (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
+                              <button type="submit"
+                                class="user-btn approval-btn mr5"
+                              // onClick={this.sendForMasterApproval}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
                               </button>
                               :
-                              <button type="submit" className="user-btn mr5 save-btn">
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}
                               </button>
-                          } */}
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                          }
                         </div>
                       </Row>
                     </form>
@@ -1821,6 +1842,21 @@ class AddRMImport extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                masterId={1}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={true}
+              />
+            )
+          }
         </div>
       </>
     );
