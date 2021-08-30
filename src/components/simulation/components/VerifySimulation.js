@@ -19,6 +19,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { node } from 'prop-types';
 const gridOptions = {};
 
 function VerifySimulation(props) {
@@ -184,15 +185,16 @@ function VerifySimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
+
+        gridApi.forEachNode(node => {
+            for (let i = 0; i < selectedRows.length; i++) {
+                if (node.data.CostingNumber === selectedRows[i].CostingNumber) {
+                    node.setSelected(true);
+                }
+            }
+        });
         setSelectedRowData(selectedRows)
-        // if (isSelected) {
-        //     let tempArr = [...selectedRowData, row]
-        //     setSelectedRowData(tempArr)
-        // } else {
-        //     const CostingId = row.CostingId;
-        //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-        //     setSelectedRowData(tempArr)
-        // }
+
     }
 
     const onSelectAll = (isSelected, rows) => {
@@ -396,7 +398,7 @@ function VerifySimulation(props) {
                                                     title: CONSTANT.EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
-                                                suppressRowClickSelection={true}
+                                                // suppressRowClickSelection={true}
                                                 rowSelection={'multiple'}
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
