@@ -220,17 +220,16 @@ class RMListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
         data && data.map((item => {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, this.props.rawMaterialTypeDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {

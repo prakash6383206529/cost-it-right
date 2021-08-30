@@ -29,10 +29,9 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(!IsApplyMasterBatch ? Ids : []);
+  const [selectedIds, setSelectedIds] = useState(Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
 
   const dispatch = useDispatch()
 

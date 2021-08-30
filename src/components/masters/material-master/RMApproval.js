@@ -8,9 +8,12 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment'
-import { checkForDecimalAndNull } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getRMApprovalList } from '../actions/Material';
+import SummaryDrawer from '../SummaryDrawer';
+import { DRAFT } from '../../../config/constants';
+import MasterSendForApproval from '../MasterSendForApproval';
 
 
 
@@ -22,8 +25,12 @@ function RMApproval(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [approvalData, setApprovalData] = useState('')
+    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const approvalList = []
+    const { approvalList } = useSelector((state) => state.material)
+    const [approvalDrawer, setApprovalDrawer] = useState(false)
+    const [approvalObj, setApprovalObj] = useState([])
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -98,7 +105,7 @@ function RMApproval(props) {
     const requestedOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? cell : '-';
     }
 
     const statusFormatter = (props) => {
@@ -125,7 +132,7 @@ function RMApproval(props) {
     */
     const costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+        return (cellValue === true || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
     }
 
 
@@ -136,7 +143,7 @@ function RMApproval(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? moment(cellValue).format('DD/MM/yyyy') : '';
     }
 
     /**
@@ -160,9 +167,51 @@ function RMApproval(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey() && getConfigurationKey().NoOfDecimalForPrice) : '';
     }
+
+    const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
+        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
+        setShowApprovalSummary(true)
+        // props.closeDashboard()
+
+    }
+
+    /**
+  * @method linkableFormatter
+  * @description Renders Name link
+  */
+    const linkableFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <Fragment>
+                <div
+                    onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
+                    className={row.Status !== DRAFT ? 'link' : ''}
+                >
+                    {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
+                </div>
+            </Fragment>
+        )
+    }
+
+
+    /**
+   * @method closeDrawer
+   * @description HIDE RM DRAWER
+   */
+    const closeDrawer = (e = '') => {
+        setShowApprovalSummary(false)
+        getTableData()
+    }
+    const closeApprovalDrawer = (e = '') => {
+        setApprovalDrawer(false)
+        getTableData()
+    }
+
 
 
     const onRowSelect = () => {
@@ -180,6 +229,10 @@ function RMApproval(props) {
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
         getTableData()
+    }
+
+    const sendForApproval = () => {
+        setApprovalDrawer(true)
     }
 
 
@@ -222,10 +275,15 @@ function RMApproval(props) {
         costFormatter: costFormatter,
         freightCostFormatter: freightCostFormatter,
         shearingCostFormatter: shearingCostFormatter,
-        effectiveDateFormatter: getRMApprovalList
+        effectiveDateFormatter: effectiveDateFormatter,
+        linkableFormatter: linkableFormatter,
+        effectiveDateRenderer: effectiveDateFormatter
+
+
+
     };
 
-    //   const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === PENDING : false
+    const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
 
 
 
@@ -239,8 +297,11 @@ function RMApproval(props) {
                             {/* <button title="send-for-approval" class="user-btn approval-btn mr5" onClick={sendForApproval}>
                       <div className="send-for-approval mr-0" ></div>
                     </button> */}
-                            <button type="button" className="user-btn" title="Reset Grid" onClick={resetState}>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
+                            </button>
+                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                                <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
                     </div>
@@ -275,11 +336,12 @@ function RMApproval(props) {
                                     suppressRowClickSelection={true}
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
-                                //   isRowSelectable={isRowSelectable}
+                                    isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                                    <AgGridColumn cellClass="has-checkbox" field="TokenNumber" headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
@@ -296,8 +358,8 @@ function RMApproval(props) {
                                     <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="InitiatedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
-                                    <AgGridColumn field="LastApprovedby" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
-                                    {/* {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
+                                    <AgGridColumn field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
+                                    <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
 
                                 <div className="paging-container d-inline-block float-right">
@@ -312,7 +374,30 @@ function RMApproval(props) {
                     </div>
                 </Col>
             </Row>
+            {
+                showApprovalSumary &&
+                <SummaryDrawer
+                    isOpen={showApprovalSumary}
+                    closeDrawer={closeDrawer}
+                    approvalData={approvalData}
+                    anchor={'bottom'}
+                />
+            }
+            {
+                approvalDrawer &&
+                <MasterSendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={1}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    approvalData={selectedRowData}
+                />
+            }
         </div>
+
     );
 }
 

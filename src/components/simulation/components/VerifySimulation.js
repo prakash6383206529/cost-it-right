@@ -53,7 +53,7 @@ function VerifySimulation(props) {
     }, [])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
-        const plant = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
         dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const data = res.data.Data

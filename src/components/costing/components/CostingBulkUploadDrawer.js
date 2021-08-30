@@ -7,7 +7,7 @@ import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting, plasticBulkUploadCosting } from '../actions/CostWorking'
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
 import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../config/masterData'
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL, SHEET_METAL } from '../../../config/constants';
@@ -221,6 +221,13 @@ class CostingBulkUploadDrawer extends Component {
         } if (this.state.Technology.label == 'Plastic') {
 
             this.props.plasticBulkUploadCosting(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state
+                files.push(Data)
+            })
+            this.cancel()
+        } if (this.state.Technology.label === 'Machining') {
+            this.props.machiningBulkUploadCosting(data, (res) => {
                 let Data = res.data[0]
                 const { files } = this.state
                 files.push(Data)
