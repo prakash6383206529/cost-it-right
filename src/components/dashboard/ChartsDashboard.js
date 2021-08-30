@@ -8,6 +8,16 @@ const color6 = "#76E2C5";
 const color7 = "#D6DDEB";
 // graph colors end
 
+// graph colors start
+export const graphColor1 = "#F199CE";
+export const graphColor2 = "#78AAD8";
+export const graphColor3 = "#73B0F4";
+export const graphColor4 = "#3E88CB";
+export const graphColor5 = "#B1CEEE";
+export const graphColor6 = "#76E2C5";
+export const graphColor7 = "#D6DDEB";
+// graph colors end
+
 
 // graph 1 (Cost Movement by Cost Drivers) dashboard  
 export const options1 = {
