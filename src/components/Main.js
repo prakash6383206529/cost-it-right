@@ -315,9 +315,9 @@ class Main extends Component {
 
                     <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
 
-                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+                    <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
 
-                    <Route path="/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
+                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
