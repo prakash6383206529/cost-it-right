@@ -8,7 +8,6 @@ import SpecificationListing from './SpecificationListing';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import { CONSTANT } from '../../../helper/AllConastant';
 import classnames from 'classnames';
-
 import { getRowMaterialDataAPI } from '../actions/Material';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
@@ -16,9 +15,11 @@ import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
+import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import Insights from './Insights';
+import RMApproval from './RMApproval'
 
 class RowMaterialMaster extends Component {
     constructor(props) {
@@ -28,7 +29,7 @@ class RowMaterialMaster extends Component {
             isOpen: false,
             isEditFlag: false,
             Id: '',
-            activeTab: '1',
+            activeTab: '2',
 
             isRMDomesticForm: false,
             isRMImportForm: false,
@@ -52,30 +53,42 @@ class RowMaterialMaster extends Component {
     * @description SET PERMISSION FOR ADD, VIEW, EDIT, DELETE, DOWNLOAD AND BULKUPLOAD
     */
     componentDidMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === RAW_MATERIAL)
-                const accessDataRMANDGRADE = Data && Data.find(el => el.PageName === RAW_MATERIAL_NAME_AND_GRADE)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-                const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewRMAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                        AddAccessibilityRMANDGRADE: permmisionDataRMANDGRADE && permmisionDataRMANDGRADE.Add ? permmisionDataRMANDGRADE.Add : false,
-                        EditAccessibilityRMANDGRADE: permmisionDataRMANDGRADE && permmisionDataRMANDGRADE.Edit ? permmisionDataRMANDGRADE.Edit : false,
-                    })
-                }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+
+            const accessData = Data && Data.Pages.find(el => el.PageName === RAW_MATERIAL)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            const accessDataRMANDGRADE = Data && Data.Pages.find(el => el.PageName === RAW_MATERIAL_NAME_AND_GRADE)
+            const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewRMAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    AddAccessibilityRMANDGRADE: permmisionDataRMANDGRADE && permmisionDataRMANDGRADE.Add ? permmisionDataRMANDGRADE.Add : false,
+                    EditAccessibilityRMANDGRADE: permmisionDataRMANDGRADE && permmisionDataRMANDGRADE.Edit ? permmisionDataRMANDGRADE.Edit : false,
+                })
             }
-        })
+        }
     }
 
     /**
@@ -168,25 +181,41 @@ class RowMaterialMaster extends Component {
                     <Col>
                         <div>
                             <Nav tabs className="subtabs mt-0">
-                                {ViewRMAccessibility && <NavItem>
+                                {/* {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                        Manage Raw Material (Domestic)
-                                </NavLink>
-                                </NavItem>}
+                                        Insights
+                                    </NavLink>
+                                </NavItem>} */}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Manage Raw Material (Import)
-                                </NavLink>
+                                        Manage Raw Material (Domestic)
+                                    </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                        Manage Specification
-                                </NavLink>
+                                        Manage Raw Material (Import)
+                                    </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                        Manage Specification
+                                    </NavLink>
+                                </NavItem>}
+                                {ViewRMAccessibility && <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                         Manage Material
-                                </NavLink>
+                                    </NavLink>
+                                </NavItem>}
+                                {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
+                                {/* uncomment below line after cherry-pick to Minda  TODO */}
+                                {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
+                                {ViewRMAccessibility && <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => {
+                                        this.toggle('5');
+                                        // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                    }}>
+                                        RM Approval
+                                    </NavLink>
                                 </NavItem>}
                             </Nav>
 
@@ -194,6 +223,11 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 1 && ViewRMAccessibility &&
                                     <TabPane tabId="1">
+                                        <Insights />
+                                    </TabPane>}
+
+                                {this.state.activeTab == 2 && ViewRMAccessibility &&
+                                    <TabPane tabId="2">
                                         <RMDomesticListing
                                             formToggle={this.displayDomesticForm}
                                             getDetails={this.getDetails}
@@ -202,11 +236,12 @@ class RowMaterialMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 2 && ViewRMAccessibility &&
-                                    <TabPane tabId="2">
+                                {this.state.activeTab == 3 && ViewRMAccessibility &&
+                                    <TabPane tabId="3">
                                         <RMImportListing
                                             formToggle={this.displayImportForm}
                                             getDetails={this.getDetailsImport}
@@ -215,11 +250,13 @@ class RowMaterialMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 3 && ViewRMAccessibility &&
-                                    <TabPane tabId="3">
+                                {this.state.activeTab == 4 && ViewRMAccessibility &&
+                                    <TabPane tabId="4">
                                         <SpecificationListing
                                             toggle={this.toggle}
                                             AddAccessibility={this.state.AddAccessibility}
@@ -228,15 +265,34 @@ class RowMaterialMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             AddAccessibilityRMANDGRADE={this.state.AddAccessibilityRMANDGRADE}
                                             EditAccessibilityRMANDGRADE={this.state.EditAccessibilityRMANDGRADE}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 4 && ViewRMAccessibility &&
-                                    <TabPane tabId="4">
+                                {this.state.activeTab == 6 && ViewRMAccessibility &&
+                                    <TabPane tabId="6">
                                         <RMListing
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+
+                                        />
+                                    </TabPane>}
+                                {this.state.activeTab == 5 && ViewRMAccessibility &&
+                                    <TabPane tabId="5">
+                                        {/* {
+                                            this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                        } */}
+
+                                        {/* <Link to="/raw-material-approval"></Link> */}
+                                        {/* <Route path="/raw-material-approval">
+                                        </Route> */}
+                                        <RMApproval
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
                                         />
                                     </TabPane>}
 
@@ -256,8 +312,8 @@ class RowMaterialMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { leftMenuData, loading } = auth;
-    return { leftMenuData, loading }
+    const { leftMenuData, topAndLeftMenuData, loading } = auth;
+    return { leftMenuData, topAndLeftMenuData, loading }
 }
 
 

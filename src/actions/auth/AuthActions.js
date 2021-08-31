@@ -6,11 +6,13 @@ import {
     GET_USER_UNIT_DATA_SUCCESS, GET_UNIT_ROLE_DATA_SUCCESS, GET_UNIT_DEPARTMENT_DATA_SUCCESS, GET_UNIT_LEVEL_DATA_SUCCESS, GET_ROLES_SELECTLIST_SUCCESS,
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
-    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API
+    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
+    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
 import { MESSAGES } from "../../config/message";
+import { loggedInUserId } from '../../helper/auth';
 
 
 /**
@@ -747,6 +749,62 @@ export function deleteUserLevelAPI(Id, callback) {
 }
 
 /**
+ * @method addSimulationLevel
+ * @description ADD SIMULATION LEVEL
+ */
+export function addSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updateSimulationLevel
+ * @description UPDATE SIMULATION LEVEL
+ */
+export function updateSimulationLevel(requestData, callback) {
+    return (dispatch) => {
+        axios.put(API.updateSimulationLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getSimulationLevel
+ * @description GET SIMULATION LEVEL
+ */
+export function getSimulationLevel(LevelId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method assignUserLevelAPI
  * @description assign level of users
  */
@@ -850,6 +908,29 @@ export function getAllLevelMappingAPI(callback) {
 }
 
 /**
+ * @method getSimulationLevelDataList
+ * @description GET SIMULATION LEVEL DATALIST
+ */
+export function getSimulationLevelDataList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationLevelDataList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: SIMULATION_LEVEL_DATALIST_API,
+                    payload: response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method fetchPlantDataAPI
  * @description Used to fetch plant list
  */
@@ -875,7 +956,31 @@ export function getAllTechnologyAPI(callback) {
     };
 }
 
-
+/**
+ * @method getSimulationTechnologySelectList
+ * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
+ */
+export function getSimulationTechnologySelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getSimulationTechnologySelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
 
 /**
  * @method createPrivilegePage
@@ -1421,5 +1526,239 @@ export function updateCompanyAPI(requestData, callback) {
                 apiErrors(error);
                 callback(error);
             });
+    };
+}
+
+export function getSimualationLevelByTechnology(technologyId, callback) {
+    return (dispatch) => {
+        if (technologyId !== '') {
+            //dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+                payload: [],
+            });
+            callback();
+
+        }
+    };
+}
+
+/**
+* @method getUsersSimulationTechnologyLevelAPI
+* @description get User's technology level
+*/
+export function getUsersSimulationTechnologyLevelAPI(UserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}`, headers);
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            if (response && response.data && response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getTopAndLeftMenuData
+ * @description GET ALL MENU DATA AND LEFT MENU DATA
+ */
+export function getTopAndLeftMenuData(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getTopAndLeftMenuData}/${loggedInUserId()}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TOP_AND_LEFT_MENU_DATA,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSimulationTechnologySelectList
+ * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
+ */
+export function getMastersSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getMastersSelectList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MASTER_SELECT_LIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method addMasterLevel
+ * @description ADD MASTER LEVEL
+ */
+export function addMasterLevel(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addMasterLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updateMasterLevel
+ * @description UPDATE MASTER LEVEL
+ */
+export function updateMasterLevel(requestData, callback) {
+    return (dispatch) => {
+        axios.put(API.updateMasterLevel, requestData, headers)
+            .then((response) => {
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getMasterLevel
+ * @description GET MASTER LEVEL
+ */
+export function getMasterLevel(LevelId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getMasterLevel}/${LevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getSimulationLevelDataList
+ * @description GET SIMULATION LEVEL DATALIST
+ */
+export function getMasterLevelDataList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getMasterLevelDataList}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: MASTER_LEVEL_DATALIST_API,
+                    payload: response.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+export function getMasterLevelByMasterId(masterId, callback) {
+    return (dispatch) => {
+        if (masterId !== '') {
+            //dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_MASTER_LEVEL_BY_MASTERID,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_MASTER_LEVEL_BY_MASTERID,
+                payload: [],
+            });
+            callback();
+
+        }
+    };
+}
+
+/**
+* @method getUsersSimulationTechnologyLevelAPI
+* @description get User's technology level
+*/
+export function getUsersMasterLevelAPI(UserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}`, headers);
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            if (response && response.data && response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

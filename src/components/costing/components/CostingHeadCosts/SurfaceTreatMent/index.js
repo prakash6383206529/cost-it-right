@@ -8,7 +8,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 
 function SurfaceTreatment(props) {
@@ -26,6 +26,7 @@ function SurfaceTreatment(props) {
   const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   /**
   * @method toggleDrawer
@@ -65,6 +66,7 @@ function SurfaceTreatment(props) {
         "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
         "EffectiveDate": CostingEffectiveDate,
         "LoggedInUserId": loggedInUserId(),
+        "TotalCost": netPOPrice,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "IsAssemblyPart": true,
@@ -97,6 +99,7 @@ function SurfaceTreatment(props) {
         "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
         "EffectiveDate": CostingEffectiveDate,
         "LoggedInUserId": loggedInUserId(),
+        "TotalCost": netPOPrice,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
@@ -209,7 +212,7 @@ function SurfaceTreatment(props) {
                     type={'button'}
                     className="submit-button mr5 save-btn"
                     onClick={saveData} >
-                    <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                    <div className={'save-icon'}></div>
                     {'SAVE'}
                   </button>
 
@@ -217,7 +220,7 @@ function SurfaceTreatment(props) {
                     type={'button'}
                     className="reset mr15 cancel-btn"
                     onClick={cancel} >
-                    <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>

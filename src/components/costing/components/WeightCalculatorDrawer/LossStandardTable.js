@@ -5,13 +5,20 @@ import { useDispatch, useSelector } from 'react-redux'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
+import { setPlasticArray } from '../../actions/Costing'
 
 function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+
+  const [lossWeight, setLossWeight] = useState('')
+  const dispatch = useDispatch()
+
+
+
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     //defaultValues: defaultValues,
@@ -19,11 +26,7 @@ function LossStandardTable(props) {
 
   const fieldValues = useWatch({
     control,
-    name: [
-      'LossOfType',
-      'LossPercentage',
-      //  'inputWeight'
-    ],
+    name: ['LossOfType', 'LossPercentage',],
   })
 
   useEffect(() => {
@@ -37,17 +40,10 @@ function LossStandardTable(props) {
   const [editIndex, setEditIndex] = useState('')
   const [oldNetWeight, setOldNetWeight] = useState('')
   const [netWeight, setNetWeight] = useState(props.netWeight !== '' ? props.netWeight : 0)
+  const [burningWeight, setBurningWeight] = useState(props.burningValue !== '' ? props.burningValue : '')
 
   useEffect(() => {
-    // if (props.sendTable.length === 0) {
-    //   return false
-    // } else {
-
     setTableData(props.sendTable ? props.sendTable : [])
-    // setNetWeight(props.netWeight !== '' ? props.netWeight : 0)
-    // setNetWeight(props.sendTable.LostSum)
-    // }
-
   }, [])
   /**
    * @method calculateLossWeight
@@ -56,14 +52,14 @@ function LossStandardTable(props) {
   const calculateLossWeight = () => {
     const LossPercentage = Number(getValues('LossPercentage'))
 
-    const inputWeight = props.weightValue //Need to Ask what to do
-
-    // if (!inputWeight || !LossPercentage) {
-    //   return ''
-    // }
+    const inputWeight = props.weightValue
     const LossWeight = (inputWeight * LossPercentage) / 100
 
-    setValue('LossWeight', checkForDecimalAndNull(LossWeight, trim))
+    setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+
+    setLossWeight(LossWeight)
+
+
   }
   /**
    * @method addRow
@@ -71,8 +67,8 @@ function LossStandardTable(props) {
    */
   const addRow = () => {
     const LossPercentage = Number(getValues('LossPercentage'))
-    const LossOfType = getValues('LossOfType').label
-    const LossWeight = Number(getValues('LossWeight'))
+    const LossOfType = getValues('LossOfType').value
+    const LossWeight = Number(lossWeight)
 
     if (LossPercentage === 0 || LossOfType === '' || LossWeight === 0) {
       toastr.warning("Please add data first.")
@@ -94,7 +90,6 @@ function LossStandardTable(props) {
     if (isEdit) {
       const oldWeight = netWeight - Number(oldNetWeight)
       NetWeight = checkForNull(oldWeight + LossWeight)
-      props.calculation(NetWeight)
       setNetWeight(NetWeight)
     } else {
 
@@ -103,7 +98,7 @@ function LossStandardTable(props) {
       setTimeout(() => {
         setNetWeight(NetWeight)
       }, 400);
-      props.calculation(NetWeight)
+
     }
     const obj = {
       LossPercentage: LossPercentage,
@@ -120,7 +115,12 @@ function LossStandardTable(props) {
       tempArray.push(obj)
       setTableData(tempArray)
     }
-
+    if (LossOfType === 2) {
+      setBurningWeight(LossWeight)
+      props.burningLoss(LossWeight)
+    }
+    dispatch(setPlasticArray(tempArray))
+    props.calculation(NetWeight)
     props.tableValue(tempArray)
 
     reset({
@@ -139,7 +139,7 @@ function LossStandardTable(props) {
     const tempObj = tableData[index]
     setOldNetWeight(tempObj.LossWeight)
     setValue('LossPercentage', tempObj.LossPercentage)
-    setValue('LossOfType', { label: tempObj.LossOfType })
+    setValue('LossOfType', { label: getLossTypeName(tempObj.LossOfType), value: tempObj.LossOfType })
     setValue('LossWeight', tempObj.LossWeight)
   }
   /**
@@ -153,6 +153,7 @@ function LossStandardTable(props) {
     setValue('LossPercentage', '')
     setValue('LossOfType', '')
     setValue('LossWeight', '')
+
   }
   /**
    * @method deleteRow
@@ -175,9 +176,17 @@ function LossStandardTable(props) {
       }
       return true
     })
+
+    dispatch(setPlasticArray(tempData))
     props.tableValue(tempData)
     setTableData(tempData)
   }
+
+  const getLossTypeName = (number) => {
+    const name = dropDownMenu && dropDownMenu.find(item => item.value === Number(number))
+    return name?.label
+  }
+
   return (
     <Fragment>
       <Row className={''}>
@@ -194,7 +203,7 @@ function LossStandardTable(props) {
             Controller={Controller}
             control={control}
             register={register}
-            mandatory={true}
+            mandatory={false}
             // rules={{
             //   required: true,
             //   pattern: {
@@ -215,14 +224,14 @@ function LossStandardTable(props) {
         </Col>
         <Col md="3">
           <TextFieldHookForm
-            label={`Lost(%)`}
+            label={`Loss(%)`}
             name={'LossPercentage'}
             Controller={Controller}
             control={control}
             register={register}
-            mandatory={true}
+            mandatory={false}
             rules={{
-              required: true,
+              required: false,
               pattern: {
                 //value: /^[0-9]*$/i,
                 value: /^[0-9]\d*(\.\d+)?$/i,
@@ -288,6 +297,7 @@ function LossStandardTable(props) {
                 type="submit"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
+                disabled={props.CostingViewMode}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -300,7 +310,7 @@ function LossStandardTable(props) {
             <thead>
               <tr>
                 <th>{`Type of Loss`}</th>
-                <th>{`Lost(%)`}</th>
+                <th>{`Loss(%)`}</th>
                 <th>{`Loss Weight`}</th>
                 <th>{`Actions`}</th>
               </tr>
@@ -311,7 +321,7 @@ function LossStandardTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
-                        <td>{item.LossOfType}</td>
+                        <td>{getLossTypeName(item.LossOfType)}</td>
                         <td>{item.LossPercentage}</td>
                         <td>
                           {checkForDecimalAndNull(item.LossWeight, trim)}
@@ -322,11 +332,13 @@ function LossStandardTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
+                                disabled={props.CostingViewMode}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
+                                disabled={props.CostingViewMode}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>
@@ -354,14 +366,17 @@ function LossStandardTable(props) {
 
             {/* <span className="col-sm-4 ">{'30'}</span> */}
           </Table>
-
-          <div className="col-md-12 text-right bluefooter-butn border">
-            <span className="w-100">
-              {`Net Loss Weight:`}
-              {checkForDecimalAndNull(netWeight, trim)}
-            </span>
-          </div>
-
+            <div className="col-md-12 text-right bluefooter-butn border">
+            {props.isPlastic &&
+              <span className="w-50 d-inline-block text-left">
+                {`Burning Loss Weight:`}
+                {checkForDecimalAndNull(burningWeight, trim)}
+              </span>}
+              <span className="w-50 d-inline-block">
+                {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight:`}
+                {checkForDecimalAndNull(findLostWeight(tableData), trim)}
+              </span>
+            </div>
         </Col>
 
         {/* <Row>

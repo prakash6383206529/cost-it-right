@@ -9,17 +9,26 @@ import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import AddReason from './AddReason';
-import { REASON } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
+import ReactExport from 'react-export-excel';
+import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class ReasonListing extends Component {
   constructor(props) {
@@ -33,48 +42,63 @@ class ReasonListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false,
+      isLoader: true,
+      renderState: true
     }
   }
 
+  componentWillUnmount() {
+    this.props.getAllReasonAPI(false, (res) => { })
+  }
+
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId')
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData
-        const accessData = Data && Data.find((el) => el.PageName === REASON)
-        const permmisionData =
-          accessData &&
-          accessData.Actions &&
-          checkPermission(accessData.Actions)
+    this.applyPermission(this.props.topAndLeftMenuData)
+    setTimeout(() => {
+      this.getTableListData()
+    }, 2000);
+  }
 
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility:
-              permmisionData && permmisionData.View
-                ? permmisionData.View
-                : false,
-            AddAccessibility:
-              permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility:
-              permmisionData && permmisionData.Edit
-                ? permmisionData.Edit
-                : false,
-            DeleteAccessibility:
-              permmisionData && permmisionData.Delete
-                ? permmisionData.Delete
-                : false,
-          })
-        }
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === REASON)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
       }
-    })
 
-    this.getTableListData()
+    }
   }
 
   // Get updated Supplier's list after any action performed.
   getUpdatedData = () => {
-    this.getTableListData()
+    setTimeout(() => {
+
+      this.getTableListData()
+    }, 500);
   }
 
   /**
@@ -82,12 +106,13 @@ class ReasonListing extends Component {
    * @description Get user list data
    */
   getTableListData = () => {
-    this.props.getAllReasonAPI((res) => {
+    this.setState({ isLoader: true })
+    this.props.getAllReasonAPI(true, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data }, () => this.setState({ isLoader: false, renderState: !this.state.renderState }))
       } else {
         this.setState({ tableData: [] })
       }
@@ -130,36 +155,35 @@ class ReasonListing extends Component {
   }
 
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility } = this.state
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    const { EditAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && (
-          <button
-            className="Edit"
-            type={'button'}
-            onClick={() => this.editItemDetails(cell)}
-          />
-        )}
-        {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />} */}
       </>
     )
-  }
+  };
 
   /**
    * @method statusButtonFormatter
    * @description Renders buttons
    */
-  statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+  statusButtonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <label htmlFor="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           <Switch
-            onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-            checked={cell}
+            onChange={() => this.handleChange(cellValue, rowData)}
+            checked={cellValue}
             background="#ff6600"
             onColor="#4DC771"
             onHandleColor="#ffffff"
@@ -172,7 +196,7 @@ class ReasonListing extends Component {
     )
   }
 
-  handleChange = (cell, row, enumObject, rowIndex) => {
+  handleChange = (cell, row) => {
     let data = {
       Id: row.ReasonId,
       LoggedInUserId: loggedInUserId(),
@@ -232,18 +256,71 @@ class ReasonListing extends Component {
     )
   }
 
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, this.props.reasonDataList)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    TempData && TempData.map((item) => {
+      if (item.ECNNumber === null) {
+        item.ECNNumber = ' '
+      } else if (item.RevisionNumber === null) {
+        item.RevisionNumber = ' '
+      } else if (item.DrawingNumber === null) {
+        item.DrawingNumber = ' '
+      } else if (item.Technology === '-') {
+        item.Technology = ' '
+      } else {
+        return false
+      }
+      return item
+    })
+    return (
+
+      <ExcelSheet data={TempData} name={Reasonmaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+  }
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
+
   /**
    * @method render
    * @description Renders the component
    */
   render() {
-    const { isEditFlag, isOpenDrawer, AddAccessibility } = this.state
+    const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -253,10 +330,25 @@ class ReasonListing extends Component {
 
     }
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      statusButtonFormatter: this.statusButtonFormatter
+    };
+
     return (
       <>
-        <div className="container-fluid">
-          {/* {this.props.loading && <Loader />} */}
+
+        {this.state.isLoader && <LoaderCustom />}
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
@@ -268,32 +360,56 @@ class ReasonListing extends Component {
                   {AddAccessibility && (
                     <button
                       type="button"
-                      className={'user-btn'}
+                      className={'user-btn mr5'}
+                      title="Add"
                       onClick={this.formToggle}
                     >
-                      <div className={'plus'}></div>ADD
+                      <div className={'plus mr-0'}></div>
                     </button>
                   )}
+                  {
+                    DownloadAccessibility &&
+                    <>
+
+                      <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
+                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                          {/* DOWNLOAD */}
+                        </button>}>
+
+                        {this.onBtExport()}
+                      </ExcelFile>
+
+                    </>
+
+                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                  }
+
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                    <div className="refresh mr-0"></div>
+                  </button>
+
                 </div>
               </div>
             </Col>
           </Row>
-          <BootstrapTable
+          {/* <BootstrapTable
             data={this.props.reasonDataList}
             striped={false}
             hover={false}
             bordered={false}
             options={options}
             search
-            // exportCSV
+            exportCSV={DownloadAccessibility}
+            csvFileName={`${Reasonmaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
             tableHeaderClass="my-custom-header"
             pagination
-          >
-            {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-            <TableHeaderColumn
+          > */}
+          {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+          {/* <TableHeaderColumn
               dataField="Reason"
               dataAlign="left"
               dataSort={true}
@@ -320,8 +436,48 @@ class ReasonListing extends Component {
               dataFormat={this.buttonFormatter}
             >
               Actions
-          </TableHeaderColumn>
-          </BootstrapTable>
+            </TableHeaderColumn>
+          </BootstrapTable> */}
+
+          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+            </div>
+            <div
+              className="ag-theme-material"
+              style={{ height: '100%', width: '100%' }}
+            >
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                domLayout='autoHeight'
+                // columnDefs={c}
+                rowData={this.props.reasonDataList}
+                pagination={true}
+                paginationPageSize={10}
+                onGridReady={this.onGridReady}
+                gridOptions={gridOptions}
+                loadingOverlayComponent={'customLoadingOverlay'}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                noRowsOverlayComponentParams={{
+                  title: CONSTANT.EMPTY_DATA,
+                }}
+                frameworkComponents={frameworkComponents}
+              >
+                <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
+                <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
+              </AgGridReact>
+              <div className="paging-container d-inline-block float-right">
+                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                  <option value="10" selected={true}>10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
         </div>
         {isOpenDrawer && (
           <AddReason
@@ -344,8 +500,8 @@ class ReasonListing extends Component {
  */
 function mapStateToProps({ reason, auth }) {
   const { loading, reasonDataList } = reason
-  const { leftMenuData } = auth
-  return { loading, leftMenuData, reasonDataList }
+  const { leftMenuData, topAndLeftMenuData } = auth
+  return { loading, leftMenuData, reasonDataList, topAndLeftMenuData }
 }
 
 /**

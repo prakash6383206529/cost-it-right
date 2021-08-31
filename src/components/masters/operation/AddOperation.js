@@ -27,6 +27,9 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -54,7 +57,9 @@ class AddOperation extends Component {
       isOpenUOM: false,
       OperationId: '',
       effectiveDate: '',
-      destinationPlant: []
+      destinationPlant: [],
+      changeValue: true,
+      dataToChange: ''
     }
   }
 
@@ -317,12 +322,13 @@ class AddOperation extends Component {
               selectedPlants: plantArray,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
-              destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
+              destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+              dataToChange: Data
             })
           }, 500)
 
@@ -446,7 +452,7 @@ class AddOperation extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
@@ -484,6 +490,10 @@ class AddOperation extends Component {
         IsForcefulUpdated: true
       }
       if (this.state.isEditFlag) {
+        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate)) {
+          this.cancel()
+          return false
+        }
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -495,6 +505,7 @@ class AddOperation extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -520,7 +531,7 @@ class AddOperation extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
       this.props.reset()
@@ -824,7 +835,7 @@ class AddOperation extends Component {
                           onChange={this.onPressSurfaceTreatment}
                         >
                           Surface Treatment Operation
-                              <input
+                          <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
                             disabled={isEditFlag ? true : false}
@@ -897,10 +908,10 @@ class AddOperation extends Component {
                                 Drag and Drop or{" "}
                                 <span className="text-primary">
                                   Browse
-                          </span>
+                                </span>
                                 <br />
-                          file to upload
-                        </span>
+                                file to upload
+                              </span>
                             </div>))}
                             styles={{
                               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
@@ -948,24 +959,14 @@ class AddOperation extends Component {
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
                       >
-                        <div className={"cross-icon"}>
-                          <img
-                            src={require("../../../assests/images/times.png")}
-                            alt="cancel-icon.jpg"
-                          />
-                        </div>{" "}
+                        <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
                         className="user-btn mr5 save-btn"
                       >
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../assests/images/check.png")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}
                       </button>
                     </div>

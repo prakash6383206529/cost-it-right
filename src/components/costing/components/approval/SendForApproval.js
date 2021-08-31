@@ -6,7 +6,7 @@ import { toastr } from 'react-redux-toastr'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, } from '../../actions/Approval'
-import { userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 
@@ -17,11 +17,15 @@ import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
+import PushSection from '../../../common/PushSection'
+import { debounce } from 'lodash'
+import { data } from 'react-dom-factories'
+
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, setError } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -29,6 +33,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -43,6 +48,7 @@ const SendForApproval = (props) => {
   const [showErrorMsg, setShowErrorMsg] = useState(false)
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
+  const [dataToPush, setDataToPush] = useState({})
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
@@ -256,13 +262,19 @@ const SendForApproval = (props) => {
     )
   }
 
+
+
+
+
   /**
    * @method onSubmit
    * @param {*} data
    * @description This method is called on the submission of the form for send for approval
    */
-  const onSubmit = (data) => {
 
+
+
+  const onSubmit = debounce(handleSubmit((data) => {
     let count = 0
     viewApprovalData.map((item) => {
       if (item.effectiveDate == '') {
@@ -349,7 +361,7 @@ const SendForApproval = (props) => {
       tempObj.Reason = data.reason
       tempObj.ECNNumber = ''
       // tempObj.ECNNumber = 1;
-      tempObj.EffectiveDate = moment(data.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+      tempObj.EffectiveDate = moment(data.effectiveDate).local().format('YYYY-MM-DD')
       tempObj.RevisionNumber = partNo.revisionNumber
       tempObj.PartName = partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
@@ -386,8 +398,13 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
+    obj.PurchasingGroup = SAPData.PurchasingGroup?.label
+    obj.MaterialGroup = SAPData.MaterialGroup?.label
 
 
+    // debounce_fun()
+    // console.log("After debounce");
+    // props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
@@ -396,7 +413,9 @@ const SendForApproval = (props) => {
         dispatch(setCostingViewData([]))
       }),
     )
-  }
+  }), 500)
+
+
 
   const handleApproverChange = (data) => {
     setApprover(data.label)
@@ -529,7 +548,7 @@ const SendForApproval = (props) => {
                                     :
 
                                     <DatePickerHookForm
-                                      name={`${dateField}EffectiveDate[${index}]`}
+                                      name={`${dateField}EffectiveDate.${index}`}
                                       label={'Effective Date'}
                                       selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                       handleChange={(date) => {
@@ -630,10 +649,18 @@ const SendForApproval = (props) => {
                 );
               })}
             <div className="">
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form >
                 {
                   isFinalApproverShow === false ?
                     <>
+                      <Row className="px-3">
+                        <Col md="12">
+                          <div className="left-border">{"SAP-Push Details"}</div>
+                        </Col>
+                        <div className="w-100">
+                          <PushSection />
+                        </div>
+                      </Row>
                       <Row className="px-3">
                         <Col md="4">
                           <div className="left-border">{"Approver"}</div>
@@ -642,7 +669,7 @@ const SendForApproval = (props) => {
                       <Row className="px-3">
                         <Col md="6">
                           <SearchableSelectHookForm
-                            label={"Company"}
+                            label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                             name={"dept"}
                             placeholder={"-Select-"}
                             Controller={Controller}
@@ -726,27 +753,17 @@ const SendForApproval = (props) => {
                       onClick={toggleDrawer}
                     // className="reset mr15 cancel-btn"
                     >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                      <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
 
                     <button
                       className="btn btn-primary save-btn"
-                      type="submit"
-                    // className="submit-button save-btn"
-                    // onClick={() => handleSubmit(onSubmit)}
+                      type="button"
+                      // className="submit-button save-btn"
+                      onClick={onSubmit}
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={'save-icon'}></div>
                       {"Submit"}
                     </button>
                   </Col>

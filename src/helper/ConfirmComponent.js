@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import confirmImg from '../assests/images/confirm.svg'
 
 function ConfirmComponent() {
   return (
@@ -7,7 +8,7 @@ function ConfirmComponent() {
         <h4>Confirm</h4>
       </div>
       <div className="text-center img-block">
-        <img alt={""} src={require("../assests/images/confirm.svg")} />
+        <img alt={""} src={confirmImg} />
       </div>
     </div>
   );

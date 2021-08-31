@@ -31,6 +31,11 @@ import moment from 'moment';
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
+import WarningMessage from '../../common/WarningMessage'
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -67,7 +72,8 @@ class AddBOPImport extends Component {
       showCurrency: false,
       netLandedConverionCost: '',
       DataToChange: [],
-      DropdownChange: true
+      DropdownChange: true,
+      showWarning: false
     }
   }
 
@@ -191,7 +197,7 @@ class AddBOPImport extends Component {
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
-              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
+              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -394,7 +400,23 @@ class AddBOPImport extends Component {
 
       } else {
         this.setState({ showCurrency: true }, () => {
-          this.handleCalculation()
+          if (this.state.effectiveDate) {
+            this.props.getExchangeRateByCurrency(newValue.label, moment(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
+              //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+
+              if (Object.keys(res.data.Data).length === 0) {
+
+                this.setState({ showWarning: true })
+              }
+              else {
+                this.setState({ showWarning: false })
+              }
+              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+                this.handleCalculation()
+              })
+            })
+          }
+          // this.handleCalculation()
         })
       }
       this.setState({ currency: newValue, })
@@ -435,6 +457,14 @@ class AddBOPImport extends Component {
     } else {
       this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+
+        if (Object.keys(res.data.Data).length === 0) {
+
+          this.setState({ showWarning: true })
+        }
+        else {
+          this.setState({ showWarning: false })
+        }
         this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
           this.handleCalculation()
         })
@@ -602,6 +632,7 @@ class AddBOPImport extends Component {
             })
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -620,7 +651,7 @@ class AddBOPImport extends Component {
         Vendor: vendorName.value,
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.netLandedcost,
@@ -703,7 +734,7 @@ class AddBOPImport extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -953,7 +984,8 @@ class AddBOPImport extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            />
+                            >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>
                           <Col md="3">
                             <div className="inputbox date-section mb-3 form-group">
@@ -1063,7 +1095,7 @@ class AddBOPImport extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -1089,10 +1121,10 @@ class AddBOPImport extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
@@ -1154,24 +1186,14 @@ class AddBOPImport extends Component {
                             className=" mr15 cancel-btn"
                             onClick={this.cancel}
                           >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >
-                            <div className={"check-icon"}>
-                              <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                              />{" "}
-                            </div>
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
                           </button>
                         </div>

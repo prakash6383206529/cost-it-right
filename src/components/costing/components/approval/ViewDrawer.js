@@ -5,7 +5,7 @@ import { APPROVED, PENDING, REJECTED } from '../../../../config/constants'
 import moment from 'moment'
 
 function ViewDrawer(props) {
-  const { approvalLevelStep, approvalNo } = props
+  const { approvalLevelStep, approvalNo, isSimulation } = props
 
   const toggleDrawer = (event) => {
     if (
@@ -27,7 +27,7 @@ function ViewDrawer(props) {
             <Row className="drawer-heading sticky-top-0">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{`Approval Workflow (Approval No.${approvalNo})`}</h3>
+                  <h3>{`Approval Workflow (${isSimulation ? `Token No.${approvalNo})` : `Approval No.${approvalNo})`}`}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -110,12 +110,7 @@ function ViewDrawer(props) {
                   className="reset mr15 cancel-btn"
                   onClick={toggleDrawer}
                 >
-                  <div className={'cross-icon'}>
-                    <img
-                      src={require('../../../../assests/images/times.png')}
-                      alt="cancel-icon.jpg"
-                    />
-                  </div>{' '}
+                  <div className={'cancel-icon'}></div>{' '}
                   {'Cancel'}
                 </button>
               </div>

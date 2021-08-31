@@ -4,28 +4,34 @@ import { useForm, Controller } from 'react-hook-form'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, isMultipleRMAllow } from '../../../../helper';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+const gridOptions = {};
 
 function AddRM(props) {
 
-  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+  const { IsApplyMasterBatch, Ids } = props;
+  const { register, handleSubmit, control, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [selectedIds, setSelectedIds] = useState(Ids);
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
 
   const dispatch = useDispatch()
 
@@ -79,23 +85,34 @@ function AddRM(props) {
   // const onSelectAll = (isSelected, rows) => { }
 
   const onRowSelect = (row, isSelected, e) => {
+
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (costData.TechnologyId === 6) {
-      if (isSelected) {
-        let tempArr = [...selectedRowData, row]
-        setSelectedRowData(tempArr)
-      } else {
-        const RawMaterialId = row.RawMaterialId;
-        let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
-        setSelectedRowData(tempArr)
-      }
+    if (isMultipleRMAllow(costData.TechnologyName)) {
+      var selectedRows = gridApi.getSelectedRows();
+      if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+      setSelectedRowData(selectedRows)
+      // if (isSelected) {
+      //   let tempArr = [...selectedRowData, row]
+      //   setSelectedRowData(tempArr)
+      // } else {
+      //   const RawMaterialId = row.RawMaterialId;
+      //   let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
+      //   setSelectedRowData(tempArr)
+      // }
     } else {
-      setSelectedRowData(row)
+      var selectedRows = gridApi.getSelectedRows();
+      if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+      setSelectedRowData(selectedRows[0])
+      // if (isSelected) {
+      //   setSelectedRowData(row)
+      // } else {
+      //   setSelectedRowData({})
+      // }
     }
   }
 
   const onSelectAll = (isSelected, rows) => {
-    if (costData.TechnologyId === 6) {
+    if (isMultipleRMAllow(costData.TechnologyName)) {
       if (isSelected) {
         setSelectedRowData(rows)
       } else {
@@ -107,7 +124,7 @@ function AddRM(props) {
   }
 
   const selectRowProp = {
-    mode: costData.TechnologyId === 6 ? 'checkbox' : 'radio',
+    mode: isMultipleRMAllow(costData.TechnologyName) ? 'checkbox' : 'radio',
     //onSelect: onRowSelect,
     //mode: 'checkbox',
     clickToSelect: true,
@@ -116,46 +133,21 @@ function AddRM(props) {
     onSelectAll: onSelectAll
   };
 
-  const renderBasicRate = () => {
-    return <>Basic Rate /<br />UOM </>
-  }
-  const renderRmType = () => {
-    return <>RM <br />Type</>
-  }
-  const renderRmName = () => {
-    return <>RM <br />Name</>
-  }
-  const renderRmGrade = () => {
-    return <>RM <br />Grade</>
-  }
-  const renderRmSpec = () => {
-    return <>RM <br />Spec</>
-  }
-  const renderVendorLocation = () => {
-    return <>Vendor<br /> Location</>
+  const netLandedFormat = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
   }
 
-  const renderScrapRate = () => {
-    return <>Scrap Rate /<br />UOM </>
+  const netLandedConversionFormat = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return rowData.Currency !== '-' ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
-  const renderNetLandedRate = () => {
-    return <>Net Cost<br />INR/UOM</>
-  }
-  const renderNetLandedConversionRate = () => {
-    return <>Net Cost<br />USD/UOM</>
-  }
-
-  const netLandedFormat = (cell, row, enumObject, rowIndex) => {
-    return cell !== null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
-  }
-
-  const netLandedConversionFormat = (cell, row, enumObject, rowIndex) => {
-    return row.Currency !== '-' ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
-  }
-
-  const currencyFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell !== '-' ? cell : 'INR'
+  const currencyFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue !== '-' ? cellValue : 'INR'
   }
   /**
   * @method cancel
@@ -170,7 +162,7 @@ function AddRM(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (Object.keys(selectedRowData).length === 0) {
       toastr.warning('Please select row.')
       return false;
     }
@@ -204,7 +196,7 @@ function AddRM(props) {
       const data = {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
-        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
+        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
@@ -285,6 +277,57 @@ function AddRM(props) {
 
   const onSubmit = data => { }
 
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+    return thisIsFirstColumn;
+  }
+
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: true,
+    headerCheckboxSelection: isMultipleRMAllow(costData.TechnologyName) ? isFirstColumn : false,
+    checkboxSelection: isFirstColumn
+  };
+
+  const onGridReady = (params) => {
+    // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    // getDataList()
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
+    params.api.paginationGoToPage(0);
+
+  };
+
+  const onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    gridApi.paginationSetPageSize(Number(value));
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  const frameworkComponents = {
+    // totalValueRenderer: this.buttonFormatter,
+    // effectiveDateRenderer: this.effectiveDateFormatter,
+    // costingHeadRenderer: this.costingHeadFormatter,
+    netLandedFormat: netLandedFormat,
+    netLandedConversionFormat: netLandedConversionFormat,
+    currencyFormatter: currencyFormatter,
+    //  specificationFormat: specificationFormat,
+    customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+  };
+
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.RawMaterialId) : false;
+
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -294,122 +337,152 @@ function AddRM(props) {
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        <Container className="costing-rm-drawer">
-          <div className={'drawer-wrapper drawer-1500px'}>
+        < div className={`ag-grid-react`}>
+          <Container className="costing-rm-drawer">
+            <div className={'drawer-wrapper drawer-1500px'}>
 
-            <Row className="drawer-heading">
-              <Col>
-                <div className={'header-wrapper left'}>
-                  <h3>{'ADD RM'}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}>
-                </div>
-              </Col>
-            </Row>
-
-            < form onSubmit={handleSubmit(onSubmit)} noValidate >
-
-              <div className="filter-row">
-                <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
-                  <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
-                    <div className="flex-fills mb-0">
-                      <h5 className="left-border">{`Filter By:`}</h5>
-                    </div>
-
-                    <div className="flex-fills hide-label mb-0">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'RawMaterialId'}
-                        placeholder={'Raw Material'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        options={renderListing("material")}
-                        customClassName="mn-height-auto mb-0"
-                        handleChange={handleRMChange} />
-                    </div>
-
-                    <div className="flex-fills hide-label mb-0">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'RawMaterialGradeId'}
-                        placeholder={'RM Grade'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        options={renderListing("grade")}
-                        customClassName="mn-height-auto mb-0"
-                        handleChange={() => { }} />
-                    </div>
-
-                    <div className="flex-fills mb-0">
-                      <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"} </button>
-                      <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
-                    </div>
-
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={'header-wrapper left'}>
+                    <h3>{'ADD RM'}</h3>
+                  </div>
+                  <div
+                    onClick={(e) => toggleDrawer(e)}
+                    className={'close-button right'}>
                   </div>
                 </Col>
-              </div>
+              </Row>
 
-            </form >
+              < form onSubmit={handleSubmit(onSubmit)} noValidate >
 
-            <Row className="mx-0">
-              <Col className="hidepage-size">
-                <BootstrapTable
-                  data={rmDrawerList}
-                  striped={false}
-                  bordered={false}
-                  hover={false}
-                  options={options}
-                  selectRow={selectRowProp}
-                  search
-                  multiColumnSearch={true}
-                  //exportCSV
-                  //ignoreSinglePage
-                  //ref={'table'}
-                  pagination
-                >
-                  <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMSpec" >{renderRmSpec()}</TableHeaderColumn>
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" dataFormat={currencyFormatter} searchable={false} >Currency</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" searchable={false} >{renderScrapRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
-                </BootstrapTable>
-              </Col>
-            </Row>
+                <div className="filter-row">
+                  <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
+                    <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
+                      <div className="flex-fills mb-0">
+                        <h5 className="left-border">{`Filter By:`}</h5>
+                      </div>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-              <div className="col-sm-12 text-left bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="submit-button mr5 save-btn"
-                  onClick={addRow} >
-                  <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'SELECT'}
-                </button>
+                      <div className="flex-fills hide-label mb-0">
+                        <SearchableSelectHookForm
+                          label={''}
+                          name={'RawMaterialId'}
+                          placeholder={'Raw Material'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          options={renderListing("material")}
+                          customClassName="mn-height-auto mb-0"
+                          handleChange={handleRMChange} />
+                      </div>
 
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-              </div>
-            </Row>
+                      <div className="flex-fills hide-label mb-0">
+                        <SearchableSelectHookForm
+                          label={''}
+                          name={'RawMaterialGradeId'}
+                          placeholder={'RM Grade'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          options={renderListing("grade")}
+                          customClassName="mn-height-auto mb-0"
+                          handleChange={() => { }} />
+                      </div>
 
-          </div>
-        </Container>
+                      <div className="flex-fills mb-0">
+                        <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"} </button>
+                        <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
+                      </div>
+
+                    </div>
+                  </Col>
+                </div>
+
+              </form >
+
+              <Row className="mx-0">
+                <Col className="hidepage-size">
+                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-header">
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                        <div className="refresh mr-0"></div>
+                      </button>
+                    </div>
+                    <div
+                      className="ag-theme-material"
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <AgGridReact
+                        style={{ height: '100%', width: '100%' }}
+                        defaultColDef={defaultColDef}
+                        domLayout='autoHeight'
+                        // columnDefs={c}
+                        rowData={rmDrawerList}
+                        pagination={true}
+                        paginationPageSize={10}
+                        onGridReady={onGridReady}
+                        gridOptions={gridOptions}
+                        loadingOverlayComponent={'customLoadingOverlay'}
+                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                        noRowsOverlayComponentParams={{
+                          title: CONSTANT.EMPTY_DATA,
+                        }}
+                        suppressRowClickSelection={true}
+                        rowSelection={isMultipleRMAllow(costData.TechnologyName) && !IsApplyMasterBatch ? 'multiple' : 'single'}
+                        frameworkComponents={frameworkComponents}
+                        onSelectionChanged={onRowSelect}
+                        isRowSelectable={isRowSelectable}
+                      >
+                        <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>
+                        <AgGridColumn field="RawMaterial" headerName="RM Name"></AgGridColumn>
+                        <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
+                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                        <AgGridColumn field="Category" ></AgGridColumn>
+                        {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName="Vendor" ></AgGridColumn>}
+                        {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName="Vendor Location" ></AgGridColumn>}
+                        <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="UOM"></AgGridColumn>
+                        <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
+
+                      </AgGridReact>
+                      <div className="paging-container d-inline-block float-right">
+                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                          <option value="10" selected={true}>10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+
+              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+                <div className="col-sm-12 text-left bluefooter-butn">
+                  <button
+                    type={'button'}
+                    className="submit-button mr5 save-btn"
+                    onClick={addRow} >
+                    <div className={'save-icon'}></div>
+                    {'SELECT'}
+                  </button>
+
+                  <button
+                    type={'button'}
+                    className="reset mr15 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                </div>
+              </Row>
+
+            </div>
+          </Container>
+        </div>
       </Drawer>
     </div>
   );

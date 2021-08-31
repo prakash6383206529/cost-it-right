@@ -75,7 +75,7 @@ class EfficiencyDrawer extends Component {
         const { handleSubmit, isEditFlag, } = this.props;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
@@ -133,13 +133,13 @@ class EfficiencyDrawer extends Component {
                                             type={'button'}
                                             className=" mr15 cancel-btn"
                                             onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                            <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type="button"
                                             className="user-btn save-btn"
                                             onClick={this.calculateEfficiency} >
-                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                            <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Calculate'}
                                         </button>
                                     </div>

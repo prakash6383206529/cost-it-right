@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -11,7 +11,7 @@ import {
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList
+  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -26,15 +26,21 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC } from '../../../config/constants';
+import { FILE_URL, INR, SHEET_METAL, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import moment from 'moment';
-
-
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import WarningMessage from '../../common/WarningMessage';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval';
+
+
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -88,7 +94,10 @@ class AddRMImport extends Component {
       DataToChange: [],
       isDateChange: false,
       isSourceChange: false,
-      source: ''
+      source: '',
+      showWarning: false,
+      showExtraCost: false,
+      approveDrawer: false
     }
   }
 
@@ -118,6 +127,12 @@ class AddRMImport extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
+      this.props.checkAndGetRawMaterialCode('', (res) => {
+        let Data = res.data.DynamicData;
+        this.props.change('Code', Data.RawMaterialCode)
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -188,7 +203,12 @@ class AddRMImport extends Component {
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
-    this.setState({ Technology: newValue })
+    if (newValue.label === SHEET_METAL) {
+      this.setState({ Technology: newValue, showExtraCost: true })
+    } else {
+      this.setState({ Technology: newValue, showExtraCost: false })
+
+    }
   }
 
   /**
@@ -288,14 +308,15 @@ class AddRMImport extends Component {
   */
   handleCurrency = (newValue) => {
     if (newValue && newValue !== '') {
-      this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
       if (newValue.label === INR) {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
         this.setState({ showCurrency: true })
       }
-      this.handleNetCost()
+      this.setState({ currency: newValue, }, () => {
+        this.handleNetCost()
+      })
     } else {
       this.setState({ currency: [] })
     }
@@ -328,11 +349,20 @@ class AddRMImport extends Component {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
       })
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
-        this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
-      })
+      if (currency && effectiveDate) {
+
+        this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
+          if (Object.keys(res.data.Data).length === 0) {
+            this.setState({ showWarning: true })
+          }
+          else {
+            this.setState({ showWarning: false })
+          }
+          this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
+        })
+      }
     }
   }
 
@@ -388,9 +418,11 @@ class AddRMImport extends Component {
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
                 this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
                 this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-                // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-                // this.props.change('NetLandedCost')
+                this.props.change('JaliScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')
+                this.props.change('CircleScrapCost', Data.ScrapRate)
 
+                this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+                this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
 
                 let plantArray = [];
                 Data && Data.Plant.map((item) => {
@@ -425,14 +457,15 @@ class AddRMImport extends Component {
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
                   // FreightCharge:Data.FreightCharge
-                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : ''
+                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
+                  showExtraCost: technologyObj.Text === SHEET_METAL ? true : false,
                 }, () => this.setState({ isLoader: false }))
               }, 200);
             });
@@ -575,6 +608,14 @@ class AddRMImport extends Component {
     this.setState({ isOpenUOM: false }, () => {
       this.props.getUOMSelectList(() => { })
     })
+  }
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
+    }
   }
 
   /**
@@ -874,16 +915,20 @@ class AddRMImport extends Component {
         SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         Attachements: updatedFiles,
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
         IsConvertIntoCopy: isDateChange ? true : false,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
       }
       if (isEditFlag) {
         if (isSourceChange) {
@@ -907,24 +952,27 @@ class AddRMImport extends Component {
             }
           })
         } else {
-          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark) {
+          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
             this.cancel()
             return false
           }
-          const toastrConfirmOptions = {
-            onOk: () => {
-              this.props.reset()
-              this.props.updateRMImportAPI(requestData, (res) => {
-                if (res.data.Result) {
-                  toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                  this.clearForm();
-                }
-              })
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
+          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+            const toastrConfirmOptions = {
+              onOk: () => {
+                this.props.reset()
+                this.props.updateRMImportAPI(requestData, (res) => {
+                  if (res.data.Result) {
+                    toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                    this.clearForm();
+                  }
+                })
+              },
+              onCancel: () => { },
+              component: () => <ConfirmComponent />,
+            }
+            return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
           }
-          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+
         }
       }
 
@@ -944,7 +992,7 @@ class AddRMImport extends Component {
         SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -953,20 +1001,45 @@ class AddRMImport extends Component {
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+        // RawMaterialCode: values.Code
+
       }
-      this.props.reset()
-      this.props.createRMImport(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-          this.clearForm();
-        }
-      });
+      // let obj
+      // if(CheckApprovalApplicableMaster('1') === true){
+      //   obj = {...formData,IsSendForApproval:true}
+      // }
+      // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
+      if (CheckApprovalApplicableMaster('1') === true) {
+        this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+      } else {
+        this.props.reset()
+        this.props.createRMImport(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
+            this.clearForm();
+          }
+        });
+      }
     }
+  }
+
+
+  checkUniqCode = (e) => {
+    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+        toastr.warning(res.data.Message);
+        $('input[name="Code"]').focus()
+      }
+    })
   }
 
   handleKeyDown = function (e) {
@@ -1032,7 +1105,7 @@ class AddRMImport extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1041,6 +1114,22 @@ class AddRMImport extends Component {
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Raw Material:"}</h5>
                             </div>
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleTechnologyChange}
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
                           </Col>
                           <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -1151,20 +1240,21 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label="Technology"
+                              label={`Code`}
+                              name={'Code'}
                               type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              placeholder={'Enter'}
+                              validate={[required]}
+                              component={renderText}
                               required={true}
-                              handleChangeDescription={this.handleTechnologyChange}
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
+                              className=" "
+                              customClassName=" withBorder"
+                              onBlur={this.checkUniqCode}
+                              // disabled={isEditFlag ? true : false}
+                              disabled={false}
                             />
                           </Col>
+
                           {(this.state.IsVendor === false && (
                             <Col md="4">
                               <Field
@@ -1369,7 +1459,9 @@ class AddRMImport extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            />
+                            >
+                              {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            </Field>
                           </Col>
                           <Col md="4">
                             <div className="form-group">
@@ -1396,6 +1488,20 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
+                              label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              name={"cutOffPrice"}
+                              type="text"
+                              placeholder={""}
+                              validate={[]}
+                              component={renderText}
+                              required={false}
+                              disabled={false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
                               label={`Basic Rate(${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"BasicRate"}
                               type="text"
@@ -1409,27 +1515,31 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
-                              name={"ScrapRate"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
-                              required={true}
-                              className=""
-                              maxLength="15"
-                              customClassName=" withBorder"
-                            />
-                          </Col>
+                          {
+                            !this.state.showExtraCost &&
+                            <Col md="4">
+                              <Field
+                                label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                name={"ScrapRate"}
+                                type="text"
+                                placeholder={"Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName=" withBorder"
+                                maxLength="15"
+                              />
+                            </Col>
+                          }
+
                           <Col md="4">
                             <Field
                               label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1443,7 +1553,7 @@ class AddRMImport extends Component {
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1451,6 +1561,39 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+                          {
+                            this.state.showExtraCost &&
+                            <>
+                              <Col md="4">
+                                <Field
+                                  label={`Circle Scrap Cost  (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label}) `}
+                                  name={"CircleScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={false}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              <Col md="4">
+                                <Field
+                                  label={`Jali Scrap Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                  name={"JaliScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[required, maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                            </>
+                          }
                           <Col md="4">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
@@ -1511,7 +1654,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (Upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
@@ -1536,10 +1679,10 @@ class AddRMImport extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
@@ -1601,26 +1744,27 @@ class AddRMImport extends Component {
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
                           >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"check-icon"}>
-                              <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                              />
-                            </div>{" "}
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                          {
+                            (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                              // onClick={this.sendForMasterApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          }
                         </div>
                       </Row>
                     </form>
@@ -1698,6 +1842,21 @@ class AddRMImport extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                masterId={1}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={true}
+              />
+            )
+          }
         </div>
       </>
     );
@@ -1775,7 +1934,8 @@ export default connect(mapStateToProps, {
   getTechnologySelectList,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  getVendorWithVendorCodeSelectList
+  getVendorWithVendorCodeSelectList,
+  checkAndGetRawMaterialCode
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

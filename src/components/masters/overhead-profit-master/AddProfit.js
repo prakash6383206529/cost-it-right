@@ -2,13 +2,11 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
+import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
-import {
-  createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
-} from '../actions/OverheadProfit';
+import { createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit, } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -16,9 +14,11 @@ import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
@@ -52,7 +52,8 @@ class AddProfit extends Component {
       isHideBOP: false,
       effectiveDate: '',
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      plant: []
     }
   }
 
@@ -65,6 +66,7 @@ class AddProfit extends Component {
     this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
     this.props.getVendorWithVendorCodeSelectList()
     this.props.getClientSelectList(() => { })
+    this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetails();
   }
 
@@ -123,12 +125,13 @@ class AddProfit extends Component {
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
-            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
+            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
 
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
+            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
 
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
@@ -147,6 +150,7 @@ class AddProfit extends Component {
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
+              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -171,7 +175,7 @@ class AddProfit extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, modelTypes, costingHead, clientSelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, modelTypes, costingHead, clientSelectList, plantSelectList } = this.props;
     const temp = [];
 
     if (label === 'ModelType') {
@@ -209,6 +213,14 @@ class AddProfit extends Component {
       });
       return temp;
     }
+    if (label === 'plant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -222,6 +234,15 @@ class AddProfit extends Component {
       this.setState({ vendorName: [] })
     }
   };
+
+  handlePlant = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ plant: newValue });
+    } else {
+      this.setState({ plant: [] })
+    }
+    this.setState({ DropdownChanged: false })
+  }
 
   /**
   * @method handleClient
@@ -519,7 +540,7 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
@@ -574,8 +595,9 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
-        IsForcefulUpdated: true
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        IsForcefulUpdated: true,
+        PlantId: plant.value
       }
       if (isEditFlag) {
         const toastrConfirmOptions = {
@@ -589,6 +611,7 @@ class AddProfit extends Component {
             })
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -614,7 +637,8 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        PlantId: plant.value
       }
 
       this.props.reset()
@@ -696,7 +720,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -709,7 +733,7 @@ class AddProfit extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Client Based</span>
-                          </Label>
+                          </Label> */}
                         </Col>
                       </Row>
                       <Row>
@@ -737,29 +761,52 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="4">
-                            <Field
-                              name="vendorName"
-                              type="text"
-                              label={"Vendor Name"}
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("VendorNameList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.vendorName == null ||
-                                  this.state.vendorName.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={
-                                this.handleVendorName
-                              }
-                              valueDescription={this.state.vendorName}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+                          <>
+                            <Col md="4">
+                              <Field
+                                name="vendorName"
+                                type="text"
+                                label={"Vendor Name"}
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("VendorNameList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.vendorName == null ||
+                                    this.state.vendorName.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={
+                                  this.handleVendorName
+                                }
+                                valueDescription={this.state.vendorName}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="4" >
+                              <Field
+                                name="Plant"
+                                type="text"
+                                label={"Plant"}
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("plant")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.plant == null ||
+                                    this.state.plant.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handlePlant}
+                                valueDescription={this.state.plant}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          </>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="4">
@@ -953,10 +1000,10 @@ class AddProfit extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
@@ -1018,24 +1065,14 @@ class AddProfit extends Component {
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
+                          <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                         >
-                          <div className={"check-icon"}>
-                            <img
-                              src={require("../../../assests/images/check.png")}
-                              alt="check-icon.jpg"
-                            />{" "}
-                          </div>
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>
@@ -1061,7 +1098,7 @@ function mapStateToProps(state) {
   const filedObj = selector(state, 'ProfitPercentage', 'ProfitRMPercentage', 'ProfitMachiningCCPercentage',
     'ProfitBOPPercentage')
 
-  const { modelTypes, costingHead, } = comman;
+  const { modelTypes, costingHead, plantSelectList } = comman;
   const { overheadProfitData, } = overheadProfit;
   const { clientSelectList } = client;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1077,10 +1114,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return {
-    modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList,
-    filedObj, initialValues,
-  }
+  return { modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList, plantSelectList, filedObj, initialValues, }
 
 }
 
@@ -1100,6 +1134,7 @@ export default connect(mapStateToProps, {
   getProfitData,
   fileUploadProfit,
   fileDeleteProfit,
+  getPlantSelectListByType
 })(reduxForm({
   form: 'AddProfit',
   enableReinitialize: true,

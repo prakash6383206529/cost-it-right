@@ -17,7 +17,7 @@ function TransportationCost(props) {
     TransportationCost: data && data.TransportationCost !== undefined ? data.TransportationCost : 0,
   }
 
-  const { register, control, errors, setValue, getValues, handleSubmit } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -254,8 +254,7 @@ function TransportationCost(props) {
                   rules={{
                     //required: true,
                     pattern: {
-                      value: /^[0-9]*$/i,
-                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                      value: /^\d*\.?\d*$/,
                       message: 'Invalid Number.'
                     },
                   }}

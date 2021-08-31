@@ -113,12 +113,12 @@ export const postiveNumber = value =>
         ? 'This field is invalid.' : undefined;
 
 export const positiveAndDecimalNumber = value =>
-    value && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)
+    value && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(value)
         ? 'This field is invalid.' : undefined;
 
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
-    let pattern = /[0-9a-zA-Z](?= @.#%\_!\^&\*\(\)-+\=\?<>,|)/;
+    let pattern = /[0-9a-zA-Z](?=@.#%\_!\^&\*\(\)-+\=\?<>,|)/;
     return value && !pattern.test(value)
         ? 'Invalid field' : undefined;
 }
@@ -316,7 +316,7 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return moment((excelDate - (25567 + 2)) * 86400 * 1000).format('DD-MM-YYYY');
+    return moment((excelDate - (25567 + 2)) * 86400 * 1000).local().format('YYYY-MM-DD HH:mm:ss');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 

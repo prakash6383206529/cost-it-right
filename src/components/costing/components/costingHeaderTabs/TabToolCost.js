@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -34,6 +34,7 @@ function TabToolCost(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -56,14 +57,19 @@ function TabToolCost(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
-    setTimeout(() => {
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
+      //setTimeout(() => {
       let topHeaderData = {
         ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
         IsApplicableProcessWise: IsApplicableProcessWise,
       }
-      props.setHeaderCost(topHeaderData)
-    }, 1500)
+      if (props.activeTab === '5') {
+        props.setHeaderCost(topHeaderData)
+      }
+      //}, 1500)
+    }
   }, [ToolTabData]);
 
   /**
@@ -186,7 +192,8 @@ function TabToolCost(props) {
       "EffectiveDate": CostingEffectiveDate,
       "CostingNumber": costData.CostingNumber,
       "ToolCost": ToolTabData.TotalToolCost,
-      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
+      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
+      "TotalCost": netPOPrice,
     }
 
     dispatch(saveToolTab(data, res => {

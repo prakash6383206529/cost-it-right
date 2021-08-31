@@ -12,6 +12,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { ViewCostingContext } from '../../CostingDetails'
 
 
 
@@ -44,6 +45,7 @@ function Coil(props) {
     }
 
     const costData = useContext(costingInfoContext)
+    const CostingViewMode = useContext(ViewCostingContext);
 
     const defaultValues = {
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
@@ -56,7 +58,7 @@ function Coil(props) {
     }
 
     const {
-        register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+        register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues,
@@ -523,20 +525,21 @@ function Coil(props) {
                             </Row>
                         </div>
 
-                        <div className="col-sm-12 text-right px-0 mt-4">
-                            <button
-                                type={'button'}
-                                className="reset mr15 cancel-btn"
-                                onClick={cancel} >
-                                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                            </button>
-                            <button
-                                type={'submit'}
-                                className="submit-button save-btn">
-                                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                {'Save'}
-                            </button>
-                        </div>
+                        {!CostingViewMode &&
+                            <div className="col-sm-12 text-right px-0 mt-4">
+                                <button
+                                    type={'button'}
+                                    className="reset mr15 cancel-btn"
+                                    onClick={cancel} >
+                                    <div className={'cancel-icon'}></div> {'Cancel'}
+                                </button>
+                                <button
+                                    type={'submit'}
+                                    className="submit-button save-btn">
+                                    <div className={'save-icon'}></div>
+                                    {'Save'}
+                                </button>
+                            </div>}
 
                     </form>
                 </div>

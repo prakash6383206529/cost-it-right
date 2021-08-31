@@ -14,7 +14,6 @@ import { checkForDecimalAndNull } from '../../../helper'
 import { getSimulationHistory } from '../actions/History'
 
 
-
 function SimulationHistory(props) {
 
     const simulationHistory = useSelector(state => state.history.simulationHistory)
@@ -32,16 +31,8 @@ function SimulationHistory(props) {
     }
 
     const linkableFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <Fragment>
-                <div
-                    onClick={() => { }} className={'link'}>{cell}
-                </div>
-            </Fragment>
-        )
+        return <div onClick={() => { }} className={'link'}>{cell}</div>
     }
-
-
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
@@ -59,10 +50,10 @@ function SimulationHistory(props) {
         return <>Vendor Name</>
     }
     const renderImpactCosting = () => {
-        return <>Impact Costing </>
+        return <>Impacted Costing </>
     }
     const renderImpactParts = () => {
-        return <>Impact Parts </>
+        return <>Impacted Parts </>
     }
     const renderSimulatedBy = () => {
         return <>Simulated By </>

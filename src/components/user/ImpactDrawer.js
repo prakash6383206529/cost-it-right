@@ -41,7 +41,7 @@ class ImpactDrawer extends Component {
         return (
             <div>
                 {/* {isLoader && <Loader />} */}
-                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
@@ -116,7 +116,7 @@ class ImpactDrawer extends Component {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn">
-                                                <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> CANCEL</button>
+                                                <div className={"cancel-icon"}></div> CANCEL</button>
                                             {/* <input
                                 disabled={isSubmitted ? true : false}
                                 type="submit"
@@ -128,8 +128,8 @@ class ImpactDrawer extends Component {
                                                 type="submit"
                                                 disabled={false}
                                                 className="btn-primary save-btn"
-                                            >	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
-                                                </div>
+                                            >
+                                                <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>
                                         </div>

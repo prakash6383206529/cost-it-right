@@ -6,7 +6,7 @@ import AddFreight from './AddFreight';
 import AddPackaging from './AddPackaging';
 import FreightListing from './FreightListing';
 import PackagListing from './PackagListing';
-import { FREIGHT } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
@@ -26,29 +26,41 @@ class FreightMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false
         }
     }
 
     componentDidMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === FREIGHT)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                    })
-                }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === FREIGHT)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                })
             }
-        })
+        }
     }
 
     /**
@@ -126,55 +138,58 @@ class FreightMaster extends Component {
 
         return (
             <>
-            <div className="container-fluid">
-                {/* {this.props.loading && <Loader/>} */}
-                <Row>
-                    <Col sm="4">
-                        <h1>{`Freight & Packaging Master`}</h1>
-                    </Col>
-                </Row>
+                <div className="container-fluid">
+                    {/* {this.props.loading && <Loader/>} */}
+                    <Row>
+                        <Col sm="4">
+                            {/* <h1>{`Freight & Packaging Master`}</h1> */}
+                            <h1>{`Freight Master`}</h1>
+                        </Col>
+                    </Row>
 
-                <Row>
-                    <Col>
-                        <Nav tabs className="subtabs mt-0">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Manage Freight
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
+                    <Row>
+                        <Col>
+                            <Nav tabs className="subtabs mt-0">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Manage Freight
+                                    </NavLink>
+                                </NavItem>
+                                {/* <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                     Manage Packaging
                                 </NavLink>
-                            </NavItem>
-                        </Nav>
+                            </NavItem> */}
+                            </Nav>
 
-                        <TabContent activeTab={this.state.activeTab}>
+                            <TabContent activeTab={this.state.activeTab}>
 
-                            {this.state.activeTab == 1 &&
-                                <TabPane tabId="1">
-                                    <FreightListing
-                                        displayForm={this.displayFreightForm}
-                                        getDetails={this.getDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                    />
-                                </TabPane>}
+                                {this.state.activeTab == 1 &&
+                                    <TabPane tabId="1">
+                                        <FreightListing
+                                            displayForm={this.displayFreightForm}
+                                            getDetails={this.getDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
 
-                            {this.state.activeTab == 2 &&
-                                <TabPane tabId="2">
-                                    <PackagListing
-                                        displayForm={this.displayPackagForm}
-                                        getDetails={this.getPackaingDetails}
-                                    />
-                                </TabPane>}
-                        </TabContent>
+                                        />
+                                    </TabPane>}
 
-                    </Col>
-                </Row>
+                                {this.state.activeTab == 2 &&
+                                    <TabPane tabId="2">
+                                        <PackagListing
+                                            displayForm={this.displayPackagForm}
+                                            getDetails={this.getPackaingDetails}
+                                        />
+                                    </TabPane>}
+                            </TabContent>
+
+                        </Col>
+                    </Row>
                 </div>
-                </ >
+            </ >
         );
     }
 }
@@ -186,8 +201,8 @@ class FreightMaster extends Component {
 */
 function mapStateToProps({ boughtOutparts, auth }) {
     const { BOPListing, loading } = boughtOutparts;
-    const { leftMenuData } = auth;
-    return { BOPListing, leftMenuData, loading }
+    const { leftMenuData, topAndLeftMenuData } = auth;
+    return { BOPListing, leftMenuData, loading, topAndLeftMenuData }
 }
 
 

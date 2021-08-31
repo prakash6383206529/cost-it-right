@@ -13,13 +13,28 @@ import { searchableSelect } from "../../layout/FormInputs";
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { toastr } from 'react-redux-toastr'
 import Switch from "react-switch";
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PowerMaster } from '../../../config/constants';
+import ReactExport from 'react-export-excel';
+import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from '../../../config/masterData';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { li } from 'react-dom-factories';
+import { getConfigurationKey } from '../../../helper';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
+
+
 
 class PowerListing extends Component {
   constructor(props) {
@@ -150,15 +165,19 @@ class PowerListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { DeleteAccessibility, EditAccessibility } = this.props;
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
+
 
   /**
   * @method costingHeadFormatter
@@ -189,24 +208,26 @@ class PowerListing extends Component {
     return <>Sr. <br />No. </>
   }
 
-  costFormatter = (cell, row, enumObject, rowIndex) => {
+  costFormatter = (props) => {
     const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    const cellValue = props?.value;
+    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
-  costFormatterForVBC = (cell, row, enumObject, rowIndex) => {
+  costFormatterForVBC = (props) => {
     const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    const cellValue = props?.value;
+    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
-
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
   }
@@ -350,8 +371,61 @@ class PowerListing extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = (values) => { }
 
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    temp = TempData && TempData.map((item) => {
+      if (item.Plants === '-') {
+        item.Plants = ' '
+      } if (item.Vendor === '-') {
+        item.Vendor = ' '
+      }
+      return item
+    })
+
+    return (<ExcelSheet data={temp} name={`${PowerMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    let listing = []
+    let downloadTemp = ''
+    if (this.state.IsVendor) {
+      listing = this.props.vendorPowerDataList
+      downloadTemp = POWERLISTING_VENDOR_DOWNLOAD_EXCEL
+    } else {
+      listing = this.props.powerDataList
+      downloadTemp = POWERLISTING_DOWNLOAD_EXCEl
+    }
+    return this.returnExcelColumn(downloadTemp, listing)
+  };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
   }
 
   /**
@@ -359,12 +433,13 @@ class PowerListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, initialConfiguration } = this.props;
+    const { handleSubmit, AddAccessibility, initialConfiguration, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
     const options = {
       clearSearch: true,
       noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -372,9 +447,27 @@ class PowerListing extends Component {
 
     };
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      // effectiveDateRenderer: this.effectiveDateFormatter,
+      // costingHeadRenderer: this.costingHeadFormatter,
+      // customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      // freightCostFormatter: this.freightCostFormatter,
+      // shearingCostFormatter: this.shearingCostFormatter,
+      costFormatter: this.costFormatter
+    };
+
     return (
 
-      <div>
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -468,29 +561,32 @@ class PowerListing extends Component {
                           className="fullinput-icon"
                         />
                       </div>
-                      <div className="flex-fill">
-                        <Field
-                          name="VendorPlant"
-                          type="text"
-                          label={""}
-                          component={searchableSelect}
-                          placeholder={"Vendor Plant"}
-                          isClearable={false}
-                          options={this.renderListing("VendorPlant")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.vendorPlant == null ||
-                              this.state.vendorPlant.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={this.handleVendorPlant}
-                          valueDescription={this.state.vendorPlant}
-                          disabled={isEditFlag ? true : false}
-                          className="fullinput-icon"
-                        />
-                      </div>
+                      {
+                        initialConfiguration && initialConfiguration.IsVendorPlantConfigurable &&
+                        <div className="flex-fill">
+                          <Field
+                            name="VendorPlant"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"Vendor Plant"}
+                            isClearable={false}
+                            options={this.renderListing("VendorPlant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.vendorPlant == null ||
+                                this.state.vendorPlant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleVendorPlant}
+                            valueDescription={this.state.vendorPlant}
+                            disabled={isEditFlag ? true : false}
+                            className="fullinput-icon"
+                          />
+                        </div>
+                      }
                     </>
                   )}
                   <div className="flex-fill">
@@ -519,19 +615,44 @@ class PowerListing extends Component {
                   <>
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                        <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <div className="filter mr-0"></div>
+                      </button>
                     )}
                     {AddAccessibility && (
                       <button
                         type="button"
-                        className={"user-btn"}
+                        className={"user-btn mr5"}
                         onClick={this.formToggle}
+                        title="Add"
                       >
-                        <div className={"plus"}></div>ADD
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
                       </button>
                     )}
+                    {
+                      DownloadAccessibility &&
+                      <>
+
+                        <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
+
+                          {this.onBtExport()}
+                        </ExcelFile>
+
+                      </>
+
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                    }
+                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                      <div className="refresh mr-0"></div>
+                    </button>
+
                   </>
                 </div>
               </div>
@@ -541,46 +662,72 @@ class PowerListing extends Component {
         <Row>
           <Col>
 
-            {/* ZBC POWER LISTING */}
-            {!this.state.IsVendor &&
-              <BootstrapTable
-                data={this.props.powerDataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                // exportCSV
-                //ignoreSinglePage
-                ref={'table'}
-                pagination>
-                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-              </BootstrapTable>}
 
-            {/* VENDOR POWER LISTING */}
-            {this.state.IsVendor &&
-              <BootstrapTable
-                data={this.props.vendorPowerDataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                // exportCSV
-                //ignoreSinglePage
-                ref={'table'}
-                pagination>
-                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>}
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costFormatterForVBC} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-              </BootstrapTable>}
 
+            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              {/* ZBC Listing */}
+              <div className="ag-grid-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              </div>
+              <div
+                className="ag-theme-material"
+                style={{ height: '100%', width: '100%' }}
+              >
+                {!this.state.IsVendor &&
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    domLayout='autoHeight'
+                    // columnDefs={c}
+                    rowData={this.props.powerDataList}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={this.onGridReady}
+                    gridOptions={gridOptions}
+                    loadingOverlayComponent={'customLoadingOverlay'}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: CONSTANT.EMPTY_DATA,
+                    }}
+                    frameworkComponents={frameworkComponents}
+                  >
+                    <AgGridColumn field="StateName"></AgGridColumn>
+                    <AgGridColumn field="PlantName"></AgGridColumn>
+                    <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  </AgGridReact>}
+
+                {/* VBC Listing */}
+                {this.state.IsVendor &&
+                  <AgGridReact
+                    defaultColDef={defaultColDef}
+                    domLayout='autoHeight'
+                    // columnDefs={c}
+                    rowData={this.props.vendorPowerDataList}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={this.onGridReady}
+                    gridOptions={gridOptions}
+                    loadingOverlayComponent={'customLoadingOverlay'}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: CONSTANT.EMPTY_DATA,
+                    }}
+                    frameworkComponents={frameworkComponents}
+                  >
+                    <AgGridColumn field="VendorName"></AgGridColumn>
+                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName"></AgGridColumn>}
+                    <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
+                    <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  </AgGridReact>}
+                <div className="paging-container d-inline-block float-right">
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </Col>
         </Row>
       </div >

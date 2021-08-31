@@ -1,214 +1,108 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getMenuByUser, getLeftMenu } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
+import { Col, Container, Row } from "reactstrap";
+import ApprovalListing from '../costing/components/approval/ApprovalListing';
+import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 import { reactLocalStorage } from "reactjs-localstorage";
+import { Field, reduxForm } from "redux-form";
+import dashboardImg from '../../assests/images/dashboard-img.png'
 
-class Dashboard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+function Dashboard(props) {
+  const { handleSubmit, menusData } = props
 
-  UNSAFE_componentWillMount() {
-    this.props.getMenuByUser(loggedInUserId(), () => {
-      const { menusData } = this.props;
+  const [acc1, setAcc1] = useState(true)
+  const [acc2, setAcc2] = useState(false)
+  const [hideDash, setShowHideDash] = useState(false)
+
+  useEffect(() => {
+    props.getMenuByUser(loggedInUserId(), () => {
       if (menusData !== undefined) {
         reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
-        this.props.getLeftMenu(
+        props.getLeftMenu(
           menusData[0].ModuleId,
           loggedInUserId(),
-          (res) => {}
+          (res) => { }
         );
       }
     });
+  })
+
+  const closeDashboard = () => {
+    setShowHideDash(true)
   }
 
-  /**
-   * @method render
-   * @description Renders the component
-   */
-  render() {
-    return (
-      <div className="dashboard-top position-relative">
-        <div className="dashboard-text">
-          <h2>Dashboard Will Come Here</h2>
-        </div>
-        <img src={require('../../assests/images/dashboard-img.png')} alt='dashboard-background' />
-        {/* {(this.props.loading || this.state.showLoader) && <Loader />} */}
-        {/* <Row>
-                    <Col> */}
-        {/* <div>
-          <div className="row">
-            <div className="col-md-12">
-              <h2 className="text-success bdr-bottom">Dashboard</h2>
-            </div>
+
+  return (
+    <>
+      {
+        !hideDash &&
+        <>
+          <div className="dashboard-page w-100">
+            <Row>
+              <Col md="12">
+                <h1>Dashboard</h1>
+              </Col>
+            </Row>
+            <form onSubmit={handleSubmit}>
+              <Row className="m-0">
+                <div className="graph-box w-100">
+                  <Row>
+                    <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                        {acc1 ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} />}</Col>
+                  </Row>
+                </div>
+              </Row>
+
+              <Row className="m-0">
+                <div className="graph-box w-100">
+                  <Row>
+                    <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                        {acc2 ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} />}</Col>
+                  </Row>
+                </div>
+              </Row>
+            </form>
           </div>
-          <div className="row process">
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-blue order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(15)}</span>
-                      <span className="f-18 d-b m-t-15 pl-2">
-                        <i className="fa fa-inr"></i> {checkForNull(14)}
-                      </span>
-                    </div>
-                    <span className="f-18 d-b">Submitted</span>
-                  </p>
+          <Row className="m-0">
+            <div className="graph-box w-100">
+              <div className="dashboard-top position-relative">
+                <div className="dashboard-text">
+                  <h2>Other Widgets Will Come Here</h2>
                 </div>
+                <img src={dashboardImg} alt='dashboard-background' />
               </div>
             </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-green order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(2)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i>
-                        {checkForNull(33)}
-                      </span>
-                    </div>
-
-                    <span className="f-18 d-b">Finance Approved</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-pink order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(43)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i>
-                        {checkForNull(32)}
-                      </span>
-                    </div>
-                    <span className="f-18 d-b">Rejected</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-yellow order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(55)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i>
-                        {checkForNull(27)}
-                      </span>
-                    </div>
-
-                    <span className="f-18 d-b">
-                      Pending With
-                      <br />
-                      First Level
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-yellow order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(32)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i>
-                        {checkForNull(12)}
-                      </span>
-                    </div>
-
-                    <span className="f-18 d-b">
-                      Pending
-                      <br />
-                      With Finance
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-lite-green order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(32)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i>
-                        {checkForNull(23)}
-                      </span>
-                    </div>
-
-                    <span className="f-18 d-b">
-                      Resubmission From
-                      <br />
-                      First Level
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-blue order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(11)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i> {checkForNull(12)}
-                      </span>
-                    </div>
-                    <span className="f-18 d-b">
-                      Seek Info From
-                      <br /> First Level
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4 col-xl-4">
-              <div className="card bg-c-blue order-card">
-                <div className="card-block p-3">
-                  <p className="f-left w-100">
-                    <div className="d-flex justify-content-between">
-                      <span className="f-32 d-b">{checkForNull(22)}</span>
-                      <span className="f-18 d-b m-t-15">
-                        <i className="fa fa-inr"></i> {checkForNull(32)}
-                      </span>
-                    </div>
-                    <span className="f-18 d-b">
-                      Seek Info
-                      <br />
-                      From Finance
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-        {/* </Col>
-                </Row> */}
-      </div>
-    );
-  }
+          </Row>
+        </>
+      }
+    </>
+  )
 }
-
 /**
  * @name mapStateToProps
  * @desc map state containing organisation details from the api to props
@@ -222,4 +116,7 @@ function mapStateToProps({ auth }) {
 export default connect(mapStateToProps, {
   getMenuByUser,
   getLeftMenu,
-})(Dashboard);
+})(reduxForm({
+  form: 'Dashboard',
+  enableReinitialize: true,
+})(Dashboard));

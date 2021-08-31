@@ -1,13 +1,9 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import React, { useEffect, Fragment } from 'react'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-    SearchableSelectHookForm,
-    TextFieldHookForm,
-} from '../../../layout/HookFormInputs'
-import { get } from 'lodash'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
 
 function Rubber(props) {
     const trimValue = getConfigurationKey()
@@ -60,15 +56,7 @@ function Rubber(props) {
             ? WeightCalculatorRequest.InputDiameter
             : ''
     }
-    const {
-        register,
-        handleSubmit,
-        control,
-        setValue,
-        getValues,
-        reset,
-        errors,
-    } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
@@ -421,12 +409,7 @@ function Rubber(props) {
                                 value="CANCEL"
                                 className="reset mr15 cancel-btn"
                             >
-                                <div className={'cross-icon'}>
-                                    <img
-                                        src={require('../../../../assests/images/times.png')}
-                                        alt="cancel-icon.jpg"
-                                    />
-                                </div>
+                                <div className={'cancel-icon'}></div>
                                       CANCEL
                              </button>
                             <button
@@ -434,9 +417,7 @@ function Rubber(props) {
                                 // disabled={isSubmitted ? true : false}
                                 className="btn-primary save-btn"
                             >
-                                <div className={'check-icon'}>
-                                    <i class="fa fa-check" aria-hidden="true"></i>
-                                </div>
+                                <div className={'save-icon'}></div>
                                 {'SAVE'}
                             </button>
                         </div>

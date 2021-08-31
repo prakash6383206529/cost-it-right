@@ -6,11 +6,13 @@ import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
 import AssemblyPartListing from './AssemblyPartListing';
 import IndivisualPartListing from './IndivisualPartListing';
-import { PART } from '../../../config/constants';
+import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import IndivisualProductListing from './IndivisualProductListing';
+import AddIndivisualProduct from './AddIndivisualProduct';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -20,6 +22,7 @@ class PartMaster extends Component {
             activeTab: '1',
             isAddBOMForm: false,
             isPartForm: false,
+            isProductForm: false,
             getDetails: {},
 
             ViewAccessibility: false,
@@ -27,29 +30,42 @@ class PartMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
+            DownloadAccessibility: false,
+
         }
     }
 
     componentDidMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === PART)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                    })
-                }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === PART)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                })
             }
-        })
+        }
     }
 
     /**
@@ -76,7 +92,7 @@ class PartMaster extends Component {
 
     //HIDE BOM & PART INDIVIDUAL FORM
     hideForm = () => {
-        this.setState({ isAddBOMForm: false, isPartForm: false, getDetails: {}, })
+        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, })
     }
 
     //DISPLAY INDIVIDUAL PART FORM
@@ -89,12 +105,22 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isPartForm: true, isAddBOMForm: false, })
     }
 
+    //DISPLAY INDIVIDUAL PART FORM
+    displayIndividualProductForm = () => {
+        this.setState({ isProductForm: true, getDetails: {} })
+    }
+
+    //GET DETAILS OF INDIVIDUAL PART
+    getIndividualProductDetails = (data) => {
+        this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
-        const { isAddBOMForm, isPartForm, } = this.state;
+        const { isAddBOMForm, isPartForm, isProductForm } = this.state;
 
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
@@ -111,52 +137,78 @@ class PartMaster extends Component {
             />
         }
 
+        if (isProductForm === true) {
+            return <AddIndivisualProduct
+                hideForm={this.hideForm}
+                data={this.state.getDetails}
+            />
+        }
+
         return (
             <>
-            <div className="container-fluid">
-                <div className="user-page p-0">
-                    {/* {this.props.loading && <Loader/>} */}
-                    <div>
-                        <h1>Part Master</h1>
-                        <Nav tabs className="subtabs mt-0">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Manage Assembly Part
+                <div className="container-fluid">
+                    <div className="user-page p-0">
+                        {/* {this.props.loading && <Loader/>} */}
+                        <div>
+                            <h1>Part Master</h1>
+                            <Nav tabs className="subtabs mt-0">
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                        Manage Assembly Part
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        Manage Component/Part
+                                    </NavLink>
+                                </NavItem>
+                                {/* <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                        Manage Products
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Manage Component/Part
-                                </NavLink>
-                            </NavItem>
-                        </Nav>
-                        <TabContent activeTab={this.state.activeTab}>
-                            {this.state.activeTab === '1' &&
-                                <TabPane tabId="1">
-                                    <AssemblyPartListing
-                                        displayForm={this.displayForm}
-                                        getDetails={this.getDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                    />
-                                </TabPane>}
-                            {this.state.activeTab === '2' &&
-                                <TabPane tabId="2">
-                                    <IndivisualPartListing
-                                        formToggle={this.displayIndividualForm}
-                                        getDetails={this.getIndividualPartDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                    />
-                                </TabPane>}
-                        </TabContent>
-                    </div>
-                </div >
-            </div>
+                                </NavItem> */}
+                            </Nav>
+                            <TabContent activeTab={this.state.activeTab}>
+                                {this.state.activeTab === '1' &&
+                                    <TabPane tabId="1">
+                                        <AssemblyPartListing
+                                            displayForm={this.displayForm}
+                                            getDetails={this.getDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                                {this.state.activeTab === '2' &&
+                                    <TabPane tabId="2">
+                                        <IndivisualPartListing
+                                            formToggle={this.displayIndividualForm}
+                                            getDetails={this.getIndividualPartDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                                {this.state.activeTab === '3' &&
+                                    <TabPane tabId="3">
+                                        <IndivisualProductListing
+                                            formToggle={this.displayIndividualProductForm}
+                                            getDetails={this.getIndividualProductDetails}
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
+                                    </TabPane>}
+                            </TabContent>
+                        </div>
+                    </div >
+                </div>
             </ >
         );
     }
@@ -168,8 +220,8 @@ class PartMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { leftMenuData } = auth;
-    return { leftMenuData }
+    const { leftMenuData, topAndLeftMenuData } = auth;
+    return { leftMenuData, topAndLeftMenuData }
 }
 
 

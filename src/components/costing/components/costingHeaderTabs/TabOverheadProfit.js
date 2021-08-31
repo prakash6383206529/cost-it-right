@@ -3,9 +3,8 @@ import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getOverheadProfitTabData, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
-import Switch from "react-switch";
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
 import { LEVEL0 } from '../../../../helper/AllConastant';
@@ -37,24 +36,29 @@ function TabOverheadProfit(props) {
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
+  //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
+  const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
+
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
-        checkForNull(TopHeaderValues.ProfitCost) +
-        checkForNull(TopHeaderValues.RejectionCost) +
-        checkForNull(TopHeaderValues.ICCCost) +
-        checkForNull(TopHeaderValues.PaymentTermCost))
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
+      let topHeaderData = {
+        NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
+          checkForNull(TopHeaderValues.ProfitCost) +
+          checkForNull(TopHeaderValues.RejectionCost) +
+          checkForNull(TopHeaderValues.ICCCost) +
+          checkForNull(TopHeaderValues.PaymentTermCost))
+      }
+      props.setHeaderCost(topHeaderData)
     }
-    props.setHeaderCost(topHeaderData)
   }, [OverheadProfitTabData]);
 
   const filteredUsers = React.useMemo(() => {
     setIsIncludeSurfaceTreatment(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
     dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
-  }, [OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
-  );
+  }, [OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]);
 
   /**
   * @method setPartDetails
@@ -560,7 +564,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={CostingViewMode || !IsCheckBoxDisabled ? true : false}
                     />
                     <span
                       className=" before-box"

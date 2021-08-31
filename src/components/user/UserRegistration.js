@@ -8,16 +8,17 @@ import {
   minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
   maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
-import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, } from "../layout/FormInputs";
+import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
+  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
+  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId
 } from "../../actions/auth/AuthActions";
-import { getAllCities } from "../../actions/Common";
+import { getAllCities, getCityByCountry, getAllCity } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { loggedInUserId } from "../../helper/auth";
-import { Table, Button } from 'reactstrap';
+import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
+import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
@@ -25,6 +26,7 @@ import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import ConfirmComponent from "../../helper/ConfirmComponent";
+import { EMPTY_GUID } from "../../config/constants";
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -51,7 +53,9 @@ class UserRegistration extends Component {
       isEditFlag: false,
       isShowForm: false,
       UserId: '',
-
+      acc1: false,
+      acc2: false,
+      acc3: false,
       IsShowAdditionalPermission: false,
       Modules: [],
       oldModules: [],
@@ -63,7 +67,19 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
-      isLoader: false
+      isLoader: false,
+      simulationHeads: [],
+      simualtionLevel: [],
+      HeadLevelGrid: [],
+      oldHeadLevelGrid: [],
+      simulationLevelEditIndex: '',
+      isSimulationEditIndex: false,
+      master: [],
+      masterLevel: [],
+      masterLevelGrid: [],
+      oldMasterLevelGrid: [],
+      masterLevelEditIndex: '',
+      isMasterEditIndex: false,
     };
   }
 
@@ -76,10 +92,15 @@ class UserRegistration extends Component {
     this.props.setEmptyUserDataAPI('', () => { })
     this.props.getAllRoleAPI(() => { })
     this.props.getAllDepartmentAPI(() => { })
-    this.props.getAllCities(() => { })
+    // this.props.getAllCities(() => { })
     this.props.getAllTechnologyAPI(() => { })
     this.props.getLevelByTechnology('', () => { })
     this.getUserDetail(data);
+    this.props.getAllCity(cityId => {
+      this.props.getCityByCountry(cityId, 0, () => { })
+    })
+    this.props.getSimulationTechnologySelectList(() => { })
+    this.props.getMastersSelectList(() => { })
   }
 
   /**
@@ -166,7 +187,7 @@ class UserRegistration extends Component {
   * @description Used show listing
   */
   searchableSelectType = (label) => {
-    const { roleList, departmentList, cityList, technologyList, levelSelectList } = this.props;
+    const { roleList, departmentList, cityList, technologyList, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterLevelSelectList, masterList } = this.props;
     const temp = [];
 
     if (label === 'role') {
@@ -202,11 +223,54 @@ class UserRegistration extends Component {
       return temp;
     }
 
+    if (label === 'heads') {
+      simulationTechnologyList && simulationTechnologyList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'masters') {
+      masterList && masterList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
     if (label === 'level') {
       levelSelectList && levelSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
+      return temp;
+    }
+
+    if (label === 'simualtionLevel') {
+      simulationLevelSelectList && simulationLevelSelectList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+      })
+      return temp;
+    }
+
+    if (label === 'masterLevel') {
+      masterLevelSelectList && masterLevelSelectList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+      })
+      return temp;
+    }
+
+
+    if (label === 'multiDepartment') {
+      departmentList && departmentList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.DepartmentName, Value: item.DepartmentId, CompanyId: item.CompanyId })
+        return null
+      })
       return temp;
     }
   }
@@ -274,19 +338,26 @@ class UserRegistration extends Component {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            const { roleList, departmentList, cityList } = this.props;
-
+            const { roleList, cityList, departmentList } = this.props;
+            let DepartmentObj = {}
+            const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
-            const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
+            if (Data.IsMultipleDepartmentAllowed) {
+              Data.Departments && Data.Departments.map(item => { depatArr.push({ Text: item.DepartmentName, Value: item.DepartmentId }) })
+            } else {
+              DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
+            }
+            // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsShowAdditionalPermission: Data.IsAdditionalAccess,
-              department: DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
+              department: (getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ Text: DepartmentObj.DepartmentName, Value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+              // TechnologyLevelGrid:
             })
 
             if (Data.IsAdditionalAccess) {
@@ -296,6 +367,8 @@ class UserRegistration extends Component {
           }, 500)
 
           this.getUsersTechnologyLevelData(data.UserId)
+          this.getUsersSimulationTechnologyLevelData(data.UserId)
+          this.getUsersMasterLevelData(data.UserId)
           if (data.passwordFlag) {
             $('input[type="password"]').get(0).focus()
           }
@@ -336,6 +409,43 @@ class UserRegistration extends Component {
         this.setState({
           TechnologyLevelGrid: TechnologyLevels,
           oldTechnologyLevelGrid: TechnologyLevels,
+        })
+      }
+    })
+  }
+
+  /**
+ * @method getUsersTechnologyLevelData
+ * @description used to get users technology level listing
+ */
+  getUsersSimulationTechnologyLevelData = (UserId) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let TechnologySimulationLevels = Data.TechnologyLevels;
+
+        this.setState({
+          HeadLevelGrid: TechnologySimulationLevels,
+          oldHeadLevelGrid: TechnologySimulationLevels,
+        })
+      }
+    })
+  }
+
+
+  /**
+ * @method getUsersMasterLevelData
+ * @description used to get users MASTER level listing
+ */
+  getUsersMasterLevelData = (UserId) => {
+    this.props.getUsersMasterLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let masterSimulationLevel = Data.MasterLevels;
+
+        this.setState({
+          masterLevelGrid: masterSimulationLevel,
+          oldMasterLevelGrid: masterSimulationLevel,
         })
       }
     })
@@ -432,6 +542,34 @@ class UserRegistration extends Component {
     }
   };
 
+
+  /**
+   * @method headHandler
+   * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
+  */
+
+  headHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ simulationHeads: newValue, simualtionLevel: [] });
+      this.props.getSimualationLevelByTechnology(newValue.value, res => { })
+    } else {
+      this.setState({ simulationHeads: [] });
+    }
+  };
+
+  /**
+   * @method masterHandler
+   * @description USED TO HANLE MASTER AND CALL MASTER LEVEL API
+  */
+  masterHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ master: newValue, masterLevel: [] });
+      this.props.getMasterLevelByMasterId(newValue.value, res => { })
+    } else {
+      this.setState({ simulationHeads: [] });
+    }
+  };
+
   /**
   * @method levelHandler
   * @description Used to handle 
@@ -441,6 +579,31 @@ class UserRegistration extends Component {
       this.setState({ level: newValue });
     } else {
       this.setState({ level: [] });
+    }
+  };
+
+
+
+  /**
+  * @method simualtionLevelHandler
+  * @description Used to handle  simulation level handler
+  */
+  simualtionLevelHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ simualtionLevel: newValue });
+    } else {
+      this.setState({ simualtionLevel: [] });
+    }
+  };
+  /**
+  * @method masterLevelHandler
+  * @description Used to handle  master level
+  */
+  masterLevelHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ masterLevel: newValue });
+    } else {
+      this.setState({ master: [] });
     }
   };
 
@@ -457,9 +620,10 @@ class UserRegistration extends Component {
       return false;
     }
     const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return el.TechnologyId === technology.value
+      return Number(el.TechnologyId) === Number(technology.value)
       // && el.LevelId === level.value
     })
+
     if (isExistTechnology !== -1) {
       // toastr.warning('Technology and Level already allowed.')
       toastr.warning('Technology cannot have multiple level.')
@@ -520,9 +684,91 @@ class UserRegistration extends Component {
     });
   };
 
+
+  /**
+   * @method setSimualtionHeadLevel
+   * @description Used to handle setTechnologyLevel
+   */
+  setSimualtionHeadLevel = () => {
+    const { simulationHeads, simualtionLevel, HeadLevelGrid } = this.state;
+    const tempArray = [];
+
+    if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
+      toastr.warning('Please select technology and level')
+      return false;
+    }
+
+    const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
+      return Number(el.TechnologyId) === Number(simulationHeads.value)
+      // && el.LevelId === level.value
+    })
+
+
+    if (isExistTechnology !== -1) {
+      // toastr.warning('Technology and Level already allowed.')
+      toastr.warning('Head cannot have multiple level.')
+      return false;
+    }
+
+    tempArray.push(...HeadLevelGrid, {
+      Technology: simulationHeads.label,
+      TechnologyId: simulationHeads.value,
+      Level: simualtionLevel.label,
+      LevelId: simualtionLevel.value,
+    })
+
+    this.setState({
+      HeadLevelGrid: tempArray,
+      simualtionLevel: [],
+      simulationHeads: [],
+    });
+  };
+
+  /**
+  * @method updateSimualtionHeadLevel
+  * @description Used to handle updateTechnologyLevel
+  */
+  updateSimualtionHeadLevel = () => {
+    const { simulationHeads, simualtionLevel, HeadLevelGrid, simulationLevelEditIndex } = this.state;
+    let tempArray = [];
+
+    let tempData = HeadLevelGrid[simulationLevelEditIndex];
+    tempData = {
+      Technology: simulationHeads.label,
+      TechnologyId: simulationHeads.value,
+      Level: simualtionLevel.label,
+      LevelId: simualtionLevel.value,
+    }
+
+    tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
+
+    this.setState({
+      HeadLevelGrid: tempArray,
+      simualtionLevel: [],
+      simulationHeads: [],
+      simulationLevelEditIndex: '',
+      isSimulationEditIndex: false,
+    });
+  };
+
+  /**
+  * @method resetSimualtionHeadLevel
+  * @description Used to handle simulation data
+  */
+  resetSimualtionHeadLevel = () => {
+    this.setState({
+      simualtionLevel: [],
+      simulationHeads: [],
+      simulationLevelEditIndex: '',
+      isSimulationEditIndex: false,
+    });
+  };
+
+
+
   /**
   * @method editItemDetails
-  * @description used to Reset form
+  * @description used to edit costing technology and level
   */
   editItemDetails = (index) => {
     const { TechnologyLevelGrid } = this.state;
@@ -552,6 +798,153 @@ class UserRegistration extends Component {
 
     this.setState({
       TechnologyLevelGrid: tempData
+    })
+  }
+
+  /**
+ * @method editItemDetails
+ * @description used to edit simulation head and level
+ */
+  editSimulationItemDetails = (index) => {
+    const { HeadLevelGrid } = this.state;
+    const tempData = HeadLevelGrid[index];
+    this.props.getSimualationLevelByTechnology(tempData.TechnologyId, res => { })
+    this.setState({
+      simulationLevelEditIndex: index,
+      isSimulationEditIndex: true,
+      simulationHeads: { label: tempData.Technology, value: tempData.TechnologyId },
+      simualtionLevel: { label: tempData.Level, value: tempData.LevelId },
+    })
+  }
+
+  /**
+  * @method deleteItem
+  * @description used to DELETE form
+  */
+  deleteSimulationItem = (index) => {
+    const { HeadLevelGrid } = this.state;
+    let tempData = HeadLevelGrid.filter((item, i) => {
+      if (i === index) {
+        return false;
+      }
+      return true;
+    });
+
+    this.setState({
+      HeadLevelGrid: tempData
+    })
+  }
+
+  /***********MASTER LEVEL STARTS HERE**************/
+  /**
+   * @method setMasterLevel
+   * @description Used to handle master level
+   */
+  setMasterLevel = () => {
+    const { master, masterLevel, masterLevelGrid } = this.state;
+    const tempArray = [];
+
+    if (master.length === 0 || masterLevel.length === 0) {
+      toastr.warning('Please select master and level')
+      return false;
+    }
+
+    const isExistTechnology = masterLevelGrid && masterLevelGrid.findIndex(el => {
+      return Number(el.MasterId) === Number(master.value)
+    })
+
+
+    if (isExistTechnology !== -1) {
+      // toastr.warning('Technology and Level already allowed.')
+      toastr.warning('A master cannot have multiple level.')
+      return false;
+    }
+
+    tempArray.push(...masterLevelGrid, {
+      Master: master.label,
+      MasterId: master.value,
+      Level: masterLevel.label,
+      LevelId: masterLevel.value,
+    })
+
+    this.setState({
+      masterLevelGrid: tempArray,
+      masterLevel: [],
+      master: [],
+    });
+  };
+
+  /**
+  * @method updateMasterLevel
+  * @description Used to handle update Master and it's level
+  */
+  updateMasterLevel = () => {
+    const { master, masterLevel, masterLevelGrid, masterLevelEditIndex } = this.state;
+    let tempArray = [];
+
+    let tempData = masterLevelGrid[masterLevelEditIndex];
+    tempData = {
+      Master: master.label,
+      MasterId: master.value,
+      Level: masterLevel.label,
+      LevelId: masterLevel.value,
+    }
+
+    tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
+
+    this.setState({
+      masterLevelGrid: tempArray,
+      masterLevel: [],
+      master: [],
+      masterLevelEditIndex: '',
+      isMasterEditIndex: false,
+    });
+  };
+
+  /**
+  * @method resetMasterLevel
+  * @description Used to reset master data
+  */
+  resetMasterLevel = () => {
+    this.setState({
+      masterLevel: [],
+      master: [],
+      masterLevelEditIndex: '',
+      isMasterEditIndex: false,
+    });
+  };
+
+  /**
+ * @method editMasterItem
+ * @description used to edit master detail form
+ */
+  editMasterItem = (index) => {
+    const { masterLevelGrid } = this.state;
+    const tempData = masterLevelGrid[index];
+    this.props.getMasterLevelByMasterId(tempData.MasterId, res => { })
+    this.setState({
+      masterLevelEditIndex: index,
+      isMasterEditIndex: true,
+      master: { label: tempData.Master, value: tempData.MasterId },
+      masterLevel: { label: tempData.Level, value: tempData.LevelId },
+    })
+  }
+
+  /**
+  * @method deleteItem
+  * @description used to delete master item 
+  */
+  deleteMasterItem = (index) => {
+    const { masterLevelGrid } = this.state;
+    let tempData = masterLevelGrid.filter((item, i) => {
+      if (i === index) {
+        return false;
+      }
+      return true;
+    });
+
+    this.setState({
+      masterLevelGrid: tempData
     })
   }
 
@@ -615,14 +1008,13 @@ class UserRegistration extends Component {
 
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
-      oldTechnologyLevelGrid, UserId } = this.state;
+      oldTechnologyLevelGrid, UserId, HeadLevelGrid, oldHeadLevelGrid, masterLevelGrid } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
     if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
       toastr.warning('Users technology level should not be empty.')
       return false;
     }
-    //this.setState({ isSubmitted: true })
 
     let tempTechnologyLevelArray = []
 
@@ -636,13 +1028,44 @@ class UserRegistration extends Component {
       return null;
     })
 
+    let tempHeadLevelArray = []
+
+    HeadLevelGrid && HeadLevelGrid.map((item, index) => {
+      tempHeadLevelArray.push({
+        SimulationTechnologyId: item.TechnologyId,
+        LevelId: item.LevelId,
+        Technology: item.Technology,
+        Level: item.Level,
+
+      })
+      return null
+    })
+
+    let tempMasterLevelArray = []
+    masterLevelGrid && masterLevelGrid.map((item, index) => {
+      tempMasterLevelArray.push({
+        MasterId: item.MasterId,
+        LevelId: item.LevelId,
+        Master: item.Master,
+        Level: item.Level,
+      })
+    })
+
+    let multiDeptArr = []
+
+    department && department.map((item) => {
+      multiDeptArr.push({ DepartmentId: item.Value, DepartmentName: item.Text })
+    })
+
+
     if (isEditFlag) {
       let updatedData = {
         UserId: UserId,
-        FullName: `${values.FirstName} ${values.LastName}`,
+        FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData.LevelId,
         LevelName: registerUserData.LevelName,
-        DepartmentName: department.label,
+        // DepartmentName: department.label,
+        DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -650,18 +1073,21 @@ class UserRegistration extends Component {
         //AdditionalPermission: registerUserData.AdditionalPermission,
         CityName: department.label,
         UserProfileId: registerUserData.UserProfileId,
-        UserName: values.UserName,
+        UserName: values.UserName ? values.UserName.trim() : '',
         Password: this.state.isShowPwdField ? values.Password : '',
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
-        DepartmentId: department.value,
+        // DepartmentId: department.value,
+        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,
+        Departments: getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : [],
+        IsMultipleDepartmentAllowed: getConfigurationKey().IsMultipleDepartmentAllowed ? true : false,
         loggedInUserId: loggedInUserId(),
-        CompanyId: department.CompanyId,
-        EmailAddress: values.EmailAddress,
+        CompanyId: department.CompanyId ? department.CompanyId : '',
+        EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
         Mobile: values.Mobile,
-        FirstName: values.FirstName,
-        MiddleName: values.MiddleName,
-        LastName: values.LastName,
+        FirstName: values.FirstName ? values.FirstName.trim() : '',
+        MiddleName: values.MiddleName ? values.MiddleName.trim() : '',
+        LastName: values.LastName ? values.LastName.trim() : '',
         RoleName: role.label,
         UserCode: registerUserData.UserCode,
         CreatedDate: registerUserData.CreatedDate,
@@ -677,6 +1103,8 @@ class UserRegistration extends Component {
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
+        SimulationTechnologyLevels: tempHeadLevelArray,
+        MasterLevels: tempMasterLevelArray
       }
 
       const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
@@ -723,18 +1151,20 @@ class UserRegistration extends Component {
     } else {
 
       let userData = {
-        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName : null,
+        UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName.trim() : null,
         Password: values.Password,
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
-        DepartmentId: department.value,
+        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,
+        Departments: getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : [],
+        IsMultipleDepartmentAllowed: getConfigurationKey().IsMultipleDepartmentAllowed ? true : false,
         loggedInUserId: loggedInUserId(),
-        CompanyId: department.CompanyId,
-        EmailAddress: values.EmailAddress,
+        CompanyId: department.CompanyId ? department.CompanyId : '',
+        EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
         Mobile: values.Mobile,
-        FirstName: values.FirstName,
-        MiddleName: values.MiddleName,
-        LastName: values.LastName,
+        FirstName: values.FirstName ? values.FirstName.trim() : '',
+        MiddleName: values.MiddleName ? values.MiddleName.trim() : '',
+        LastName: values.LastName ? values.LastName.trim() : '',
         RoleName: role.label,
         AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
         AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
@@ -746,6 +1176,8 @@ class UserRegistration extends Component {
         TechnologyLevels: tempTechnologyLevelArray,
         IsAdditionalAccess: this.state.IsShowAdditionalPermission,
         AdditionalPermission: this.state.IsShowAdditionalPermission ? 'YES' : 'NO',
+        SimulationTechnologyLevels: tempHeadLevelArray,
+        MasterLevels: tempMasterLevelArray
       }
       this.props.registerUserAPI(userData, res => {
         this.setState({ isSubmitted: false, })
@@ -835,7 +1267,7 @@ class UserRegistration extends Component {
                           customClassName={'withBorder'}
                         />
                       </div>
-                      <div className="input-group col-md-3 input-withouticon">
+                      <div className="col-md-3">
                         <div className="row form-group">
                           <div className="Phone phoneNumber col-md-8 input-withouticon">
                             <Field
@@ -850,7 +1282,7 @@ class UserRegistration extends Component {
                               customClassName={'withBorder'}
                             />
                           </div>
-                          <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
+                          <div className="ext phoneNumber col-md-4 pl-0">
                             <Field
                               label="Extension"
                               name={"Extension"}
@@ -999,7 +1431,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={'Role & Company:'}
+                      title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1018,21 +1450,43 @@ class UserRegistration extends Component {
                           valueDescription={this.state.role}
                         />
                       </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="DepartmentId"
-                          type="text"
-                          label="Company"
-                          component={searchableSelect}
-                          placeholder={'Select company'}
-                          options={this.searchableSelectType('department')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
-                          required={true}
-                          handleChangeDescription={this.departmentHandler}
-                          valueDescription={this.state.department}
-                        />
-                      </div>
+                      {
+                        getConfigurationKey().IsMultipleDepartmentAllowed ?
+                          <div className="col-md-3">
+                            <Field
+                              name="DepartmentId"
+                              type="text"
+                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              component={renderMultiSelectField}
+                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              selection={this.state.department == null || this.state.department.length === 0 ? [] : this.state.department}
+                              options={this.searchableSelectType('multiDepartment')}
+                              validate={this.state.department == null || this.state.department.length === 0 ? [required] : []}
+                              required={true}
+                              selectionChanged={this.departmentHandler}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              className="multiselect-with-border"
+                              mendatory={true}
+                            />
+                          </div> :
+                          <div className="col-md-3">
+                            <Field
+                              name="DepartmentId"
+                              type="text"
+                              label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              component={searchableSelect}
+                              placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                              // placeholder={'Select company'}
+                              options={this.searchableSelectType('department')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.departmentHandler}
+                              valueDescription={this.state.department}
+                            />
+                          </div>
+                      }
                     </div>
 
 
@@ -1096,98 +1550,332 @@ class UserRegistration extends Component {
                               //////////////////////////////////////////////////
                               ///////////////////////////////////////////////// */}
 
-                    <HeaderTitle
-                      title={'Technology & Level:'}
-                      customClass={''} />
+                    <Row>
+                      <Col md="8">
+                        <HeaderTitle title={'Technology & Level:'} customClass={''} />
+                      </Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc1: !this.state.acc1 }) }}>
 
-                    <div className="row form-group">
-                      <div className="col-md-3">
-                        <Field
-                          name="TechnologyId"
-                          type="text"
-                          label="Technology"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('technology')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.technologyHandler}
-                          valueDescription={this.state.technology}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Field
-                          name="LevelId"
-                          type="text"
-                          label="Level"
-                          component={searchableSelect}
-                          options={this.searchableSelectType('level')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.levelHandler}
-                          valueDescription={this.state.level}
-                        />
-                      </div>
-                      <div className="col-md-3 btn-mr-rate d-flex">
-                        {this.state.isEditIndex ?
-                          <>
-                            <button
-                              type="button"
-                              className={'btn btn-primary add-button-big'}
-                              onClick={this.updateTechnologyLevel}
-                            >Update</button>
+                          {this.state.acc1 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    {this.state.acc1 &&
+                      <>
+                        <div className="row form-group">
+                          <div className="col-md-3">
+                            <Field
+                              name="TechnologyId"
+                              type="text"
+                              label="Technology"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('technology')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.technologyHandler}
+                              valueDescription={this.state.technology}
+                            />
+                          </div>
+                          <div className="col-md-3">
+                            <Field
+                              name="LevelId"
+                              type="text"
+                              label="Level"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('level')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.levelHandler}
+                              valueDescription={this.state.level}
+                            />
+                          </div>
+                          <div className="col-md-3 btn-mr-rate d-flex">
+                            {this.state.isEditIndex ?
+                              <>
+                                <button
+                                  type="button"
+                                  className={'btn btn-primary add-button-big'}
+                                  onClick={this.updateTechnologyLevel}
+                                >Update</button>
 
-                            <button
-                              type="button"
-                              className={'reset-btn ml-2'}
-                              onClick={this.resetTechnologyLevel}
-                            >Cancel</button>
-                          </>
-                          :
-                          <button
-                            type="button"
-                            className={'user-btn add-button-big ml-2'}
-                            onClick={this.setTechnologyLevel}
-                          ><div className={'plus'}></div>ADD</button>}
-                      </div>
-                    </div>
+                                <button
+                                  type="button"
+                                  className={'reset-btn ml-2'}
+                                  onClick={this.resetTechnologyLevel}
+                                >Cancel</button>
+                              </>
+                              :
+                              <button
+                                type="button"
+                                className={'user-btn add-button-big ml-2'}
+                                onClick={this.setTechnologyLevel}
+                              ><div className={'plus'}></div>ADD</button>}
+                          </div>
+                        </div>
 
-                    <div className="row form-group">
-                      <div className="col-md-12">
-                        <Table className="table" size="sm" >
-                          <thead>
-                            <tr>
-                              <th>{`Technology`}</th>
-                              <th>{`Level`}</th>
-                              <th className="text-right">{`Action`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              this.state.TechnologyLevelGrid &&
-                              this.state.TechnologyLevelGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.Technology}</td>
-                                    <td>{item.Level}</td>
-                                    <td className="text-right">
-                                      <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                      <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                    </td>
-                                  </tr>
-                                )
-                              })
-                            }
-                          </tbody>
-                        </Table>
-                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                      </div>
-                    </div>
+
+                        <div className="row form-group">
+                          <div className="col-md-12">
+                            <Table className="table" size="sm" >
+                              <thead>
+                                <tr>
+                                  <th>{`Technology`}</th>
+                                  <th>{`Level`}</th>
+                                  <th className="text-right">{`Action`}</th>
+                                </tr>
+                              </thead>
+                              <tbody >
+                                {
+                                  this.state.TechnologyLevelGrid &&
+                                  this.state.TechnologyLevelGrid.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <td>{item.Technology}</td>
+                                        <td>{item.Level}</td>
+                                        <td className="text-right">
+                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                          <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                        </td>
+                                      </tr>
+                                    )
+                                  })
+                                }
+                              </tbody>
+                            </Table>
+                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                          </div>
+                        </div>
+                      </>
+                    }
 
                     {/* ////////////////////////////////////////////////////
                       ////////////////////////////////////////////////////
                       /////////////// User's technology level END ////////
+                      ////////////////////////////////////////////////////
+                      ///////////////////////////////////////////////// */}
+
+
+
+                    <Row>
+                      <Col md="8">
+                        <HeaderTitle title={'Simulation Heads & Level:'} customClass={''} />
+                      </Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc2: !this.state.acc2 }) }}>
+
+                          {this.state.acc2 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    {this.state.acc2 &&
+                      <>
+                        <div className="row form-group">
+                          <div className="col-md-3">
+                            <Field
+                              name="Head"
+                              type="text"
+                              label="Head"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('heads')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.headHandler}
+                              valueDescription={this.state.simulationHeads}
+                            />
+                          </div>
+                          <div className="col-md-3">
+                            <Field
+                              name="simualtionLevel"
+                              type="text"
+                              label="Level"
+                              component={searchableSelect}
+                              options={this.searchableSelectType('simualtionLevel')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                              //required={true}
+                              handleChangeDescription={this.simualtionLevelHandler}
+                              valueDescription={this.state.simualtionLevel}
+                            />
+                          </div>
+                          <div className="col-md-3 btn-mr-rate d-flex">
+                            {this.state.isSimulationEditIndex ?
+                              <>
+                                <button
+                                  type="button"
+                                  className={'btn btn-primary add-button-big'}
+                                  onClick={this.updateSimualtionHeadLevel}
+                                >Update</button>
+
+                                <button
+                                  type="button"
+                                  className={'reset-btn ml-2'}
+                                  onClick={this.resetSimualtionHeadLevel}
+                                >Cancel</button>
+                              </>
+                              :
+                              <button
+                                type="button"
+                                className={'user-btn add-button-big ml-2'}
+                                onClick={this.setSimualtionHeadLevel}
+                              ><div className={'plus'}></div>ADD</button>}
+                          </div>
+                        </div>
+
+                        <div className="row form-group">
+                          <div className="col-md-12">
+                            <Table className="table" size="sm" >
+                              <thead>
+                                <tr>
+                                  <th>{`Head`}</th>
+                                  <th>{`Level`}</th>
+                                  <th className="text-right">{`Action`}</th>
+                                </tr>
+                              </thead>
+                              <tbody >
+                                {
+                                  this.state.HeadLevelGrid &&
+                                  this.state.HeadLevelGrid.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <td>{item.Technology}</td>
+                                        <td>{item.Level}</td>
+                                        <td className="text-right">
+                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editSimulationItemDetails(index)} />
+                                          <button className="Delete" type={'button'} onClick={() => this.deleteSimulationItem(index)} />
+                                        </td>
+                                      </tr>
+                                    )
+                                  })
+                                }
+                              </tbody>
+                            </Table>
+                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                          </div>
+                        </div>
+                      </>
+                    }
+                    {
+                      getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                      <>
+                        <Row>
+                          <Col md="8">
+                            <HeaderTitle title={'Masters & Level:'} customClass={''} />
+                          </Col>
+                          <Col md="4" className="text-right">
+                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
+
+                              {this.state.acc2 ? (
+                                <i className="fa fa-minus" ></i>
+                              ) : (
+                                <i className="fa fa-plus"></i>
+                              )}
+                            </button>
+                          </Col>
+                        </Row>
+                        {this.state.acc3 &&
+                          <>
+                            <div className="row form-group">
+                              <div className="col-md-3">
+                                <Field
+                                  name="Master"
+                                  type="text"
+                                  label="Master"
+                                  component={searchableSelect}
+                                  options={this.searchableSelectType('masters')}
+                                  handleChangeDescription={this.masterHandler}
+                                  valueDescription={this.state.master}
+                                />
+                              </div>
+                              <div className="col-md-3">
+                                <Field
+                                  name="masterLevel"
+                                  type="text"
+                                  label="Level"
+                                  component={searchableSelect}
+                                  options={this.searchableSelectType('masterLevel')}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                                  //required={true}
+                                  handleChangeDescription={this.masterLevelHandler}
+                                  valueDescription={this.state.masterLevel}
+                                />
+                              </div>
+                              <div className="col-md-3 btn-mr-rate d-flex">
+                                {this.state.isMasterEditIndex ?
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={'btn btn-primary add-button-big'}
+                                      onClick={this.updateMasterLevel}
+                                    >Update</button>
+
+                                    <button
+                                      type="button"
+                                      className={'reset-btn ml-2'}
+                                      onClick={this.resetMasterLevel}
+                                    >Cancel</button>
+                                  </>
+                                  :
+                                  <button
+                                    type="button"
+                                    className={'user-btn add-button-big ml-2'}
+                                    onClick={this.setMasterLevel}
+                                  ><div className={'plus'}></div>ADD</button>}
+                              </div>
+                            </div>
+
+                            <div className="row form-group">
+                              <div className="col-md-12">
+                                <Table className="table" size="sm" >
+                                  <thead>
+                                    <tr>
+                                      <th>{`Master`}</th>
+                                      <th>{`Level`}</th>
+                                      <th className="text-right">{`Action`}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody >
+                                    {
+                                      this.state.masterLevelGrid &&
+                                      this.state.masterLevelGrid.map((item, index) => {
+                                        return (
+                                          <tr key={index}>
+                                            <td>{item.Master}</td>
+                                            <td>{item.Level}</td>
+                                            <td className="text-right">
+                                              <button className="Edit mr-2" type={'button'} onClick={() => this.editMasterItem(index)} />
+                                              <button className="Delete" type={'button'} onClick={() => this.deleteMasterItem(index)} />
+                                            </td>
+                                          </tr>
+                                        )
+                                      })
+                                    }
+                                  </tbody>
+                                </Table>
+                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              </div>
+                            </div>
+                          </>
+                        }
+                      </>
+
+                    }
+
+                    {/* ////////////////////////////////////////////////////
+                      ////////////////////////////////////////////////////
+                      /////////////// User's MASTER level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
 
@@ -1200,14 +1888,15 @@ class UserRegistration extends Component {
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn">
-                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
+                        <div className={"cancel-icon"}></div>
                       CANCEL
                       </button>
 
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn">
+                        <div className={"save-icon"}></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>
@@ -1259,7 +1948,7 @@ function validate(values) {
 */
 const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
-    initialConfiguration, loading, levelSelectList } = auth;
+    initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList } = auth;
   const { cityList } = comman;
 
   let initialValues = {};
@@ -1284,7 +1973,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, initialConfiguration, loading, levelSelectList
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList
   };
 };
 
@@ -1306,13 +1995,21 @@ export default connect(mapStateToProps, {
   setEmptyUserDataAPI,
   getRoleDataAPI,
   getAllTechnologyAPI,
-
   getPermissionByUser,
   getUsersTechnologyLevelAPI,
   setUserAdditionalPermission,
   setUserTechnologyLevelForCosting,
   updateUserTechnologyLevelForCosting,
-  getLevelByTechnology
+  getLevelByTechnology,
+  getCityByCountry,
+  getAllCity,
+  getSimulationTechnologySelectList,
+  getSimualationLevelByTechnology,
+  getUsersSimulationTechnologyLevelAPI,
+  getMastersSelectList,
+  getMasterLevelDataList,
+  getUsersMasterLevelAPI,
+  getMasterLevelByMasterId
 })(reduxForm({
   validate,
   form: 'Signup',

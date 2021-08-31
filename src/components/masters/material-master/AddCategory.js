@@ -10,6 +10,8 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddCategory extends Component {
     constructor(props) {
@@ -158,13 +160,13 @@ class AddCategory extends Component {
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn">
 
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='error-icon.jpg' /></div>CANCEL</button>
+                                                <div className={"cancel-icon"}></div>
+                                                CANCEL</button>
                                             <button
                                                 type="submit"
                                                 // disabled={isSubmitted ? true : false}
-                                                className="btn-primary save-btn"
-                                            >	<div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
-                                                </div>
+                                                className="btn-primary save-btn">
+                                                <div className={"save-icon"}></div>
                                                 {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                                             </button>
                                         </div>

@@ -1,3 +1,5 @@
+import { userDetails } from "./auth"
+
 export function formatLoginResult(res) {
     if (res) {
         // const userObj = {
@@ -46,6 +48,12 @@ export function formatLoginResult(res) {
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
             Department: res.Department,
+            DepartmentCode: res.DepartmentCode,
+            LoggedInSimulationLevel: res.LoggedInSimulationLevel,
+            LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
+            LoggedInMasterLevel: res.LoggedInMasterLevel,
+            LoggedInMasterLevelId: res.LoggedInMasterLevelId,
+            Role: res.Role
         };
         return userObj;
     }
@@ -103,4 +111,36 @@ export function formatGetPlanResult(result) {
         planListArray.push(planListYearly);
     }
     return planListArray;
+}
+
+
+export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
+
+    if (simulationDetail && selectedRowData && costingArr) {
+        let temp = []
+        costingArr && costingArr.map(item => {
+            let checked = false
+            selectedRowData && selectedRowData.map(item1 => {
+                if (item1.CostingId === item.CostingId) {
+                    checked = true
+                    return false
+                }
+                return true
+            })
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked })
+        })
+
+        const simulationObj = {
+            SimulationId: simulationDetail.SimulationId,
+            Token: simulationDetail.TokenNo,
+            Currency: "",
+            EffectiveDate: "",
+            Remark: "",
+            LoggedInUserId: userDetails().LoggedInUserId,
+            IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
+            SelectedCostings: temp,
+        };
+        return simulationObj;
+    }
+    return null;
 }

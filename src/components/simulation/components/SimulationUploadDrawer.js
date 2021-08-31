@@ -9,6 +9,8 @@ import { bulkUploadCosting } from '../../costing/actions/CostWorking'
 import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
+import imgCloud from '../../../assests/images/uploadcloud.png';
+import TooltipCustom from '../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -22,7 +24,7 @@ class SimulationUploadDrawer extends Component {
             fileData: '',
             fileName: '',
             correctRowCount: '',
-            incorrectRowCount: ''
+            NoOfRowsWithoutChange: ''
         }
     }
 
@@ -56,11 +58,11 @@ class SimulationUploadDrawer extends Component {
     }
 
     toggleDrawer = (event) => {
-        const { fileData, correctRowCount, incorrectRowCount } = this.state
+        const { fileData, correctRowCount, NoOfRowsWithoutChange } = this.state
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', fileData, correctRowCount, incorrectRowCount)
+        this.props.closeDrawer('', fileData, correctRowCount, NoOfRowsWithoutChange)
     };
 
     cancel = () => {
@@ -125,21 +127,18 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
-                    //
-                    // fileHeads = ["SerialNumber", "BillNumber"]
-
                     let fileData = [];
                     let basicRateCount = 0
                     let scrapRateCount = 0
                     let correctRowCount = 0
-                    let incorrectRowCount = 0
+                    let NoOfRowsWithoutChange = 0
                     resp.rows.map((val, index) => {
                         if (index > 0) {
-                            if (val[10] !== '') {
-                                basicRateCount = basicRateCount + 1
+                            if (val[10] !== '' && val[10] !== undefined) {
+                                basicRateCount = 1
                             }
-                            if (val[10] === '' && val[12] === '') {
-                                incorrectRowCount = incorrectRowCount + 1
+                            if (val[10] === '' && val[14] === '') {
+                                NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                 return false
                             }
                             correctRowCount = correctRowCount + 1
@@ -147,9 +146,6 @@ class SimulationUploadDrawer extends Component {
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
-                                }
-                                if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                                    el = parseInt(el)
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -160,7 +156,6 @@ class SimulationUploadDrawer extends Component {
                         }
                         return null;
                     })
-
                     if (basicRateCount === 0) {
                         toastr.warning('Please fill at least one basic rate.')
                         return false
@@ -169,7 +164,7 @@ class SimulationUploadDrawer extends Component {
                         fileData: fileData,
                         uploadfileName: uploadfileName,
                         correctRowCount: correctRowCount,
-                        incorrectRowCount: incorrectRowCount
+                        NoOfRowsWithoutChange: NoOfRowsWithoutChange
                     });
                 }
             });
@@ -180,6 +175,10 @@ class SimulationUploadDrawer extends Component {
         const { fileData } = this.state
         // let data = new FormData()
         // data.append('file', fileData)
+        if (fileData.length === 0) {
+            toastr.warning("Please select a file to upload.")
+            return false
+        }
 
         let obj = {
             file: fileData,
@@ -230,7 +229,10 @@ class SimulationUploadDrawer extends Component {
                                         </ExcelFile>
                                     </Col> */}
                                     <Col md="12">
-                                        <label>Upload</label>
+                                        <label className="d-inline-block w-auto">Upload</label>
+                                        <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                                            <span class="tooltiptext">Please upload the file with data. The file can be downloaded from previous screen.</span>
+                                        </div>
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>
@@ -249,9 +251,7 @@ class SimulationUploadDrawer extends Component {
                                     <div className="col-md-12 pl-3 pr-3">
                                         <div className="text-right ">
                                             <button type="submit" className="btn-primary save-btn">
-                                                <div className={"check-icon"}>
-                                                    <img src={require("../../../assests/images/check.png")} alt="" />
-                                                </div>
+                                                <div className={"save-icon"}></div>
                                                 {"SAVE"}
                                             </button>
                                         </div>

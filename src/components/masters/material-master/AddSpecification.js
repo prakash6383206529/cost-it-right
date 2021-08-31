@@ -18,6 +18,8 @@ import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -43,6 +45,7 @@ class AddSpecification extends Component {
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
     // this.props.getMaterialTypeSelectList(() => { })
+    this.props.getRMGradeSelectListByRawMaterial('', res => { })
   }
 
   /**
@@ -227,12 +230,14 @@ class AddSpecification extends Component {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       this.getDetails()
       this.props.getRawMaterialNameChild(() => {
+        this.props.getRMGradeSelectListByRawMaterial('', res => { })
         /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
         const { rawMaterialNameSelectList } = this.props;
         if (Object.keys(formData).length > 0) {
           let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
           this.setState({
             RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+            RMGrade: []
           })
 
         }
@@ -536,25 +541,14 @@ class AddSpecification extends Component {
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cross-icon"}>
-                            {" "}
-                            <img
-                              alt={""}
-                              src={require("../../../assests/images/times.png")}
-                            ></img>
-                          </div>{" "}
+                          <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
                         <button
                           type="submit"
                           className="user-btn save-btn"
                         >
-                          <div className={"check-icon"}>
-                            <img
-                              alt={""}
-                              src={require("../../../assests/images/check.png")}
-                            ></img>
-                          </div>{" "}
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>

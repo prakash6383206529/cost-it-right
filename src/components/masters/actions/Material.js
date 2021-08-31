@@ -37,10 +37,12 @@ import {
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
+import { loggedInUserId, userDetails } from '../../../helper';
+import { MESSAGES } from '../../../config/message';
 
 const headers = config
 
@@ -1049,7 +1051,7 @@ export function getRMDomesticDataList(data, callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const queryParams = `CostingHead=${data.costingHead}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1160,7 +1162,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, callback) {
     return (dispatch) => {
-        const queryParams = `CostingHead=${data.costingHead}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}`
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1534,4 +1536,224 @@ export function getMaterialTypeSelectList(callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method checkAndGetOperationCode
+ * @description CHECK AND GET OPERATION CODE
+ */
+export function checkAndGetRawMaterialCode(code, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.checkAndGetRawMaterialCode}?materialCode=${code}`, '', headers);
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setFilterForRM(filteredValue) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_FILTERED_RM_DATA,
+            payload: filteredValue,
+        });
+    }
+}
+
+
+/**
+ * @method getRMApprovalList
+ * @description Used to get RM Approval List
+ */
+export function getRMApprovalList(callback) {
+
+    return (dispatch) => {
+
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                //
+                dispatch({
+                    type: GET_RM_APPROVAL_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                    // payload: JSON.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error)
+        });
+    };
+}
+
+
+/**
+ * @method getAllMasterApprovalDepartment
+ * @description get all master approval department
+ */
+export function getAllMasterApprovalDepartment(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllMasterApprovalDepartment}`, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ALL_MASTER_APPROVAL_DEPARTMENT,
+                        payload: response.data.SelectList,
+                    })
+                    callback(response)
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR)
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                callback(error)
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+* @method getAllApprovalUserFilterByDepartment
+* @description GET ALL APPROVAL USERS FILTER BY DEPARTMENT
+*/
+export function getAllMasterApprovalUserByDepartment(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getAllMasterApprovalUserByDepartment}`, data, headers,)
+
+        request
+            .then((response) => {
+
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT,
+                        payload: response.data.DataList,
+                    })
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({
+                    type: API_FAILURE,
+                })
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+ * @method simulationApprovalRequestBySender
+ * @description sending the request to Approver for first time
+ */
+export function masterApprovalRequestBySender(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterSendToApprover, data, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    toastr.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+/**
+ * @method approvalRequestByApprove
+ * @description approving the request by approve
+ */
+export function approvalRequestByMasterApprove(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.approveMasterByApprover, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+/**
+ * @method rejectRequestByApprove
+ * @description rejecting approval Request
+ */
+export function rejectRequestByMasterApprove(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.rejectMasterByApprover, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+
+/**
+ * @method getApprovalSummary
+ * @description getting summary of approval by approval id
+ */
+
+export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
+    return (dispatch) => {
+        const request = axios.get(
+            `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_RM_DOMESTIC_LIST,
+                        payload: response.data.Data.ImpactedMasterDataList,
+                    })
+                    callback(response)
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR)
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
 }

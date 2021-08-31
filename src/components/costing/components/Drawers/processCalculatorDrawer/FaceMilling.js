@@ -1,141 +1,64 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
-import {
-  clampingTime,
-  feedByMin,
-  findRpm,
-  passesNo,
-  totalMachineTime,
-} from './CommonFormula'
-import {
-  checkForDecimalAndNull,
-  getConfigurationKey,
-} from '../../../../../helper'
+import { useDispatch } from 'react-redux'
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
+import { toastr } from 'react-redux-toastr'
 
 function FaceMilling(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  const costData = useContext(costingInfoContext);
+
+  const dispatch = useDispatch()
+
+  const [dataToSend, setDataToSend] = useState({})
 
   const defaultValues = {
-    cutLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutLength !== undefined
-      ? WeightCalculatorRequest.CutLength
-      : '',
-    rpm: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Rpm !== undefined
-      ? WeightCalculatorRequest.Rpm
-      : '',
-    feedRev: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FeedRev !== undefined
-      ? WeightCalculatorRequest.FeedRev
-      : '',
-    feedMin: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FeedMin !== undefined
-      ? WeightCalculatorRequest.FeedMin
-      : '',
-    cutTime: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutTime !== undefined
-      ? WeightCalculatorRequest.CutTime
-      : '',
-    numberOfPasses: WeightCalculatorRequest &&
-      WeightCalculatorRequest.NumberOfPasses !== undefined
-      ? WeightCalculatorRequest.NumberOfPasses
-      : '',
-    clampingPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingPercentage !== undefined
-      ? WeightCalculatorRequest.ClampingPercentage
-      : '',
-    clampingValue: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingValue !== undefined
-      ? WeightCalculatorRequest.ClampingValue
-      : '',
-    cutterDiameter: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutterDiameter !== undefined
-      ? WeightCalculatorRequest.CutterDiameter
-      : '',
-    cutLengthOfArea: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutLengthOfArea !== undefined
-      ? WeightCalculatorRequest.CutLengthOfArea
-      : '',
-    areaWidth: WeightCalculatorRequest &&
-      WeightCalculatorRequest.AreaWidth !== undefined
-      ? WeightCalculatorRequest.AreaWidth
-      : '',
-    removedMaterial: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RemovedMaterial !== undefined
-      ? WeightCalculatorRequest.RemovedMaterial
-      : '',
-    doc: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Doc !== undefined
-      ? WeightCalculatorRequest.Doc
-      : '',
-    cuttingSpeed: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CuttingSpeed !== undefined
-      ? WeightCalculatorRequest.CuttingSpeed
-      : '',
-    toothFeed: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ToothFeed !== undefined
-      ? WeightCalculatorRequest.ToothFeed
-      : '',
-    clampingPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingPercentage !== undefined
-      ? WeightCalculatorRequest.ClampingPercentage
-      : '',
+    cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
+    rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
+    feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
+    feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    numberOfPasses: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPasses !== undefined ? WeightCalculatorRequest.NumberOfPasses : '',
+    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
+    cutterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.CutterDiameter !== undefined ? WeightCalculatorRequest.CutterDiameter : '',
+    cutLengthOfArea: WeightCalculatorRequest && WeightCalculatorRequest.CutLengthOfArea !== undefined ? WeightCalculatorRequest.CutLengthOfArea : '',
+    areaWidth: WeightCalculatorRequest && WeightCalculatorRequest.AreaWidth !== undefined ? WeightCalculatorRequest.AreaWidth : '',
+    removedMaterial: WeightCalculatorRequest && WeightCalculatorRequest.RemovedMaterial !== undefined ? WeightCalculatorRequest.RemovedMaterial : '',
+    doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
+    cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
+    toothFeed: WeightCalculatorRequest && WeightCalculatorRequest.ToothFeed !== undefined ? WeightCalculatorRequest.ToothFeed : '',
+    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
   }
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
   const fieldValues = useWatch({
     control,
-    name: [
-      'cutterDiameter',
-      'cutLengthOfArea',
-      'areaWidth',
-      // 'cutLength',
-      //'turningLength',
-      'removedMaterial',
-      'doc',
-      'cuttingSpeed',
-      'toothFeed',
-      // 'rpm',
-      // 'feedRev',
-      'clampingPercentage',
-      // 'feedMin',
-      // 'cutTime',
-      // 'clampingPercentage',
-      // 'clampingValue',
-    ],
+    name: ['cutterDiameter', 'cutLengthOfArea', 'areaWidth', 'removedMaterial', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage'],
   })
 
   useEffect(() => {
-    onClampingPercantageChange()
-    // onFinishDiameterChange()
     onDocChange()
     onWidthChange()
-    // onFeedRevChange()
     onToothFeedChange()
     onSpeedChange()
+    onClampingPercantageChange()
   }, [fieldValues])
-  const trimValue = getConfigurationKey()
-  const trim = trimValue.NumberOfDecimalForWeightCalculation
-  const isEditFlag = WeightCalculatorRequest ? true : false
+
+
+  const trim = getConfigurationKey().NoOfDecimalForInputOutput
   const { technology, process, calculateMachineTime } = props
-  const [totalMachiningTime, setTotalMachiningTime] = useState('')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
+
   useEffect(() => {
     const toothNo = 3 // Need to make it dynamic from API
     setValue('toothNo', toothNo)
@@ -144,18 +67,17 @@ function FaceMilling(props) {
   const onDocChange = () => {
     const removedMaterial = getValues('removedMaterial')
     const doc = getValues('doc')
+    const numberOfPasses = passesNo(removedMaterial, doc)
+    setValue('numberOfPasses', numberOfPasses)
 
-    if (technology === 'Machining') {
-      const numberOfPasses = passesNo(removedMaterial, doc)
-      setValue('numberOfPasses', numberOfPasses)
-    }
   }
 
   const onSpeedChange = () => {
     const cutterDiameter = getValues('cutterDiameter')
     const cuttingSpeed = getValues('cuttingSpeed')
     const rpm = findRpm(cuttingSpeed, cutterDiameter)
-    setValue('rpm', rpm)
+    setDataToSend(prevState => ({ ...prevState, rpm: rpm }))
+    setValue('rpm', checkForDecimalAndNull(rpm, trim))
   }
   const onToothFeedChange = (e) => {
     const toothNo = getValues('toothNo')
@@ -163,33 +85,30 @@ function FaceMilling(props) {
     const cutLength = getValues('cutLength')
     const numberOfPasses = getValues('numberOfPasses')
     const toothFeed = getValues('toothFeed')
-    const feedRev = checkForDecimalAndNull(toothNo * toothFeed, trim)
+    const feedRev = checkForNull(toothNo * toothFeed)
     if (!feedRev) {
       return ''
     }
-    setValue('feedRev', feedRev)
+    setValue('feedRev', checkForDecimalAndNull(feedRev, trim))
     const feedMin = feedByMin(feedRev, rpm)
-    setValue('feedMin', feedMin)
-    const tCut = checkForDecimalAndNull(
-      (cutLength / feedMin) * numberOfPasses,
-      trim,
-    )
-    setValue('cutTime', tCut)
+    setValue('feedMin', checkForDecimalAndNull(feedMin, trim))
+    const tCut = (cutLength / feedMin) * numberOfPasses
+    setValue('cutTime', checkForDecimalAndNull(tCut, trim))
+    setDataToSend(prevState => ({ ...prevState, feedMin: feedMin, tCut: tCut, feedRev: feedRev }))
+
   }
   const onWidthChange = (e) => {
-    const cutterDiameter = Number(getValues('cutterDiameter')) // Need to ask
+    const cutterDiameter = Number(getValues('cutterDiameter'))
     const cutLengthOfArea = Number(getValues('cutLengthOfArea'))
     const areaWidth = Number(getValues('areaWidth'))
-    const cutLength = checkForDecimalAndNull(
-      cutterDiameter +
-      cutLengthOfArea +
-      (areaWidth / (cutterDiameter * 0.7)) * cutLengthOfArea,
-      trim,
-    )
+    const cutLength = checkForNull(cutterDiameter + cutLengthOfArea + (areaWidth / (cutterDiameter * 0.7)) * cutLengthOfArea,)
     if (!cutLength || !cutterDiameter || !cutLengthOfArea || !areaWidth) {
       return ''
     }
-    setValue('cutLength', cutLength)
+    setDataToSend(prevState => ({ ...prevState, cutLength: cutLength }))
+    setTimeout(() => {
+      setValue('cutLength', checkForDecimalAndNull(cutLength, trim))
+    }, 500);
   }
 
   const onClampingPercantageChange = () => {
@@ -197,20 +116,39 @@ function FaceMilling(props) {
     const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
-    setValue('clampingValue', clampingValue)
+    setDataToSend(prevState => ({ ...prevState, clampingValue: clampingValue }))
+    setValue('clampingValue', checkForDecimalAndNull(clampingValue, trim))
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (value) => {
 
     let obj = {}
-    obj.CutLength = value.cutLength
-    obj.Rpm = value.rpm
-    obj.FeedRev = value.feedRev
-    obj.FeedMin = value.feedMin
-    obj.CutTime = value.cutTime
+    obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    obj.IsChangeApplied = true
+    obj.TechnologyId = costData.TechnologyId
+    obj.CostingId = costData.CostingId
+    obj.TechnologyName = costData.TechnologyName
+    obj.PartId = costData.PartId
+    obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
+    obj.MachineRateId = props.calculatorData.MachineRateId
+    obj.PartNumber = costData.PartNumber
+    obj.ProcessId = props.calculatorData.ProcessId
+    obj.ProcessName = props.calculatorData.ProcessName
+    obj.ProcessDescription = props.calculatorData.ProcessDescription
+    obj.MachineName = costData.MachineName
+    obj.UOM = props.calculatorData.UOM
+    obj.LoggedInUserId = loggedInUserId()
+    obj.UnitTypeId = props.calculatorData.UOMTypeId
+    obj.UnitType = props.calculatorData.UOMType
+    obj.CutLength = dataToSend.cutLength
+    obj.Rpm = dataToSend.rpm
+    obj.FeedRev = dataToSend.feedRev
+    obj.FeedMin = dataToSend.feedMin
+    obj.CutTime = dataToSend.tCut
     obj.NumberOfPasses = value.numberOfPasses
     obj.ClampingPercentage = value.clampingPercentage
-    obj.ClampingValue = value.clampingValue
+    obj.ClampingValue = dataToSend.clampingValue
     obj.CutterDiameter = value.cutterDiameter
     obj.CutLengthOfArea = value.cutLengthOfArea
     obj.AreaWidth = value.areaWidth
@@ -218,9 +156,17 @@ function FaceMilling(props) {
     obj.Doc = value.doc
     obj.CuttingSpeed = value.cuttingSpeed
     obj.ToothFeed = value.toothFeed
-    obj.ClampingPercentage = value.clampingPercentage
+    obj.ToothNo = value.toothNo
     obj.TotalMachiningTime = totalMachiningTime
-    calculateMachineTime(totalMachiningTime, obj)
+    obj.MachineRate = props.calculatorData.MHR
+    obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
+    dispatch(saveProcessCostCalculationData(obj, res => {
+      if (res.data.Result) {
+        obj.ProcessCalculationId = res.data.Identity
+        toastr.success('Calculation saved sucessfully.')
+        calculateMachineTime(totalMachiningTime, obj)
+      }
+    }))
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -230,14 +176,14 @@ function FaceMilling(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="12">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutter Diameter(mm)`}
                         name={'cutterDiameter'}
@@ -262,7 +208,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Length of Area Cut(mm)`}
                         name={'cutLengthOfArea'}
@@ -287,7 +233,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Width of area to cut`}
                         name={'areaWidth'}
@@ -312,7 +258,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -320,15 +266,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -340,7 +277,7 @@ function FaceMilling(props) {
                   </Row>
 
                   <Row>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Material To be removed`}
                         name={'removedMaterial'}
@@ -365,7 +302,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Depth of cut`}
                         name={'doc'}
@@ -390,7 +327,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label="No. of Passes"
                         name={'numberOfPasses'}
@@ -398,15 +335,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -423,7 +351,7 @@ function FaceMilling(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -448,7 +376,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -456,15 +384,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -473,7 +392,7 @@ function FaceMilling(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of Teeth on Cutter`}
                         name={'toothNo'}
@@ -481,14 +400,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -497,7 +408,7 @@ function FaceMilling(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/ Tooth`}
                         name={'toothFeed'}
@@ -521,7 +432,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -529,14 +440,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -545,7 +448,7 @@ function FaceMilling(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -553,15 +456,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -578,7 +472,7 @@ function FaceMilling(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -586,15 +480,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -603,7 +488,7 @@ function FaceMilling(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -628,7 +513,7 @@ function FaceMilling(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
@@ -636,14 +521,6 @@ function FaceMilling(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -657,38 +534,17 @@ function FaceMilling(props) {
                 <div className="bluefooter-butn border row">
                   <div className="col-sm-8">Total Machining Time </div>
                   <span className="col-sm-4 text-right">
-                    {totalMachiningTime === '0.00'
-                      ? totalMachiningTime
-                      : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
-                    min
+                    {totalMachiningTime === '0.00' ? totalMachiningTime : checkForDecimalAndNull(totalMachiningTime, trim)}{' '} min
                   </span>
                 </div>
               </div>
             </Col>
             <div className="mt25 col-md-12 text-right">
-              <button
-                onClick={onCancel} // Need to change this cancel functionality
-                type="submit"
-                value="CANCEL"
-                className="reset mr15 cancel-btn"
-              >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
-                CANCEL
-              </button>
-              <button
-                type="submit"
-                // disabled={isSubmitted ? true : false}
-                className="btn-primary save-btn"
-              >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
-                {isEditFlag ? 'UPDATE' : 'SAVE'}
+              <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn">
+                <div className={'cancel-icon'}></div>CANCEL</button>
+              <button type="submit" className="btn-primary save-btn">
+                <div className={"save-icon"}></div>
+                {'SAVE'}
               </button>
             </div>
           </form>

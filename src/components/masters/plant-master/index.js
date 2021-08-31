@@ -6,9 +6,7 @@ import ZBCPlantListing from './ZBCPlantListing';
 import VBCPlantListing from './VBCPlantListing';
 
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { PLANT } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper/auth';
+import { MASTERS, PLANT } from '../../../config/constants';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 
 class PlantMaster extends Component {
@@ -23,30 +21,42 @@ class PlantMaster extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             ActivateAccessibility: false,
+            DownloadAccessibility: false
         }
     }
 
     componentDidMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === PLANT)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                        ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-                    })
-                }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === PLANT)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                    ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                })
             }
-        })
+        }
     }
 
     /**
@@ -95,6 +105,7 @@ class PlantMaster extends Component {
                                         DeleteAccessibility={this.state.DeleteAccessibility}
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
+                                        DownloadAccessibility={this.state.DownloadAccessibility}
                                     />
                                 </TabPane>}
                             {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.activeTab === '2' &&
@@ -105,6 +116,7 @@ class PlantMaster extends Component {
                                         DeleteAccessibility={this.state.DeleteAccessibility}
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
+                                        DownloadAccessibility={this.state.DownloadAccessibility}
                                     />
                                 </TabPane>}
                         </TabContent>
@@ -123,8 +135,8 @@ class PlantMaster extends Component {
 */
 function mapStateToProps({ comman, auth }) {
     const { loading, } = comman;
-    const { leftMenuData, initialConfiguration } = auth;
-    return { loading, leftMenuData, initialConfiguration };
+    const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
+    return { loading, leftMenuData, initialConfiguration, topAndLeftMenuData };
 }
 
 export default connect(mapStateToProps,

@@ -11,9 +11,10 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
 
+let counter = 0;
 function OperationCost(props) {
 
-  const { register, control, errors, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -159,7 +160,7 @@ function OperationCost(props) {
       setGridData(tempArr)
       toastr.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]Quantity`, 0)
+        setValue(`${OperationGridFields}.${index}.Quantity`, 0)
       }, 200)
     }
   }
@@ -184,9 +185,9 @@ function OperationCost(props) {
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      toastr.warning('Please enter valid number.')
+      //toastr.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
+        setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
       }, 200)
     }
   }
@@ -197,11 +198,15 @@ function OperationCost(props) {
   }
 
   /**
-  * @method setRMCCErrors
-  * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-  */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+   * @method setRMCCErrors
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   const OperationGridFields = 'OperationGridFields';
@@ -265,7 +270,7 @@ function OperationCost(props) {
                               {
                                 <NumberFieldHookForm
                                   label=""
-                                  name={`${OperationGridFields}[${index}]Quantity`}
+                                  name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -300,7 +305,7 @@ function OperationCost(props) {
                                   item.IsLabourRateExist ?
                                     <NumberFieldHookForm
                                       label=""
-                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}

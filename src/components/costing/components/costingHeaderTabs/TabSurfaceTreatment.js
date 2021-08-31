@@ -35,11 +35,16 @@ function TabSurfaceTreatment(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].CostingPartDetails !== undefined ? SurfaceTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.NetSurfaceTreatmentCost !== null ? TopHeaderValues.NetSurfaceTreatmentCost : 0,
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      let TopHeaderValues = SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].CostingPartDetails !== undefined ? SurfaceTabData[0].CostingPartDetails : null;
+      let topHeaderData = {
+        NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.NetSurfaceTreatmentCost !== null ? TopHeaderValues.NetSurfaceTreatmentCost : 0,
+      }
+      if (props.activeTab === '2') {
+        props.setHeaderCost(topHeaderData)
+      }
     }
-    props.setHeaderCost(topHeaderData)
   }, [SurfaceTabData]);
 
   /**
@@ -653,12 +658,7 @@ function TabSurfaceTreatment(props) {
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
                     >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
+                      <div className={"save-icon"}></div>
                       {"Save"}
                     </button>
                   </div>

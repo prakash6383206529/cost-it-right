@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
-import { loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -38,6 +38,7 @@ class AddAssemblyPart extends Component {
       selectedPlants: [],
       effectiveDate: '',
       files: [],
+      ProductGroup: [],
 
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
@@ -104,6 +105,11 @@ class AddAssemblyPart extends Component {
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
   }
+
+  handleProductGroup = (e) => {
+    this.setState({ ProductGroup: e })
+  }
+
 
   /**
   * @method handleChange
@@ -221,6 +227,10 @@ class AddAssemblyPart extends Component {
       });
       return temp;
     }
+    if (label === 'ProductGroup') {
+      return []
+    }
+
   }
 
   /**
@@ -229,9 +239,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined ||
-      fieldsObj.AssemblyPartNumber === undefined ||
-      fieldsObj.AssemblyPartName === undefined) {
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {
       return false;
     } else {
       return true;
@@ -269,6 +277,7 @@ class AddAssemblyPart extends Component {
     //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
     let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
 
+    //BELOW CONDITION WILL PASS WHEN L0 LEVEL IS NOT AVAILABLE
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
         PartType: ASSEMBLY,
@@ -484,7 +493,7 @@ class AddAssemblyPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -532,7 +541,7 @@ class AddAssemblyPart extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -714,6 +723,26 @@ class AddAssemblyPart extends Component {
                       <Row>
                         {/* <Col md="3">
                           <Field
+                            label="Product Group"
+                            name="ProductGroup"
+                            placeholder={"Select"}
+                            selection={
+                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                            options={this.renderListing("ProductGroup")}
+                            selectionChanged={this.handleProductGroup}
+                            validate={
+                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                            required={true}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                          // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                          />
+                        </Col> */}
+                        {/* <Col md="3">
+                          <Field
                             label="Plant"
                             name="Plant"
                             placeholder={"Select"}
@@ -765,8 +794,8 @@ class AddAssemblyPart extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag ? true : false}
-                              //minDate={moment()}
+                                disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
+                              //minDate={moment()} 
                               />
                             </div>
                           </div>
@@ -777,7 +806,7 @@ class AddAssemblyPart extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
-                              </button>
+                          </button>
                         </Col>
                       </Row>
 
@@ -827,10 +856,10 @@ class AddAssemblyPart extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
@@ -894,24 +923,14 @@ class AddAssemblyPart extends Component {
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
+                          <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                         >
-                          <div className={"check-icon"}>
-                            <img
-                              src={require("../../../assests/images/check.png")}
-                              alt="check-icon.jpg"
-                            />{" "}
-                          </div>
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>

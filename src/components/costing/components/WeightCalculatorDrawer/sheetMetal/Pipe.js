@@ -15,6 +15,16 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { ViewCostingContext } from '../../CostingDetails'
+
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
+  });
+
+  return values;
+}
 
 function Pipe(props) {
 
@@ -46,6 +56,7 @@ function Pipe(props) {
   const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
+  const CostingViewMode = useContext(ViewCostingContext);
 
   const defaultValues = {
 
@@ -66,7 +77,7 @@ function Pipe(props) {
   }
 
   const {
-    register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+    register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
       mode: 'onChange',
       reValidateMode: 'onChange',
       defaultValues: defaultValues,
@@ -88,7 +99,7 @@ function Pipe(props) {
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({
     GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-    FinishWeight: WeightCalculatorRequest?.FinishWeight ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
   })
   const [manualFinish, setManualFinish] = useState(false)
   const [isChangeApplies, setIsChangeApplied] = useState(true)
@@ -99,12 +110,13 @@ function Pipe(props) {
 
   const [useFinishWeight, setUseFinishWeight] = useState(false)
 
-
-
-  const fieldValues = useWatch({
-    control,
-    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
-  })
+  let fields = IsolateReRender(control)
+  let fieldValues = {
+    OuterDiameter: fields && fields[0],
+    Thickness: fields && fields[1],
+    SheetLength: fields && fields[2],
+    PartLength: fields && fields[3],
+  }
 
   // const fieldVal = useWatch({
   //   control,
@@ -489,6 +501,7 @@ function Pipe(props) {
     //
     grossWeight = setValueAccToUOM(grossWeight, value.label)
     let finishWeight = setValueAccToUOM(dataToSend?.FinishWeight ? dataToSend.FinishWeight : FinishWeight, value.label)
+    console.log('finishWeight: ', (finishWeight).toFixed(6));
 
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 
@@ -965,24 +978,22 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
-            {
-              isEditFlag &&
 
+            {isEditFlag && !CostingViewMode &&
               <div className="col-sm-12 text-right px-0 mt-4">
                 <button
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                  <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
                   type={'submit'}
                   className="submit-button save-btn">
-                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  <div className={'save-icon'}></div>
                   {'Save'}
                 </button>
-              </div>
-            }
+              </div>}
 
           </form>
         </div>

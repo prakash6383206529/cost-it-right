@@ -27,9 +27,12 @@ import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import attachClose from '../../../assests/images/red-cross.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -580,6 +583,9 @@ class AddMachineRate extends Component {
     }
 
     let tempData = processGrid[processGridEditIndex];
+    if (MachineRate !== tempData.MachineRate || UOM.value !== tempData.UnitOfMeasurementId || processName.value !== tempData.ProcessId) {
+      this.setState({ DropdownChange: false })
+    }
     tempData = {
       processName: processName.label,
       ProcessId: processName.value,
@@ -626,7 +632,7 @@ class AddMachineRate extends Component {
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
     }, () => this.props.change('MachineRate', tempData.MachineRate))
-    this.setState({ DropdownChange: false })
+    // this.setState({ DropdownChange: false })
   }
 
   /**
@@ -776,7 +782,8 @@ class AddMachineRate extends Component {
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-    const a = this.state.Data
+
+
 
     if (isViewFlag) {
       this.cancel();
@@ -831,9 +838,13 @@ class AddMachineRate extends Component {
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
-          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         }
         if (isEditFlag) {
+          if (DropdownChange) {
+            this.cancel();
+            return false
+          }
           const toastrConfirmOptions = {
             onOk: () => {
               this.props.reset()
@@ -845,6 +856,8 @@ class AddMachineRate extends Component {
               })
             },
             onCancel: () => { },
+            component: () => <ConfirmComponent />,
+
           }
           return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
@@ -871,7 +884,7 @@ class AddMachineRate extends Component {
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       }
       this.props.reset()
       this.props.createMachine(formData, (res) => {
@@ -1107,7 +1120,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1119,9 +1132,9 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1142,7 +1155,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1161,7 +1174,7 @@ class AddMachineRate extends Component {
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
                             required={false}
-                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1398,10 +1411,10 @@ class AddMachineRate extends Component {
                                   Drag and Drop or{" "}
                                   <span className="text-primary">
                                     Browse
-                          </span>
+                                  </span>
                                   <br />
-                          file to upload
-                        </span>
+                                  file to upload
+                                </span>
                               </div>))}
                               styles={{
                                 dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
@@ -1444,12 +1457,12 @@ class AddMachineRate extends Component {
                                 type={'button'}
                                 className=" mr15 cancel-btn"
                                 onClick={this.cancel} >
-                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn" >
-                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}
                               </button>
                             </>
@@ -1457,7 +1470,7 @@ class AddMachineRate extends Component {
                             <button
                               type="submit"
                               className="submit-button mr5 save-btn" >
-                              <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                              <div className={'save-icon'}></div>
                               {'Exit'}
                               {/* Need to change name of button for view flag */}
                             </button>

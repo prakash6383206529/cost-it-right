@@ -1525,7 +1525,7 @@ class AddMoreDetails extends Component {
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1635,7 +1635,7 @@ class AddMoreDetails extends Component {
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files,
         VendorPlant: [],
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
       }
 
 
@@ -3222,12 +3222,12 @@ class AddMoreDetails extends Component {
                           type={'button'}
                           className=" mr15 cancel-btn"
                           onClick={this.cancel} >
-                          <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                          <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn" >
-                          <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
                         </button>
                       </div>

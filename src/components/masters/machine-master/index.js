@@ -6,10 +6,10 @@ import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
-
+import MachineInsights from './MachineInsights';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MACHINE, } from '../../../config/constants';
+import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 
@@ -17,7 +17,7 @@ class MachineMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '1',
+            activeTab: '2',
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
@@ -38,26 +38,36 @@ class MachineMaster extends Component {
     * @description SET PERMISSION FOR ADD, VIEW, EDIT, DELETE, DOWNLOAD AND BULKUPLOAD
     */
     componentDidMount() {
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === MACHINE)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+        this.applyPermission(this.props.topAndLeftMenuData)
+    }
 
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                        BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                    })
-                }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === MACHINE)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+                })
             }
-        })
+        }
     }
 
     /**
@@ -182,15 +192,20 @@ class MachineMaster extends Component {
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Machine Rate
-                                </NavLink>
-                                    </NavItem>
+                                            Insights
+                                        </NavLink>
+                                    </NavItem> */}
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                            Machine Rate
+                                        </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Manage Process
-                                </NavLink>
+                                        </NavLink>
                                     </NavItem>
                                 </Nav>
 
@@ -198,6 +213,11 @@ class MachineMaster extends Component {
 
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
+                                            <MachineInsights />
+                                        </TabPane>}
+
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
                                             <MachineRateListing
                                                 displayForm={this.displayForm}
                                                 getDetails={this.getDetails}
@@ -205,17 +225,20 @@ class MachineMaster extends Component {
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab == 2 &&
-                                        <TabPane tabId="2">
+                                    {this.state.activeTab == 3 &&
+                                        <TabPane tabId="3">
                                             <ProcessListing
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
+
                                 </TabContent>
                             </div>
                         </Col>
@@ -232,8 +255,8 @@ class MachineMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { leftMenuData, loading } = auth;
-    return { leftMenuData, loading }
+    const { leftMenuData, topAndLeftMenuData, loading } = auth;
+    return { leftMenuData, topAndLeftMenuData, loading }
 }
 
 

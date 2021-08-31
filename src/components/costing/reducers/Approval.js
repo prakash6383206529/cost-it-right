@@ -8,10 +8,13 @@ import {
   GET_ALL_REASON_SELECTLIST,
   GET_APPROVAL_LIST,
   GET_APPROVAL_SUMMARY,
-  GET_SELECTED_COSTING_STATUS
+  GET_SELECTED_COSTING_STATUS,
+  SET_SAP_DATA
 } from '../../../config/constants'
 
-const initialState = {}
+const initialState = {
+  SAPObj: { PurchasingGroup: '', MaterialGroup: '' }
+}
 
 export default function ApprovalReducer(state = initialState, action) {
   switch (action.type) {
@@ -80,6 +83,12 @@ export default function ApprovalReducer(state = initialState, action) {
         loading: false,
         error: true,
         costingStatusList: action.payload
+      }
+    case SET_SAP_DATA:
+      return {
+        ...state,
+        loading: false,
+        SAPObj: action.payload
       }
     default:
       return state

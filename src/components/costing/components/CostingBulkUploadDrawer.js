@@ -6,13 +6,12 @@ import { Container, Row, Col, } from 'reactstrap';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting, plasticBulkUploadCosting } from '../actions/CostWorking'
+import Dropzone from 'react-dropzone-uploader';
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
 import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../config/masterData'
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL, SHEET_METAL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
@@ -227,6 +226,13 @@ class CostingBulkUploadDrawer extends Component {
                 files.push(Data)
             })
             this.cancel()
+        } if (this.state.Technology.label === 'Machining') {
+            this.props.machiningBulkUploadCosting(data, (res) => {
+                let Data = res.data[0]
+                const { files } = this.state
+                files.push(Data)
+            })
+            this.cancel()
         }
 
     }
@@ -355,18 +361,11 @@ class CostingBulkUploadDrawer extends Component {
                                                 value="CANCEL"
                                                 className="reset mr15 cancel-btn"
                                             >
-                                                <div className={"cross-icon"}>
-                                                    <img
-                                                        src={require("../../../assests/images/times.png")}
-                                                        alt="cancel-icon.jpg"
-                                                    />
-                                                </div>
+                                                <div className={'cancel-icon'}></div>
                                                     CANCEL
                                             </button>
                                             <button type="submit" className="btn-primary save-btn">
-                                                <div className={"check-icon"}>
-                                                    <img src={require("../../../assests/images/check.png")} alt="" />
-                                                </div>
+                                                <div className={'save-icon'}></div>
                                                 {"SAVE"}
                                             </button>
                                         </div>
@@ -402,7 +401,8 @@ export default connect(mapStateToProps,
     {
         bulkUploadCosting,
         getCostingTechnologySelectList,
-        plasticBulkUploadCosting
+        plasticBulkUploadCosting,
+        machiningBulkUploadCosting
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,

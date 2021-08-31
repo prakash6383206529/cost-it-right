@@ -9,6 +9,7 @@ import Login from './login/Login'
 import NotFoundPage from './common/NotFoundPage'
 import User from './user'
 import Dashboard from './dashboard'
+import DashboardWithGraph from './dashboard/DashboardWithGraph'
 import { Loader } from '../../src/components/common/Loader'
 import PartMaster from './masters/part-master'
 import UOMMaster from './masters/uom-master'
@@ -38,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config
+  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -49,6 +50,11 @@ import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
 import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
+import ReportListing from './report/ReportListing'
+import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
+import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
+import CostingSimulation from './simulation/components/CostingSimulation'
+import RMApproval from './masters/material-master/RMApproval'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -62,28 +68,28 @@ const CustomHeader = {
 const Detail = userDetails()
 
 if (Object.keys(Detail).length > 0) {
-  window.setInterval(() => {
+  // window.setInterval(() => {
 
-    const NewDetail = userDetails()
+  //   const NewDetail = userDetails()
 
-    let reqParams = {
-      IsRefreshToken: true,
-      refresh_token: NewDetail.RefreshToken,
-      ClientId: 'self',
-      grant_type: 'refresh_token',
-    }
+  //   let reqParams = {
+  //     IsRefreshToken: true,
+  //     refresh_token: NewDetail.RefreshToken,
+  //     ClientId: 'self',
+  //     grant_type: 'refresh_token',
+  //   }
 
-    let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
-    axios.post(API.tokenAPI, queryParams, CustomHeader)
-      .then((response) => {
-        if (response && response.status === 200) {
-          let userDetail = formatLoginResult(response.data);
-          reactLocalStorage.setObject("userDetail", userDetail);
-        }
-      }).catch((error) => {
+  //   let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
+  //   axios.post(API.tokenAPI, queryParams, CustomHeader)
+  //     .then((response) => {
+  //       if (response && response.status === 200) {
+  //         let userDetail = formatLoginResult(response.data);
+  //         reactLocalStorage.setObject("userDetail", userDetail);
+  //       }
+  //     }).catch((error) => {
 
-      });
-  }, (Detail.expires_in - 60) * 1000);
+  //     });
+  // }, (Detail.expires_in - 60) * 1000);
 }
 
 class Main extends Component {
@@ -144,7 +150,6 @@ class Main extends Component {
       const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
       const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 
 
-      console.log('current_time: ', current_time, totalSeconds * 1000, callBeforeSeconds);
       if ((totalSeconds * 1000 - callBeforeSeconds) > 0) {
 
         setInterval(() => {
@@ -155,9 +160,7 @@ class Main extends Component {
             grant_type: 'refresh_token',
           }
 
-          console.log('current_time: Before', current_time, totalSeconds, callBeforeSeconds);
           this.props.TokenAPI(reqParams, (res) => {
-            console.log('current_time: After', current_time, totalSeconds, callBeforeSeconds);
             if (res && res.status === 200) {
               let userDetail = formatLoginResult(res.data);
               reactLocalStorage.setObject("userDetail", userDetail);
@@ -223,9 +226,18 @@ class Main extends Component {
         location.pathname === APPROVAL_LISTING_PATH ||
         location.pathname === APPROVAL_SUMMARY_PATH ||
         location.pathname === COSTING_BULK_UPLOAD ||
-        location.pathname === COSTING_SUMMARY
-        ? 'w-100'
-        : ''
+        location.pathname === COSTING_SUMMARY ||
+        location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
+        location.pathname === DASHBOARD_PATH ||
+        location.pathname === DASHBOARD_PATH_SECOND ||
+        location.pathname === DASHBOARDWITHGRAPH_PATH ? 'w-100' : ''
+
+    //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
+    const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
+    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND ? 'Dashboard-page' : ''
+    //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
+
+
 
     return (
       <Suspense fallback={<Loader />}>
@@ -268,11 +280,15 @@ class Main extends Component {
                 location.pathname !== APPROVAL_LISTING_PATH &&
                 location.pathname !== COSTING_BULK_UPLOAD &&
                 location.pathname !== COSTING_SUMMARY &&
+                location.pathname !== DASHBOARDWITHGRAPH_PATH &&
+                location.pathname !== SIMULATION_APPROVAL_SUMMARY_PATH &&
+                location.pathname !== DASHBOARD_PATH &&
+                location.pathname !== DASHBOARD_PATH_SECOND &&
                 (
                   <LeftMenu {...this.props} />
                 )}
 
-              <div className={isLogin ? `content-page ${fullSizeClass}` : ''}>
+              <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
                   <Switch>
 
@@ -293,11 +309,15 @@ class Main extends Component {
 
                     <Route path="/dashboard" component={AuthMiddleware(Dashboard, DASHBOARD)} />
 
+                    <Route path="/dashboardWithGraph" component={(DashboardWithGraph)} />
+
                     <Route path="/part-master" component={AuthMiddleware(PartMaster, PART)} />
 
                     <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
 
-                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+                    <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+
+                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
@@ -319,11 +339,12 @@ class Main extends Component {
 
                     <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
-                    <Route path="/costing" component={CostingRoutes} />
+                    <Route path="/costing" component={CostingRoutes} exact={true} />
 
                     <Route path="/costing-summary" component={CostingRoutes} />
 
-                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} />
+                    {/* <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} /> */}
+                    <Route path="/approval-summary" component={ApprovalSummary} />
 
                     <Route path="/approval-listing" component={ApprovalListing} />
                     {/* <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} /> */}
@@ -340,11 +361,20 @@ class Main extends Component {
 
                     <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
 
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} />
+                    {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
-                    <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
+                    {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
+                    <Route path="/simulation-history" component={SimulationApprovalListing} />
 
-                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
+                    <Route path='/simulation-approval-summary' component={SimulationApprovalSummary} />
+
+                    <Route path="/simulation" component={Simulation} />
+
+                    <Route path="/simulation-upload" component={SimulationUpload} />
+
+                    <Route path="/costing-detail-report" component={ReportListing} />
+
+                    {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     <Route
                       render={(props) => (

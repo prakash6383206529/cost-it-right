@@ -2,14 +2,11 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderText, renderDatePicker } from "../../layout/FormInputs";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
+import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
-import {
-  createOverhead, updateOverhead, getOverheadData, fileUploadOverHead,
-  fileDeleteOverhead,
-} from '../actions/OverheadProfit';
+import { createOverhead, updateOverhead, getOverheadData, fileUploadOverHead, fileDeleteOverhead, } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -17,9 +14,11 @@ import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
+import imgRedcross from '../../../assests/images/red-cross.png'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -54,7 +53,8 @@ class AddOverhead extends Component {
       isHideBOP: false,
       DropdownChanged: true,
       DataToChange: [],
-      effectiveDate: ''
+      effectiveDate: '',
+      plant: []
     }
   }
 
@@ -67,6 +67,7 @@ class AddOverhead extends Component {
     this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
     this.props.getVendorWithVendorCodeSelectList()
     this.props.getClientSelectList(() => { })
+    this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetails();
   }
 
@@ -118,6 +119,7 @@ class AddOverhead extends Component {
         OverheadID: data.Id,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow');
+      this.props.getVendorWithVendorCodeSelectList()
       this.props.getOverheadData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -125,12 +127,12 @@ class AddOverhead extends Component {
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
-            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
+            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
-
+            const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
               Head = 'vendor';
@@ -147,6 +149,7 @@ class AddOverhead extends Component {
               costingHead: Head,
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
@@ -172,7 +175,7 @@ class AddOverhead extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, clientSelectList, modelTypes, costingHead } = this.props;
+    const { vendorWithVendorCodeSelectList, clientSelectList, modelTypes, costingHead, plantSelectList } = this.props;
     const temp = [];
 
     if (label === 'ModelType') {
@@ -210,6 +213,16 @@ class AddOverhead extends Component {
       });
       return temp;
     }
+
+    if (label === 'plant') {
+      plantSelectList &&
+        plantSelectList.map((item) => {
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
   }
 
   /**
@@ -224,6 +237,15 @@ class AddOverhead extends Component {
     }
     this.setState({ DropdownChanged: false })
   };
+
+  handlePlant = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ plant: newValue });
+    } else {
+      this.setState({ plant: [] })
+    }
+    this.setState({ DropdownChanged: false })
+  }
 
   /**
   * @method handleClient
@@ -530,13 +552,10 @@ class AddOverhead extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
-
-
-
       if (values.OverheadPercentage == '') {
         values.OverheadPercentage = null
       }
@@ -584,8 +603,9 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
-        IsForcefulUpdated: true
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        IsForcefulUpdated: true,
+        PlantId: plant.value
       }
       if (isEditFlag) {
         const toastrConfirmOptions = {
@@ -599,6 +619,7 @@ class AddOverhead extends Component {
             })
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -624,7 +645,8 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        PlantId: plant.value
       }
 
       this.props.reset()
@@ -706,7 +728,7 @@ class AddOverhead extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -719,7 +741,7 @@ class AddOverhead extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Client Based</span>
-                          </Label>
+                          </Label> */}
                         </Col>
                       </Row>
                       <Row>
@@ -747,29 +769,52 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="4" >
-                            <Field
-                              name="vendorName"
-                              type="text"
-                              label={"Vendor Name"}
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("VendorNameList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.vendorName == null ||
-                                  this.state.vendorName.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={
-                                this.handleVendorName
-                              }
-                              valueDescription={this.state.vendorName}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+                          <>
+                            <Col md="4" >
+                              <Field
+                                name="vendorName"
+                                type="text"
+                                label={"Vendor Name"}
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("VendorNameList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.vendorName == null ||
+                                    this.state.vendorName.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={
+                                  this.handleVendorName
+                                }
+                                valueDescription={this.state.vendorName}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="4" >
+                              <Field
+                                name="Plant"
+                                type="text"
+                                label={"Plant"}
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("plant")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.plant == null ||
+                                    this.state.plant.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handlePlant}
+                                valueDescription={this.state.plant}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          </>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="4">
@@ -965,10 +1010,10 @@ class AddOverhead extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
@@ -1023,12 +1068,7 @@ class AddOverhead extends Component {
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
                         >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
+                          <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
                         {/* <button onClick={this.options}>13</button> */}
@@ -1036,12 +1076,7 @@ class AddOverhead extends Component {
                           type="submit"
                           className="user-btn mr5 save-btn"
                         >
-                          <div className={"check-icon"}>
-                            <img
-                              src={require("../../../assests/images/check.png")}
-                              alt="check-icon.jpg"
-                            />{" "}
-                          </div>
+                          <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
                         </button>
                       </div>
@@ -1067,7 +1102,7 @@ function mapStateToProps(state) {
   const filedObj = selector(state, 'OverheadPercentage', 'OverheadRMPercentage', 'OverheadMachiningCCPercentage',
     'OverheadBOPPercentage')
 
-  const { modelTypes, costingHead, } = comman;
+  const { modelTypes, costingHead, plantSelectList } = comman;
   const { overheadProfitData, } = overheadProfit;
   const { clientSelectList } = client;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1085,7 +1120,7 @@ function mapStateToProps(state) {
 
   return {
     modelTypes, costingHead, overheadProfitData, clientSelectList,
-    vendorWithVendorCodeSelectList, filedObj, initialValues,
+    vendorWithVendorCodeSelectList, filedObj, initialValues, plantSelectList
   }
 
 }
@@ -1106,6 +1141,7 @@ export default connect(mapStateToProps, {
   getOverheadData,
   fileUploadOverHead,
   fileDeleteOverhead,
+  getPlantSelectListByType
 })(reduxForm({
   form: 'AddOverhead',
   enableReinitialize: true,

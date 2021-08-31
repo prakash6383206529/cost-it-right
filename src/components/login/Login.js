@@ -1,3 +1,4 @@
+
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import {
@@ -12,6 +13,9 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
+import logo from '../../assests/images/logo/company-logo.png'
+import secondLogo from '../../assests/images/logo/CIRlogo.svg'
+import errorImg from '../../assests/images/box.png'
 
 class Login extends Component {
   constructor(props) {
@@ -58,7 +62,7 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
         this.props.logUserIn();
-        //this.setState({ isRedirect: true })
+        // this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
@@ -88,7 +92,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/logo/minda-logo1x.png")} alt="Minda" /></a>
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={logo} alt="Minda" /></a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
@@ -157,11 +161,11 @@ class Login extends Component {
                 </form>
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
-                  <img className="logo-second" src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" />
+                  <img className="logo-second" src={secondLogo} alt="Cost It Right" />
                 </div>
               </div>
               <div className="col-md-7 p-0 right-sideimg">
-                <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+                <img src={errorImg} alt='error-icon' />
               </div>
             </div>
           </div>

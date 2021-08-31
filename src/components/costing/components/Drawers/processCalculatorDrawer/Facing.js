@@ -1,107 +1,52 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
-import {
-  clampingTime,
-  feedByMin,
-  findRpm,
-  passesNo,
-  totalMachineTime,
-} from './CommonFormula'
-import {
-  checkForDecimalAndNull,
-  getConfigurationKey,
-  trimDecimalPlace,
-} from '../../../../../helper'
+import { useDispatch } from 'react-redux'
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
+import { checkForDecimalAndNull, getConfigurationKey, trimDecimalPlace, loggedInUserId } from '../../../../../helper'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
+import { toastr } from 'react-redux-toastr'
+
+
 function Facing(props) {
-  const { technology, process, calculateMachineTime } = props
+  const { calculateMachineTime } = props
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  const costData = useContext(costingInfoContext);
+
+  const dispatch = useDispatch()
+
+
   const defaultValues = {
-    cutLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutLength !== undefined
-      ? WeightCalculatorRequest.CutLength
-      : '',
-    // removedMaterial: '',
-    rpm: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Rpm !== undefined
-      ? WeightCalculatorRequest.Rpm : '',
-    feedMin: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FeedMin !== undefined
-      ? WeightCalculatorRequest.FeedMin : '',
-    cutTime: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CutTime !== undefined
-      ? WeightCalculatorRequest.CutTime : '',
-    numberOfPasses: WeightCalculatorRequest &&
-      WeightCalculatorRequest.NumberOfPasses !== undefined
-      ? WeightCalculatorRequest.NumberOfPasses : '',
-    clampingPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingPercentage !== undefined
-      ? WeightCalculatorRequest.ClampingPercentage : '',
-    clampingValue: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingValue !== undefined
-      ? WeightCalculatorRequest.ClampingValue : '',
-    turningDiameter: WeightCalculatorRequest &&
-      WeightCalculatorRequest.TurningDiameter !== undefined
-      ? WeightCalculatorRequest.TurningDiameter : '',
-    finishDiameter: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FinishDiameter !== undefined
-      ? WeightCalculatorRequest.FinishDiameter : '',
-    removedMaterial: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RemovedMaterial !== undefined
-      ? WeightCalculatorRequest.RemovedMaterial : '',
-    cuttingSpeed: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CuttingSpeed !== undefined
-      ? WeightCalculatorRequest.CuttingSpeed : '',
-    doc: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Doc !== undefined
-      ? WeightCalculatorRequest.Doc : '',
-    feedRev: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FeedRev !== undefined
-      ? WeightCalculatorRequest.FeedRev : '',
-    clampingPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ClampingPercentage !== undefined
-      ? WeightCalculatorRequest.ClampingPercentage : '',
+    cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
+    rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
+    feedMin: WeightCalculatorRequest && WeightCalculatorRequest.FeedMin !== undefined ? WeightCalculatorRequest.FeedMin : '',
+    cutTime: WeightCalculatorRequest && WeightCalculatorRequest.CutTime !== undefined ? WeightCalculatorRequest.CutTime : '',
+    numberOfPasses: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPasses !== undefined ? WeightCalculatorRequest.NumberOfPasses : '',
+    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
+    turningDiameter: WeightCalculatorRequest && WeightCalculatorRequest.TurningDiameter !== undefined ? WeightCalculatorRequest.TurningDiameter : '',
+    finishDiameter: WeightCalculatorRequest && WeightCalculatorRequest.FinishDiameter !== undefined ? WeightCalculatorRequest.FinishDiameter : '',
+    removedMaterial: WeightCalculatorRequest && WeightCalculatorRequest.RemovedMaterial !== undefined ? WeightCalculatorRequest.RemovedMaterial : '',
+    cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
+    doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
+    feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
+    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
   }
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
   const fieldValues = useWatch({
     control,
-    name: [
-      'turningDiameter',
-      'finishDiameter',
-      // 'turningLength',
-      //'cutLength',
-      'removedMaterial',
-      'cuttingSpeed',
-      'doc',
-      // 'rpm',
-      'feedRev',
-      'clampingPercentage',
-      // 'feedMin',
-      // 'cutTime',
-      // 'clampingPercentage',
-      // 'clampingValue',
-    ],
+    name: ['turningDiameter', 'finishDiameter', 'removedMaterial', 'cuttingSpeed', 'doc', 'feedRev', 'clampingPercentage',],
   })
 
   useEffect(() => {
-    // onTurningLength()
     onClampingPercantageChange()
     onFinishDiameterChange()
     onDocChange()
@@ -110,35 +55,28 @@ function Facing(props) {
   }, [fieldValues])
 
 
-  const [totalMachiningTime, setTotalMachiningTime] = useState('0.00')
+  const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
   const isEditFlag = WeightCalculatorRequest ? true : false
-  const trimVal = getConfigurationKey()
-  const trim = trimVal.NumberOfDecimalForWeightCalculation
+  const trim = getConfigurationKey().NoOfDecimalForInputOutput
+  const [dataToSend, setDataToSend] = useState({})
 
-
-  const fieldForProcess = () => { }
 
   const onFinishDiameterChange = (e) => {
     const turningDiameter = getValues('turningDiameter')
     const finishDiameter = getValues('finishDiameter')
-
-    const cutLength = checkForDecimalAndNull(
-      (turningDiameter - finishDiameter) / 2,
-      trim,
-    )
+    const cutLength = (turningDiameter - finishDiameter) / 2
     if (!turningDiameter || !finishDiameter || cutLength) {
       return ''
     }
-    setValue('cutLength', cutLength)
+    setDataToSend(prevState => ({ ...prevState, cutLength: cutLength }))
+    setValue('cutLength', checkForDecimalAndNull(cutLength, trim))
   }
 
   const onDocChange = (e) => {
     const removedMaterial = getValues('removedMaterial')
     const doc = getValues('doc')
-    if (technology === 'Machining') {
-      const numberOfPasses = passesNo(removedMaterial, doc)
-      setValue('numberOfPasses', numberOfPasses)
-    }
+    const numberOfPasses = passesNo(removedMaterial, doc)
+    setValue('numberOfPasses', numberOfPasses)
   }
 
   const onSpeedChange = (e) => {
@@ -147,7 +85,8 @@ function Facing(props) {
     const cuttingSpeed = getValues('cuttingSpeed')
     const Diameter = (Number(turningDiameter) + Number(finishDiameter)) / 2
     const rpm = findRpm(cuttingSpeed, Diameter)
-    setValue('rpm', rpm)
+    setDataToSend(prevState => ({ ...prevState, rpm: rpm }))
+    setValue('rpm', checkForDecimalAndNull(rpm, trim))
   }
   const onFeedRevChange = (e) => {
     const feedRev = getValues('feedRev')
@@ -158,39 +97,65 @@ function Facing(props) {
     if (!feedMin) {
       return ''
     }
-    const tCut = checkForDecimalAndNull((cutLength * passesNo) / feedMin, trim)
-    setValue('feedMin', feedMin)
-    setValue('cutTime', tCut)
+    const tCut = (cutLength * passesNo) / feedMin
+    setDataToSend(prevState => ({ ...prevState, feedMin: feedMin, tCut: tCut }))
+    setValue('feedMin', checkForDecimalAndNull(feedMin, trim))
+    setValue('cutTime', checkForDecimalAndNull(tCut, trim))
   }
+
   const onClampingPercantageChange = (e) => {
     const tcut = Number(getValues('cutTime'))
     const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
-    setValue('clampingValue', clampingValue)
-    // setValue('totalmachineTime', totalMachiningTime)
+    setValue('clampingValue', checkForDecimalAndNull(clampingValue, trim))
+    setDataToSend(prevState => ({ ...prevState, clampingValue: clampingValue }))
     setTotalMachiningTime(totalMachiningTime)
   }
+
   const onSubmit = (formValue) => {
-
-
     let obj = {}
+    obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    obj.IsChangeApplied = true
+    obj.TechnologyId = costData.TechnologyId
+    obj.CostingId = costData.CostingId
+    obj.TechnologyName = costData.TechnologyName
+    obj.PartId = costData.PartId
+    obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
+    obj.MachineRateId = props.calculatorData.MachineRateId
+    obj.PartNumber = costData.PartNumber
+    obj.ProcessId = props.calculatorData.ProcessId
+    obj.ProcessName = props.calculatorData.ProcessName
+    obj.ProcessDescription = props.calculatorData.ProcessDescription
+    obj.MachineName = costData.MachineName
+    obj.UOM = props.calculatorData.UOM
+    obj.LoggedInUserId = loggedInUserId()
+    obj.UnitTypeId = props.calculatorData.UOMTypeId
+    obj.UnitType = props.calculatorData.UOMType
     obj.TurningDiameter = formValue.turningDiameter
     obj.FinishDiameter = formValue.finishDiameter
     obj.CutLength = formValue.cutLength
     obj.RemovedMaterial = formValue.removedMaterial
-    obj.Rpm = formValue.rpm
+    obj.Rpm = dataToSend.rpm
     obj.FeedRev = formValue.feedRev
-    obj.FeedMin = formValue.feedMin
-    obj.CutTime = formValue.cutTime
+    obj.FeedMin = dataToSend.feedMin
+    obj.CutTime = dataToSend.tcut
     obj.NumberOfPasses = formValue.numberOfPasses
     obj.ClampingPercentage = formValue.clampingPercentage
-    obj.ClampingValue = formValue.clampingValue
+    obj.ClampingValue = dataToSend.clampingValue
     obj.CuttingSpeed = formValue.cuttingSpeed
     obj.Doc = formValue.doc
     obj.TotalMachiningTime = totalMachiningTime
-
-    calculateMachineTime(totalMachiningTime, obj)
+    obj.MachineRate = props.calculatorData.MHR
+    obj.ProcessCost = (totalMachiningTime / 60) * props.calculatorData.MHR
+    dispatch(saveProcessCostCalculationData(obj, res => {
+      if (res.data.Result) {
+        obj.ProcessCalculationId = res.data.Identity
+        toastr.success('Calculation saved sucessfully.')
+        calculateMachineTime(totalMachiningTime, obj)
+      }
+    }))
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -201,14 +166,14 @@ function Facing(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Turning Diameter(mm)`}
                         name={'turningDiameter'}
@@ -219,21 +184,19 @@ function Facing(props) {
                         rules={{
                           required: true,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.cutterDiameter}
+                        errors={errors.turningDiameter}
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Finish Diameter(mm)`}
                         name={'finishDiameter'}
@@ -244,21 +207,19 @@ function Facing(props) {
                         rules={{
                           required: true,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.cutLengthOfArea}
+                        errors={errors.finishDiameter}
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -269,21 +230,19 @@ function Facing(props) {
                         rules={{
                           required: true,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={onFinishDiameterChange}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.areaWidth}
+                        errors={errors.cutLength}
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Material To be Removed`}
                         name={'removedMaterial'}
@@ -294,24 +253,22 @@ function Facing(props) {
                         rules={{
                           required: false,
                           pattern: {
-                            value: /^[0-9\b]+$/i,
-                            //value: /^[0-9]\d*(\.\d+)?$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.slotNo}
+                        errors={errors.removedMaterial}
                         disabled={false}
                       />
                     </Col>
                   </Row>
 
                   <Row>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Depth of Cut(mm)`}
                         name={'doc'}
@@ -322,21 +279,19 @@ function Facing(props) {
                         rules={{
                           required: false,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={onDocChange}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.cutLength}
+                        errors={errors.doc}
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of Passes`}
                         name={'numberOfPasses'}
@@ -344,15 +299,6 @@ function Facing(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -369,7 +315,7 @@ function Facing(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -380,11 +326,9 @@ function Facing(props) {
                         rules={{
                           required: true,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={onSpeedChange}
                         defaultValue={''}
@@ -394,7 +338,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -402,15 +346,6 @@ function Facing(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -420,7 +355,7 @@ function Facing(props) {
                       />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -429,12 +364,11 @@ function Facing(props) {
                         register={register}
                         mandatory={true}
                         rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
+                          required: true,
+                          pattern: {
+                            value: /^[0-9]*$/i,
+                            message: 'Invalid Number.'
+                          },
                         }}
                         handleChange={onFeedRevChange}
                         defaultValue={''}
@@ -444,7 +378,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -452,15 +386,6 @@ function Facing(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -477,7 +402,7 @@ function Facing(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -485,15 +410,6 @@ function Facing(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -502,7 +418,7 @@ function Facing(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -513,11 +429,9 @@ function Facing(props) {
                         rules={{
                           required: true,
                           pattern: {
-                            //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={onClampingPercantageChange}
                         defaultValue={''}
@@ -527,7 +441,7 @@ function Facing(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
@@ -535,14 +449,6 @@ function Facing(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
@@ -551,7 +457,7 @@ function Facing(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3"></Col>
+                    <Col md="4"></Col>
                   </Row>
                 </Col>
 
@@ -573,12 +479,7 @@ function Facing(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
-                  <img
-                    src={require('../../../../../assests/images/times.png')}
-                    alt="cancel-icon.jpg"
-                  />
-                </div>
+                <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
               <button
@@ -586,9 +487,7 @@ function Facing(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+                <div className={"save-icon"}></div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>

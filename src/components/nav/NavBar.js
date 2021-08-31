@@ -6,11 +6,34 @@ import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
+  getTopAndLeftMenuData,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
 import ConfirmComponent from "../../helper/ConfirmComponent"
+import masterImage from '../../assests/images/list.svg'
+import masterActive from '../../assests/images/masters-active.svg'
+import additionalMaster from '../../assests/images/list-add.png'
+import reportImg from '../../assests/images/chart.svg'
+import costingImg from '../../assests/images/costing.svg'
+import simulationImg from '../../assests/images/imac.svg'
+import userImg from '../../assests/images/men.svg'
+import auditImg from '../../assests/images/Audit.svg'
+import dashboardImg from '../../assests/images/homeicon.svg'
+import activeDashBoard from '../../assests/images/home-active.svg'
+import addMasterActive from '../../assests/images/aa-master-active.svg'
+import activeCosting from '../../assests/images/costing-active.svg'
+import activeSimulation from '../../assests/images/simulation-active.svg'
+import activeUser from '../../assests/images/user-active.svg'
+import activeAudit from '../../assests/images/audit-active.svg'
+import Logo from '../../assests/images/logo/company-logo.png'
+import cirLogo from '../../assests/images/logo/CIRlogo.svg'
+import userPic from '../../assests/images/user-pic.png'
+import UserImg from '../../assests/images/user.png'
+import logoutImg from '../../assests/images/logout.svg'
+import activeReport from '../../assests/images/report-active.svg'
+
 
 class SideBar extends Component {
   constructor(props) {
@@ -33,6 +56,8 @@ class SideBar extends Component {
         this.setLeftMenu(res.data.Data.ModuleId);
         this.setState({ isLoader: false });
       });
+
+      this.props.getTopAndLeftMenuData(() => { })
     }
 
     const loginUserId = loggedInUserId();
@@ -169,10 +194,10 @@ class SideBar extends Component {
    * @description Render dashboard menu.
    */
   renderDashboard = (module) => {
-    const { menusData } = this.props
+    const { menusData, topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
@@ -192,7 +217,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/home-active.svg")) : (require("../../assests/images/homeicon.svg"))}`}
+                    src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? activeDashBoard : dashboardImg}`}
                     alt={module + " icon"}
                   />
                   <span>{module}</span>
@@ -211,10 +236,10 @@ class SideBar extends Component {
    * @description Render master menu.
    */
   renderMaster = (module) => {
-    const { menusData, leftMenuData, menuData } = this.props
+    const { menusData, leftMenuData, menuData, topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
@@ -240,7 +265,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/masters-active.svg") : require("../../assests/images/list.svg")}
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? masterActive : masterImage}
                     alt={module + " icon"}
                   />
                   <span>Masters</span>
@@ -248,8 +273,8 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      menuData && menuData.map((item, i) => {
-                        if (item.Sequence === 22) return false
+                      el && el.Pages && el.Pages.map((item, i) => {
+                        if (item.Sequence === 22) return false;
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
@@ -297,19 +322,18 @@ class SideBar extends Component {
    * @description Render Addtional master menu.
    */
   renderAdditionalMaster = (module) => {
-    const { menusData, leftMenuData, menuData } = this.props
+    const { menusData, leftMenuData, menuData, topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown">
+              <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
                 <Link
                   key={i}
-                  className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -321,7 +345,7 @@ class SideBar extends Component {
                 >
                   <img
                     className=""
-                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/aa-master-active.svg")) : (require("../../assests/images/list-add.png"))}
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? addMasterActive : additionalMaster}
                     alt={module + " icon"}
                   />
                   <span>Additional Masters</span>
@@ -329,7 +353,7 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      menuData && menuData.map((item, i) => {
+                      el && el.Pages && el.Pages.map((item, i) => {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
@@ -360,9 +384,9 @@ class SideBar extends Component {
    * @description Render Report & Analytics menu.
    */
   renderReportAnalytics = (module) => {
-    const { menusData } = this.props;
+    const { menusData, topAndLeftMenuData } = this.props;
     return (
-      menusData && menusData.map((el, i) => {
+      topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li>
@@ -371,17 +395,17 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/report-analytics",
+                  pathname: "/costing-detail-report",
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Reports & Analytics",
-                    PageURL: "/report-analytics",
+                    PageName: "costing-detail-report",
+                    PageURL: "/costing-detail-report",
                   },
                 }}
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/report-active.svg") : require("../../assests/images/chart.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeReport : reportImg}
                   alt={module + " icon"}
                 />
                 <span>Report</span>
@@ -399,71 +423,56 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData, location, menuData } = this.props
+    const { menusData, location, menuData, topAndLeftMenuData } = this.props
     return (
-      menusData && menusData.map((el, i) => {
+      topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li className="nav-item dropdown">
-              <Link
-                key={i}
-                isActive={location && location.pathname === '/costing' ? true : false}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-                onClick={() => this.setLeftMenu(el.ModuleId)}
-                onMouseOver={() => this.SetMenu(el.ModuleId)}
-                to={{
-                  pathname: "/costing",
-                  state: {
-                    ModuleId: el.ModuleId,
-                    PageName: "Technology",
-                    PageURL: "/costing",
-                  },
-                }}
-              >
-                <img
-                  className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
-                  alt={module + " icon"}
-                />
-                <span>Costing </span>
-              </Link>
-              <div className="dropdown-menu sub-menu">
-                <ul>
-                  {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
-                  {
-                    menuData && menuData.map((item, i) => {
-                      if (item.Sequence !== 0) return false
-                      return (
-                        <li key={i} className={`mb5`}>
-                          <Link
-                            onClick={() => this.setLeftMenu(el.ModuleId)}
-                            to={{
-                              pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
-                            }}
-                          >{item.PageName}</Link>
-                        </li>
-                      )
-                    })
-                  }
-                  {/* <li>
-                    <Link
-                      className="dropdown-item "
-                      to={{
-                        pathname: "/approval-listing",
-                        state: {
-                          ModuleId: 1,
-                          PageName: "Costing",
-                          PageURL: "/approval-listing",
-                        },
-                      }}
-                    >
-                      - Approval
-                  </Link>
-                  </li> */}
-                </ul>
-              </div>
-            </li>
+            <>
+              <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
+                <Link
+                  key={i}
+                  // isActive={location && location.pathname === '/costing' ? true : false}
+                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  onClick={() => this.setLeftMenu(el.ModuleId)}
+                  to={{
+                    pathname: el.LandingPageURL,
+                    state: {
+                      ModuleId: el.ModuleId,
+                      PageName: "Costing",
+                      PageURL: el.LandingPageURL,
+                    },
+                  }}
+                >
+                  <img
+                    className=""
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeCosting : costingImg}
+                    alt={module + " icon"}
+                  />
+                  <span>Costing </span>
+                </Link>
+                <div className="dropdown-menu sub-menu">
+                  <ul>
+                    {
+                      el && el.Pages && el.Pages.map((item, i) => {
+                        if (item.Sequence !== 0) return false
+                        return (
+                          <li key={i} className={`mb5`}>
+                            <Link
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
+                              to={{
+                                pathname: item.NavigationURL,
+                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              }}
+                            >{item.PageName}</Link>
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
+                </div>
+              </li>
+            </>
           );
         }
         return null
@@ -476,9 +485,9 @@ class SideBar extends Component {
    * @description Render Simulation.
    */
   renderSimulation = (module) => {
-    const { menusData, menuData } = this.props
+    const { menusData, menuData, topAndLeftMenuData } = this.props
     return (
-      menusData && menusData.map((el, i) => {
+      topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li className={'nav-item dropdown'}>
@@ -499,7 +508,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/simulation-active.svg") : require("../../assests/images/imac.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeSimulation : simulationImg}
                   alt={module + " icon"}
                 />
                 <span>Simulation</span>
@@ -507,7 +516,7 @@ class SideBar extends Component {
               <div className="dropdown-menu sub-menu">
                 <ul>
                   {
-                    menuData && menuData.map((item, i) => {
+                    el && el.Pages && el.Pages.map((item, i) => {
                       if (item.Sequence !== 0) return false
                       if (item.PageName === 'Simulation Upload') return false; //NEED TO REMOVE USED FOR NOW
                       return (
@@ -553,10 +562,10 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderUser = (module) => {
-    const { menusData } = this.props
+    const { menusData, topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li>
@@ -575,7 +584,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/user-active.svg") : require("../../assests/images/men.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeUser : userImg}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>
@@ -593,10 +602,10 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderAudit = (module) => {
-    const { menusData } = this.props
+    const { menusData, topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li>
@@ -615,7 +624,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/audit-active.svg") : require("../../assests/images/Audit.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
                   alt={module + " icon"}
                 />
                 <span>{el.ModuleName}</span>
@@ -629,7 +638,7 @@ class SideBar extends Component {
   };
 
   render() {
-    const { userData, moduleSelectList, leftMenuData } = this.props;
+    const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData } = this.props;
     const { isLoader, isLeftMenuRendered } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
@@ -651,11 +660,16 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
-                <img src={require("../../assests/images/logo/minda-logo.png")} alt="Minda" height="40" />
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 ">
+                <img
+                  src={Logo}
+                  // src={require("../../assests/images/sipl-logo.jpg")}
+                  alt="Systematix"
+                  height="40"
+                />
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-                <img src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" height="40" />
+                <img src={cirLogo} alt="Cost It Right" height="40" />
               </a>
               <button
                 className="navbar-toggler p-0 border-0"
@@ -699,7 +713,7 @@ class SideBar extends Component {
                               <a className="dropdown-item preview-item d-flex py-2 align-items-start">
                                 <div className="preview-thumbnail d-inline-block">
                                   <img
-                                    src={require("../../assests/images/user-pic.png")}
+                                    src={userPic}
                                     alt={""}
                                     className="img-sm profile-pic"
                                   />{" "}
@@ -718,7 +732,7 @@ class SideBar extends Component {
                               <a className="dropdown-item preview-item d-flex py-2 align-items-start">
                                 <div className="preview-thumbnail d-inline-block">
                                   <img
-                                    src={require("../../assests/images/user-pic.png")}
+                                    src={userPic}
                                     alt={""}
                                     className="img-sm profile-pic"
                                   />{" "}
@@ -737,7 +751,7 @@ class SideBar extends Component {
                               <a className="dropdown-item preview-item d-flex py-2 align-items-start">
                                 <div className="preview-thumbnail d-inline-block">
                                   <img
-                                    src={require("../../assests/images/user-pic.png")}
+                                    src={userPic}
                                     alt={""}
                                     className="img-sm profile-pic"
                                   />{" "}
@@ -780,7 +794,7 @@ class SideBar extends Component {
                                 <img
                                   className="img-xs rounded-circle"
                                   alt={""}
-                                  src={require("../../assests/images/user.png")}
+                                  src={UserImg}
                                 />
                                 {userData.Name}
                               </>
@@ -814,7 +828,7 @@ class SideBar extends Component {
                       <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
                         <img
                           className=""
-                          src={require("../../assests/images/logout.svg")}
+                          src={logoutImg}
                           alt=""
                         />
                       </a>
@@ -831,9 +845,9 @@ class SideBar extends Component {
             <div className="nav-scroller bg-white shadow-sm header-secondry w100">
               <nav className="navbar navbar-expand-lg pl-0">
                 <ul className="navbar-nav mr-auto">
-                  {moduleSelectList &&
-                    moduleSelectList.map((item, index) => {
-                      return this.renderMenus(item.Text);
+                  {topAndLeftMenuData &&
+                    topAndLeftMenuData.map((item, index) => {
+                      return this.renderMenus(item.ModuleName);
                     })}
                 </ul>
               </nav>
@@ -851,8 +865,8 @@ class SideBar extends Component {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData } = auth
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData }
+  const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData }
 }
 
 /**
@@ -868,5 +882,6 @@ export default connect(mapStateToProps, {
   getLeftMenu,
   getPermissionByUser,
   getModuleIdByPathName,
-  getMenu
+  getMenu,
+  getTopAndLeftMenuData,
 })(SideBar)

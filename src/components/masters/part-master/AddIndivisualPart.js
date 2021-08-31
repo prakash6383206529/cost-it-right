@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
-import { loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class AddIndivisualPart extends Component {
 
       selectedPlants: [],
       effectiveDate: '',
+      ProductGroup: [],
 
       files: [],
       DataToCheck: [],
@@ -89,6 +91,11 @@ class AddIndivisualPart extends Component {
     this.setState({ selectedPlants: e })
   }
 
+
+  handleProductGroup = (e) => {
+    this.setState({ ProductGroup: e })
+  }
+
   /**
   * @method handleChange
   * @description Handle Effective Date
@@ -111,6 +118,9 @@ class AddIndivisualPart extends Component {
         temp.push({ Text: item.Text, Value: item.Value })
       });
       return temp;
+    }
+    if (label === 'ProductGroup') {
+      return []
     }
 
   }
@@ -237,7 +247,7 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Remark: values.Remark,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true
@@ -256,6 +266,7 @@ class AddIndivisualPart extends Component {
             });
           },
           onCancel: () => { },
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -273,7 +284,7 @@ class AddIndivisualPart extends Component {
         PartName: values.PartName,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -407,6 +418,27 @@ class AddIndivisualPart extends Component {
                               </Col>
                             )}
 
+                          {/* <Col md="3">
+                            <Field
+                              label="Product Group"
+                              name="ProductGroup"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                              options={this.renderListing("ProductGroup")}
+                              selectionChanged={this.handleProductGroup}
+                              validate={
+                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                              required={true}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                            />
+                          </Col> */}
+
                         </Row>
 
                         <Row>
@@ -487,7 +519,7 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
                                 //minDate={moment()}
                                 />
 
@@ -637,24 +669,14 @@ class AddIndivisualPart extends Component {
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
                           >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
+                            <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >
-                            <div className={"check-icon"}>
-                              <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                              />{" "}
-                            </div>
+                            <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
                           </button>
                         </div>

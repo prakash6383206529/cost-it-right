@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { getOperationDrawerDataList } from '../../actions/Costing';
 import { netHeadCostContext } from '../CostingDetailStepTwo';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, } from '../../../../helper';
 import Switch from "react-switch";
+
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: 'PackagingCostPercentage',
+  });
+
+  return values;
+}
 
 function AddPackaging(props) {
 
@@ -22,24 +28,18 @@ function AddPackaging(props) {
     PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? rowObjData.PackagingCost : 0,
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
-  const dispatch = useDispatch()
-
   const headCostData = useContext(netHeadCostContext)
 
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
-  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : true);
-  //const [formData, setFormData] = useState({});
+  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
 
-  const fieldValues = useWatch({
-    control,
-    name: ['PackagingCostPercentage'],
-  });
+  const fieldValues = IsolateReRender(control)
 
   useEffect(() => {
     if (applicability && applicability.value !== undefined) {
@@ -48,10 +48,12 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    if (!PackageType) {
-      setValue('PackagingCostPercentage', 'Fixed')
-    } else {
-      setValue('PackagingCostPercentage', '')
+    if (!isEditFlag) {
+      if (!PackageType) {
+        setValue('PackagingCostPercentage', 'Fixed')
+      } else {
+        setValue('PackagingCostPercentage', '')
+      }
     }
   }, [PackageType]);
 
@@ -99,16 +101,17 @@ function AddPackaging(props) {
    */
   const calculateApplicabilityCost = (Text) => {
 
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
+    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
+    const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
+    const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     switch (Text) {
       case 'RM':
         if (!PackageType) {
-
           setValue('PackagingCost', '')
         } else {
-
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
@@ -117,7 +120,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(PackagingCostPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull(RMCC * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -125,7 +128,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingCostPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -133,7 +136,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(PackagingCostPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull((RMBOPCC) * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -250,11 +253,6 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -324,7 +322,6 @@ function AddPackaging(props) {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -342,14 +339,14 @@ function AddPackaging(props) {
                       type={'button'}
                       className="reset mr15 cancel-btn"
                       onClick={cancel} >
-                      <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                      <div className={'cancel-icon'}></div> {'Cancel'}
                     </button>
 
                     <button
                       type={'submit'}
                       className="submit-button  save-btn"
                       onClick={addRow} >
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                      <div className={'save-icon'}></div>
                       {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>

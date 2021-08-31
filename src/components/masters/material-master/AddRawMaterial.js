@@ -9,6 +9,8 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
 
 class AddRawMaterial extends Component {
   constructor(props) {
@@ -151,25 +153,15 @@ class AddRawMaterial extends Component {
                         value="CANCEL"
                         className=" mr15 cancel-btn"
                       >
-                        <div className={"cross-icon"}>
-                          <img
-                            src={require("../../../assests/images/times.png")}
-                            alt="cancel-icon.jpg"
-                          />
-                        </div>
-                            CANCEL
-                          </button>
+                        <div className={"cancel-icon"}></div>
+                        CANCEL
+                      </button>
                       <button
                         type="submit"
                         // disabled={isSubmitted ? true : false}
                         className="user-btn save-btn"
                       >
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../assests/images/check.png")}
-                            alt=""
-                          />
-                        </div>
+                        <div className={"save-icon"}></div>
                         {this.props.isEditFlag ? "UPDATE" : "SAVE"}
                       </button>
                     </div>

@@ -14,12 +14,24 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
+import { ProcessMaster } from '../../../config/constants'
+import ReactExport from 'react-export-excel';
+import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
 
 class ProcessListing extends Component {
   constructor(props) {
@@ -32,7 +44,9 @@ class ProcessListing extends Component {
 
       plant: [],
       machine: [],
-
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
     }
   }
 
@@ -143,15 +157,18 @@ class ProcessListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
     const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   /**
   * @method costingHeadFormatter
@@ -249,31 +266,25 @@ class ProcessListing extends Component {
     })
   }
 
+
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility, DeleteAccessibility } = this.props
+* @method buttonFormatter
+* @description Renders buttons
+*/
+  buttonFormatter = (props) => {
+
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && (
-          <button
-            className="Edit mr-2"
-            type={'button'}
-            onClick={() => this.editItemDetails(cell)}
-          />
-        )}
-        {DeleteAccessibility && (
-          <button
-            className="Delete"
-            type={'button'}
-            onClick={() => this.deleteItem(cell)}
-          />
-        )}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
+
 
   /**
    * @method costingHeadFormatter
@@ -287,8 +298,9 @@ class ProcessListing extends Component {
 * @method effectiveDateFormatter
 * @description Renders buttons
 */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
   /**
    * @method indexFormatter
@@ -406,17 +418,69 @@ class ProcessListing extends Component {
    */
   onSubmit = (values) => { }
 
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    temp = TempData.map((item) => {
+      if (item.IsVendor === true) {
+        item.IsVendor = 'Vendor Based'
+      } else if (item.IsVendor === false) {
+        item.IsVendor = 'Zero Based'
+      } else if (item.VendorName === '-') {
+        item.VendorName = ' '
+      } else {
+        return false
+      }
+      return item
+    })
+
+    return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
+    </ExcelSheet>);
+  }
+
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+    return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
+  };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
+
   /**
    * @method render
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props
-    const { isOpenProcessDrawer, isEditFlag } = this.state
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const { isOpenProcessDrawer, isEditFlag } = this.state;
+
     const options = {
       clearSearch: true,
       noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -424,8 +488,23 @@ class ProcessListing extends Component {
 
     }
 
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      costingHeadRenderer: this.costingHeadFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      hyphenFormatter: this.hyphenFormatter
+    };
+
     return (
-      <div>
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -495,16 +574,31 @@ class ProcessListing extends Component {
                 <div>
                   {this.state.shown ? (
                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                      <div className="cancel-icon-white"></div></button>
                   ) : (
                     ''
                     // <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                   )}
                   {AddAccessibility && <button
                     type="button"
-                    className={'user-btn'}
+                    className={'user-btn mr5'}
+                    title="Add"
                     onClick={this.processToggler}>
-                    <div className={'plus'}></div>ADD</button>}
+                    <div className={'plus mr-0'}></div></button>}
+                  {
+                    DownloadAccessibility &&
+                    <>
+                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                        {this.onBtExport()}
+                      </ExcelFile>
+                    </>
+                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                  }
+
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                    <div className="refresh mr-0"></div>
+                  </button>
+
                 </div>
               </div>
             </Col>
@@ -513,25 +607,65 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            <BootstrapTable
+            {/* <BootstrapTable
               data={this.props.processList}
               striped={false}
               hover={false}
               bordered={false}
               options={options}
               search
-              // exportCSV
+              exportCSV={DownloadAccessibility}
+              csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination
             >
               <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn>
-              {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
-              {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
-              {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
-              <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>
+              <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
+            {/* <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+            </BootstrapTable> */}
+
+            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+              </div>
+              <div
+                className="ag-theme-material"
+                style={{ height: '100%', width: '100%' }}
+              >
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  domLayout='autoHeight'
+                  // columnDefs={c}
+                  rowData={this.props.processList}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={this.onGridReady}
+                  gridOptions={gridOptions}
+                  loadingOverlayComponent={'customLoadingOverlay'}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  noRowsOverlayComponentParams={{
+                    title: CONSTANT.EMPTY_DATA,
+                  }}
+                  frameworkComponents={frameworkComponents}
+                >
+                  <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                  <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
+                  <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                </AgGridReact>
+                <div className="paging-container d-inline-block float-right">
+                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                    <option value="10" selected={true}>10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
           </Col>
         </Row>
         {isOpenProcessDrawer && (

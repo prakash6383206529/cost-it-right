@@ -6,7 +6,7 @@ import {
   getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData,
   setComponentPackageFreightItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData
 } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import { toastr } from 'react-redux-toastr';
@@ -21,6 +21,7 @@ function TabPackagingFreight(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const netPOPrice = useContext(NetPOPriceContext);
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -37,11 +38,16 @@ function TabPackagingFreight(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      NetFreightPackagingCost: TopHeaderValues && checkForNull(TopHeaderValues.NetFreightPackagingCost),
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
+      let topHeaderData = {
+        NetFreightPackagingCost: TopHeaderValues && TopHeaderValues.NetFreightPackagingCost !== null ? checkForNull(TopHeaderValues.NetFreightPackagingCost) : 0,
+      }
+      if (props.activeTab === '4') {
+        props.setHeaderCost(topHeaderData)
+      }
     }
-    props.setHeaderCost(topHeaderData)
   }, [PackageAndFreightTabData]);
 
   /**
@@ -145,11 +151,12 @@ function TabPackagingFreight(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
+      "NetPOPrice": netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
+      "TotalCost": netPOPrice,
       "CostingNumber": costData.CostingNumber,
-      "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+      //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
 
@@ -239,12 +246,7 @@ function TabPackagingFreight(props) {
                     className="submit-button mr5 save-btn"
                     onClick={saveCosting}
                   >
-                    <div className={"check-icon"}>
-                      <img
-                        src={require("../../../../assests/images/check.png")}
-                        alt="check-icon.jpg"
-                      />{" "}
-                    </div>
+                    <div className={"save-icon"}></div>
                     {"Save"}
                   </button>}
                 </div>

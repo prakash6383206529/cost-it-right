@@ -8,15 +8,14 @@ import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant'
 import NoContentFound from '../../common/NoContentFound'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
 import $ from 'jquery'
-import { costingHeadObjs, Months } from '../../../config/masterData'
+import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
-import { VOLUME, ZBC } from '../../../config/constants'
+import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { loggedInUserId } from '../../../helper/auth'
@@ -24,6 +23,17 @@ import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
+import ReactExport from 'react-export-excel';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
+
 const initialTableData = [
   {
     VolumeApprovedDetailId: 0,
@@ -118,51 +128,53 @@ class VolumeListing extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
+      DownloadAccessibility: false,
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
+      sideBar: { toolPanels: ['columns'] },
+      showData: false
+
     }
   }
 
   componentDidMount() {
-    let ModuleId = reactLocalStorage.get('ModuleId')
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData
-        const accessData = Data && Data.find((el) => el.PageName === VOLUME)
-        const permmisionData =
-          accessData &&
-          accessData.Actions &&
-          checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility:
-              permmisionData && permmisionData.View
-                ? permmisionData.View
-                : false,
-            AddAccessibility:
-              permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility:
-              permmisionData && permmisionData.Edit
-                ? permmisionData.Edit
-                : false,
-            DeleteAccessibility:
-              permmisionData && permmisionData.Delete
-                ? permmisionData.Delete
-                : false,
-            BulkUploadAccessibility:
-              permmisionData && permmisionData.BulkUpload
-                ? permmisionData.BulkUpload
-                : false,
-          })
-        }
-      }
-    })
-
+    this.applyPermission(this.props.topAndLeftMenuData)
     this.props.getPlantSelectList(() => { })
     this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
     this.props.getVendorWithVendorCodeSelectList()
     this.getTableListData()
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+      this.applyPermission(nextProps.topAndLeftMenuData)
+    }
+  }
+
+  /**
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+  */
+  applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === VOLUME)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
+      }
+
+    }
   }
 
   /**
@@ -284,30 +296,21 @@ class VolumeListing extends Component {
   }
 
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
-    const { EditAccessibility, DeleteAccessibility } = this.state
+* @method buttonFormatter
+* @description Renders buttons
+*/
+  buttonFormatter = (props) => {
+    const cellValue = props?.value;
+    const rowData = props?.data;
+
+    const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && (
-          <button
-            className="Edit mr-2"
-            type={'button'}
-            onClick={() => this.editItemDetails(cell)}
-          />
-        )}
-        {DeleteAccessibility && (
-          <button
-            className="Delete"
-            type={'button'}
-            onClick={() => this.deleteItem(cell)}
-          />
-        )}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
-  }
+  };
 
   /**
    * @method handleYear
@@ -357,70 +360,16 @@ class VolumeListing extends Component {
     }
   }
 
-  /**
-   * @method indexFormatter
-   * @description Renders serial number
-   */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    let currentPage = this.refs.table.state.currPage
-    let sizePerPage = this.refs.table.state.sizePerPage
-    let serialNumber = ''
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1
-    } else {
-      serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1)
-    }
-    return serialNumber
-  }
 
-  renderSerialNumber = () => {
-    return (
-      <>
-        Sr. <br />
-        No.{' '}
-      </>
-    )
-  }
 
-  renderCostingHead = () => {
-    return (
-      <>
-        Costing <br />
-        Head{' '}
-      </>
-    )
-  }
-  renderOperationName = () => {
-    return (
-      <>
-        Operation <br />
-        Name{' '}
-      </>
-    )
-  }
-  renderOperationCode = () => {
-    return (
-      <>
-        Operation <br />
-        Code{' '}
-      </>
-    )
-  }
-  renderVendorName = () => {
-    return (
-      <>
-        Vendor <br />
-        Name{' '}
-      </>
-    )
-  }
 
   /**
    * @method costingHeadFormatter
    * @description Renders Costing head
    */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'Vendor Based' : 'Zero Based'
+  costingHeadFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? 'Vendor Based' : 'Zero Based'
   }
 
   onExportToCSV = (row) => {
@@ -542,7 +491,56 @@ class VolumeListing extends Component {
    */
   onSubmit(values) { }
 
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
 
+  onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+  };
+
+  onBtExport = () => {
+    let tempArr = []
+    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
+    data && data.map((item => {
+      tempArr.push(item.data)
+    }))
+
+    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
+  };
+
+  returnExcelColumn = (data = [], TempData) => {
+    let temp = []
+    TempData && TempData.map((item) => {
+      if (item.IsVendor === true) {
+        item.IsVendor = 'Vendor Based'
+      } else if (item.IsVendor === false) {
+        item.IsVendor = 'Zero Based'
+      } else if (item.VendorName === '-') {
+        item.VendorName = ' '
+      } else if (item.Plant === '-') {
+        item.Plant = ' '
+      } else {
+        return false
+      }
+      return item
+    })
+    return (
+
+      <ExcelSheet data={TempData} name={VolumeMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+  }
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
 
   /**
    * @method render
@@ -558,12 +556,13 @@ class VolumeListing extends Component {
       isBudgetedBulkUpload,
       AddAccessibility,
       BulkUploadAccessibility,
+      DownloadAccessibility
     } = this.state
     const options = {
       clearSearch: true,
       noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
+      exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -572,6 +571,21 @@ class VolumeListing extends Component {
       lastPage: <span className="last-page-pg"></span>,
 
     }
+
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+
+    };
+
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      costingHeadRenderer: this.costingHeadFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      indexFormatter: this.indexFormatter
+    };
 
     if (showVolumeForm) {
       return (
@@ -586,7 +600,8 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className="container-fluid">
+        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -727,72 +742,125 @@ class VolumeListing extends Component {
                   </div>
                 </Col>)}
 
-              <Col md="7" className="search-user-block mb-3">
+              <Col md="8" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">
                   <div>
                     {this.state.shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                        <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.actualBulkToggle}
-                      >
-                        <div className={'upload'}></div>Actual Upload
-                      </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={'user-btn mr5'}
-                        onClick={this.budgetedBulkToggle}
-                      >
-                        <div className={'upload'}></div>Budgeted Upload
+                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <div className="filter mr-0"></div>
                       </button>
                     )}
                     {AddAccessibility && (
                       <button
                         type="button"
-                        className={'user-btn'}
+                        className={"user-btn mr5"}
                         onClick={this.formToggle}
+                        title="Add"
                       >
-                        <div className={'plus'}></div>ADD
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
                       </button>
                     )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.actualBulkToggle}
+                        title="Actual Volume Upload"
+                      >{"A"}
+                        <div className={"ml5 upload mr-0"}></div>
+                        {/* Actual Upload */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.budgetedBulkToggle}
+                        title="Budgeted Volume Upload"
+                      >{"B"}
+                        <div className={"ml5 upload mr-0"}></div>
+                        {/* Budgeted Bulk Upload */}
+                      </button>
+                    )}
+                    {
+                      DownloadAccessibility &&
+                      <>
+
+                        <ExcelFile filename={'VolumeMaster'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
+
+                          {this.onBtExport()}
+                        </ExcelFile>
+
+                      </>
+
+                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                    }
+                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                      <div className="refresh mr-0"></div>
+                    </button>
+
                   </div>
                 </div>
               </Col>
             </Row>
           </form>
-          <BootstrapTable
-            data={this.props.volumeDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            // exportCSV
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass="my-custom-header"
-            pagination
-          >
-            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter} >              {this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Year'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Month'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'Part No.'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true} >{'Part Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="left" dataFormat={this.plantFormatter} dataSort={true}>{'Plant'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="BudgetedQuantity" width={150} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="ApprovedQuantity" width={150} columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
-            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-          </BootstrapTable>
+
+
+          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+            </div>
+            <div
+              className="ag-theme-material"
+              style={{ height: '100%', width: '100%' }}
+            >
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                domLayout='autoHeight'
+                // columnDefs={c}
+                rowData={this.props.volumeDataList}
+                pagination={true}
+                editable={true}
+                paginationPageSize={10}
+                onGridReady={this.onGridReady}
+                gridOptions={gridOptions}
+                loadingOverlayComponent={'customLoadingOverlay'}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                noRowsOverlayComponentParams={{
+                  title: CONSTANT.EMPTY_DATA,
+                }}
+                frameworkComponents={frameworkComponents}
+              >
+                <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
+                <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
+                <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
+                <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
+                <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+              </AgGridReact>
+              <div className="paging-container d-inline-block float-right">
+                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                  <option value="10" selected={true}>10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
           {isActualBulkUpload && (
             <BulkUpload
               isOpen={isActualBulkUpload}
@@ -830,7 +898,7 @@ function mapStateToProps({ comman, material, volume, auth }) {
   const { loading, plantSelectList, vendorWithVendorCodeSelectList } = comman
   const { vendorListByVendorType, } = material
   const { financialYearSelectList, volumeDataList } = volume
-  const { leftMenuData } = auth
+  const { leftMenuData, topAndLeftMenuData } = auth
   return {
     loading,
     vendorListByVendorType,
@@ -838,7 +906,8 @@ function mapStateToProps({ comman, material, volume, auth }) {
     financialYearSelectList,
     leftMenuData,
     volumeDataList,
-    vendorWithVendorCodeSelectList
+    vendorWithVendorCodeSelectList,
+    topAndLeftMenuData,
   }
 }
 

@@ -179,7 +179,7 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         IsForcefulUpdated: true
@@ -209,7 +209,7 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
 
@@ -395,24 +395,14 @@ class AddExchangeRate extends Component {
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
                       >
-                        <div className={"cross-icon"}>
-                          <img
-                            src={require("../../../assests/images/times.png")}
-                            alt="cancel-icon.jpg"
-                          />
-                        </div>{" "}
+                        <div className={'cancel-icon'}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
                         className="user-btn mr5 save-btn"
                       >
-                        <div className={"check-icon"}>
-                          <img
-                            src={require("../../../assests/images/check.png")}
-                            alt="check-icon.jpg"
-                          />{" "}
-                        </div>
+                        <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}
                       </button>
                     </div>

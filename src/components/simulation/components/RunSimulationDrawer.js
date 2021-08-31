@@ -1,24 +1,39 @@
-import React, { Component, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 // import { runSimulation } from '../actions/Simulation'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting } from '../actions/Simulation';
-
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability } from '../actions/Simulation';
+import { DatePickerHookForm } from '../../layout/HookFormInputs';
+import moment from 'moment';
 
 function RunSimulationDrawer(props) {
     const { objs } = props
 
+    const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    })
 
-    const [isProfitChecked, setIsProfitChecked] = useState(false)
-    const [isOverheadChecked, setIsOverheadChecked] = useState(false)
-    const [isICCChecked, setIsICCChecked] = useState(false)
-    const [isRejectionChecked, setIsRejectionChecked] = useState(false)
-    const [isPaymentChecked, setIsPaymentChecked] = useState(false)
-    const [isCostingPage, setIsCostingPage] = useState(false)
+
+
+
+    const dispatch = useDispatch()
+
+    const [multipleHeads, setMultipleHeads] = useState([])
+    const [opposite, setIsOpposite] = useState(false)
+    const [selectedDate, setSelectedDate] = useState('')
+    const [selectedData, setSelectedData] = useState([])
+
+
+    useEffect(() => {
+        dispatch(getSelectListOfSimulationApplicability(() => { }))
+    }, [])
+
+    const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
 
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -32,31 +47,52 @@ function RunSimulationDrawer(props) {
         props.closeDrawer('', true)
     }
 
-    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
-
-    const dispatch = useDispatch()
-
-    const handleProfitChange = () => {
-        setIsProfitChecked(!isProfitChecked)
+    const handleApplicabilityChange = (elementObj) => {
+        let temp = multipleHeads
+        let temp1 = multipleHeads
+        if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
+            const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
+            if (ind !== -1) {
+                temp.splice(ind, 1)
+            }
+        } else {
+            temp.push({ SimulationApplicabilityName: elementObj.Text, SimulationApplicabilityId: elementObj.Value })
+            temp1.push(elementObj.Text)
+        }
+        setMultipleHeads(temp)
+        setSelectedData(temp1)
+        setIsOpposite(!opposite)
     }
 
-    const handleOverheadChange = () => {
-        setIsOverheadChecked(!isOverheadChecked)
-    }
+    const IsAvailable = (id) => { }
 
-    const handleICCChange = () => {
-        setIsICCChecked(!isICCChecked)
-    }
+    const SimulationRun = () => {
 
-    const handleRejectionChange = () => {
-        setIsRejectionChecked(!isRejectionChecked)
-    }
+        let obj = {}
 
-    const handlePaymentChange = () => {
-        setIsPaymentChecked(!isPaymentChecked)
+        const Overhead = selectedData.includes("Overhead")
+        const Profit = selectedData.includes("Profit")
+        const Rejection = selectedData.includes("Rejection")
+        const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
+        const PaymentTerms = selectedData.includes("Payment Terms")
+        const Inventory = selectedData.includes("Inventory")
+        let temp = []
+        obj.IsOverhead = Overhead
+        obj.IsProfit = Profit
+        obj.IsRejection = Rejection
+        obj.IsInventory = Inventory
+        obj.IsPaymentTerms = PaymentTerms
+        obj.IsDiscountAndOtherCost = DiscountOtherCost
+        temp.push(obj)
+        console.log('temp: ', temp);
+
+        //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+        dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+            if (res.data.Result) {
+                toastr.success('Simulation process has been run successfully.')
+                runSimulationCosting()
+            }
+        }))
     }
 
     const onSubmit = () => {
@@ -69,14 +105,9 @@ function RunSimulationDrawer(props) {
         // }))
     }
 
-    const SimulationRun = () => {
 
-        dispatch(runSimulationOnSelectedCosting(objs, (res) => {
-            if (res.data.Result) {
-                toastr.success('Simulation process has been run successfully.')
-                runSimulationCosting()
-            }
-        }))
+    const handleEffectiveDateChange = (date) => {
+        setSelectedDate(date)
     }
 
     return (
@@ -89,7 +120,7 @@ function RunSimulationDrawer(props) {
                 >
                     <Container>
                         <div className={"drawer-wrapper"}>
-                            <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                            <form noValidate className="form" onSubmit={handleSubmit(SimulationRun)}>
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={"header-wrapper left"}>
@@ -103,118 +134,91 @@ function RunSimulationDrawer(props) {
                                         ></div>
                                     </Col>
                                 </Row>
+
                                 <Row className="ml-0 pt-3">
                                     <Col md="12" className="mb-3">
-                                        <label
-                                            className="custom-checkbox"
-                                            onChange={handleProfitChange}
-                                        >
-                                            {'Profit'}
-                                            <input
-                                                type="checkbox"
-                                                value={"All"}
-                                                checked={isProfitChecked}
-                                            />
-                                            <span
-                                                className=" before-box"
-                                                checked={isProfitChecked}
-                                                onChange={handleProfitChange}
-                                            />
-                                        </label>
-                                    </Col>
-
-                                    <Col md="12" className="mb-3">
-                                        <label
-                                            className="custom-checkbox"
-                                            onChange={handleOverheadChange}
-                                        >
-                                            {'Overhead'}
-                                            <input
-                                                type="checkbox"
-                                                value={"All"}
-                                                checked={isOverheadChecked}
-                                            />
-                                            <span
-                                                className=" before-box"
-                                                checked={isOverheadChecked}
-                                                onChange={handleOverheadChange}
-                                            />
-                                        </label>
-                                    </Col>
-
-                                    <Col md="12" className="mb-3">
-                                        <label
-                                            className="custom-checkbox"
-                                            onChange={handleICCChange}
-                                        >
-                                            {'ICC'}
-                                            <input
-                                                type="checkbox"
-                                                value={"All"}
-                                                checked={isICCChecked}
-                                            />
-                                            <span
-                                                className=" before-box"
-                                                checked={isICCChecked}
-                                                onChange={handleICCChange}
-                                            />
-                                        </label>
-                                    </Col>
-                                    <Col md="12" className="mb-3">
-                                        <label
-                                            className="custom-checkbox"
-                                            onChange={handleRejectionChange}
-                                        >
-                                            {'Rejection'}
-                                            <input
-                                                type="checkbox"
-                                                value={"All"}
-                                                checked={isRejectionChecked}
-                                            />
-                                            <span
-                                                className=" before-box"
-                                                checked={isRejectionChecked}
-                                                onChange={handleRejectionChange}
-                                            />
-                                        </label>
-                                    </Col>
-                                    <Col md="12" className="mb-3">
-                                        <label
-                                            className="custom-checkbox"
-                                            onChange={handlePaymentChange}
-                                        >
-                                            {'Payment Terms'}
-                                            <input
-                                                type="checkbox"
-                                                value={"All"}
-                                                checked={isPaymentChecked}
-                                            />
-                                            <span
-                                                className=" before-box"
-                                                checked={isPaymentChecked}
-                                                onChange={handlePaymentChange}
-                                            />
-                                        </label>
+                                        {
+                                            applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
+                                                if (el.Value === '0') return false;
+                                                return (
+                                                    <Col md="12" className="mb-3 p-0">
+                                                        <div class="custom-check1 d-inline-block">
+                                                            <label
+                                                                className="custom-checkbox mb-0"
+                                                                onChange={() => handleApplicabilityChange(el)}
+                                                            >
+                                                                {el.Text}
+                                                                <input
+                                                                    type="checkbox"
+                                                                    value={"All"}
+                                                                    // disabled={true}
+                                                                    checked={IsAvailable(el.Value)}
+                                                                />
+                                                                <span
+                                                                    className=" before-box"
+                                                                    checked={IsAvailable(el.Value)}
+                                                                    onChange={() => handleApplicabilityChange(el)}
+                                                                />
+                                                            </label>
+                                                        </div>
+                                                    </Col>
+                                                )
+                                            })
+                                        }
+                                        <div className="input-group form-group col-md-12 px-0">
+                                            <div className="inputbox date-section">
+                                                <DatePickerHookForm
+                                                    name={`EffectiveDate`}
+                                                    label={'Effective Date'}
+                                                    selected={selectedDate}
+                                                    handleChange={(date) => {
+                                                        handleEffectiveDateChange(date);
+                                                    }}
+                                                    //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                                    rules={{ required: true }}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dateFormat="aa/MM/yyyy"
+                                                    //maxDate={new Date()}
+                                                    dropdownMode="select"
+                                                    placeholderText="Select date"
+                                                    customClassName="withBorder"
+                                                    className="withBorder"
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                    disabled={false}
+                                                    mandatory={true}
+                                                    errors={errors.EffectiveDate}
+                                                />
+                                            </div>
+                                        </div>
                                     </Col>
                                 </Row>
-                            </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-md-12 px-3">
-                                    <div className="text-right px-3">
-                                        <button onClick={SimulationRun} type="submit" className="user-btn mr5 save-btn">
-                                            <div className={"Run-icon"}>
-                                            </div>{" "}
-                                            {"RUN SIMULATION"}
-                                        </button>
-                                        <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
-                                            <div className={"cross-icon"}>
-                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" />
-                                            </div>{" "}
-                                            {"Cancel"}
-                                        </button>
+
+
+
+                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                    <div className="col-md-12 px-3">
+                                        <div className="text-right px-3">
+                                            <button type="submit" className="user-btn mr5 save-btn">
+                                                <div className={"Run-icon"}>
+                                                </div>{" "}
+                                                {"RUN SIMULATION"}
+                                            </button>
+                                            <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
+                                                <div className={"cross-icon"}>
+                                                    <div className="cancel-icon"></div>
+                                                </div>{" "}
+                                                {"Cancel"}
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            </Row>
+                                </Row>
+                            </form>
                         </div>
                     </Container>
                 </Drawer>

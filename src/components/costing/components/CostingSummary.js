@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,18 +8,18 @@ import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
-  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology,
+  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { formViewData } from '../../../helper'
+import { formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
 
 function CostingSummary(props) {
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -38,7 +39,7 @@ function CostingSummary(props) {
 
   const costingData = useSelector(state => state.costing.costingData)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
-  const technologySelectList = useSelector(state => state.costing.technologySelectList,)
+  const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology,)
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
 
@@ -60,7 +61,7 @@ function CostingSummary(props) {
 
 
   useEffect(() => {
-    dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
@@ -262,19 +263,25 @@ function CostingSummary(props) {
    * @description RESETING FORM AFTER SELECTING RESET BUTTON
   */
   const resetData = () => {
-    reset()
     setPart([])
     setTechnology([])
-    setTimeout(() => {
-      setValue('Technology', '')
-      setValue('Part', '')
-    }, 200);
     setDisabled(false)
     setEffectiveDate('')
     dispatch(storePartNumber(''))
     dispatch(setCostingViewData([]))
     setShowWarningMsg(false)
     dispatch(getPartSelectListByTechnology('', () => { }))
+    dispatch(getPartInfo('', () => { }))
+    reset({
+      Technology: '',
+      Part: '',
+      PartName: '',
+      Description: '',
+      ECNNumber: '',
+      DrawingNumber: '',
+      RevisionNumber: '',
+      ShareOfBusiness: '',
+    })
   }
 
   /**
@@ -315,7 +322,7 @@ function CostingSummary(props) {
           </button> */}
 
           <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+            <div className="add-rounded m-auto"></div>
             <span className="d-block mt-1">ADD BOM</span>
           </button>
         </div>
@@ -513,12 +520,7 @@ function CostingSummary(props) {
                           //disabled={pristine || submitting}
                           onClick={resetData}
                           className="reset-btn"
-                        ><div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
+                        ><div className={'cancel-icon'}></div>
                           {"Clear"}
                         </button>
                       </Col>
@@ -530,7 +532,15 @@ function CostingSummary(props) {
           </Col>
         </Row>
       </div>
-      {partNumber !== "" && <CostingSummaryTable resetData={resetData} showDetail={props.showDetail} technologyId={TechnologyId} showWarningMsg={showWarningMsg} />}
+
+      {partNumber !== "" && <CostingSummaryTable
+        resetData={resetData}
+        showDetail={props.showDetail}
+        technologyId={TechnologyId}
+        showWarningMsg={showWarningMsg}
+        selectedTechnology={technology.label}
+      />}
+
       {IsBulkOpen && <BOMUpload
         isOpen={IsBulkOpen}
         closeDrawer={closeBulkUploadDrawer}

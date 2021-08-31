@@ -10,13 +10,13 @@ import { toastr } from 'react-redux-toastr';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
-import { curry } from 'lodash';
 import { INR } from '../../../../../config/constants';
 
+let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
 
-  const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
+  const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -143,8 +143,8 @@ function BOPCost(props) {
     let tempData = gridData[index];
 
     if (!isNaN(event.target.value) && event.target.value !== '') {
-      const NetBoughtOutPartCost = tempData.LandedCostINR * parseInt(event.target.value);
-      tempData = { ...tempData, Quantity: parseInt(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
+      const NetBoughtOutPartCost = tempData.LandedCostINR * checkForNull(event.target.value);
+      tempData = { ...tempData, Quantity: checkForNull(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
@@ -153,9 +153,9 @@ function BOPCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setValue(`${bopGridFields}[${index}]Quantity`, 0)
+        setValue(`${bopGridFields}.${index}.Quantity`, 0)
       }, 200)
-      toastr.warning('Please enter valid number.')
+      //toastr.warning('Please enter valid number.')
     }
   }
 
@@ -243,11 +243,15 @@ function BOPCost(props) {
   const onSubmit = (values) => { }
 
   /**
-  * @method setRMCCErrors
-  * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-  */
-  if (Object.keys(errors).length > 0) {
-    //dispatch(setRMCCErrors(errors))
+   * @method setRMCCErrors
+   * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0 && counter < 2) {
+    dispatch(setRMCCErrors(errors))
+    counter++;
+  } else if (Object.keys(errors).length === 0 && counter > 0) {
+    dispatch(setRMCCErrors({}))
+    counter = 0
   }
 
   /**
@@ -282,7 +286,7 @@ function BOPCost(props) {
                     <tr>
                       <th>{`BOP Part No.`}</th>
                       <th>{`BOP Part Name`}</th>
-                      <th style={{ width: "220px" }} >{`Landed Cost(INR)`}</th>
+                      <th style={{ width: "220px" }} >{`BOP Cost(INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
@@ -302,7 +306,7 @@ function BOPCost(props) {
                                 {
                                   <NumberFieldHookForm
                                     label=""
-                                    name={`${bopGridFields}[${index}]Quantity`}
+                                    name={`${bopGridFields}.${index}.Quantity`}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -310,8 +314,7 @@ function BOPCost(props) {
                                     rules={{
                                       //required: true,
                                       pattern: {
-                                        value: /^[0-9]*$/i,
-                                        //value: /^[1-9]\d*(\.\d+)?$/i,
+                                        value: /^\d*\.?\d*$/,
                                         message: 'Invalid Number.'
                                       },
                                     }}
@@ -351,7 +354,7 @@ function BOPCost(props) {
                     }
                     {gridData && gridData.length === 0 &&
                       <tr>
-                        <td colSpan={7}>
+                        <td colSpan={6}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />
                         </td>
                       </tr>
@@ -389,7 +392,7 @@ function BOPCost(props) {
                     name={"BOPHandlingPercentage"}
                     Controller={Controller}
                     control={control}
-                    register={register({ required: true, })}
+                    register={register}
                     mandatory={false}
                     rules={{
                       required: true,
