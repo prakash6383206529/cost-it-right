@@ -16,8 +16,7 @@ import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { HISTORY, MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId } from '../../../helper';
+import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import Insights from './Insights';
 
@@ -36,7 +35,7 @@ class RowMaterialMaster extends Component {
             isOpen: false,
             isEditFlag: false,
             Id: '',
-            activeTab: '1',
+            activeTab: reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1',
 
             isRMDomesticForm: false,
             isRMImportForm: false,
@@ -222,7 +221,10 @@ class RowMaterialMaster extends Component {
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => {
+                                        this.toggle('5');
+                                        // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                    }}>
                                         RM Approval
                                     </NavLink>
                                 </NavItem>}
@@ -232,7 +234,7 @@ class RowMaterialMaster extends Component {
 
                                 {this.state.activeTab == 1 && ViewRMAccessibility &&
                                     <TabPane tabId="1">
-                                        <Insights/>
+                                        <Insights />
                                     </TabPane>}
 
                                 {this.state.activeTab == 2 && ViewRMAccessibility &&
@@ -288,19 +290,19 @@ class RowMaterialMaster extends Component {
                                     </TabPane>}
                                 {this.state.activeTab == 5 && ViewRMAccessibility &&
                                     <TabPane tabId="5">
-                                        {
-                                            this.props.history.push({ pathname: '/raw-material-approval' })
-                                        }
+                                        {/* {
+                                            this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                        } */}
 
                                         {/* <Link to="/raw-material-approval"></Link> */}
                                         {/* <Route path="/raw-material-approval">
-                                            <RMApproval
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
-                                            />
                                         </Route> */}
+                                        <RMApproval
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                        />
                                     </TabPane>}
 
                             </TabContent>
