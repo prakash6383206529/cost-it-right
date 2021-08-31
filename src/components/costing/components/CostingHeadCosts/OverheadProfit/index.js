@@ -1132,7 +1132,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={overheadObj.OverheadCombinedCost !== null ? overheadObj.OverheadCombinedCost : ''}
+                            defaultValue={overheadObj.OverheadCombinedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCombinedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.OverheadCombinedCost}
@@ -1197,7 +1197,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={overheadObj.OverheadRMCost !== null ? overheadObj.OverheadRMCost : ''}
+                            defaultValue={overheadObj.OverheadRMCost !== null ? checkForDecimalAndNull(overheadObj.OverheadRMCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.OverheadRMCost}
@@ -1257,7 +1257,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPCost !== null ? overheadObj.OverheadBOPCost : ''}
+                          defaultValue={overheadObj.OverheadBOPCost !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPCost}
@@ -1316,7 +1316,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCCost !== null ? overheadObj.OverheadCCCost : ''}
+                          defaultValue={overheadObj.OverheadCCCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCCCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCCost}
@@ -1484,7 +1484,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={profitObj.ProfitCombinedCost !== null ? profitObj.ProfitCombinedCost : ''}
+                            defaultValue={profitObj.ProfitCombinedCost !== null ? checkForDecimalAndNull(profitObj.ProfitCombinedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.ProfitCombinedCost}
@@ -1550,7 +1550,7 @@ function OverheadProfit(props) {
                             register={register}
                             mandatory={false}
                             handleChange={() => { }}
-                            defaultValue={profitObj.ProfitRMCost !== null ? profitObj.ProfitRMCost : ''}
+                            defaultValue={profitObj.ProfitRMCost !== null ? checkForDecimalAndNull(profitObj.ProfitRMCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.ProfitRMCost}
@@ -1609,7 +1609,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={profitObj.ProfitBOPCost !== null ? profitObj.ProfitBOPCost : ''}
+                          defaultValue={profitObj.ProfitBOPCost !== null ? checkForDecimalAndNull(profitObj.ProfitBOPCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitBOPCost}
@@ -1668,7 +1668,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={profitObj.ProfitCCCost !== null ? profitObj.ProfitCCCost : ''}
+                          defaultValue={profitObj.ProfitCCCost !== null ? checkForDecimalAndNull(profitObj.ProfitCCCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitCCCost}
