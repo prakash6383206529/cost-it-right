@@ -356,10 +356,7 @@ function ReportListing(props) {
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>
-                <div
-                    className="ag-theme-material"
-                    style={{ height: '100%', width: '100%' }}
-                >
+                <div className="ag-theme-material" >
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
