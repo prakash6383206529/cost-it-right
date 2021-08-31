@@ -13,11 +13,9 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
@@ -200,13 +198,7 @@ class BOPDomesticListing extends Component {
         }
     }
 
-    /**
-    * @method renderPaginationShowsTotal
-    * @description Pagination
-    */
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
+
 
     /**
     * @method buttonFormatter
@@ -225,42 +217,7 @@ class BOPDomesticListing extends Component {
         )
     };
 
-    // /**
-    // * @method costingHeadFormatter
-    // * @description Renders Costing head
-    // */
-    // costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    //     return cell ? 'VBC' : 'ZBC';
-    // }
 
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
-
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
-
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-
-    renderEffectiveDate = () => {
-        return <>Effective <br />Date </>
-    }
 
     /**
     * @method costingHeadFormatter
@@ -276,41 +233,7 @@ class BOPDomesticListing extends Component {
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
-    /**
-    * @method effectiveDateFormatter
-    * @description Renders buttons
-    */
-    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-    }
 
-    renderEffectiveDate = () => {
-        return <> Effective <br /> Date </>
-    }
-
-    renderbopNo = () => {
-        return <> BOP <br /> Part No. </>
-    }
-
-    renderbopName = () => {
-        return <> BOP <br /> Part Name </>
-    }
-
-    renderbopCategory = () => {
-        return <> BOP <br /> Category </>
-    }
-    renderpartAssemblyNumber = () => {
-        return <> Part Assembly <br />Number </>
-    }
-    renderNetLandedCost = () => {
-        return <> Net  <br />Cost(INR) </>
-    }
-    renderMinQuantity = () => {
-        return <>Minimum Order<br /> Quantity</>
-    }
-    renderBasicRate = () => {
-        return <>Basic<br /> Rate(INR)</>
-    }
     renderPlant = (cell, row, enumObject, rowIndex) => {
         return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
     }
@@ -660,9 +583,6 @@ class BOPDomesticListing extends Component {
                                             </ExcelFile>
 
                                         </>
-
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
@@ -676,36 +596,6 @@ class BOPDomesticListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        {/* <BootstrapTable
-                            data={this.props.bopDomesticList}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${BopDomestic}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            // selectRow={selectRow}
-                            pagination> */}
-                        {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn width={100} dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn width={110} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
-                            <TableHeaderColumn width={110} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
-                            <TableHeaderColumn width={110} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
-                            <TableHeaderColumn width={110} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== false} export={getConfigurationKey().IsDestinationPlantConfigure === false} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} hidden={getConfigurationKey().IsDestinationPlantConfigure !== true} export={getConfigurationKey().IsDestinationPlantConfigure === true} dataField="DestinationPlant" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.renderPlant} dataSort={true} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderMinQuantity()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderBasicRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={120} dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}  >{this.renderNetLandedCost()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable> */}
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
@@ -731,7 +621,7 @@ class BOPDomesticListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
@@ -745,7 +635,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

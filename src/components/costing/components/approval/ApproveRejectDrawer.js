@@ -124,15 +124,15 @@ function ApproveRejectDrawer(props) {
       let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
-      switch (master) {
-        case RMDOMESTIC:
+      switch (Number(master)) {
+        case Number(RMDOMESTIC):
           dispatch(saveSimulationForRawMaterial(simObj, res => {
             if (res.data.Result) {
               toastr.success('Simulation has been saved successfully.')
             }
           }))
           break;
-        case RMIMPORT:
+        case Number(RMIMPORT):
           dispatch(saveSimulationForRawMaterial(simObj, res => {
             if (res.data.Result) {
               toastr.success('Simulation has been saved successfully.')
@@ -546,7 +546,7 @@ function ApproveRejectDrawer(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                              selected={simulationDetail?.EffectiveDate && moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
                               // onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

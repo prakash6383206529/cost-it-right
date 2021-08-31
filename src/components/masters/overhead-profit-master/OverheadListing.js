@@ -207,41 +207,7 @@ class OverheadListing extends Component {
         return serialNumber;
     }
 
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
 
-    renderCostingHead = () => {
-        return <>Costing <br />Head </>
-    }
-
-    renderVendor = () => {
-        return <>Vendor <br />Name </>
-    }
-    renderClient = () => {
-        return <>Client <br />Name </>
-    }
-    renderModelType = () => {
-        return <>Model <br />Type </>
-    }
-    renderOverheadAppli = () => {
-        return <>Overhead <br />Applicability</>
-    }
-    renderOverheadAppliPercent = () => {
-        return <>Overhead <br />Applicability (%)</>
-    }
-    renderOverheadCC = () => {
-        return <>Overhead <br /> on CC (%)</>
-    }
-    renderOverheadRM = () => {
-        return <>Overhead <br /> on RM (%)</>
-    }
-    renderOverheadBOP = () => {
-        return <>Overhead <br />on BOP (%)</>
-    }
-    renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
-    }
 
 
     /**
@@ -333,7 +299,7 @@ class OverheadListing extends Component {
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <label htmlFor="normal-switch">
+                <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -436,12 +402,12 @@ class OverheadListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, this.props.overheadProfitList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } if (item.OverheadPercentage === null) {
@@ -634,41 +600,41 @@ class OverheadListing extends Component {
                                         </button>
                                         :
                                         <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     }
                                     {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.formToggle}
+                                            title="Add"
+                                        >
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
                                     {
-                                                DownloadAccessibility &&
-                                                <>
+                                        DownloadAccessibility &&
+                                        <>
 
-                                                    <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                            <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
-                                                    </button>}>
+                                                </button>}>
 
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
 
-                                                </>
+                                        </>
 
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                            }
+                                    }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </div>
@@ -677,33 +643,6 @@ class OverheadListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        {/* <BootstrapTable
-                            data={this.props.overheadProfitList}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${OverheadMaster}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            pagination> */}
-                        {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataField="TypeOfHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={120} columnTitle={true} dataAlign="left" >{this.renderVendor()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ClientName" width={120} columnTitle={true} dataAlign="left" >{this.renderClient()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="left" >{this.renderModelType()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadApplicabilityType" width={110} columnTitle={true} dataAlign="left" >{this.renderOverheadAppli()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="OverheadPercentage" width={130} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable> */}
-
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -728,7 +667,7 @@ domLayout='autoHeight'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
@@ -738,7 +677,7 @@ domLayout='autoHeight'
                                     <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="OverheadId" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

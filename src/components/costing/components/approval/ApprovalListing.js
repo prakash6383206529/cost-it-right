@@ -2,12 +2,11 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, getSelectedCostingList } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
-import { getAllPartSelectList, getCostingStatusSelectList, } from '../../actions/Costing'
+import { getAllPartSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 import moment from 'moment'
@@ -32,10 +31,6 @@ function ApprovalListing(props) {
   const [dShown, setDshown] = useState(false)
 
   const [tableData, setTableData] = useState([])
-  const [partNoDropdown, setPartNoDropdown] = useState([])
-  const [createdByDropdown, setCreatedByDropdown] = useState([])
-  const [requestedByDropdown, setRequestedByDropdown] = useState([])
-  const [statusDropdown, setStatusDropdown] = useState([])
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [approveDrawer, setApproveDrawer] = useState(false)
@@ -265,43 +260,6 @@ function ApprovalListing(props) {
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    //   let tempArr = [...selectedRowData, row]
-    //   setSelectedRowData(tempArr)
-    // } else {
-    //   const CostingId = row.CostingId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-    //   setSelectedRowData(tempArr)
-    // }
-  }
-
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll,
-  };
-
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-    //exportCSVText: 'Download Excel',
-    //onExportToCSV: this.onExportToCSV,
-    //paginationShowsTotal: true,
-    //paginationShowsTotal: this.renderPaginationShowsTotal,
   }
 
   const sendForApproval = () => {
@@ -518,7 +476,6 @@ function ApprovalListing(props) {
                 </Col>
               }
 
-
               <Col md="6" lg="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
@@ -535,70 +492,9 @@ function ApprovalListing(props) {
                     </button>
                   </div>
                 </div>
-                {/* <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">
-                      Grant Marshall{' '}
-                      <a href="">
-                        <i className="ml-1 fa fa-times-circle"></i>
-                      </a>
-                    </Badge>
-                    <Badge color="secondary" pill className="md-badge-blue-grey">
-                      Kerri Barber{' '}
-                      <a href="">
-                        <i className="ml-1 fa fa-times-circle"></i>
-                      </a>
-                    </Badge> */}
               </Col>
-
-
-              {/* <Col md="12"  className="mb-4">
-            <Badge color="success" pill className="badge-small">Approved </Badge>
-            <Badge color="danger" pill className="badge-small">Rejected</Badge>
-            <Badge color="warning" pill className="badge-small">Pending for Approval</Badge>
-          </Col> */}
-
-              {/* <Col md="4" className="search-user-block">
-            <div className="d-flex justify-content-end bd-highlight">
-              <div>
-                
-            
-                
-              </div>
-            </div>
-          </Col> */}
             </Row>
           </form>
-
-          {/* <BootstrapTable
-              data={approvalList}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              selectRow={selectRowProp}
-              // exportCSV
-              //ignoreSinglePage
-              //ref={'table'}
-              trClassName={'userlisting-row'}
-              tableHeaderClass="my-custom-header"
-              pagination
-            >
-              <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ApprovalNumber" width={100} columnTitle={false} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CostingNumber" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PartNumber" width={90} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PartName" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="NetPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'New Price'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={false} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
-              <TableHeaderColumn dataField={'Reason'} width={100} columnTitle={true} dataAlign="left" >{'Reason'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CreatedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CreatedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
-              <TableHeaderColumn dataField="RequestedBy" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>
-              <TableHeaderColumn dataField="RequestedOn" width={100} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={requestedOnFormatter}> {'Requested On '}</TableHeaderColumn>
-              <TableHeaderColumn dataField="Status" width={140} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
-            </BootstrapTable> */}
           <Row>
             <Col>
               <div className={`ag-grid-react`}>

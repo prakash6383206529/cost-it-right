@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
+import { APPROVED, REJECTED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
 
 function ApprovalWorkFlow(props) {
   const { approvalLevelStep, approvalNo } = props

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { Link, Redirect, } from "react-router-dom";
+import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
@@ -159,11 +159,7 @@ class SideBar extends Component {
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set("ModuleId", ModuleId);
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { location } = this.props;
       this.setState({ isLeftMenuRendered: true });
-      // if (location && location.state) {
-      //   this.setState({ activeURL: location.pathname })
-      // }
     });
   };
 
@@ -183,7 +179,7 @@ class SideBar extends Component {
   */
   SetMenu = (ModuleId) => {
     if (ModuleId !== reactLocalStorage.get("MenuModuleId")) {
-      this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
+      //this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
     }
     reactLocalStorage.set("MenuModuleId", ModuleId);
   };
@@ -193,10 +189,10 @@ class SideBar extends Component {
    * @description Render dashboard menu.
    */
   renderDashboard = (module) => {
-    const { menusData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
@@ -235,10 +231,10 @@ class SideBar extends Component {
    * @description Render master menu.
    */
   renderMaster = (module) => {
-    const { menusData, leftMenuData, menuData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
@@ -272,8 +268,8 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      menuData && menuData.map((item, i) => {
-                        if (item.Sequence === 22) return false
+                      el && el.Pages && el.Pages.map((item, i) => {
+                        if (item.Sequence === 22) return false;
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
@@ -321,10 +317,10 @@ class SideBar extends Component {
    * @description Render Addtional master menu.
    */
   renderAdditionalMaster = (module) => {
-    const { menusData, leftMenuData, menuData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
@@ -352,7 +348,7 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      menuData && menuData.map((item, i) => {
+                      el && el.Pages && el.Pages.map((item, i) => {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
@@ -383,9 +379,9 @@ class SideBar extends Component {
    * @description Render Report & Analytics menu.
    */
   renderReportAnalytics = (module) => {
-    const { menusData } = this.props;
+    const { topAndLeftMenuData } = this.props;
     return (
-      menusData && menusData.map((el, i) => {
+      topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li>
@@ -422,9 +418,9 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData, location, menuData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData && menusData.map((el, i) => {
+      topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
@@ -453,7 +449,7 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      menuData && menuData.map((item, i) => {
+                      el && el.Pages && el.Pages.map((item, i) => {
                         if (item.Sequence !== 0) return false
                         return (
                           <li key={i} className={`mb5`}>
@@ -484,9 +480,9 @@ class SideBar extends Component {
    * @description Render Simulation.
    */
   renderSimulation = (module) => {
-    const { menusData, menuData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData && menusData.map((el, i) => {
+      topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li className={'nav-item dropdown'}>
@@ -515,7 +511,7 @@ class SideBar extends Component {
               <div className="dropdown-menu sub-menu">
                 <ul>
                   {
-                    menuData && menuData.map((item, i) => {
+                    el && el.Pages && el.Pages.map((item, i) => {
                       if (item.Sequence !== 0) return false
                       if (item.PageName === 'Simulation Upload') return false; //NEED TO REMOVE USED FOR NOW
                       return (
@@ -561,10 +557,10 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderUser = (module) => {
-    const { menusData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li>
@@ -601,10 +597,10 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderAudit = (module) => {
-    const { menusData } = this.props
+    const { topAndLeftMenuData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <li>
@@ -637,19 +633,12 @@ class SideBar extends Component {
   };
 
   render() {
-    const { userData, moduleSelectList, leftMenuData } = this.props;
-    const { isLoader, isLeftMenuRendered } = this.state;
+    const { userData, topAndLeftMenuData } = this.props;
+    const { isLoader, } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav>
         {isLoader && <Loader />}
-        {/* {isLeftMenuRendered && leftMenuData[0] !== undefined && (
-          <Redirect
-            to={{
-              pathname: leftMenuData[0].NavigationURL,
-            }}
-          />
-        )} */}
         <div>
           <div className="flex-conatiner sign-social ">
             <NavbarToggler
@@ -770,13 +759,6 @@ class SideBar extends Component {
                           </div>
                         </div>
                       </li>
-                      {/* <li className="nav-item d-xl-inline-block">
-                        <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
-                      </li>
-                      <li className="nav-item d-xl-inline-block">
-                        <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
-                        </a>
-                      </li> */}
                     </>
                   )}
 
@@ -802,18 +784,6 @@ class SideBar extends Component {
                             )}
                           </DropdownToggle>
 
-                          {/* <DropdownMenu>
-                            {
-                              isLoggedIn ?
-                                <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>
-                                :
-                                <DropdownItem header>
-                                  <Link className="bell-notifcation-icon" to="/login">
-                                    Login
-                                  </Link>
-                                </DropdownItem>
-                            }
-                          </DropdownMenu> */}
                         </Dropdown>
                         <NavbarToggler
                           className="navbar-light float-right"
@@ -824,7 +794,7 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
+                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}
@@ -844,9 +814,9 @@ class SideBar extends Component {
             <div className="nav-scroller bg-white shadow-sm header-secondry w100">
               <nav className="navbar navbar-expand-lg pl-0">
                 <ul className="navbar-nav mr-auto">
-                  {moduleSelectList &&
-                    moduleSelectList.map((item, index) => {
-                      return this.renderMenus(item.Text);
+                  {topAndLeftMenuData &&
+                    topAndLeftMenuData.map((item, index) => {
+                      return this.renderMenus(item.ModuleName);
                     })}
                 </ul>
               </nav>

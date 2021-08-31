@@ -8,7 +8,7 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
@@ -55,34 +55,30 @@ class LevelsListing extends Component {
 		}
 	}
 
-	UNSAFE_componentWillMount() {
-		let ModuleId = reactLocalStorage.get('ModuleId');
-		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-			const { leftMenuData } = this.props;
-			if (leftMenuData !== undefined) {
-				let Data = leftMenuData;
-				const accessData = Data && Data.find(el => el.PageName === LEVELS)
-				const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-				if (permmisionData !== undefined) {
-					this.setState({
-						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-					})
-				}
-			}
-		})
-	}
-
 	componentDidMount() {
+		const { topAndLeftMenuData } = this.props;
+		if (topAndLeftMenuData !== undefined) {
+			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+			const accessData = userMenu && userMenu.Pages.find(el => el.PageName === LEVELS)
+			const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+			if (permmisionData !== undefined) {
+				this.setState({
+					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+				})
+			}
+		}
+
 		this.getLevelsListData();
 		this.props.getUsersByTechnologyAndLevel(() => { })
-		//this.props.onRef(this);
 	}
+
 	UNSAFE_componentWillUpdate() {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 	}
+
 	getLevelsListData = () => {
 		this.props.getAllLevelAPI(res => {
 			if (res && res.data && res.data.DataList) {
@@ -280,7 +276,7 @@ class LevelsListing extends Component {
 		// if (ActivateAccessibility) {
 		return (
 			<>
-				<label htmlFor="normal-switch">
+				<label htmlFor="normal-switch" className="normal-switch">
 					{/* <span>Switch with default style</span> */}
 					<Switch
 						onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -429,39 +425,17 @@ class LevelsListing extends Component {
 									<Row>
 										<Col className="mt-0 level-table" md="12">
 
-											{/* <BootstrapTable
-											data={this.props.usersListByTechnologyAndLevel}
-											striped={false}
-											bordered={false}
-											hover={false}
-											options={options}
-											search
-											ignoreSinglePage
-											ref={'table'}
-											trClassName={'userlisting-row'}
-											tableHeaderClass={'my-custom-header'}
-											pagination>
-											<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-											<TableHeaderColumn dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-											<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
-													<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
-
-													{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
-											{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
-											{/* </BootstrapTable> */}
-
 											<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
 												<div className="ag-grid-header">
 													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 												</div>
 												<div
 													className="ag-theme-material"
-													
+
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
-domLayout='autoHeight'
+														domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}
 														pagination={true}
@@ -476,8 +450,8 @@ domLayout='autoHeight'
 														frameworkComponents={frameworkComponents}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="180" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads"></AgGridColumn>
-														<AgGridColumn width="100" field="Level"  suppressSizeToFit={true} headerName="Level"></AgGridColumn>
+														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Tehnology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
+														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
 													<div className="paging-container d-inline-block float-right">
@@ -534,9 +508,9 @@ domLayout='autoHeight'
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { levelList, leftMenuData, loading, usersListByTechnologyAndLevel } = auth;
+	const { levelList, leftMenuData, loading, usersListByTechnologyAndLevel, topAndLeftMenuData } = auth;
 
-	return { levelList, leftMenuData, loading, usersListByTechnologyAndLevel };
+	return { levelList, leftMenuData, loading, usersListByTechnologyAndLevel, topAndLeftMenuData };
 }
 
 

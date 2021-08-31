@@ -14,7 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { EMPTY_GUID, G, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
+import { getTechnology, getTechnologyForRecoveryPercent, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 
 let counter = 0;
@@ -48,6 +48,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
+  const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
 
   const dispatch = useDispatch()
 
@@ -80,6 +81,7 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
 
+      // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
       if (Object.keys(gridData).length > 0 && gridData[0].IsCutOffApplicable) {
         dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
       }
@@ -511,6 +513,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
+    console.log('weightData: ', weightData);
 
     let tempArr = []
     let tempData = gridData[editIndex]
@@ -531,10 +534,12 @@ function RawMaterialCost(props) {
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+      const RecoveryPercentage = weightData.RecoveryPercentage
 
       const scrapWeight = checkForNull(GrossWeight - FinishWeight);
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+
 
       tempData = {
         ...tempData,
@@ -545,6 +550,7 @@ function RawMaterialCost(props) {
         WeightCalculationId: weightData.WeightCalculationId,
         IsCalculatedEntry: true,
         CutOffRMC: CutOffRMC,
+        ScrapRecoveryPercentage: RecoveryPercentage
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -552,6 +558,7 @@ function RawMaterialCost(props) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING
       }, 500)
@@ -797,12 +804,12 @@ function RawMaterialCost(props) {
                     <tr>
                       <th>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
-                      <th>{`UOM`}</th>
                       <th>{`Scrap Rate`}</th>
+                      <th>{`UOM`}</th>
                       {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "190px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
-                      <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>
+                      {isScrapRecoveryPercentageApplied && <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
                       <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
@@ -816,8 +823,8 @@ function RawMaterialCost(props) {
                           <tr key={index}>
                             <td>{item.RMName}</td>
                             <td>{item.RMRate}</td>
-                            <td>{item.UOM}</td>
                             <td>{item.ScrapRate}</td>
+                            <td>{item.UOM}</td>
                             {
                               getTechnology.includes(costData.ETechnologyType) &&
                               <td className="text-center">
@@ -855,6 +862,7 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
+
                             <td>
                               <NumberFieldHookForm
                                 label=""
@@ -881,37 +889,40 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
-                            <td>
-                              {item.IsScrapRecoveryPercentageApplied && <NumberFieldHookForm
-                                label=""
-                                name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^\d*\.?\d*$/,
-                                    message: 'Invalid Number.',
-                                  },
-                                  max: {
-                                    value: 100,
-                                    message: 'Percentage should be less than 100'
-                                  },
-                                }}
-                                defaultValue={item.ScrapRecoveryPercentage}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleScrapRecoveryChange(e, index)
-                                }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                disabled={CostingViewMode ? true : false}
-                              />}
-                            </td>
-                            <td>{checkForDecimalAndNull(item.FinishWeight ? (item.GrossWeight - item.FinishWeight) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            {
+                              isScrapRecoveryPercentageApplied &&
+                              <td>
+                                <NumberFieldHookForm
+                                  label=""
+                                  name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: true,
+                                    pattern: {
+                                      value: /^\d*\.?\d*$/,
+                                      message: 'Invalid Number.',
+                                    },
+                                    max: {
+                                      value: 100,
+                                      message: 'Percentage should be less than 100'
+                                    },
+                                  }}
+                                  defaultValue={item.ScrapRecoveryPercentage}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleScrapRecoveryChange(e, index)
+                                  }}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
+                                  disabled={CostingViewMode ? true : false}
+                                />
+                              </td>
+                            }
+                            <td>{checkForDecimalAndNull(item.FinishWeight ? (item.GrossWeight - item.FinishWeight).toFixed(9) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
@@ -939,6 +950,7 @@ function RawMaterialCost(props) {
             </Row>
 
             <Row >
+              {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData.TechnologyName === PLASTIC &&
                 <Col md="2" className="py-3 ">
                   <label
@@ -961,6 +973,7 @@ function RawMaterialCost(props) {
                 </Col>
               }
 
+              {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
                   <Col md="2">
@@ -1076,6 +1089,7 @@ function RawMaterialCost(props) {
           ID={''}
           anchor={'right'}
           rmRowData={gridData[editIndex]}
+          isSummary={false}
         />
       )}
     </>

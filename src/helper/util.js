@@ -5,8 +5,9 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY,
 } from '../config/constants'
+import { getConfigurationKey } from './auth'
 
 /**
  * @method  apiErrors
@@ -48,6 +49,9 @@ const handleHTTPStatus = (response) => {
     case 400:
       return toastr.error('Bad Request. Please contact your IT Team.')
     case 401:
+      reactLocalStorage.setObject("isUserLoggedIn", false);
+      reactLocalStorage.setObject("userDetail", {});
+      reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
       return toastr.error('Authentication error. Please contact your IT Team.')
     case 403:
@@ -553,7 +557,7 @@ export function formViewData(costingSummary) {
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
-    overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
+    overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
     overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails.NetOverheadCost : '-'
   }
   obj.profitOn = {
@@ -646,6 +650,10 @@ export function formViewData(costingSummary) {
   obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
   obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
+  obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
+  obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
+  obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
+  obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
   console.log('obj: ', obj);
 
 
@@ -745,4 +753,30 @@ export function getTechnologyPermission(technology) {
 export function isRMDivisorApplicable(technology) {
   const allowedTechnologyForRMDivisor = [SPRINGS, HARDWARE, FASTNERS, RIVETS];
   return allowedTechnologyForRMDivisor.includes(technology);
+}
+
+export function findLostWeight(tableVal) {
+  let sum = 0
+  tableVal && tableVal.map(item => {
+    console.log('item: ', item);
+    if (item.LossOfType === 2) {
+      return false
+    } else {
+      sum = sum + item.LossWeight
+    }
+  })
+  return sum
+}
+
+export function CheckApprovalApplicableMaster(number) {
+  // UNCOMMENT IT AFTER DEV IS DONE
+  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
+  // const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number)
+  return isApproval
+
+}
+
+export function isMultipleRMAllow(technology) {
+  const allowedMultipleRM = [MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, MACHINING, FORGING, PLASTIC];
+  return allowedMultipleRM.includes(technology);
 }

@@ -196,6 +196,7 @@ function SimulationApprovalSummary(props) {
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
             const obj3 = formViewData(Data.Variance)
+            console.log('obj3: ', obj3);
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))

@@ -413,7 +413,7 @@ domLayout='autoHeight'
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="EntryType" headerName="BOP Type"  ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="BOP Type"  ></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>

@@ -206,17 +206,16 @@ class RMListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        console.log(this.state.gridApi, 'this.state.gridApithis.state.gridApi')
         data && data.map((item => {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, this.props.rawMaterialTypeDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {
@@ -365,11 +364,11 @@ domLayout='autoHeight'
                                     frameworkComponents={frameworkComponents}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="RawMaterial"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
