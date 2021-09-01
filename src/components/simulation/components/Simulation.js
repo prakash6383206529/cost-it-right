@@ -60,8 +60,10 @@ function Simulation(props) {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setMaster(value)
         setShowMasterList(false)
+        setTechnology({ label: '', value: '' })
+        setValue('Technology', '')
         dispatch(setMasterForSimulation(value))
-        if (value !== '' && (Object.keys(technology).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setShowMasterList(true)
         }
     }

@@ -184,25 +184,29 @@ function VerifySimulation(props) {
     }
 
     const onRowSelect = () => {
-        var selectedRows = gridApi.getSelectedRows();
 
+        // setGridSelection(true)
+
+    }
+
+    const onRowSelected = (e) => {
+        let row = e.node.isSelected()
+        setGridSelection(row, e.node)
+    }
+
+    const setGridSelection = (type, clickedElement) => {
+        var selectedRows = gridApi.getSelectedRows();
+        const rowIndex = clickedElement.rowIndex
+        const costingNumber = clickedElement.data.CostingNumber
         gridApi.forEachNode(node => {
-            for (let i = 0; i < selectedRows.length; i++) {
-                if (node.data.CostingNumber === selectedRows[i].CostingNumber) {
-                    node.setSelected(true);
+            if (node.rowIndex !== rowIndex) {
+                if (node.data.CostingNumber === costingNumber) {
+                    node.setSelected(type);
+
                 }
             }
         });
         setSelectedRowData(selectedRows)
-
-    }
-
-    const onSelectAll = (isSelected, rows) => {
-        if (isSelected) {
-            setSelectedRowData(rows)
-        } else {
-            setSelectedRowData([])
-        }
     }
 
     const renderDropdownListing = (label) => {
@@ -226,23 +230,7 @@ function VerifySimulation(props) {
         }
     }
 
-    const selectRowProp = {
-        mode: 'checkbox',
-        clickToSelect: true,
-        unselectable: selectedIds,
-        onSelect: onRowSelect,
-        onSelectAll: onSelectAll,
-    };
 
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-        // paginationShowsTotal: renderPaginationShowsTotal(),
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-    };
 
     const runSimulation = () => {
         if (selectedRowData.length === 0) {
@@ -400,8 +388,10 @@ function VerifySimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 // suppressRowClickSelection={true}
                                                 rowSelection={'multiple'}
+                                                onRowSelected={onRowSelected}
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
+
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>

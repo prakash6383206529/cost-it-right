@@ -20,6 +20,7 @@ export function Fgwiseimactdata(props) {
                                     <th><span>Part Name</span></th>
                                     <th><span>Old Cost/Pc</span></th>
                                     <th><span>New Cost/pc</span></th>
+                                    <th><span>Quantity</span></th>
                                     <th><span>Impact/Pc</span></th>
                                     <th><span>Volume</span></th>
                                     <th><span>Impact/Month</span></th>
@@ -30,6 +31,7 @@ export function Fgwiseimactdata(props) {
                                     <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
                                     <td><span>1</span></td>
                                     <td><span>This is A model</span></td>
+                                    <td><span>0</span></td>
                                     <td><span>0</span></td>
                                     <td><span>0</span></td>
                                     <td><span>24(INR)</span></td>
@@ -77,6 +79,7 @@ export function Fgwiseimactdata(props) {
                                     <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
                                     <td><span>1</span></td>
                                     <td><span>This is A model</span></td>
+                                    <td><span>0</span></td>
                                     <td><span>0</span></td>
                                     <td><span>0</span></td>
                                     <td><span>24(INR)</span></td>

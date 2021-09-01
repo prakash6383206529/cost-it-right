@@ -175,11 +175,20 @@ class OperationListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
-        this.setState({
-            data: { isEditFlag: true, ID: Id },
+    // editItemDetails = (Id) => {
+    //     this.setState({
+    //         data: { isEditFlag: true, ID: Id },
+    //         toggleForm: true,
+    //     })
+    // }
+
+    editItemDetails = (Id, rowData) => {
+        let data = {
+            isEditFlag: true,
+            ID: Id,
             toggleForm: true,
-        })
+        }
+        this.props.getDetails(data);
     }
 
     /**
@@ -407,7 +416,8 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ toggleForm: true })
+        // this.setState({ toggleForm: true })
+        this.props.formToggle()
     }
 
     hideForm = () => {
@@ -532,10 +542,10 @@ class OperationListing extends Component {
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
                         {
-                            !this.props.isSimulation &&
-                            <Row>
-                                <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                            </Row>
+                            // !this.props.isSimulation &&
+                            // <Row>
+                            //     <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
+                            // </Row>
                         }
                         <Row className="pt-4 filter-row-large blue-before">
                             {this.state.shown &&
