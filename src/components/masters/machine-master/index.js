@@ -192,11 +192,11 @@ class MachineMaster extends Component {
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                             Insights
                                         </NavLink>
-                                    </NavItem>
+                                    </NavItem> */}
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                             Machine Rate
