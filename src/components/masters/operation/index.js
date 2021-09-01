@@ -15,7 +15,7 @@ class OperationsMaster extends Component {
         super(props);
         this.state = {
             Id: '',
-            activeTab: '1',
+            activeTab: '2',
             isOperation: false,
 
             ViewAccessibility: false,
@@ -81,9 +81,9 @@ class OperationsMaster extends Component {
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>Insights</NavLink>
-                                    </NavItem>
+                                    </NavItem> */}
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Manage Operation</NavLink>
                                     </NavItem>
@@ -94,7 +94,7 @@ class OperationsMaster extends Component {
 
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
-                                            <OperationInsights/>
+                                            <OperationInsights />
                                         </TabPane>}
 
                                     {this.state.activeTab == 2 &&
