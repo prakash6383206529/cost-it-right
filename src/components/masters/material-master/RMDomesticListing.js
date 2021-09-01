@@ -26,7 +26,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -242,11 +242,21 @@ class RMDomesticListing extends Component {
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        let isEditbale = false
         const { EditAccessibility, DeleteAccessibility } = this.props;
+        if (CheckApprovalApplicableMaster('1')) {
+            if (EditAccessibility && rowData.IsEditable) {
+                isEditbale = true
+            } else {
+                isEditbale = false
+            }
+        } else {
+            isEditbale = EditAccessibility
+        }
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )

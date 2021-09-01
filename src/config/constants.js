@@ -191,6 +191,7 @@ export const API = {
   approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
   rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
+  masterFinalLeveluser: `${BASE_URL}/masters-approval-raw-material/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
