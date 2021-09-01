@@ -18,6 +18,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
+import Simulation from '../Simulation';
 const gridOptions = {
 
 };
@@ -34,6 +35,7 @@ function RMSimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [update, setUpdate] = useState(true)
+    const [showMainSimulation, setShowMainSimulation] = useState(false)
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -58,6 +60,7 @@ function RMSimulation(props) {
         let basicScrapCount = 0
 
         list && list.map((li) => {
+            console.log('li: ', li);
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -72,7 +75,8 @@ function RMSimulation(props) {
             toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
-
+        basicRateCount = 0
+        basicScrapCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
@@ -166,19 +170,12 @@ function RMSimulation(props) {
     }
 
     const newBasicRateFormatter = (props) => {
+        console.log('props: ', props);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // let tempData = {...row,NewBasicRate:cell && value ? Number(cell) : Number(row.BasicRate)}
+        // list = Object.assign([...list], { [index]: tempData })
         const value = beforeSaveCell(cell)
-        console.log('value: ', value);
-        // costFormatter(props)
-        gridApi && gridApi.redrawRows({ force: true })
-        if (value) {
-            console.log("Value updated");
-            setTimeout(() => {
-
-                setUpdate(!update)
-            }, 200);
-        }
         return (
             <>
                 <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
@@ -294,7 +291,8 @@ function RMSimulation(props) {
     };
 
     const cancel = () => {
-        props.cancelEditPage()
+        // props.cancelEditPage()
+        setShowMainSimulation(true)
     }
     const cellEditProp = {
         mode: 'click',
@@ -331,7 +329,9 @@ function RMSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-
+    const cellChange = (props) => {
+        console.log(props, "PROPS");
+    }
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
@@ -346,7 +346,8 @@ function RMSimulation(props) {
         costFormatter: costFormatter,
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        newBasicRateFormatter: newBasicRateFormatter
+        newBasicRateFormatter: newBasicRateFormatter,
+        cellChange: cellChange
     };
 
 
@@ -359,7 +360,7 @@ function RMSimulation(props) {
                 {
 
 
-                    !showverifyPage &&
+                    (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
                         {
                             isbulkUpload &&
@@ -441,7 +442,7 @@ function RMSimulation(props) {
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
                                                 <AgGridColumn width={120} field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
@@ -494,6 +495,10 @@ function RMSimulation(props) {
                 {
                     showverifyPage &&
                     <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                }
+
+                {
+                    showMainSimulation && <Simulation isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&
