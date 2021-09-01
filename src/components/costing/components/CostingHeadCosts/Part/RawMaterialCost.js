@@ -12,7 +12,7 @@ import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, 
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import { EMPTY_GUID, G, KG, MG, PLASTIC } from '../../../../../config/constants'
+import { EMPTY_GUID, G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, getTechnologyForRecoveryPercent, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -107,9 +107,10 @@ function RawMaterialCost(props) {
 
       if (costData.TechnologyName === PLASTIC) {
         let rowArray = rowData && rowData.map(el => {
+          console.log('rowData: ', el);
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
-            RMRate: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
+            RMRate: (el.Currency === '-' || el.Currency === INR) ? el.NetLandedCost : el.NetLandedCostConversion,
             MaterialType: el.MaterialType,
             RMGrade: el.RMGrade,
             Density: el.Density,
@@ -131,7 +132,7 @@ function RawMaterialCost(props) {
       } else {
         let tempObj = {
           RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
-          RMRate: rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
+          RMRate: (rowData.Currency === '-' || rowData.Currency === INR) ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
           MaterialType: rowData.MaterialType,
           RMGrade: rowData.RMGrade,
           Density: rowData.Density,
