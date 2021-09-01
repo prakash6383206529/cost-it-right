@@ -304,9 +304,19 @@ class RMImportListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { EditAccessibility, DeleteAccessibility } = this.props;
+    let isEditbale = false
+    if (CheckApprovalApplicableMaster('1')) {
+      if (EditAccessibility && rowData.IsEditable) {
+        isEditbale = true
+      } else {
+        isEditbale = false
+      }
+    } else {
+      isEditbale = EditAccessibility
+    }
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {isEditbale && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )

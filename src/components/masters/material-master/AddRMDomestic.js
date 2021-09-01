@@ -12,11 +12,12 @@ import {
 } from '../../../actions/Common'
 import {
   createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
+  masterFinalLevelUser
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { loggedInUserId, getConfigurationKey, } from '../../../helper/auth'
+import { loggedInUserId, getConfigurationKey, userDetails, } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddSpecification from './AddSpecification'
 import AddGrade from './AddGrade'
@@ -92,7 +93,8 @@ class AddRMDomestic extends Component {
       source: '',
       showExtraCost: false,
       approveDrawer: false,
-      approvalObj: {}
+      approvalObj: {},
+      isFinalApprovar: false
     }
   }
   /**
@@ -105,6 +107,7 @@ class AddRMDomestic extends Component {
     this.props.getSupplierList(() => { })
     this.props.fetchPlantDataAPI(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+
   }
 
   /**
@@ -129,6 +132,18 @@ class AddRMDomestic extends Component {
     }
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
+    })
+    let obj = {
+      MasterId: '1',
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
     })
 
   }
@@ -1695,7 +1710,8 @@ class AddRMDomestic extends Component {
                             (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                              // onClick={this.sendForMasterApproval}
+                                // onClick={this.sendForMasterApproval}
+                                disabled={this.state.isFinalApprovar}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1904,7 +1920,8 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  masterFinalLevelUser
 })(
   reduxForm({
     form: 'AddRMDomestic',

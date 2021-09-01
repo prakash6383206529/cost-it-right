@@ -11,11 +11,12 @@ import {
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
+  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
+  masterFinalLevelUser
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, getConfigurationKey } from "../../../helper/auth";
+import { loggedInUserId, getConfigurationKey, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
@@ -97,7 +98,8 @@ class AddRMImport extends Component {
       source: '',
       showWarning: false,
       showExtraCost: false,
-      approveDrawer: false
+      approveDrawer: false,
+      isFinalApprovar: false
     }
   }
 
@@ -133,6 +135,17 @@ class AddRMImport extends Component {
         this.props.change('Code', Data.RawMaterialCode)
       })
     }
+    let obj = {
+      MasterId: '1',
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+    })
   }
 
   componentDidUpdate(prevProps) {
@@ -1751,7 +1764,7 @@ class AddRMImport extends Component {
                             (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                              // onClick={this.sendForMasterApproval}
+                                disabled={this.state.isFinalApprovar}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1935,7 +1948,8 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   getVendorWithVendorCodeSelectList,
-  checkAndGetRawMaterialCode
+  checkAndGetRawMaterialCode,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

@@ -1704,6 +1704,7 @@ export function approvalRequestByMasterApprove(data, callback) {
             })
     }
 }
+
 /**
  * @method rejectRequestByApprove
  * @description rejecting approval Request
@@ -1749,6 +1750,31 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
                     callback(response)
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR)
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+ * @method masterFinalLevelUser
+ * @description rejecting approval Request
+ */
+export function masterFinalLevelUser(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterFinalLeveluser, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
                 }
             })
             .catch((error) => {
