@@ -91,22 +91,22 @@ class RMDomesticListing extends Component {
         this.getInitialRange()
         const { filteredRMData, isSimulation } = this.props
         if (this.props.isSimulation) {
-
             this.setState({
                 costingHead: filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : [],
                 plant: filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : [],
                 RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
                 RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
                 vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-                technology: [],
+                // technology: [],
                 value: { min: 0, max: 0 },
             }, () => {
+
+                this.getInitialRange()
+                this.getDataList(null)
+
+                this.props.getRawMaterialFilterSelectList(() => { })
             })
         }
-        this.getInitialRange()
-        this.getDataList(null)
-
-        this.props.getRawMaterialFilterSelectList(() => { })
     }
 
     /**

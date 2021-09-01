@@ -33,6 +33,8 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
@@ -49,12 +51,25 @@ function Simulation(props) {
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getCostingTechnologySelectList(() => { }))
         setShowEditTable(false)
+        if (props.isRMPage) {
+            console.log("RM MASTWRE");
+            setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+            setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+
+            setMaster({ label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+            setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+
+            setShowMasterList(true)
+        }
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
+
+
+
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -156,7 +171,7 @@ function Simulation(props) {
     const cancelEditPage = () => {
         setShowEditTable(false)
         setIsBulkUpload(false)
-        setTableData([])
+        // setTableData([])
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
     }
