@@ -46,6 +46,7 @@ function MasterSendForApproval(props) {
     }
 
     useEffect(() => {
+
         dispatch(getReasonSelectList((res) => { }))
         // dispatch(getAllApprovalDepartment((res) => { }))
         dispatch(getAllMasterApprovalDepartment((res) => {
