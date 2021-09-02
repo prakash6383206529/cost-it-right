@@ -276,6 +276,7 @@ function ReportListing(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+       gridOptions.api.setFilterModel(null);
     }
 
     const onRowSelect = () => {
@@ -361,6 +362,7 @@ function ReportListing(props) {
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
                         defaultColDef={defaultColDef}
+                        floatingFilter = {true}
                         // columnDefs={c}
                         rowData={reportListingData}
                         pagination={true}

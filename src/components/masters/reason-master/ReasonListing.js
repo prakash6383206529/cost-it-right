@@ -307,6 +307,7 @@ class ReasonListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
 
@@ -448,7 +449,8 @@ class ReasonListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
+                floatingFilter = {true}
+domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}

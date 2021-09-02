@@ -174,6 +174,7 @@ class LevelTechnologyListing extends Component {
 
 	resetState() {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady1 = (params) => {
@@ -271,7 +272,8 @@ class LevelTechnologyListing extends Component {
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
-									domLayout='autoHeight'
+									floatingFilter = {true}
+domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}

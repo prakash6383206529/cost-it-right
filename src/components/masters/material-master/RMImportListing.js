@@ -597,6 +597,7 @@ class RMImportListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+   gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -850,6 +851,7 @@ class RMImportListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  floatingFilter = {true}
                   domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.rmImportDataList}

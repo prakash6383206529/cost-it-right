@@ -350,6 +350,7 @@ class LevelsListing extends Component {
 
 	resetState() {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 
@@ -437,6 +438,7 @@ class LevelsListing extends Component {
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
+														floatingFilter = {true}
 														domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}

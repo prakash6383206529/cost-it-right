@@ -227,7 +227,8 @@ function RMApproval(props) {
     }
 
     const resetState = () => {
-        gridOptions.columnApi.resetColumnState();
+       gridOptions.columnApi.resetColumnState();
+       gridOptions.api.setFilterModel(null);
         getTableData()
     }
 
@@ -324,6 +325,7 @@ function RMApproval(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
+                                floatingFilter = {true}
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'

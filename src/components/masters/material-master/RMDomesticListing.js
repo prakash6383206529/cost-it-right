@@ -597,7 +597,8 @@ class RMDomesticListing extends Component {
     }
 
     resetState = () => {
-        gridOptions.columnApi.resetColumnState();
+        gridOptions.columnApi.resetColumnState(null);
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -613,6 +614,7 @@ class RMDomesticListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
+          
         };
 
         const frameworkComponents = {
@@ -851,6 +853,8 @@ class RMDomesticListing extends Component {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
+                                    floatingFilter = {true}
+
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmDataList}

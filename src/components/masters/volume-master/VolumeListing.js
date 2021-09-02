@@ -538,6 +538,7 @@ class VolumeListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+   gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -821,7 +822,8 @@ class VolumeListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
+                floatingFilter = {true}
+domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}

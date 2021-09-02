@@ -332,6 +332,7 @@ class SOBListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   createCustomExportCSVButton = (onClick) => {
@@ -499,6 +500,7 @@ class SOBListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  floatingFilter = {true}
 domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.bopSobList}

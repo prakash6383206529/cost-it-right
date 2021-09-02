@@ -161,6 +161,7 @@ class RolesListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -248,7 +249,8 @@ class RolesListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
+                    floatingFilter = {true}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}

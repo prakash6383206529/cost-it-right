@@ -370,6 +370,7 @@ class FreightListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+   gridOptions.api.setFilterModel(null);
   }
 
 
@@ -568,7 +569,8 @@ class FreightListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
+                  floatingFilter = {true}
+domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.freightDetail}
                   pagination={true}

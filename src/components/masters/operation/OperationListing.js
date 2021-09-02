@@ -498,6 +498,7 @@ class OperationListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -710,10 +711,14 @@ class OperationListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
-                                domLayout='autoHeight'
+                                floatingFilter = {true}
+domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
+
+                               // <AgGridColumn field="country" filter={true} floatingFilter={true} />
+
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
@@ -725,7 +730,7 @@ class OperationListing extends Component {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                                <AgGridColumn field="Technology"   filter={true} floatingFilter={true}      headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>

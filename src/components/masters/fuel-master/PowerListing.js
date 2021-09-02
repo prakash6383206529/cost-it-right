@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+ 
+ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
@@ -426,6 +427,7 @@ class PowerListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -675,7 +677,8 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
+                    floatingFilter = {true}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}

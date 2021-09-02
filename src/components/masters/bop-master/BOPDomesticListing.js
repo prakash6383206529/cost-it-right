@@ -393,6 +393,7 @@ class BOPDomesticListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -606,6 +607,7 @@ class BOPDomesticListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    floatingFilter = {true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopDomesticList}

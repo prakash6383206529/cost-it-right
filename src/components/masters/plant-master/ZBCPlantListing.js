@@ -399,6 +399,7 @@ class ZBCPlantListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -569,7 +570,8 @@ class ZBCPlantListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            domLayout='autoHeight'
+                            floatingFilter = {true}
+domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}

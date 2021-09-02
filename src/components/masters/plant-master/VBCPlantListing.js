@@ -403,6 +403,7 @@ class VBCPlantListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     createCustomExportCSVButton = (onClick) => {
@@ -582,6 +583,7 @@ class VBCPlantListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            floatingFilter = {true}
 domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}

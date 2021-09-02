@@ -416,6 +416,7 @@ class UsersListing extends Component {
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
+		 gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady = (params) => {
@@ -607,6 +608,7 @@ class UsersListing extends Component {
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
+								floatingFilter = {true}
 								domLayout='autoHeight'
 								// columnDefs={c}
 								rowData={this.props.userDataList}

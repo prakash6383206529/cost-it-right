@@ -322,6 +322,7 @@ class AssemblyPartListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -417,7 +418,8 @@ class AssemblyPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            domLayout='autoHeight'
+                            floatingFilter = {true}
+domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
                             pagination={true}
