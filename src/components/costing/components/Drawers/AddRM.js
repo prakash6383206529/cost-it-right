@@ -326,6 +326,7 @@ function AddRM(props) {
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -414,6 +415,7 @@ function AddRM(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+                        floatingFilter = {true}
                         domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={rmDrawerList}
