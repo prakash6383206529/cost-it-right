@@ -137,6 +137,17 @@ class RMImportListing extends Component {
   }
 
 
+
+  getFilterRMData = () => {
+    if (this.props.isSimulation && CheckApprovalApplicableMaster('1')) {
+      const list = this.props.rmImportDataList && this.props.rmImportDataList.filter((item => item.IsRMAssociated === true))
+      return list
+    } else {
+      return this.props.rmImportDataList
+    }
+  }
+
+
   /**
   * @method componentDidMount
   * @description Called after rendering the component
@@ -297,7 +308,7 @@ class RMImportListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.props;
     let isEditbale = false
     if (CheckApprovalApplicableMaster('1')) {
-      if (EditAccessibility && rowData.IsEditable) {
+      if (EditAccessibility && !rowData.IsRMAssociated) {
         isEditbale = true
       } else {
         isEditbale = false
@@ -852,7 +863,7 @@ class RMImportListing extends Component {
                   defaultColDef={defaultColDef}
                   domLayout='autoHeight'
                   // columnDefs={c}
-                  rowData={this.props.rmImportDataList}
+                  rowData={this.getFilterRMData()}
                   pagination={true}
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}

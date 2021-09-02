@@ -108,6 +108,16 @@ class RMDomesticListing extends Component {
         }
     }
 
+
+    getFilterRMData = () => {
+        if (this.props.isSimulation && CheckApprovalApplicableMaster('1')) {
+            const list = this.props.rmDataList && this.props.rmDataList.filter((item => item.IsRMAssociated === true))
+            return list
+        } else {
+            return this.props.rmDataList
+        }
+    }
+
     /**
     * @method getInitialRange
     * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
@@ -259,7 +269,7 @@ class RMDomesticListing extends Component {
         let isEditbale = false
         const { EditAccessibility, DeleteAccessibility } = this.props;
         if (CheckApprovalApplicableMaster('1')) {
-            if (EditAccessibility && rowData.IsEditable) {
+            if (EditAccessibility && !rowData.IsRMAssociated) {
                 isEditbale = true
             } else {
                 isEditbale = false
@@ -853,7 +863,7 @@ class RMDomesticListing extends Component {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={this.props.rmDataList}
+                                    rowData={this.getFilterRMData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
@@ -863,7 +873,9 @@ class RMDomesticListing extends Component {
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
-                                    frameworkComponents={frameworkComponents}>
+                                    frameworkComponents={frameworkComponents}
+
+                                >
                                     <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
@@ -884,7 +896,6 @@ class RMDomesticListing extends Component {
                                     {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                                    {/* <AgGridColumn field="IsEditable" setQuickFilter={(params) => { return false }}></AgGridColumn> */}
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
