@@ -21,6 +21,7 @@ class CostingTab extends Component {
       Modules: [],
       actionData: [],
       actionSelectList: [],
+      checkBox: true
     }
   }
 
@@ -168,6 +169,23 @@ class CostingTab extends Component {
     }
   }
 
+  selectAllHandlerEvery = () => {
+    const { Modules, checkBox } = this.state;
+    let booleanVal = this.state.checkBox
+    this.setState({ checkBox: !booleanVal })
+    let tempArray = [];
+    let isCheckedSelectAll = checkBox
+    let actionRows
+    let actionArray = Modules && Modules.map((item, index) => {
+      actionRows = item
+      item.Actions && item.Actions.map((item1, index) => {
+        item1.IsChecked = isCheckedSelectAll;
+      })
+      return actionRows;
+    })
+    this.setState({ Modules: actionArray, })
+  }
+
   /**
   * @method renderAction
   * @description used to render row of actions
@@ -182,7 +200,7 @@ class CostingTab extends Component {
         return (
           <td className="text-center">
             {
-              <label htmlFor="normal-switch"  className="normal-switch">
+              <label htmlFor="normal-switch" className="normal-switch">
                 <Switch
                   onChange={() => this.actionCheckHandler(parentIndex, index)}
                   checked={item.IsChecked}
@@ -262,7 +280,27 @@ class CostingTab extends Component {
               <thead>
                 <tr>
                   <th>{`Module`}</th>
-                  <th>{``}</th>
+                  <th className=" pr-2">
+                    <label className="custom-checkbox align-middle">
+                      <input
+                        type="checkbox"
+                        value={"All"}
+                        // className={
+                        //     this.isCheckAll(item, item)
+                        //         ? "selected-box"
+                        //         : "not-selected-box"
+                        // }
+                        // checked={this.isCheckAll(
+                        //     index,
+                        //     item.Actions
+                        // )}
+                        onClick={() =>
+                          this.selectAllHandlerEvery()
+                        }
+                      />
+                      <span className=" before-box pl-0">Select All</span>
+                    </label>
+                  </th>
                   {this.renderActionHeads(actionSelectList)}
                 </tr>
               </thead>
