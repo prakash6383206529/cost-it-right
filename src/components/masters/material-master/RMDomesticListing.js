@@ -573,7 +573,7 @@ class RMDomesticListing extends Component {
     }
 
     resetState = () => {
-        //gridOptions.columnApi.resetColumnState(null);
+        gridOptions.columnApi.resetColumnState(null);
         gridOptions.api.setFilterModel(null);
     }
 

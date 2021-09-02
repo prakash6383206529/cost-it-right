@@ -331,7 +331,7 @@ class SOBListing extends Component {
 
 
   resetState() {
-    //gridOptions.columnApi.resetColumnState();
+    gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
 
