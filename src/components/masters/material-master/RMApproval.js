@@ -12,7 +12,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
-import { DRAFT } from '../../../config/constants';
+import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 
 
@@ -351,7 +351,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn width="145" field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn width="150"field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn width="150" field="RMSpec"></AgGridColumn>
                                     <AgGridColumn width="140" field="Category"></AgGridColumn>
                                     <AgGridColumn width="140" field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
@@ -395,7 +395,7 @@ function RMApproval(props) {
                     isOpen={approvalDrawer}
                     closeDrawer={closeApprovalDrawer}
                     isEditFlag={false}
-                    masterId={1}
+                    masterId={RM_MASTER_ID}
                     type={'Sender'}
                     anchor={"right"}
                     isBulkUpload={true}
