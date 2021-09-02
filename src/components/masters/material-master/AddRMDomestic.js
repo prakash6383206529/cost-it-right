@@ -123,12 +123,6 @@ class AddRMDomestic extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
-      this.props.checkAndGetRawMaterialCode('', (res) => {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
-      })
-    }
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
@@ -199,6 +193,7 @@ class AddRMDomestic extends Component {
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ RMSpec: newValue })
+      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
     } else {
       this.setState({ RMSpec: [] })
     }
@@ -650,7 +645,7 @@ class AddRMDomestic extends Component {
     if (label === 'specification') {
       rmSpecification && rmSpecification.map((item) => {
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode })
         return null
       })
       return temp
@@ -1048,14 +1043,7 @@ class AddRMDomestic extends Component {
     this.setState({ singlePlantSelected: newValue })
   }
 
-  checkUniqCode = (e) => {
-    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
-      if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
-        $('input[name="Code"]').focus()
-      }
-    })
-  }
+
 
   // sendForMasterApproval = () => {
 
@@ -1238,9 +1226,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              onBlur={this.checkUniqCode}
-                              // disabled={isEditFlag ? true : false} // NEED TO UNCOMMENT IT LATER
-                              disabled={false}
+                              disabled={true}
                             />
                           </Col>
 
