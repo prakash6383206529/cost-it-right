@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { getOperationDrawerDataList } from '../../actions/Costing';
 import { netHeadCostContext } from '../CostingDetailStepTwo';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, } from '../../../../helper';
 import Switch from "react-switch";
 
 function IsolateReRender(control) {
@@ -104,7 +101,10 @@ function AddPackaging(props) {
    */
   const calculateApplicabilityCost = (Text) => {
 
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
+    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
+    const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
+    const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     switch (Text) {
@@ -120,7 +120,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(PackagingCostPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull(RMCC * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -128,7 +128,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingCostPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -136,7 +136,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(PackagingCostPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull((RMBOPCC) * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 

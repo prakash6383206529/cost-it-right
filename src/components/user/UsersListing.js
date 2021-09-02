@@ -53,30 +53,25 @@ class UsersListing extends Component {
 		}
 	}
 
-	UNSAFE_componentWillMount() {
-
-		let ModuleId = reactLocalStorage.get('ModuleId');
-		this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-			const { leftMenuData } = this.props;
-			if (leftMenuData !== undefined) {
-				let Data = leftMenuData;
-				const userPermissions = Data && Data.find(el => el.PageName === USER)
-				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-
-				if (permmisionData !== undefined) {
-					this.setState({
-						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-					})
-				}
-			}
-		})
-	}
-
 	componentDidMount() {
 		this.getUsersListData(null, null);
+
+		const { topAndLeftMenuData } = this.props;
+		if (topAndLeftMenuData !== undefined) {
+
+			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+			const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
+			const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+
+			if (permmisionData !== undefined) {
+				this.setState({
+					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+					ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+				})
+			}
+		}
 
 		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
@@ -105,7 +100,7 @@ class UsersListing extends Component {
 				})
 			}
 		})
-		//this.props.onRef(this)
+
 	}
 
 
@@ -294,7 +289,7 @@ class UsersListing extends Component {
 		if (ActivateAccessibility) {
 			return (
 				<>
-					<label htmlFor="normal-switch">
+					<label htmlFor="normal-switch"  className="normal-switch">
 						{/* <span>Switch with default style</span> */}
 						<Switch
 							onChange={() => this.handleChange(cellValue, rowData)}
@@ -405,17 +400,9 @@ class UsersListing extends Component {
 			this.getUsersListData(filterDepartment, filterRole)
 		})
 	}
+
 	formToggle = () => {
 		this.props.formToggle()
-	}
-
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
-	onSubmit(values) {
 	}
 
 	onPageSizeChanged = (newPageSize) => {
@@ -427,7 +414,6 @@ class UsersListing extends Component {
 		this.state.gridApi.setQuickFilter(e.target.value);
 	}
 
-
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
 	}
@@ -437,9 +423,17 @@ class UsersListing extends Component {
 		params.api.paginationGoToPage(0);
 
 		//if resolution greater than 1920 table listing fit to 100%
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
-        //if resolution greater than 1920 table listing fit to 100%
+		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+		//if resolution greater than 1920 table listing fit to 100%
 	};
+
+	/**
+	* @name onSubmit
+	* @param values
+	* @desc Submit the signup form values.
+	* @returns {{}}
+	*/
+	onSubmit(values) { }
 
 	/**
 	* @method render
@@ -538,16 +532,16 @@ class UsersListing extends Component {
 								</Col>
 							}
 							<Col md="6" className="search-user-block mb-3">
-									<div className="d-flex justify-content-end bd-highlight w100">
-								{AddAccessibility && (
+								<div className="d-flex justify-content-end bd-highlight w100">
+									{AddAccessibility && (
 										<div>
 											{this.state.shown ? (
 												<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
 													<div className="cancel-icon-white"></div></button>
 											) : (
 												<button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+													<div className="filter mr-0"></div>
+												</button>
 											)}
 											<button
 												type="button"
@@ -558,11 +552,11 @@ class UsersListing extends Component {
 												<div className={"plus mr-0"}></div>
 											</button>
 										</div>
-								)}
-								<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-									</div>
+									)}
+									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+										<div className="refresh mr-0"></div>
+									</button>
+								</div>
 
 
 							</Col>
@@ -609,10 +603,11 @@ class UsersListing extends Component {
 						</div>
 						<div
 							className="ag-theme-material"
-							style={{ height: '100%', width: '100%' }}
+
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
+								domLayout='autoHeight'
 								// columnDefs={c}
 								rowData={this.props.userDataList}
 								pagination={true}
@@ -634,10 +629,10 @@ class UsersListing extends Component {
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								<AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
+								<AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn field="IsActive" width={120} headerName="Status"  cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -672,9 +667,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading } = auth;
+	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
 
-	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading };
+	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
 }
 
 

@@ -13,9 +13,9 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING } from '../../../config/constants';
 import {
-  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+  getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology,
@@ -24,12 +24,19 @@ import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
-import { getLeftMenu } from '../../../actions/auth/AuthActions';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 
 export const ViewCostingContext = React.createContext()
+
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
+  })
+
+  return values;
+}
 
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
@@ -82,21 +89,24 @@ function CostingDetails(props) {
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   // client based costing
 
-  const fieldValues = useWatch({
-    control,
-    name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
-  })
+  const fieldValues = IsolateReRender(control);
 
   const dispatch = useDispatch()
+
+  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
+  const partInfo = useSelector((state) => state.costing.partInfo)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
+  const partNumber = useSelector(state => state.costing.partNo);
+  const { topAndLeftMenuData } = useSelector(state => state.auth);
 
   useEffect(() => {
     setValue('Technology', '')
     setValue('Part', '')
     reset()
-    InjectRolePermission()
+    applyPermission(topAndLeftMenuData, technology.label)
     dispatch(storePartNumber(''))
     dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
@@ -105,34 +115,28 @@ function CostingDetails(props) {
     dispatch(gridDataAdded(false))
   }, [])
 
-  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
-  const partInfo = useSelector((state) => state.costing.partInfo)
-  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
-  const partNumber = useSelector(state => state.costing.partNo);
-  const leftMenuData = useSelector(state => state.auth.leftMenuData);
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData, technology.label)
+  }, [topAndLeftMenuData, technology])
 
   /**
-   * @method InjectRolePermission
-   * @description SET ROLE AND PERMISSION
+  * @method applyPermission
+  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
   */
-  const InjectRolePermission = (selectedTechnology) => {
-    let ModuleId = reactLocalStorage.get('ModuleId');
-    dispatch(getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
-        const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
-        if (permmisionData !== undefined) {
-          // setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
-          // setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
-          // setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
-          // setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
-          // setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
-          // setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
-        }
+  const applyPermission = (topAndLeftMenuData, selectedTechnology) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === COSTING);
+      const accessData = Data && Data.Pages.find(el => el.PageName === getTechnologyPermission(selectedTechnology))
+      const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
+      if (permmisionData !== undefined) {
+        setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
+        setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
+        setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
+        setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
+        setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+        setSOBAccessibility(permmisionData?.SOB ? permmisionData.SOB : false)
       }
-    }))
+    }
   }
 
   useEffect(() => {
@@ -149,7 +153,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
-      InjectRolePermission(partNumber.technologyName)
+      applyPermission(topAndLeftMenuData, technology.label)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
       setTimeout(() => {
@@ -177,9 +181,7 @@ function CostingDetails(props) {
   }, [partNumber])
 
   useEffect(() => {
-
     if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
-      // InjectRolePermission()
       nextToggle()
     }
   }, [technology])
@@ -245,7 +247,7 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
       setShowNextBtn(false)
-      InjectRolePermission(newValue.label)
+      applyPermission(topAndLeftMenuData, technology.label)
       reset({
         Part: '',
       })
@@ -402,13 +404,9 @@ function CostingDetails(props) {
 
     if (index > zbcPlantOldArray.length - 1) {
       return false
-    } else if (
-      parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent
-    ) {
+    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent) {
       return false
-    } else if (
-      parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent
-    ) {
+    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent) {
       return true
     }
   }
@@ -487,6 +485,7 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '') => {
+    nextToggle()
     setIsCopyCostingDrawer(false)
   }
 
@@ -533,16 +532,16 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const checkSOBTotal = () => {
-    const { zbcPlantGridFields, vbcGridFields } = fieldValues
+    // const { zbcPlantGridFields, vbcGridFields } = fieldValues
 
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
-    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields.length > 0 && zbcPlantGridFields.reduce((accummlator, el) => {
+    NetZBCSOB = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ShareOfBusinessPercent)
     }, 0)
 
-    NetVBCSOB = vbcGridFields && vbcGridFields.length > 0 && vbcGridFields.reduce((accummlator, el) => {
+    NetVBCSOB = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ShareOfBusinessPercent)
     }, 0)
 
@@ -944,7 +943,7 @@ function CostingDetails(props) {
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)
-        setValue(`zbcPlantGridFields[${index}]CostingVersion`, '')
+        setValue(`zbcPlantGridFields.${index}.CostingVersion`, '')
       }
 
       if (type === VBC) {
@@ -961,7 +960,7 @@ function CostingDetails(props) {
         }
         tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
         setVBCVendorGrid(tempArray)
-        setValue(`vbcGridFields[${index}]CostingVersion`, '')
+        setValue(`vbcGridFields.${index}.CostingVersion`, '')
       }
     }))
   }
@@ -1001,10 +1000,17 @@ function CostingDetails(props) {
     setVBCVendorGrid([])
     setIsOpenVendorSOBDetails(false)
     setShowNextBtn(false)
+    setEffectiveDate('')
     dispatch(getPartInfo('', () => { }))
     reset({
       Technology: '',
       Part: '',
+      PartName: '',
+      Description: '',
+      ECNNumber: '',
+      DrawingNumber: '',
+      RevisionNumber: '',
+      ShareOfBusiness: '',
     })
   }
 
@@ -1029,12 +1035,14 @@ function CostingDetails(props) {
     dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
     setStepTwo(false);
+
+    resetGrid()
     setZBCPlantGrid([])
+    setVBCVendorGrid([])
     nextToggle()
-    // 
+
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
-      //setPart({ label: part.label, value: part.value })
       setValue('PartName', Data.PartName)
       setValue("Description", Data.Description)
       setValue("ECNNumber", Data.ECNNumber)
@@ -1044,6 +1052,25 @@ function CostingDetails(props) {
       setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
     }))
 
+  }
+
+  /**
+   * @method resetGrid
+   * @description TO RESET THE GRID DATA OF ZBC,VBC AND CBC (COSTING VVERSION RESET)
+   */
+  const resetGrid = () => {
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    zbcPlantGrid && zbcPlantGrid.map((el, index) => {
+      setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    vbcVendorGrid && vbcVendorGrid.map((el, index) => {
+      setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
   }
 
   /**
@@ -1321,9 +1348,6 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  // const [isOpenDrawer] = 
-
-
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1355,6 +1379,7 @@ function CostingDetails(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
+              {/* BASIS OF TECHNOLOGY AND PART GET THE DETAILS OF PART.  */}
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 {stepOne && (
                   <>
@@ -1551,8 +1576,9 @@ function CostingDetails(props) {
                               <div className={"plus"}></div>ADD PLANT
                             </button>
                           </Col>
-                          {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
+
+                        {/* ZBC PLANT GRID FOR COSTING */}
                         <Row>
                           <Col md="12">
                             <Table
@@ -1688,8 +1714,9 @@ function CostingDetails(props) {
                               ""
                             )}
                           </Col>
-                          {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
+
+                        {/* VBC PLANT GRID FOR COSTING */}
                         <Row>
                           <Col md="12">
                             <Table
@@ -1709,6 +1736,7 @@ function CostingDetails(props) {
                               </thead>
                               <tbody>
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
+                                  console.log('item: ', item);
 
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
@@ -1719,13 +1747,9 @@ function CostingDetails(props) {
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
-                                  //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
-                                  //AS OF NOW 25-03-2021
-
                                   return (
                                     <tr key={index}>
                                       <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {/* {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>} */}
                                       {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
@@ -1809,13 +1833,6 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
-
-                          {/* client based costing button */}
-                          {/* <button type={"button"} className="reset-btn w-auto px-3 mr5" onClick={toggleCLientCosting} >{"Client based costing"}</button> */}
-                          {/* client based costing button */}
-
-
-
                           <button type={"button"} className="reset-btn" onClick={cancel} >
                             <div className="cancel-icon"></div>
                             {"Clear"}

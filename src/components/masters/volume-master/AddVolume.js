@@ -113,7 +113,10 @@ class AddVolume extends Component {
       edit: false,
       DataChanged: [],
       DataToChange: true,
-      destinationPlant: []
+      destinationPlant: [],
+      gridApi: null,
+      gridColumnApi: null,
+      rowData: null,
     }
   }
 
@@ -283,40 +286,46 @@ class AddVolume extends Component {
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+    const rowIndex = props?.rowIndex
     return (
       <>
-        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowData)} />
+        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
       </>
     )
   }
 
-  ActualFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+  budgetedQuantity = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const value = this.beforeSaveCell(cell)
 
     return (
       <>
-        <span className="form-control" >{cellValue}</span>
+        <span>{value ? Number(cell) : 0}</span>
       </>
     )
   }
 
-  budgetFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+  actualQuantity = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const value = this.beforeSaveCell(cell)
 
     return (
       <>
-        <span className="form-control">{cellValue}</span>
+        <span>{value ? Number(cell) : 0}</span>
       </>
     )
   }
+
 
 
   /**
    * @method beforeSaveCell
    * @description CHECK FOR ENTER NUMBER IN CELL
    */
-  beforeSaveCell = (row, cellName, cellValue) => {
+  beforeSaveCell = (props) => {
+    const cellValue = props
     if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
       if (cellValue.length > 8) {
         toastr.warning("Value should not be more than 8")
@@ -342,6 +351,7 @@ class AddVolume extends Component {
       }
       return item
     })
+    console.log(filterData, "filterData");
     this.setState({ tableData: filterData })
     this.setState({ DataToChange: false })
   }
@@ -430,6 +440,12 @@ class AddVolume extends Component {
       this.props.getVolumeData('', () => { })
     }
   }
+
+  onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    this.state.gridApi.sizeColumnsToFit();
+    params.api.paginationGoToPage(0);
+  };
 
   /**
    * @method cancel
@@ -639,201 +655,237 @@ class AddVolume extends Component {
       resizable: true,
       filter: true,
       sortable: true,
+      editable: true
     };
 
     const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
+      buttonFormatter: this.buttonFormatter,
       customLoadingOverlay: LoaderCustom,
-      ActualFormatter: this.ActualFormatter,
-      budgetFormatter: this.budgetFormatter,
-      simulationButtonFormatter: this.simulationButtonFormatter
+      budgetedQuantity: this.budgetedQuantity,
+      actualQuantity: this.actualQuantity
     };
+
+
 
     return (
       <>
-        <div className="container-fluid ag-grid-react">
-          {this.state.isLoader && <LoaderCustom />}
-          <div className="login-container signup-form">
-            <div className="row">
-              <div className="col-md-12">
-                <div className="shadow-lgg login-formg">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="form-heading mb-0">
-                        <h1>
-                          {this.state.isEditFlag
-                            ? "Update Volume"
-                            : "Add Volume"}
-                        </h1>
+        <div className={`ag-grid-react`}>
+          <div className="container-fluid">
+            {this.state.isLoader && <LoaderCustom />}
+            <div className="login-container signup-form">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="shadow-lgg login-formg">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="form-heading mb-0">
+                          <h1>
+                            {this.state.isEditFlag
+                              ? "Update Volume"
+                              : "Add Volume"}
+                          </h1>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <form
-                    noValidate
-                    className="form"
-                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                  >
-                    <div className="add-min-height">
-                      <Row>
-                        <Col md="4" className="switch mb15">
-                          <label className="switch-level">
-                            <div className={"left-title"}>Zero Based</div>
-                            <Switch
-                              onChange={this.onPressVendor}
-                              checked={this.state.IsVendor}
-                              id="normal-switch"
-                              disabled={isEditFlag ? true : false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
-                            />
-                            <div className={"right-title"}>Vendor Based</div>
-                          </label>
-                        </Col>
-                      </Row>
+                    <form
+                      noValidate
+                      className="form"
+                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                    >
+                      <div className="add-min-height">
+                        <Row>
+                          <Col md="4" className="switch mb15">
+                            <label className="switch-level">
+                              <div className={"left-title"}>Zero Based</div>
+                              <Switch
+                                onChange={this.onPressVendor}
+                                checked={this.state.IsVendor}
+                                id="normal-switch"
+                                disabled={isEditFlag ? true : false}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={"right-title"}>Vendor Based</div>
+                            </label>
+                          </Col>
+                        </Row>
 
-                      <Row className="z12">
-                        {!this.state.IsVendor && (
+                        <Row className="z12">
+                          {!this.state.IsVendor && (
+                            <Col md="3">
+                              <Field
+                                name="Plant"
+                                type="text"
+                                label="Plant"
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("plant")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.selectedPlants == null ||
+                                    this.state.selectedPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handlePlants}
+                                valueDescription={this.state.selectedPlants}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          )}
+                          {this.state.IsVendor && (
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="VendorName"
+                                    type="text"
+                                    label="Vendor Name"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing(
+                                      "VendorNameList"
+                                    )}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    validate={
+                                      this.state.vendorName == null ||
+                                        this.state.vendorName.length === 0
+                                        ? [required]
+                                        : []
+                                    }
+                                    required={true}
+                                    handleChangeDescription={
+                                      this.handleVendorName
+                                    }
+                                    valueDescription={this.state.vendorName}
+                                    disabled={isEditFlag ? true : false}
+                                  />
+                                </div>
+                                {!isEditFlag && (
+                                  <div
+                                    onClick={this.vendorToggler}
+                                    className={"plus-icon-square mr15 right"}
+                                  ></div>
+                                )}
+                              </div>
+                            </Col>
+
+                          )}
+                          {
+                            this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
+                            <Col md="3">
+                              <Field
+                                label={'Destination Plant'}
+                                name="DestinationPlant"
+                                placeholder={"Select"}
+                                // selection={
+                                //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                options={this.renderListing("plant")}
+                                handleChangeDescription={this.handleDestinationPlant}
+                                validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
+                                required={true}
+                                // optionValue={(option) => option.Value}
+                                // optionLabel={(option) => option.Text}
+                                component={searchableSelect}
+                                valueDescription={this.state.destinationPlant}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          }
                           <Col md="3">
                             <Field
-                              name="Plant"
+                              name="PartNumber"
                               type="text"
-                              label="Plant"
+                              label="Part No."
                               component={searchableSelect}
                               placeholder={"Select"}
-                              options={this.renderListing("plant")}
+                              options={this.renderListing("PartList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
-                                this.state.selectedPlants == null ||
-                                  this.state.selectedPlants.length === 0
+                                this.state.part == null ||
+                                  this.state.part.length === 0
                                   ? [required]
                                   : []
                               }
                               required={true}
-                              handleChangeDescription={this.handlePlants}
-                              valueDescription={this.state.selectedPlants}
+                              handleChangeDescription={this.handlePart}
+                              valueDescription={this.state.part}
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                        )}
-                        {this.state.IsVendor && (
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="VendorName"
-                                  type="text"
-                                  label="Vendor Name"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "VendorNameList"
-                                  )}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.vendorName == null ||
-                                      this.state.vendorName.length === 0
-                                      ? [required]
-                                      : []
-                                  }
-                                  required={true}
-                                  handleChangeDescription={
-                                    this.handleVendorName
-                                  }
-                                  valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </div>
-                              {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square mr15 right"}
-                                ></div>
-                              )}
-                            </div>
-                          </Col>
-
-                        )}
-                        {
-                          this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
                           <Col md="3">
                             <Field
-                              label={'Destination Plant'}
-                              name="DestinationPlant"
-                              placeholder={"Select"}
-                              // selection={
-                              //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                              options={this.renderListing("plant")}
-                              handleChangeDescription={this.handleDestinationPlant}
-                              validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
-                              required={true}
-                              // optionValue={(option) => option.Value}
-                              // optionLabel={(option) => option.Text}
+                              name="FinancialYear"
+                              type="text"
+                              label="Year"
                               component={searchableSelect}
-                              valueDescription={this.state.destinationPlant}
-                              mendatory={true}
-                              className="multiselect-with-border"
+                              placeholder={"Select"}
+                              options={this.renderListing("yearList")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.year == null ||
+                                  this.state.year.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={this.handleFinancialYear}
+                              valueDescription={this.state.year}
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                        }
-                        <Col md="3">
-                          <Field
-                            name="PartNumber"
-                            type="text"
-                            label="Part No."
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("PartList")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.part == null ||
-                                this.state.part.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handlePart}
-                            valueDescription={this.state.part}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            name="FinancialYear"
-                            type="text"
-                            label="Year"
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("yearList")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.year == null ||
-                                this.state.year.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handleFinancialYear}
-                            valueDescription={this.state.year}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
-                      </Row>
+                        </Row>
 
-                      <Row>
-                        <Col md="12">
-                          <div className="left-border mb-0">{"Quantity:"}</div>
-                        </Col>
-                        <Col md="12">
-                          {/* <BootstrapTable
-                            data={this.props.userDataList}
+                        <Row>
+                          <Col md="12">
+                            <div className="left-border">{"Quantity:"}</div>
+                          </Col>
+
+                          <Col>
+                          <div className="ag-grid-wrapper add-volume-table" style={{ width: '100%', height: '100%' }}>
+                            {/* <Col md="12"> */}
+                            <div
+                              className="ag-theme-material"
+
+                            >
+                              <AgGridReact
+                                style={{ height: '100%', width: '100%' }}
+                                defaultColDef={defaultColDef}
+                                domLayout='autoHeight'
+                                // columnDefs={c}
+                                rowData={this.state.tableData}
+                                pagination={true}
+                                paginationPageSize={12}
+                                onGridReady={this.onGridReady}
+                                gridOptions={gridOptions}
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                  title: CONSTANT.EMPTY_DATA,
+                                }}
+                                frameworkComponents={frameworkComponents}
+                                stopEditingWhenCellsLoseFocus={true}
+                              >
+                                <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
+                                <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
+                                <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Approved Quantity"></AgGridColumn>
+                                <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action"  type="rightAligned" ></AgGridColumn>
+                                <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
+                                <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
+                              </AgGridReact>
+                            </div>
+                            {/* <BootstrapTable
+                            data={this.state.tableData}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -845,85 +897,36 @@ class AddVolume extends Component {
                             <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="" VolumeApprovedDetailIdisKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
                           </BootstrapTable> */}
-
-                          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                            {/* <div className="ag-grid-header">
-                              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div> */}
-                            <div
-                              className="ag-theme-material"
-                              style={{ height: '100%', width: '100%' }}
-                            >
-                              <AgGridReact
-                                defaultColDef={defaultColDef}
-                                // columnDefs={c}
-                                rowData={this.props.userDataList}
-                                // pagination={true}
-                                // paginationPageSize={10}
-                                
-                                onGridReady={this.onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                  title: CONSTANT.EMPTY_DATA,
-                                }}
-                                frameworkComponents={frameworkComponents}
-                              >
-                                <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                                <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity" cellRenderer={'budgetFormatter'}></AgGridColumn>
-                                <AgGridColumn field="ApprovedQuantity" headerName="Actual Quantity" cellRenderer={'ActualFormatter'}></AgGridColumn>
-                                <AgGridColumn field="VolumeApprovedDetailId" hide headerName="Volume Approv Id"></AgGridColumn>
-                                <AgGridColumn field="VolumeBudgetedDetailId" hide headerName="Vol Budget Id" type="rightAligned" cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
-                                <AgGridColumn field="VolumeApprovedDetailId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                              </AgGridReact>
-                              {/* <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                  <option value="10" selected={true}>10</option>
-                                  <option value="50">50</option>
-                                  <option value="100">100</option>
-                                </select>
-                              </div> */}
-                            </div>
+                            {/* </Col> */}
                           </div>
-
-
-                        </Col>
-                      </Row>
-                    </div>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                      <div className="col-sm-12 text-right bluefooter-butn">
-                        <button
-                          type={"button"}
-                          className="mr15 cancel-btn"
-                          onClick={this.cancel}
-                        >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
-                          {"Cancel"}
-                        </button>
-                        <button
-                          type="submit"
-                          className="user-btn mr5 save-btn"
-                        >
-                          <div className={"check-icon"}>
-                            <img
-                              src={require("../../../assests/images/check.png")}
-                              alt="check-icon.jpg"
-                            />{" "}
-                          </div>
-                          {isEditFlag ? "Update" : "Save"}
-                        </button>
+                          </Col>
+                        </Row>
                       </div>
-                    </Row>
-                  </form></div>
+                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                          <button
+                            type={"button"}
+                            className="mr15 cancel-btn"
+                            onClick={this.cancel}
+                          >
+                            <div className={"cancel-icon"}></div>{" "}
+                            {"Cancel"}
+                          </button>
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                          >
+                            <div className={"save-icon"}> </div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                        </div>
+                      </Row>
+                    </form></div>
+                </div>
               </div>
+
             </div>
             {isOpenVendor && (
               <AddVendorDrawer

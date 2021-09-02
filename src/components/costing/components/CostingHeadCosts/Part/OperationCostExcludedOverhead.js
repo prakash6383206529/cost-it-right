@@ -10,6 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import WarningMessagge from '../../../../common/WarningMessage'
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -21,8 +22,8 @@ function OperationCostExcludedOverhead(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(props.data)
-  const [OldGridData, setOldGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(props.data ? props.data : [])
+  const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -43,7 +44,7 @@ function OperationCostExcludedOverhead(props) {
       if (props.IsAssemblyCalculation) {
         props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       } else {
-        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
     }
 
@@ -73,9 +74,9 @@ function OperationCostExcludedOverhead(props) {
 
         return {
           IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
-          OperationId: el.OperationId,
-          OperationName: el.OperationName,
-          OperationCode: el.OperationCode,
+          OtherOperationId: el.OperationId,
+          OtherOperationName: el.OperationName,
+          OtherOperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
           Quantity: el.Quantity,
@@ -83,7 +84,7 @@ function OperationCostExcludedOverhead(props) {
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
           OperationCost: OperationCost,
-          IsChecked: el.IsChecked,
+          IsOtherOperation: true
         }
       })
       let tempArr = [...GridArray, ...rowArray]
@@ -100,9 +101,9 @@ function OperationCostExcludedOverhead(props) {
   */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OperationId) === false) {
+      if (Ids.includes(el.OtherOperationId) === false) {
         let selectedIds = Ids;
-        selectedIds.push(el.OperationId)
+        selectedIds.push(el.OtherOperationId)
         setIds(selectedIds)
       }
       return null;
@@ -223,6 +224,7 @@ function OperationCostExcludedOverhead(props) {
             <Col md="8">
               <div className="left-border">
                 {'Other Operation Cost:'}
+                <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
             </Col>
             <Col md={'4'}>
@@ -262,8 +264,8 @@ function OperationCostExcludedOverhead(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
-                            <td>{item.OperationCode}</td>
+                            <td>{item.OtherOperationName}</td>
+                            <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>
@@ -340,8 +342,8 @@ function OperationCostExcludedOverhead(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
-                            <td>{item.OperationCode}</td>
+                            <td>{item.OtherOperationName}</td>
+                            <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>{item.Quantity}</td>
@@ -354,7 +356,7 @@ function OperationCostExcludedOverhead(props) {
                             <td>{netCost(item)}</td>
                             <td>
                               {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
                             </td>
                           </tr>
                       )

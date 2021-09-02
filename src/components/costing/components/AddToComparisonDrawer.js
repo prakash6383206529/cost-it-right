@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
@@ -7,10 +7,9 @@ import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED, REJECTED, HISTORY } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
-import { checkForNull } from '../../../helper'
 
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
@@ -23,29 +22,24 @@ function AddToComparisonDrawer(props) {
 
 
   const defaultValue = {
-    comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC', //COMMENTED FOR NOW FOR MINDA
-    // comparisonValue: 'VBC',
+    comparisonValue: isEditFlag ? typeOfCosting === 0 ? 'ZBC' : typeOfCosting === 1 ? 'VBC' : 'CBC' : 'ZBC',
     plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
-    costings: isEditFlag && typeOfCosting === 1 ? { label: CostingNumber, value: costingId } : '',
+    costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
     vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
     vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
     destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
   }
 
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValue
   })
-  // const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
+
 
   const dispatch = useDispatch()
 
-  /* DropDown constants */
-  // const [plantDropDownList, setPlantDropDownList] = useState([])
-  // const [vendorDropDownList, setVendorDropDownList] = useState([])
-  // const [vendorPlantDropdown, setvendorPlantDropdown] = useState([])
-  // const [clientDropdown, setclientDropdown] = useState([])
+
   const [costingDropdown, setCostingDropdown] = useState([])
 
   const [vendorId, setVendorId] = useState(editObject.VendorId ? editObject.VendorId : [])
@@ -57,9 +51,9 @@ function AddToComparisonDrawer(props) {
   const [cbcValue, setCbcValue] = useState('')
 
   /* constant for checkbox rendering condition */
-  const [isZbcSelected, setIsZbcSelected] = useState(false)  // FALSE FOR MINDA 
+  const [isZbcSelected, setIsZbcSelected] = useState(true)
 
-  const [isVbcSelected, setIsVbcSelected] = useState(true) //TRUE FOR MINDA AS BY DEFAULT TO SHOW VBC
+  const [isVbcSelected, setIsVbcSelected] = useState(false)
 
   const [isCbcSelected, setisCbcSelected] = useState(false)
 
@@ -82,61 +76,39 @@ function AddToComparisonDrawer(props) {
     /******FIRST TIME RENDER ADD TO COMPARISION******/
     if (!isEditFlag) {
       const temp = []
-      // THIS CONDITION IS TEMPORARY COMMENTED FOR MINDA
-      // setIsZbcSelected(true)
-      // setIsVbcSelected(false)
-      // setisCbcSelected(false)
-      // dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
-      //   dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-      //   dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
-      // }),
-      // )
-
-      // THIS CONDITION IS FOR MINDA 
-      setIsVbcSelected(true)
-      setIsZbcSelected(false)
+      setIsZbcSelected(true)
+      setIsVbcSelected(false)
       setisCbcSelected(false)
-      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      //    dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-      dispatch(getPlantSelectListByType(ZBC, () => { }))
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
+        dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
+        dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
+      }),
+      )
     }
 
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
-      /***************************FOR MINDA***************************************** */
-      setIsZbcSelected(false)
-      setIsVbcSelected(true)
-      setisCbcSelected(false)
-      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-      if (VendorId && VendorId !== '-') {
+      if (typeOfCosting === 0) { //ZBC COSTING CONDITION
+        setIsZbcSelected(true)
+        setIsVbcSelected(false)
+        setisCbcSelected(false)
+        dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
+        dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
+        // dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
 
-        if (getConfigurationKey().IsDestinationPlantConfigure) {
-          dispatch(getPlantSelectListByType(ZBC, () => { }))
-        } else if (getConfigurationKey().IsVendorPlantConfigurable) {
-          dispatch(getPlantBySupplier(VendorId, (res) => { }))
-        }
-        dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId ? vendorPlantId : '00000000-0000-0000-0000-000000000000', destinationPlantId ? destinationPlantId : '00000000-0000-0000-0000-000000000000', () => { }))
+        setIsZbcSelected(false)
+        setIsVbcSelected(true)
+        setisCbcSelected(false)
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+        // dispatch(getPlantBySupplier(VendorId, (res) => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, destinationPlantId, () => { }))
+      } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
+        setIsZbcSelected(false)
+        setIsVbcSelected(false)
+        setisCbcSelected(true)
       }
-      // if (typeOfCosting === 0) { //ZBC COSTING CONDITION
-
-      //   setIsZbcSelected(true)
-      //   dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
-      //   dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
-      //   dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      // } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
-
-      //   setIsZbcSelected(false)
-      //   setIsVbcSelected(true)
-      //   setisCbcSelected(false)
-      //   dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-      //   dispatch(getPlantBySupplier(VendorId, (res) => { }))
-      //   dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, () => { }))
-      // } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
-      //   setIsZbcSelected(false)
-      //   setIsVbcSelected(false)
-      //   setisCbcSelected(true)
-      // }
     }
   }, [])
 
@@ -216,17 +188,16 @@ function AddToComparisonDrawer(props) {
     const temp = []
     setVendorId(value)
     setValue('destinationPlant', '')
-    if (loggedIn) {
-      dispatch(getPlantBySupplier(value, (res) => { }),
-        // dispatch(
-        //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
-        //   }),
-        //   )
-        setValue('costings', '')
-      )
-    } else {
-      handleVendorNameChange('')
-    }
+
+    // dispatch(getPlantBySupplier(value, (res) => { }),
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    // dispatch(
+    //   getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', (res) => {
+    //   }),
+    //   )
+    setValue('costings', '')
+
+
   }
 
 
@@ -260,7 +231,7 @@ function AddToComparisonDrawer(props) {
           // let temp = viewCostingData;
           let dataFromAPI = res.data.Data
           let obj = {}
-          obj.zbc = obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
+          obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
           obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked
           obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
           obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
@@ -376,7 +347,11 @@ function AddToComparisonDrawer(props) {
           obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
           obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
           obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : ''
-
+          obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
+          obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
+          obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
+          obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
+          obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -557,31 +532,42 @@ function AddToComparisonDrawer(props) {
             </Row>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Row className="pl-3 mb-2">
-                <RadioHookForm
-                  className={"filter-from-section"}
-                  name={"comparisonValue"}
-                  control={control}
-                  // Controller={Controller}
-                  register={register}
-                  onChange={handleComparison}
-                  defaultValue={defaultValue.comparisonValue}
-                  dataArray={[
-                    // THIS IS FOR MINDA 
-                    // { 
-                    //   label: "ZBC",
-                    //   optionsValue: "ZBC",
-                    // },
-                    {
-                      label: "VBC",
-                      optionsValue: "VBC",
-                    },
-                    // {
-                    //   label: "CBC",
-                    //   optionsValue: "CBC",
-                    // },
-                  ]}
-                />
+              <Row className="pl-3 my-3">
+                <Col>
+                  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                    className={"filter-form-section mr-1"}
+                    name={"ZBC"}
+                    label={"ZBC"}
+                    defaultValue={isZbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison("ZBC")}
+                  />
+                  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline pr-3"
+                    className={"filter-form-section mr-1"}
+                    name={"VBC"}
+                    label={"VBC"}
+                    defaultValue={isVbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison("VBC")}
+                  />
+                  <RadioHookForm
+                    customClassName="d-inline-flex flex-row-reverse align-items-baseline"
+                    className={"filter-form-section mr-1"}
+                    name={"CBC"}
+                    label={"CBC"}
+                    defaultValue={isCbcSelected}
+                    control={control}
+                    Controller={Controller}
+                    register={register}
+                    handleChange={() => handleComparison("CBC")}
+                  />
+                </Col>
               </Row>
               <Row className="pl-3">
                 {isZbcSelected && (
@@ -658,7 +644,7 @@ function AddToComparisonDrawer(props) {
                     )}
                   </>
                 )}
-                {/* {isCbcSelected && (
+                {isCbcSelected && (
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
@@ -677,7 +663,7 @@ function AddToComparisonDrawer(props) {
                       />
                     </Col>
                   </>
-                )} */}
+                )}
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Costing Version"}

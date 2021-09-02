@@ -273,11 +273,11 @@ function AddOperation(props) {
                     </div>
                     <div
                       className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
                     >
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={tableData}
                         pagination={true}
@@ -296,7 +296,7 @@ function AddOperation(props) {
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
-                        <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                         <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>

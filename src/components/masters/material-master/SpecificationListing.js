@@ -330,12 +330,12 @@ class SpecificationListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, this.props.rmSpecificationList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } else if (item.RMGrade === '-') {
@@ -459,8 +459,8 @@ class SpecificationListing extends Component {
                                     <div className="cancel-icon-white"></div></button>
                             ) : (
                                 <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                    <div className="filter mr-0"></div>
+                                </button>
                             )}
                             {AddAccessibility && <button
                                 type={'button'}
@@ -468,23 +468,23 @@ class SpecificationListing extends Component {
                                 title="Add"
                                 onClick={this.openModel}>
                                 <div className={'plus mr-0'}></div></button>}
-                                {BulkUploadAccessibility && <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>}
+                            {BulkUploadAccessibility && <button
+                                type="button"
+                                className={"user-btn mr5"}
+                                onClick={this.bulkToggle}
+                                title="Bulk Upload"
+                            >
+                                <div className={"upload mr-0"}></div>
+                                {/* Bulk Upload */}
+                            </button>}
                             {
                                 DownloadAccessibility &&
                                 <>
 
                                     <ExcelFile filename={RmSpecification} fileExtension={'.xls'} element={
-                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                    {/* DOWNLOAD */}
-                                    </button>}>
+                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                            {/* DOWNLOAD */}
+                                        </button>}>
 
                                         {this.onBtExport()}
                                     </ExcelFile>
@@ -495,8 +495,8 @@ class SpecificationListing extends Component {
 
                             }
                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                <div className="refresh mr-0"></div>
+                            </button>
 
                         </Col>
                     </Row>
@@ -530,10 +530,10 @@ class SpecificationListing extends Component {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmSpecificationList}
                                     pagination={true}
@@ -550,7 +550,7 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

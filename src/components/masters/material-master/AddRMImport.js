@@ -37,6 +37,8 @@ import WarningMessage from '../../common/WarningMessage';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -93,7 +95,8 @@ class AddRMImport extends Component {
       isDateChange: false,
       isSourceChange: false,
       source: '',
-      showWarning: false
+      showWarning: false,
+      approveDrawer: false
     }
   }
 
@@ -407,7 +410,7 @@ class AddRMImport extends Component {
                 const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
                 this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-                this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+                this.handleCurrency(currencyObj ? { label: currencyObj.Text, value: currencyObj.Value } : '')
                 this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
                 // this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 // this.props.change('NetLandedCost')
@@ -599,6 +602,14 @@ class AddRMImport extends Component {
     this.setState({ isOpenUOM: false }, () => {
       this.props.getUOMSelectList(() => { })
     })
+  }
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
+    }
   }
 
   /**
@@ -991,14 +1002,24 @@ class AddRMImport extends Component {
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code
+
       }
-      this.props.reset()
-      this.props.createRMImport(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-          this.clearForm();
-        }
-      });
+      // let obj
+      // if(CheckApprovalApplicableMaster('1') === true){
+      //   obj = {...formData,IsSendForApproval:true}
+      // }
+      // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
+      if (CheckApprovalApplicableMaster('1') === true) {
+        this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+      } else {
+        this.props.reset()
+        this.props.createRMImport(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
+            this.clearForm();
+          }
+        });
+      }
     }
   }
 
@@ -1084,6 +1105,22 @@ class AddRMImport extends Component {
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Raw Material:"}</h5>
                             </div>
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleTechnologyChange}
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
                           </Col>
                           <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -1208,22 +1245,7 @@ class AddRMImport extends Component {
                               disabled={false}
                             />
                           </Col>
-                          <Col md="4">
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleTechnologyChange}
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
+
                           {(this.state.IsVendor === false && (
                             <Col md="4">
                               <Field
@@ -1679,13 +1701,24 @@ class AddRMImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                          {
+                            (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
+                              <button type="submit"
+                                class="user-btn approval-btn mr5"
+                              // onClick={this.sendForMasterApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          }
                         </div>
                       </Row>
                     </form>
@@ -1763,6 +1796,21 @@ class AddRMImport extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                masterId={1}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={true}
+              />
+            )
+          }
         </div>
       </>
     );

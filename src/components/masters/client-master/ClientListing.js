@@ -7,13 +7,10 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { CLIENT, Clientmaster } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper/auth';
+import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -57,29 +54,37 @@ class ClientListing extends Component {
     }
 
     componentDidMount() {
-
-
-        let ModuleId = reactLocalStorage.get('ModuleId');
-        this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-            const { leftMenuData } = this.props;
-            if (leftMenuData !== undefined) {
-                let Data = leftMenuData;
-                const accessData = Data && Data.find(el => el.PageName === CLIENT)
-                const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-                if (permmisionData !== undefined) {
-                    this.setState({
-                        AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                        EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                        DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                        DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                    })
-                }
-            }
-        })
+        this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
             this.getTableListData(null, null)
         }, 500);
+    }
+
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+            this.applyPermission(nextProps.topAndLeftMenuData)
+        }
+    }
+
+    /**
+    * @method applyPermission
+    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+    */
+    applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find(el => el.PageName === CLIENT)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permmisionData !== undefined) {
+                this.setState({
+                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+                })
+            }
+        }
     }
 
     // Get updated Supplier's list after any action performed.
@@ -274,12 +279,12 @@ class ClientListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, this.props.clientDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } else {
@@ -374,8 +379,8 @@ class ClientListing extends Component {
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
                                 </div>
                             </Col>
@@ -383,29 +388,7 @@ class ClientListing extends Component {
 
                     </form>
 
-                    {/* <BootstrapTable
-                        data={this.props.clientDataList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        // exportCSV={this.state.DownloadAccessibility}
-                        // csvFileName={`${Clientmaster}.csv`}
-                        //ignoreSinglePage
-                        ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass='my-custom-header client-table'
-                        className={'client-table'}
-                        pagination>
-                        <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientEmailId" dataAlign="left" >{'Email Id'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CountryName" dataAlign="left" >{'Country'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="StateName" dataAlign="left" >{'State'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CityName" dataAlign="left" >{'City'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientId" dataAlign="right" className="action" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable> */}
+
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
@@ -413,10 +396,11 @@ class ClientListing extends Component {
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{ height: '100%', width: '100%' }}
+
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
+                                domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}
@@ -436,7 +420,7 @@ class ClientListing extends Component {
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -470,9 +454,9 @@ class ClientListing extends Component {
 */
 function mapStateToProps({ comman, auth, client }) {
     const { loading, } = comman;
-    const { leftMenuData } = auth;
+    const { leftMenuData, topAndLeftMenuData } = auth;
     const { clientDataList } = client;
-    return { loading, leftMenuData, clientDataList };
+    return { loading, leftMenuData, clientDataList, topAndLeftMenuData };
 }
 
 /**

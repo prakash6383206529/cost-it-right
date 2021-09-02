@@ -144,11 +144,14 @@ export const RMDomesticVBC = [
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
-    { label: "BasicRate(INR)", value: "BasicRate(INR)" }, //*
-    { label: "ScrapRate(INR)", value: "ScrapRate(INR)" }, //*
-    { label: "RMFreightCost(INR)", value: "RMFreightCost(INR)" }, //New Added
-    { label: "ShearingCost(INR)", value: "ShearingCost(INR)" }, //New Added
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "FreightCost", value: "FreightCost" }, //*
+    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -168,11 +171,11 @@ export const RMDomesticVBCTempData = [
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Kilogram",
-        "BasicRate(INR)": "100",
-        "ScrapRate(INR)": "10",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
-        "DestinationPlant": "Manesar",
+        "BasicRate": "100",
+        "ScrapRate": "10",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -190,11 +193,11 @@ export const RMDomesticVBCTempData = [
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon",
-        "BasicRate(INR)": "500",
-        "ScrapRate(INR)": "50",
-        "RMFreightCost(INR)": "10",
-        "ShearingCost(INR)": "10",
-        "DestinationPlant": "Manesar",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "FreightCost": "10",
+        "ShearingCost": "10",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -1692,7 +1695,7 @@ export const SurfaceTreatmentPartGetJSON = [
 
 export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
 export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
-export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
+export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
@@ -2244,10 +2247,12 @@ export const ENDMILL = 'End Mill'
 
 export const getTechnology = [1, 8, 7, 2, 4]
 export const technologyForDensity = [1, 7]
+export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
+export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
 
 
 export const CostingSimulationDownload = [
-    { label: "CostingHead", value: "CostingHead" },
+    { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
@@ -2269,18 +2274,35 @@ export const CostingSimulationDownload = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "NOldDiscountCostewRMPrice" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "Variance", value: "Variance" }
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
-    { label: "IsVendor", value: "IsVendor", },
+    { label: "Costing Head", value: "IsVendor", },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
     { label: "BoughtOutPartName", value: "BoughtOutPartName", },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
-    { label: "Plants", value: "Plants", },
+    { label: "Plant", value: "Plants", },
     { label: "Vendor", value: "Vendor", },
     { label: "NumberOfPieces", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
@@ -2289,13 +2311,13 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
-    { label: "IsVendor", value: "IsVendor", },
+    { label: "Costing Head", value: "IsVendor", },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
     { label: "BoughtOutPartName", value: "BoughtOutPartName", },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
-    { label: "Plants", value: "Plants", },
+    { label: "Plant", value: "Plants", },
     { label: "Vendor", value: "Vendor", },
     { label: "NumberOfPieces", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
@@ -2325,7 +2347,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
-    { label: "IsVendor", value: "IsVendor", },
+    { label: "Costing Head", value: "IsVendor", },
     { label: "Mode", value: "Mode", },
     { label: "VendorName", value: "VendorName", },
     { label: "SourceCity", value: "SourceCity", },
@@ -2347,8 +2369,13 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit", }
 ]
 
+export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
+    { label: "VendorName", value: "VendorName" },
+    { label: "NetPowerCostPerUnit", value: "NetPowerCostPerUnit" },
+]
+
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
-    { label: "IsVendor", value: "IsVendor", },
+    { label: "Costing Head", value: "IsVendor", },
     { label: "VendorName", value: "VendorName", },
     { label: "ICCApplicability", value: "ICCApplicability", },
     { label: "ICCPercent", value: "ICCPercent", },
@@ -2359,7 +2386,7 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
 ]
 
 export const LABOUR_DOWNLOAD_EXCEl = [
-    { label: "IsContractBase", value: "IsContractBase", },
+    { label: "Employment Terms", value: "IsContractBase", },
     { label: "Vendor", value: "Vendor", },
     { label: "Plant", value: "Plant", },
     { label: "State", value: "State", },
@@ -2370,7 +2397,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 ]
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
-    { label: "IsVendor", value: "IsVendor", },
+    { label: "Costing Head", value: "IsVendor", },
     { label: "Technologies", value: "Technologies", },
     { label: "VendorName", value: "VendorName", },
     { label: "Plants", value: "Plants", },
@@ -2388,7 +2415,7 @@ export const PROCESSLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMDOMESTIC_DOWNLOAD_EXCEl = [
-    { label: "CostingHead", value: "CostingHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "RawMaterial", value: "RawMaterial", },
     { label: "RMGrade", value: "RMGrade", },
     { label: "RMSpec", value: "RMSpec", },
@@ -2404,12 +2431,11 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "ProcessName", value: "ProcessName", },
-    { label: "ProcessName", value: "ProcessName", },
+
 ]
 
 export const RMIMPORT_DOWNLOAD_EXCEl = [
-    { label: "CostingHead", value: "CostingHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "RawMaterial", value: "RawMaterial", },
     { label: "RMGrade", value: "RMGrade", },
     { label: "RMSpec", value: "RMSpec", },
@@ -2441,11 +2467,11 @@ export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const OPERATION_DOWNLOAD_EXCEl = [
-    { label: "CostingHead", value: "CostingHead", },
+    { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technology", },
     { label: "OperationName", value: "OperationName", },
     { label: "OperationCode", value: "OperationCode", },
-    { label: "Plants", value: "Plants", },
+    { label: "Plant", value: "Plants", },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement", },
     { label: "Rate", value: "Rate", },
@@ -2453,7 +2479,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 ]
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
-    { label: "TypeOfHead", value: "TypeOfHead", },
+    { label: "Costing Head", value: "TypeOfHead", },
     { label: "VendorName", value: "VendorName", },
     { label: "ClientName", value: "ClientName", },
     { label: "ModelType", value: "ModelType", },
@@ -2517,7 +2543,7 @@ export const UOM_DOWNLOAD_EXCEl = [
 ]
 
 export const VOLUME_DOWNLOAD_EXCEl = [
-    { label: "IsVendor", value: "IsVendor", },
+    { label: "Costing Head", value: "IsVendor", },
     { label: "Year", value: "Year", },
     { label: "Month", value: "Month", },
     { label: "VendorName", value: "VendorName", },
@@ -2529,7 +2555,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
-    { label: "TypeOfHead", value: "TypeOfHead", },
+    { label: "Costing Head", value: "TypeOfHead", },
     { label: "VendorName", value: "VendorName", },
     { label: "ClientName", value: "ClientName", },
     { label: "ModelType", value: "ModelType", },

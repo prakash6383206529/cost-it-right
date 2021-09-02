@@ -298,96 +298,100 @@ export const DatePickerHookForm = (field) => {
 */
 // import Typography from "../typography";
 // import "./radioButtons.less";
-export const RadioHookForm = (field) => {
-  const { dataArray = [], label = "label", optionsValue = "optionsValue", labelElement = '', className, selectedValue = "", register, name, onChange = null, defaultValue } = field
-
-  const onChangeSelect = (val) => {
-    onChange && onChange(val);
-  };
-  const flexContainer = {
-  };
-  return (
-    <div className={`te-radio-button ${className}`}>
-      <div>
-        {dataArray && dataArray.length !== 0 && (
-          <ul style={flexContainer} className={"radio-button-list d-flex"}>
-            {dataArray.map((data, index) => {
-              return (
-                <li className="p-3" key={index}>
-                  <label className="radio-button-wrapper radio-box">
-                    <input
-                      {...field}
-                      {...register}
-                      name={name}
-                      type="radio"
-                      value={data[optionsValue]}
-                      defaultValue={defaultValue}
-                      checked={defaultValue}
-                      onChange={e =>
-                        onChangeSelect(
-                          e.target.value
-                        )
-                      }
-                    />
-                    {" "}
-                    {/* {data[labelElement] && data[labelElement]} */}
-                    <span className="radio-label">{data[label]}</span>
-                  </label>
-                </li>)
-            })
-            }
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-};
-
-
-
-
-
-
 // export const RadioHookForm = (field) => {
-//   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
-//   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
-//   const InputClassName = `form-control ${field.className ? field.className : ""}`;
-//   const isDisabled = field.disabled === true ? true : false;
+//   console.log('field: ', field);
+//   const { dataArray = [], label = "label", optionsValue = "optionsValue", labelElement = '', className, selectedValue = "", register, name, onChange = null, defaultValue } = field
+
+//   const onChangeSelect = (val) => {
+//     onChange && onChange(val);
+//   };
+//   const flexContainer = {
+//   };
 //   return (
-//     <>
-//       <div 
-//       //className={className}
-//       >
-//         <label>
-//           {label}
-//           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-//         </label>
-//         <Controller
-//           name={name}
-//           control={control}
-//           rules={rules}
-//           ref={register}
-//           defaultValue={defaultValue}
-//           render={({ onChange, onBlur, value, name }) => {
-//             return (
-//               <input
-//                 {...field}
-//                 type="radio"
-//                 name={name}
-//                 // className={InputClassName}
-//                 disabled={isDisabled}
-//                 value={value}
-//                 onChange={(e) => {
-//                   handleChange(e);
-//                   onChange(e)
-//                 }}
-//               />
-//             )
-//           }
-//           }
-//         />
-//         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+//     <div className={`te-radio-button ${className}`}>
+//       <div>
+//         {dataArray && dataArray.length !== 0 && (
+//           <ul style={flexContainer} className={"radio-button-list d-flex"}>
+//             {dataArray.map((data, index) => {
+//               return (
+//                 <li className="p-3" key={index}>
+//                   <label className="radio-button-wrapper radio-box">
+//                     <input
+//                       {...field}
+//                       {...register}
+//                       name={name}
+//                       type="radio"
+//                       value={data.optionsValue}
+//                       defaultValue={defaultValue}
+//                       checked={data.optionsValue === defaultValue ? true : false}
+//                       onChange={e =>
+//                         onChangeSelect(
+//                           e.target.value
+//                         )
+//                       }
+//                     />
+//                     {" "}
+//                     {/* {data[labelElement] && data[labelElement]} */}
+//                     <span className="radio-label">{data[label]}</span>
+//                   </label>
+//                 </li>)
+//             })
+//             }
+//           </ul>
+//         )}
 //       </div>
-//     </>
-//   )
-// }
+//     </div>
+//   );
+// };
+
+
+
+
+
+
+export const RadioHookForm = (field) => {
+  // console.log('field: ', field);
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const className = `${field.customClassName ? field.customClassName : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const isDisabled = field.disabled === true ? true : false;
+  return (
+    <>
+      <div
+      className={className}
+      >
+        <label>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          {...register}
+          defaultValue={defaultValue}
+          render={({ field: { onChange, onBlur, value, name } }) => {
+            return (
+              <input
+                {...field}
+                {...register}
+                type="radio"
+                name={name}
+                checked={defaultValue}
+                // className={InputClassName}
+                disabled={isDisabled}
+                value={value}
+                onChange={(e) => {
+                  handleChange(e);
+                  onChange(e)
+                }}
+              />
+            )
+          }
+          }
+        />
+        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+      </div>
+    </>
+  )
+}

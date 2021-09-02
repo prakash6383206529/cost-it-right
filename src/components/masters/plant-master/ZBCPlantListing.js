@@ -166,7 +166,7 @@ class ZBCPlantListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
                             onChange={() => this.handleChange(cellValue, rowData)}
@@ -361,6 +361,8 @@ class ZBCPlantListing extends Component {
     }
 
     onGridReady = (params) => {
+        this.gridApi = params.api;
+        this.gridApi.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -377,25 +379,11 @@ class ZBCPlantListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, this.props.plantDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        // let temp = []
-        // TempData.map((item) => {
-        //     if (item.ECNNumber === null) {
-        //         item.ECNNumber = ' '
-        //     } else if (item.RevisionNumber === null) {
-        //         item.RevisionNumber = ' '
-        //     } else if (item.DrawingNumber === null) {
-        //         item.DrawingNumber = ' '
-        //     } else if (item.Technology === '-') {
-        //         item.Technology = ' '
-        //     } else {
-        //         return false
-        //     }
-        //     return item
-        // })
+
         return (
 
             <ExcelSheet data={TempData} name={PlantZbc}>
@@ -568,30 +556,7 @@ class ZBCPlantListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                {/* <BootstrapTable
-                    data={this.props.plantDataList}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${PlantZbc}.csv`}
-                    //ignoreSinglePage
-                    ref={"table"}
-                    trClassName={"userlisting-row"}
-                    tableHeaderClass="my-custom-header"
-                    pagination
-                >
-                    <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" dataAlign="left" dataSort={true}>Plant Code</TableHeaderColumn>
-                    {initialConfiguration && initialConfiguration.IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="CompanyName" dataAlign="left" dataSort={true}>Company</TableHeaderColumn>}
-                    <TableHeaderColumn dataField="CountryName" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="left" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataAlign="left" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" dataSort={false} searchable={false} className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
+
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -599,10 +564,11 @@ class ZBCPlantListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
@@ -622,8 +588,8 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

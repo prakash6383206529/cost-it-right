@@ -37,6 +37,7 @@ function VerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const { filteredRMData } = useSelector(state => state.material)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -52,7 +53,8 @@ function VerifySimulation(props) {
     }, [])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
-        dispatch(getVerifySimulationList(props.token, plantId, rawMatrialId, (res) => {
+        const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
+        dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const data = res.data.Data
                 if (data.SimulationImpactedCostings.length === 0) {
@@ -376,11 +378,12 @@ function VerifySimulation(props) {
                                         </div>
                                         <div
                                             className="ag-theme-material"
-                                            style={{ height: '100%', width: '100%' }}
+
                                         >
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
+                                                domLayout='autoHeight'
                                                 // columnDefs={c}
                                                 rowData={verifyList}
                                                 pagination={true}
@@ -442,14 +445,6 @@ function VerifySimulation(props) {
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
-                            {/* <button class="user-btn approval-btn mr-3" onClick={() => { }}>
-                        <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
-                        {'Send For Approval'}
-                    </button>
-                    <button type="submit" className="user-btn mr5 save-btn">
-                        <div className={"save-icon"}></div>{" "}
-                        {"Save Simulation"}
-                    </button> */}
                         </div>
                     </Row>
                 </>

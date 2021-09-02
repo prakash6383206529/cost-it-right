@@ -1,14 +1,11 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, useState } from 'react'
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch } from 'react-redux'
 import { Redirect } from "react-router-dom";
-import { checkForDecimalAndNull, formatRMSimulationObject, getConfigurationKey } from '../../../helper'
-import { RMDOMESTIC, RMIMPORT, } from '../../../config/constants'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { saveSimulationForRawMaterial } from '../actions/Simulation';
 
 
 
@@ -48,34 +45,6 @@ function CostingDetailSimulationDrawer(props) {
         setIsApprovalDrawer(true)
     }
 
-    const onSaveSimulation = () => {
-
-        const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
-
-
-        switch (master) {
-            case RMDOMESTIC:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation saved successfully.')
-                        setShowApprovalHistory(true)
-                    }
-                }))
-                break;
-            case RMIMPORT:
-                dispatch(saveSimulationForRawMaterial(simObj, res => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation saved successfully.')
-                        setShowApprovalHistory(true)
-                    }
-                }))
-                break;
-
-            default:
-                break;
-        }
-        // setShowApprovalHistory(true)
-    }
 
     const cancel = (e = '') => {
         toggleDrawer(e)
@@ -145,14 +114,7 @@ function CostingDetailSimulationDrawer(props) {
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">
                                     <div className="text-right px-3">
-                                        {/* <button class="user-btn approval-btn mr5 float-none" onClick={sendForApprovalData}>
-                                            <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
-                                            {'Send For Approval'}
-                                        </button>
-                                        <button type="submit" className="user-btn float-none" onClick={onSaveSimulation}>
-                                            <div className={"cancel-icon"}></div>{" "}
-                                            {"Save Simulation"}
-                                        </button> */}
+
                                         <button type={"button"} className="cancel-btn" onClick={cancel}>
                                             <div className={"cancel-icon"}></div>{" "}
                                             {"CANCEL"}
