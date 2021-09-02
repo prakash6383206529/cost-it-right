@@ -101,7 +101,6 @@ function CostingSimulation(props) {
                         uniqeArray.push(item);
                     }
                 }
-                console.log('uniqeArray: ', uniqeArray);
                 setTableData(uniqeArray)
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
