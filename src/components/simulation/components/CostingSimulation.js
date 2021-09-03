@@ -434,6 +434,7 @@ function CostingSimulation(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 

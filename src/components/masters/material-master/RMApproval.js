@@ -228,6 +228,7 @@ function RMApproval(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
         getTableData()
     }
 
@@ -351,7 +352,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn width="145" field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn width="150"field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn width="150" field="RMSpec"></AgGridColumn>
                                     <AgGridColumn width="140" field="Category"></AgGridColumn>
                                     <AgGridColumn width="140" field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>

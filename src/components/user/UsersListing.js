@@ -289,7 +289,7 @@ class UsersListing extends Component {
 		if (ActivateAccessibility) {
 			return (
 				<>
-					<label htmlFor="normal-switch"  className="normal-switch">
+					<label htmlFor="normal-switch" className="normal-switch">
 						{/* <span>Switch with default style</span> */}
 						<Switch
 							onChange={() => this.handleChange(cellValue, rowData)}
@@ -416,6 +416,7 @@ class UsersListing extends Component {
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady = (params) => {

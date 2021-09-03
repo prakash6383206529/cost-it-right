@@ -317,6 +317,8 @@ function VerifySimulation(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+
     }
 
     const frameworkComponents = {
