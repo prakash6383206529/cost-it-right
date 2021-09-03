@@ -31,6 +31,7 @@ function RMApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [approvalObj, setApprovalObj] = useState([])
+    const [loader, setLoader] = useState(true)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -71,7 +72,9 @@ function RMApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
-        dispatch(getRMApprovalList((res) => { }))
+        dispatch(getRMApprovalList((res) => {
+            setLoader(false)
+        }))
     }
 
     const createdOnFormatter = (props) => {
@@ -188,12 +191,13 @@ function RMApproval(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
-                <div
-                    onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
-                    className={row.Status !== DRAFT ? 'link' : ''}
-                >
-                    {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
-                </div>
+                {
+                    row.Status !== DRAFT ?
+                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={row.Status !== DRAFT ? 'link' : ''}>
+                            {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
+                        </div> :
+                        row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber
+                }
             </Fragment>
         )
     }
@@ -205,10 +209,12 @@ function RMApproval(props) {
    */
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
+        setLoader(true)
         getTableData()
     }
     const closeApprovalDrawer = (e = '') => {
         setApprovalDrawer(false)
+        setLoader(true)
         getTableData()
     }
 
@@ -316,6 +322,7 @@ function RMApproval(props) {
             </Row>
             <Row>
                 <Col>
+                    {loader && <LoaderCustom />}
                     <div className={`ag-grid-react`}>
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
@@ -325,6 +332,7 @@ function RMApproval(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
+                                    floatingFilter={true}
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
@@ -334,7 +342,6 @@ function RMApproval(props) {
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
