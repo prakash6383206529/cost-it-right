@@ -129,12 +129,7 @@ class AddRMImport extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
-      this.props.checkAndGetRawMaterialCode('', (res) => {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
-      })
-    }
+
     let obj = {
       MasterId: RM_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
@@ -198,6 +193,7 @@ class AddRMImport extends Component {
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ RMSpec: newValue })
+      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
     } else {
       this.setState({ RMSpec: [] })
     }
@@ -659,7 +655,7 @@ class AddRMImport extends Component {
     if (label === 'specification') {
       rmSpecification && rmSpecification.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode })
         return null;
       });
       return temp;
@@ -1046,14 +1042,7 @@ class AddRMImport extends Component {
   }
 
 
-  checkUniqCode = (e) => {
-    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
-      if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
-        $('input[name="Code"]').focus()
-      }
-    })
-  }
+
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1262,10 +1251,9 @@ class AddRMImport extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              onBlur={this.checkUniqCode}
-                              // disabled={isEditFlag ? true : false}
-                              disabled={false}
+                              disabled={true}
                             />
+
                           </Col>
 
                           {(this.state.IsVendor === false && (

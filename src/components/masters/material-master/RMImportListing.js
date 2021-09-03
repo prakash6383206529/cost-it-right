@@ -83,6 +83,7 @@ class RMImportListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      loader: true,
     }
   }
 
@@ -135,6 +136,7 @@ class RMImportListing extends Component {
         let DynamicData = res.data.DynamicData;
         this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
       }
+      this.setState({ loader: false })
     })
   }
 
@@ -194,15 +196,16 @@ class RMImportListing extends Component {
         this.setState({
           tableData: Data,
           maxRange: DynamicData.MaxRange,
+          loader: false
         }, () => {
           if (isSimulation) {
             this.props.apply()
           }
         })
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [], maxRange: 0, })
+        this.setState({ tableData: [], maxRange: 0, loader: false })
       } else {
-        this.setState({ tableData: [], maxRange: 0, })
+        this.setState({ tableData: [], maxRange: 0, loader: false })
       }
     })
   }
@@ -916,8 +919,7 @@ class RMImportListing extends Component {
         </form>
         <Row>
           <Col>
-
-
+            {(this.state.loader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

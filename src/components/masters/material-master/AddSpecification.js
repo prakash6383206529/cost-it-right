@@ -7,19 +7,18 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
   getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
-  getMaterialTypeSelectList,
+  getMaterialTypeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { fetchRMGradeAPI } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
+import $, { data } from 'jquery'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -72,6 +71,7 @@ class AddSpecification extends Component {
     }
 
     this.getDetails()
+
   }
 
   getDetails = () => {
@@ -85,7 +85,7 @@ class AddSpecification extends Component {
 
           setTimeout(() => {
             const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectList } = this.props;
-
+            this.props.change('Code', Data?.RawMaterialCode)
             let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterialId)
             // let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value === Data.MaterialId)
             let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value === Data.GradeId)
@@ -102,6 +102,12 @@ class AddSpecification extends Component {
       });
     } else {
       this.props.getRMSpecificationDataAPI('', res => { });
+      if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && isEditFlag === false) {
+        this.props.checkAndGetRawMaterialCode('', (res) => {
+          let Data = res.data.DynamicData;
+          this.props.change('Code', Data.RawMaterialCode)
+        })
+      }
     }
   }
 
@@ -322,6 +328,7 @@ class AddSpecification extends Component {
         GradeName: RMGrade.label,
         MaterialId: material.value,
         MaterialTypeName: material.label,
+        RawMaterialCode: values.Code
       }
       this.props.reset()
       this.props.updateRMSpecificationAPI(formData, (res) => {
@@ -337,6 +344,7 @@ class AddSpecification extends Component {
         Specification: values.Specification,
         GradeId: RMGrade.value,
         MaterialId: material.value,
+        RawMaterialCode: values.Code
       }
       this.props.reset()
       this.props.createRMSpecificationAPI(formData, (res) => {
@@ -353,6 +361,15 @@ class AddSpecification extends Component {
       e.preventDefault();
     }
   };
+
+  checkUniqCode = (e) => {
+    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+        toastr.warning(res.data.Message);
+        $('input[name="Code"]').focus()
+      }
+    })
+  }
 
   /**
   * @method render
@@ -533,6 +550,24 @@ class AddSpecification extends Component {
                     </Col>
                   </Row>
 
+                  <Row>
+                    <Col md="12">
+                      <Field
+                        label={`Code`}
+                        name={'Code'}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required]}
+                        component={renderText}
+                        required={true}
+                        className=" "
+                        customClassName=" withBorder"
+                        onBlur={this.checkUniqCode}
+                        disabled={isEditFlag ? true : false}
+                      />
+                    </Col>
+                  </Row>
+
                   <Row className="sf-btn-footer no-gutters justify-content-between">
                     <div className="col-md-12 pr-3">
                       <div className="text-right ">
@@ -627,6 +662,7 @@ export default connect(mapStateToProps, {
   getRawMaterialNameChild,
   getMaterialTypeDataAPI,
   getRMGradeSelectListByRawMaterial,
+  checkAndGetRawMaterialCode
 })(reduxForm({
   form: 'AddSpecification',
   enableReinitialize: true,
