@@ -238,7 +238,7 @@ function Insights(props) {
                         <Col md="12" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Technology:</div>
-                                <div className="hide-label flex-fills pl-0">
+                                <div className="hide-label flex-fills pl-0 w-auto">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'Technology'}
@@ -259,7 +259,7 @@ function Insights(props) {
 
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Raw Material:</div>
-                                <div className="hide-label flex-fills pl-0">
+                                <div className="hide-label flex-fills pl-0 w-auto">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'Raw Material'}
@@ -280,7 +280,7 @@ function Insights(props) {
 
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Grade:</div>
-                                <div className="hide-label flex-fills pl-0">
+                                <div className="hide-label flex-fills pl-0 w-auto">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'Grade'}

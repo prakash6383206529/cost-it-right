@@ -1664,3 +1664,6 @@ export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
+
+export const APPROVAL_ID = 3
+export const RM_MASTER_ID = 1

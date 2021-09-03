@@ -28,7 +28,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import $, { data } from 'jquery'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, SHEET_METAL, ZBC, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -134,7 +134,7 @@ class AddRMDomestic extends Component {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
     let obj = {
-      MasterId: '1',
+      MasterId: RM_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
       LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
       LoggedInUserId: loggedInUserId()
@@ -1024,7 +1024,7 @@ class AddRMDomestic extends Component {
       formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
       formData.RawMaterialCode = values.Code
       formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
-      if (CheckApprovalApplicableMaster('1') === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"
         formData.IsSendForApproval = true
@@ -1032,7 +1032,7 @@ class AddRMDomestic extends Component {
       // }
 
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster('1') === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         this.setState({ approveDrawer: true, approvalObj: formData })
       } else {
         this.props.reset()
@@ -1707,7 +1707,7 @@ class AddRMDomestic extends Component {
                             {"Cancel"}
                           </button>
                           {
-                            (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 // onClick={this.sendForMasterApproval}
@@ -1820,7 +1820,7 @@ class AddRMDomestic extends Component {
                 isOpen={this.state.approveDrawer}
                 closeDrawer={this.closeApprovalDrawer}
                 isEditFlag={false}
-                masterId={1}
+                masterId={RM_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}

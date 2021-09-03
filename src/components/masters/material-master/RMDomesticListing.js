@@ -22,7 +22,7 @@ import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { costingHeadObjs, RMDomesticSimulation, RMDomesticZBC, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { ZBC, RmDomestic } from '../../../config/constants'
+import { ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -97,7 +97,8 @@ class RMDomesticListing extends Component {
                 RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
                 RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
                 vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-                // technology: [],
+                // technology: []
+                statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
                 value: { min: 0, max: 0 },
             }, () => {
 
@@ -106,6 +107,16 @@ class RMDomesticListing extends Component {
 
                 this.props.getRawMaterialFilterSelectList(() => { })
             })
+        }
+    }
+
+
+    getFilterRMData = () => {
+        if (this.props.isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+            const list = this.props.rmDataList && this.props.rmDataList.filter((item => item.IsRMAssociated === true))
+            return list
+        } else {
+            return this.props.rmDataList
         }
     }
 
@@ -128,6 +139,7 @@ class RMDomesticListing extends Component {
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
             departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+            statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
 
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
@@ -185,6 +197,7 @@ class RMDomesticListing extends Component {
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
             departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+            statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (!this.props.isMasterSummaryDrawer) {
@@ -261,8 +274,8 @@ class RMDomesticListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         const { EditAccessibility, DeleteAccessibility } = this.props;
-        if (CheckApprovalApplicableMaster('1')) {
-            if (EditAccessibility && rowData.IsEditable) {
+        if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+            if (EditAccessibility && !rowData.IsRMAssociated) {
                 isEditbale = true
             } else {
                 isEditbale = false
@@ -327,6 +340,11 @@ class RMDomesticListing extends Component {
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    }
+
+    hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue != null ? cellValue : '-';
     }
 
     /**
@@ -652,7 +670,8 @@ class RMDomesticListing extends Component {
             costFormatter: this.costFormatter,
             freightCostFormatter: this.freightCostFormatter,
             shearingCostFormatter: this.shearingCostFormatter,
-            statusFormatter: this.statusFormatter
+            statusFormatter: this.statusFormatter,
+            hyphenFormatter: this.hyphenFormatter
 
         };
 
@@ -881,7 +900,7 @@ class RMDomesticListing extends Component {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={this.props.rmDataList}
+                                    rowData={this.getFilterRMData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
@@ -891,12 +910,15 @@ class RMDomesticListing extends Component {
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
-                                    frameworkComponents={frameworkComponents}>
+                                    frameworkComponents={frameworkComponents}
+
+                                >
                                     <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="Category"></AgGridColumn>
                                     <AgGridColumn field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
@@ -910,10 +932,11 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {CheckApprovalApplicableMaster('1') && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
                                     {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
