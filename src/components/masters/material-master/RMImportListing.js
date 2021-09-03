@@ -83,6 +83,7 @@ class RMImportListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      loader: true,
     }
   }
 
@@ -133,6 +134,7 @@ class RMImportListing extends Component {
         let DynamicData = res.data.DynamicData;
         this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
       }
+      this.setState({ loader: false })
     })
   }
 
@@ -191,15 +193,16 @@ class RMImportListing extends Component {
         this.setState({
           tableData: Data,
           maxRange: DynamicData.MaxRange,
+          loader: false
         }, () => {
           if (isSimulation) {
             this.props.apply()
           }
         })
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [], maxRange: 0, })
+        this.setState({ tableData: [], maxRange: 0, loader: false })
       } else {
-        this.setState({ tableData: [], maxRange: 0, })
+        this.setState({ tableData: [], maxRange: 0, loader: false })
       }
     })
   }
@@ -973,44 +976,7 @@ class RMImportListing extends Component {
         </form>
         <Row>
           <Col>
-            {/*
-            <BootstrapTable
-              data={this.props.rmImportDataList}
-              striped={false}
-              bordered={false}
-              hover={false}
-              options={options}
-              search
-              // exportCSV
-              //ignoreSinglePage
-              ref={'table'}
-              exportCSV={this.props.isSimulation ? false : true}
-              csvFileName={`${RmImport}.csv`}
-              pagination>
-         
-              <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="MaterialType" width={100} columnTitle={true} dataAlign="left" >{'Material'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="Plant" searchable={false} >{'Plant'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate"  >{this.renderBasicRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={this.freightCostFormatter} searchable={false}>{this.rendorFreightRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={this.shearingCostFormatter} searchable={false}>{this.renderShearingCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCostConversion" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-              {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
-              {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="VendorId"  >{''}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} export={false} hidden dataField="TechnologyId"  >{''}</TableHeaderColumn>
-
-            </BootstrapTable> */}
-
+            {(this.state.loader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
