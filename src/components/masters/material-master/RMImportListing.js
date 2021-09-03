@@ -349,7 +349,7 @@ class RMImportListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+    return (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
   }
 
 
@@ -929,6 +929,7 @@ class RMImportListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  floatingFilter={true}
                   domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.getFilterRMData()}

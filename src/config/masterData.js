@@ -69,6 +69,7 @@ export const RMDomesticZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
+    { label: "PlantName", value: "PlantName" }, //*
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -92,7 +93,8 @@ export const RMDomesticZBCTempData = [
         "RMSpec": "50 mm",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "PlantCode": "PC01",
+        "PlantCode": "1511",
+        "PlantName": "1511",
         "VendorName": "Systematix",
         "VendorCode": "VP123",
         "HasDifferentSource": "Yes",
@@ -218,6 +220,7 @@ export const RMImportZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
+    { label: "PlantName", value: "PlantName" }, //*
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -308,7 +311,7 @@ export const RMImportVBC = [
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -334,7 +337,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "DestinationPlant": "Manesar",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -358,7 +361,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "DestinationPlant": "Manesar",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
