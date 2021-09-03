@@ -27,7 +27,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
@@ -135,7 +135,7 @@ class AddRMImport extends Component {
       })
     }
     let obj = {
-      MasterId: '1',
+      MasterId: RM_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
       LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
       LoggedInUserId: loggedInUserId()
@@ -1018,11 +1018,11 @@ class AddRMImport extends Component {
 
       }
       // let obj
-      // if(CheckApprovalApplicableMaster('1') === true){
+      // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
       //   obj = {...formData,IsSendForApproval:true}
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster('1') === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
       } else {
         this.props.reset()
@@ -1715,7 +1715,7 @@ class AddRMImport extends Component {
                             {"Cancel"}
                           </button>
                           {
-                            (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 disabled={this.state.isFinalApprovar}
@@ -1815,7 +1815,7 @@ class AddRMImport extends Component {
                 isOpen={this.state.approveDrawer}
                 closeDrawer={this.closeApprovalDrawer}
                 isEditFlag={false}
-                masterId={1}
+                masterId={RM_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}

@@ -23,7 +23,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RmImport } from '../../../config/constants'
+import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -97,7 +97,7 @@ class RMImportListing extends Component {
         RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-        technology: [],
+        statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         value: { min: 0, max: 0 },
       }, () => {
         this.getInitialRange()
@@ -126,6 +126,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
+      statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -133,6 +134,17 @@ class RMImportListing extends Component {
         this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
       }
     })
+  }
+
+
+
+  getFilterRMData = () => {
+    if (this.props.isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+      const list = this.props.rmImportDataList && this.props.rmImportDataList.filter((item => item.IsRMAssociated === true))
+      return list
+    } else {
+      return this.props.rmImportDataList
+    }
   }
 
 
@@ -170,6 +182,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
+      statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -265,6 +278,11 @@ class RMImportListing extends Component {
     return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
 
+  hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue != null ? cellValue : '-';
+  }
+
 
   /**
   * @method shearingCostFormatter
@@ -301,8 +319,8 @@ class RMImportListing extends Component {
 
     const { EditAccessibility, DeleteAccessibility } = this.props;
     let isEditbale = false
-    if (CheckApprovalApplicableMaster('1')) {
-      if (EditAccessibility && rowData.IsEditable) {
+    if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+      if (EditAccessibility && !rowData.IsRMAssociated) {
         isEditbale = true
       } else {
         isEditbale = false
@@ -710,8 +728,8 @@ class RMImportListing extends Component {
       freightCostFormatter: this.freightCostFormatter,
       shearingCostFormatter: this.shearingCostFormatter,
       costFormatter: this.costFormatter,
-      plantFormatter: this.plantFormatter,
-      statusFormatter: this.statusFormatter
+      statusFormatter: this.statusFormatter,
+      hyphenFormatter: this.hyphenFormatter
     };
 
 
@@ -1006,7 +1024,7 @@ class RMImportListing extends Component {
                   defaultColDef={defaultColDef}
                   domLayout='autoHeight'
                   // columnDefs={c}
-                  rowData={this.props.rmImportDataList}
+                  rowData={this.getFilterRMData()}
                   pagination={true}
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
@@ -1023,6 +1041,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                   <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                  <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                   <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
                   <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" cellRenderer='plantFormatter'></AgGridColumn>
@@ -1032,11 +1051,12 @@ class RMImportListing extends Component {
                   {/* <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer={'freightCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer={'shearingCostFormatter'}></AgGridColumn> */}
                   <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
-                  <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer={'costFormatter'} ></AgGridColumn>
-                  <AgGridColumn field="EffectiveDate" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  {CheckApprovalApplicableMaster('1') && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-                  {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                  {/* {this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'} ></AgGridColumn>} */}
+                  <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer='freightCostFormatter'></AgGridColumn>
+                  <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                  <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+                  <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                  {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

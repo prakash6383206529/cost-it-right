@@ -12,7 +12,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
-import { DRAFT } from '../../../config/constants';
+import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 
 
@@ -396,7 +396,7 @@ function RMApproval(props) {
                     isOpen={approvalDrawer}
                     closeDrawer={closeApprovalDrawer}
                     isEditFlag={false}
-                    masterId={1}
+                    masterId={RM_MASTER_ID}
                     type={'Sender'}
                     anchor={"right"}
                     isBulkUpload={true}
