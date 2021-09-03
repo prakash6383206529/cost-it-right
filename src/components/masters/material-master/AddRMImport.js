@@ -530,12 +530,12 @@ class AddRMImport extends Component {
               const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
               const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === data.GradeId)
               const specObj = rmSpecification && rmSpecification.find((item) => item.Text === data.Specification)
-
               this.setState({
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
               })
+              this.props.change('Code', specObj.RawMaterialCode ? specObj.RawMaterialCode : '')
             })
           })
         }
