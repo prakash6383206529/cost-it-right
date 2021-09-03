@@ -427,6 +427,7 @@ class UsersListing extends Component {
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady = (params) => {
