@@ -30,7 +30,7 @@ class OperationsMaster extends Component {
     }
 
     displayOperationForm = () => {
-        this.setState({ isOperation: true, data: {} })
+        this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
 
     hideForm = () => {
