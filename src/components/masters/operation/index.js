@@ -30,7 +30,7 @@ class OperationsMaster extends Component {
     }
 
     displayOperationForm = () => {
-        this.setState({ isOperation: true, data: {} })
+        this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
 
     hideForm = () => {
@@ -94,7 +94,7 @@ class OperationsMaster extends Component {
 
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
-                                            <OperationInsights/>
+                                            <OperationInsights />
                                         </TabPane>}
 
                                     {this.state.activeTab == 2 &&
