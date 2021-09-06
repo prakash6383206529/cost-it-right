@@ -812,7 +812,9 @@ function RawMaterialCost(props) {
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
                       {isScrapRecoveryPercentageApplied && <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
+                      {/* //Add i here for MB+ */}
                       <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -958,7 +960,7 @@ function RawMaterialCost(props) {
                     className={`custom-checkbox mb-0 w-auto`}
                     onChange={onPressApplyMasterBatch}
                   >
-                    Apply Master Batch
+                    Apply Master Batch(MB)
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
@@ -982,7 +984,7 @@ function RawMaterialCost(props) {
                   </Col>
                   <Col md="2" >
                     <TextFieldHookForm
-                      label="RM"
+                      label="MB Name"
                       name={"MBName"}
                       Controller={Controller}
                       control={control}
@@ -999,7 +1001,7 @@ function RawMaterialCost(props) {
                   </Col>
                   <Col md="2">
                     <TextFieldHookForm
-                      label="Price"
+                      label="MB Rate"
                       name={'MBPrice'}
                       Controller={Controller}
                       control={control}
@@ -1046,7 +1048,7 @@ function RawMaterialCost(props) {
                   </Col>
                   <Col md="2">
                     <TextFieldHookForm
-                      label="Total"
+                      label="Effective MB Rate"
                       name={'RMTotal'}
                       Controller={Controller}
                       control={control}
