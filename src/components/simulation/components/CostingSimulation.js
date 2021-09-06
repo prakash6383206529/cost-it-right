@@ -85,7 +85,6 @@ function CostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
-                console.log(Data.SimulatedCostingList, " Data.SimulatedCostingList");
                 Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)

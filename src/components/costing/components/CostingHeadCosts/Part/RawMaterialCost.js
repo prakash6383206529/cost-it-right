@@ -107,7 +107,6 @@ function RawMaterialCost(props) {
 
       if (costData.TechnologyName === PLASTIC) {
         let rowArray = rowData && rowData.map(el => {
-          console.log('rowData: ', el);
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
             RMRate: (el.Currency === '-' || el.Currency === INR) ? el.NetLandedCost : el.NetLandedCostConversion,
@@ -154,7 +153,6 @@ function RawMaterialCost(props) {
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
-      console.log('rowData: ', rowData);
       setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
       setValue('MBPrice', rowData && (rowData[0].Currency === '-' || rowData[0].Currency === INR) ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }

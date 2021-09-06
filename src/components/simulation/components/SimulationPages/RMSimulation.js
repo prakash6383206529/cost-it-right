@@ -59,7 +59,6 @@ function RMSimulation(props) {
         let basicScrapCount = 0
 
         list && list.map((li) => {
-            console.log('li: ', li);
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -169,7 +168,6 @@ function RMSimulation(props) {
     }
 
     const newBasicRateFormatter = (props) => {
-        console.log('props: ', props);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // let tempData = {...row,NewBasicRate:cell && value ? Number(cell) : Number(row.BasicRate)}
@@ -329,7 +327,6 @@ function RMSimulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
     const cellChange = (props) => {
-        console.log(props, "PROPS");
     }
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
