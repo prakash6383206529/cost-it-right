@@ -8,7 +8,7 @@ import Plastic from './Plastic'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, Non_Ferrous_HPDC } from '../../../../config/masterData'
 import HPDC from './HPDC'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
-import RubberCalciTab from './rubber'
+import RubberCalciTab from '../WeightCalculatorDrawer/rubber/index'
 
 
 function OpenWeightCalculator(props) {

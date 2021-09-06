@@ -98,7 +98,7 @@ class RMDomesticListing extends Component {
                 RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
                 RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
                 vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-                // technology: []
+                departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
                 statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
                 value: { min: 0, max: 0 },
             }, () => {
