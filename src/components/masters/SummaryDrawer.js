@@ -41,7 +41,7 @@ function SummaryDrawer(props) {
 
     useEffect(() => {
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, res => {
-            console.log(res, "REPONSE");
+
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
@@ -66,7 +66,7 @@ function SummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{'Master Summary'}</h3>
+                                    <h3>{`Master Summary (Token No.${approvalDetails.Token})`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -77,7 +77,7 @@ function SummaryDrawer(props) {
                         {loader && <LoaderCustom />}
                         <Row className="mx-0 mb-3">
                             <Col>
-                                <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} />
+                                <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
 
                                 <RMDomesticListing isMasterSummaryDrawer={true} />
 

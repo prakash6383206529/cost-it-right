@@ -59,6 +59,7 @@ function CostingSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
+    const [tableData, setTableData] = useState([])
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -88,7 +89,18 @@ function CostingSimulation(props) {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)
                     }
+                    item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+
                 })
+                let uniqeArray = []
+                const map = new Map();
+                for (const item of Data.SimulatedCostingList) {
+                    if (!map.has(item.CostingNumber)) {
+                        map.set(item.CostingNumber, true);    // set any value to Map
+                        uniqeArray.push(item);
+                    }
+                }
+                setTableData(uniqeArray)
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
                 setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
@@ -107,9 +119,10 @@ function CostingSimulation(props) {
 
     useEffect(() => {
         hideColumn()
-        costingList && costingList.map(item => {
-            item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        })
+        // costingList && costingList.map(item => {
+        //     item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+        // })
+
 
 
     }, [costingList])
@@ -485,6 +498,7 @@ function CostingSimulation(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -562,7 +576,7 @@ function CostingSimulation(props) {
 
                                                     domLayout='autoHeight'
                                                     // columnDefs={c}
-                                                    rowData={costingList}
+                                                    rowData={tableData}
                                                     pagination={true}
                                                     paginationPageSize={10}
                                                     onGridReady={onGridReady}

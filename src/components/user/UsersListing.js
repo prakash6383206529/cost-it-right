@@ -240,9 +240,7 @@ class UsersListing extends Component {
 	}
 
 	departmentFormatter = (props) => {
-		console.log('props: ', props);
 		const cellValue = props?.data?.Departments
-		console.log('cellValue: ', cellValue);
 		let temp = ''
 		cellValue && cellValue.map(dept => {
 			temp = temp + ',' + dept.DepartmentName
@@ -425,6 +423,7 @@ class UsersListing extends Component {
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady = (params) => {

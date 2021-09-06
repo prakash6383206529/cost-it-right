@@ -19,6 +19,7 @@ import PushSection from '../common/PushSection';
 function MasterSendForApproval(props) {
     const { type, tokenNo, IsFinalLevel, IsPushDrawer, reasonId, simulationDetail, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
 
+
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -46,6 +47,7 @@ function MasterSendForApproval(props) {
     }
 
     useEffect(() => {
+
         dispatch(getReasonSelectList((res) => { }))
         // dispatch(getAllApprovalDepartment((res) => { }))
         dispatch(getAllMasterApprovalDepartment((res) => {
@@ -243,7 +245,7 @@ function MasterSendForApproval(props) {
                             </Row>
 
                             <Row className="ml-0">
-                                {!IsFinalLevelButtonShow && (
+                                {(!IsFinalLevelButtonShow && (type === 'Approve' || type === 'Sender')) && (
                                     <>
                                         <div className="input-group form-group col-md-12 input-withouticon">
                                             <SearchableSelectHookForm

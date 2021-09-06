@@ -58,6 +58,7 @@ export const Masters = [
     },
 ];
 
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -69,6 +70,7 @@ export const RMDomesticZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
+    { label: "PlantName", value: "PlantName" }, //*
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -80,6 +82,7 @@ export const RMDomesticZBC = [
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "JaliScrapCost", value: "JaliScrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -92,7 +95,8 @@ export const RMDomesticZBCTempData = [
         "RMSpec": "50 mm",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "PlantCode": "PC01",
+        "PlantCode": "1511",
+        "PlantName": "1511",
         "VendorName": "Systematix",
         "VendorCode": "VP123",
         "HasDifferentSource": "Yes",
@@ -104,6 +108,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "JaliScrapCost": "20",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -126,6 +131,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "JaliScrapCost": "20",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -152,6 +158,7 @@ export const RMDomesticVBC = [
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "JaliScrapCost", value: "JaliScrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -177,6 +184,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "JaliScrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
@@ -200,6 +208,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "JaliScrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
@@ -218,6 +227,7 @@ export const RMImportZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
+    { label: "PlantName", value: "PlantName" }, //*
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -230,6 +240,7 @@ export const RMImportZBC = [
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "JaliScrapCost", value: "JaliScrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 
@@ -258,6 +269,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "JaliScrapCost": "20",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -281,6 +293,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "JaliScrapCost": "20",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -308,7 +321,8 @@ export const RMImportVBC = [
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: "JaliScrapCost", value: "JaliScrapCost" }, //*
+    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -334,7 +348,8 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "DestinationPlant": "Manesar",
+        "JaliScrapCost": "20",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -358,7 +373,8 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "DestinationPlant": "Manesar",
+        "JaliScrapCost": "20",
+        "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",

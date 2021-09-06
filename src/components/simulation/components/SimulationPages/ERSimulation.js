@@ -17,14 +17,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
+
 const gridOptions = {
 
 };
-
-
-function RMSimulation(props) {
+function ERSimulation(props) {
     const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
@@ -43,115 +41,17 @@ function RMSimulation(props) {
     })
 
 
-
     const dispatch = useDispatch()
 
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+
     const { filteredRMData } = useSelector(state => state.material)
-    useEffect(() => {
-        setValue('NoOfCorrectRow', rowCount.correctRow)
-        setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
-    }, [])
-
-    const verifySimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-
-                basicRateCount = basicRateCount + 1
-            }
-            if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-                basicScrapCount = basicScrapCount + 1
-            }
-            return null;
-        })
-
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            return false
-        }
-        basicRateCount = 0
-        basicScrapCount = 0
-        // setShowVerifyPage(true)
-        /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
-        let obj = {}
-        obj.Technology = technology
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.Vendor = list[0].VendorName
-        obj.Masters = master
-        obj.LoggedInUserId = loggedInUserId()
-        obj.VendorId = list[0].VendorId
-        obj.TechnologyId = list[0].TechnologyId
-        obj.VendorId = list[0].VendorId
-        if (filteredRMData.plantId && filteredRMData.plantId.value) {
-            obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
-        }
-        let tempArr = []
-        list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
-                let tempObj = {}
-                tempObj.CostingHead = item.CostingHead
-                tempObj.RawMaterialName = item.RawMaterial
-                tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RMGrade
-                tempObj.RawMaterialSpecification = item.RMSpec
-                tempObj.RawMaterialCategory = item.Category
-                tempObj.UOM = item.UOM
-                tempObj.OldBasicRate = item.BasicRate
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-                tempObj.OldScrapRate = item.ScrapRate
-                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-                tempObj.OldNetLandedCost = item.NetLandedCost
-                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-                tempObj.EffectiveDate = item.EffectiveDate
-                tempObj.RawMaterialId = item.RawMaterialId
-                tempObj.PlantId = item.PlantId
-                tempObj.Delta = 0
-                tempArr.push(tempObj)
-            }
-            return null;
-        })
-        obj.SimulationRawMaterials = tempArr
-
-        dispatch(runVerifySimulation(obj, res => {
-
-            if (res.data.Result) {
-                setToken(res.data.Identity)
-                setShowVerifyPage(true)
-            }
-        }))
-    }
 
     const cancelVerifyPage = () => {
 
         setShowVerifyPage(false)
     }
-
-
-    /**
-     * @method shearingCostFormatter
-     * @description Renders buttons
-     */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
-    /**
-    * @method freightCostFormatter
-    * @description Renders buttons
-    */
-    const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -159,14 +59,8 @@ function RMSimulation(props) {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
-
-    const costingHeadFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
-    }
-
     const newBasicRateFormatter = (props) => {
+        console.log('props: ', props);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // let tempData = {...row,NewBasicRate:cell && value ? Number(cell) : Number(row.BasicRate)}
@@ -174,28 +68,10 @@ function RMSimulation(props) {
         const value = beforeSaveCell(cell)
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.CurrencyExchangeRate)} </span>
             </>
         )
     }
-
-
-    useEffect(() => {
-
-    }, [update])
-
-    const newScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
-            </>
-        )
-    }
-
-    // const colorCheck = 
 
     const costFormatter = (props) => {
 
@@ -207,9 +83,6 @@ function RMSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
 
     /**
   * @method beforeSaveCell
@@ -230,76 +103,16 @@ function RMSimulation(props) {
         return true
     }
 
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
-        } else {
-            setColorClass('form-class')
-        }
-        return false
-
-    }
-
-    const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-        const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
-        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
-    }
-
-    const runSimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
-
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
-                toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
-    }
-
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-        paginationShowsTotal: renderPaginationShowsTotal(),
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-
-    };
 
     const cancel = () => {
         // props.cancelEditPage()
         setShowMainSimulation(true)
     }
-    const cellEditProp = {
-        mode: 'click',
-        blurToSave: true,
-        beforeSaveCell: beforeSaveCell,
-        afterSaveCell: afterSaveCell,
-    };
 
     const closeDrawer = (e = '') => {
         setShowRunSimulationDrawer(false)
 
     }
-
 
     const defaultColDef = {
         resizable: true,
@@ -311,9 +124,14 @@ function RMSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-
         params.api.paginationGoToPage(0);
 
+        var allColumnIds = [];
+        params.columnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
+
+        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -324,30 +142,90 @@ function RMSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-    const cellChange = (props) => {
-    }
+
     const frameworkComponents = {
-        // totalValueRenderer: this.buttonFormatter,
-        effectiveDateFormatter: effectiveDateFormatter,
-        costingHeadFormatter: costingHeadFormatter,
-        // descriptionFormatter: descriptionFormatter,
-        // ecnFormatter: ecnFormatter,
-        shearingCostFormatter: shearingCostFormatter,
-        freightCostFormatter: freightCostFormatter,
-        newScrapRateFormatter: newScrapRateFormatter,
-        NewcostFormatter: NewcostFormatter,
-        // buttonFormatter: buttonFormatter,
+        effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
-        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         newBasicRateFormatter: newBasicRateFormatter,
-        cellChange: cellChange
     };
 
+    const verifySimulation = () => {
+        // let basicRateCount = 0
+        // let basicScrapCount = 0
+
+        // list && list.map((li) => {
+        //     console.log('li: ', li);
+        //     if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
+
+        //         basicRateCount = basicRateCount + 1
+        //     }
+        //     if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
+        //         basicScrapCount = basicScrapCount + 1
+        //     }
+        //     return null;
+        // })
+
+        // if (basicRateCount === list.length && basicScrapCount === list.length) {
+        //     toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+        //     return false
+        // }
+        // basicRateCount = 0
+        // basicScrapCount = 0
+        // // setShowVerifyPage(true)
+        // /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
+        // let obj = {}
+        // obj.Technology = technology
+        // obj.SimulationTechnologyId = selectedMasterForSimulation.value
+        // obj.Vendor = list[0].VendorName
+        // obj.Masters = master
+        // obj.LoggedInUserId = loggedInUserId()
+        // obj.VendorId = list[0].VendorId
+        // obj.TechnologyId = list[0].TechnologyId
+        // obj.VendorId = list[0].VendorId
+        // if (filteredRMData.plantId && filteredRMData.plantId.value) {
+        //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        // }
+        // let tempArr = []
+        // list && list.map(item => {
+        //     if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+        //         let tempObj = {}
+        //         tempObj.CostingHead = item.CostingHead
+        //         tempObj.RawMaterialName = item.RawMaterial
+        //         tempObj.MaterialType = item.MaterialType
+        //         tempObj.RawMaterialGrade = item.RMGrade
+        //         tempObj.RawMaterialSpecification = item.RMSpec
+        //         tempObj.RawMaterialCategory = item.Category
+        //         tempObj.UOM = item.UOM
+        //         tempObj.OldBasicRate = item.BasicRate
+        //         tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
+        //         tempObj.OldScrapRate = item.ScrapRate
+        //         tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+        //         tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+        //         tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+        //         tempObj.OldNetLandedCost = item.NetLandedCost
+        //         tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+        //         tempObj.EffectiveDate = item.EffectiveDate
+        //         tempObj.RawMaterialId = item.RawMaterialId
+        //         tempObj.PlantId = item.PlantId
+        //         tempObj.Delta = 0
+        //         tempArr.push(tempObj)
+        //     }
+        //     return null;
+        // })
+        // obj.SimulationRawMaterials = tempArr
+
+        // dispatch(runVerifySimulation(obj, res => {
+
+        //     if (res.data.Result) {
+        //         setToken(res.data.Identity)
+        //         setShowVerifyPage(true)
+        //     }
+        // }))
+    }
 
 
     return (
-
         <div>
             <div className={`ag-grid-react`}>
 
@@ -409,9 +287,9 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
-                                            domLayout='autoHeight'
                                             domLayout='autoHeight'
                                             // columnDefs={c}
                                             rowData={list}
@@ -427,30 +305,17 @@ function RMSimulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                         >
-                                            <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                            <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
-                                            <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
-                                            <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
-                                            <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                            <AgGridColumn field="Currency" editable='false' headerName="Currency"></AgGridColumn>
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)"></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)"></AgGridColumn>
+                                            {/* <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn> */}
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate (INR)" marryChildren={true} >
+                                                <AgGridColumn width={120} field="CurrencyExchangeRate" editable='false' headerName="Old" colId="CurrencyExchangeRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' field="NewCurrencyExchangeRate" headerName="New" colId='NewCurrencyExchangeRate'></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn width={120} field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
-                                            </AgGridColumn>
-                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
-                                            </AgGridColumn>
-                                            <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                            <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" field="DateOfModification" editable='false' headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
 
                                         </AgGridReact>
 
@@ -508,4 +373,4 @@ function RMSimulation(props) {
     );
 }
 
-export default RMSimulation;
+export default ERSimulation;

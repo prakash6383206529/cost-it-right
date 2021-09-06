@@ -16,7 +16,7 @@ import RMImportListing from './RMImportListing';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import Insights from './Insights';
 import RMApproval from './RMApproval'
@@ -185,7 +185,7 @@ class RowMaterialMaster extends Component {
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Insights
                                     </NavLink>
-                                </NavItem>} */}
+                                </NavItem> } */}
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                         Manage Raw Material (Domestic)
@@ -202,16 +202,16 @@ class RowMaterialMaster extends Component {
                                     </NavLink>
                                 </NavItem>}
                                 {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
-                                {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
-                                {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => {
-                                        this.toggle('5');
+                                {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
+                                    {/* {ViewRMAccessibility && <NavItem> */}
+                                    <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => {
+                                        this.toggle('6');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         RM Approval
@@ -269,8 +269,8 @@ class RowMaterialMaster extends Component {
                                         />
                                     </TabPane>}
 
-                                {this.state.activeTab == 6 && ViewRMAccessibility &&
-                                    <TabPane tabId="6">
+                                {this.state.activeTab == 5 && ViewRMAccessibility &&
+                                    <TabPane tabId="5">
                                         <RMListing
                                             AddAccessibility={this.state.AddAccessibility}
                                             EditAccessibility={this.state.EditAccessibility}
@@ -279,8 +279,8 @@ class RowMaterialMaster extends Component {
 
                                         />
                                     </TabPane>}
-                                {this.state.activeTab == 5 && ViewRMAccessibility &&
-                                    <TabPane tabId="5">
+                                {this.state.activeTab == 6 && ViewRMAccessibility &&
+                                    <TabPane tabId="6">
                                         {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}

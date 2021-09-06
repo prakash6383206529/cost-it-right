@@ -17,6 +17,7 @@ export const config = {
 // DEVELOPMENT MIL URL
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 
+
 //DEVELOPMENT MIL URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -190,6 +191,7 @@ export const API = {
   approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
   rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
+  masterFinalLeveluser: `${BASE_URL}/masters-approval-raw-material/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -526,6 +528,7 @@ export const API = {
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
+  checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1422,6 +1425,7 @@ export const REJECTED = 'Rejected'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
+export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1662,3 +1666,6 @@ export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
+
+export const APPROVAL_ID = 3
+export const RM_MASTER_ID = 1

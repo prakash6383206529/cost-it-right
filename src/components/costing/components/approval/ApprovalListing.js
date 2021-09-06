@@ -41,6 +41,7 @@ function ApprovalListing(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
+  const [isLoader, setIsLoader] = useState(true)
   const dispatch = useDispatch()
 
   const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -88,7 +89,7 @@ function ApprovalListing(props) {
 
     dispatch(
       getApprovalList(filterData, (res) => {
-
+        setIsLoader(false)
         if (res.status === 204 && res.data === '') {
           setTableData([])
         } else if (res && res.data && res.data.DataList) {
@@ -376,7 +377,7 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
               {shown &&
                 <Col lg="10" md="12" className="filter-block">
@@ -504,6 +505,7 @@ function ApprovalListing(props) {
                     style={{ height: '100%', width: '100%' }}
                   >
                     <AgGridReact
+                      floatingFilter={true}
                       style={{ height: '100%', width: '100%' }}
                       defaultColDef={defaultColDef}
                       domLayout='autoHeight'
@@ -514,7 +516,7 @@ function ApprovalListing(props) {
                       paginationPageSize={10}
                       onGridReady={onGridReady}
                       gridOptions={gridOptions}
-                      loadingOverlayComponent={'customLoadingOverlay'}
+                      // loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: CONSTANT.EMPTY_DATA,

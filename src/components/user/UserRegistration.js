@@ -1776,7 +1776,7 @@ class UserRegistration extends Component {
                           <Col md="4" className="text-right">
                             <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
 
-                              {this.state.acc2 ? (
+                              {this.state.acc3 ? (
                                 <i className="fa fa-minus" ></i>
                               ) : (
                                 <i className="fa fa-plus"></i>

@@ -715,6 +715,11 @@ a:hover {
         z-index: 1;
         padding-bottom: 12px;
       }
+      .ag-header-cell{
+        .ag-icon-filter{
+          color: #256bd1;
+        }
+      }
       .ag-pinned-right-header{
         .ag-header-cell{
           border-right: 1px solid #e5eaf9;
@@ -822,6 +827,7 @@ a:hover {
       }
       .ag-header-icon{
         color: #256bd1;
+        display: none;
       }
       .table-search{
         max-width: 245px;
@@ -2775,6 +2781,21 @@ body {
           }
         }  
       }
+      .costing-simulation-page,.simulation-page{
+        .ag-grid-react{
+          .ag-grid-wrapper{
+            min-height: calc(100vh - 300px);
+          }
+        }
+      }
+    }
+  }
+}
+
+@media(max-width:1440px){
+  .content-page{
+    .nav-item{
+      margin-right: 20px;
     }
   }
 }

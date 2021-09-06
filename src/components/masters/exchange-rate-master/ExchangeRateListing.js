@@ -96,9 +96,7 @@ class ExchangeRateListing extends Component {
         }
     }
 
-    componentWillUnmount() {
-        this.props.getExchangeRateDataList(false, {}, (res) => { })
-    }
+
 
     /**
     * @method getTableListData
@@ -329,6 +327,7 @@ class ExchangeRateListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     frameworkComponents = {
@@ -479,7 +478,7 @@ class ExchangeRateListing extends Component {
                             <div className="ag-theme-material" style={{ height: '100%', width: '100%' }}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.exchangeRateDataList}

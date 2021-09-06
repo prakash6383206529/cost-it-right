@@ -12,11 +12,12 @@ import {
 } from '../../../actions/Common'
 import {
   createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
+  masterFinalLevelUser
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { loggedInUserId, getConfigurationKey, } from '../../../helper/auth'
+import { loggedInUserId, getConfigurationKey, userDetails, } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddSpecification from './AddSpecification'
 import AddGrade from './AddGrade'
@@ -27,7 +28,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import $, { data } from 'jquery'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, SHEET_METAL, ZBC, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -92,7 +93,8 @@ class AddRMDomestic extends Component {
       source: '',
       showExtraCost: false,
       approveDrawer: false,
-      approvalObj: {}
+      approvalObj: {},
+      isFinalApprovar: false
     }
   }
   /**
@@ -105,6 +107,7 @@ class AddRMDomestic extends Component {
     this.props.getSupplierList(() => { })
     this.props.fetchPlantDataAPI(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+
   }
 
   /**
@@ -121,14 +124,20 @@ class AddRMDomestic extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
-      this.props.checkAndGetRawMaterialCode('', (res) => {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
-      })
-    }
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
+    })
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
     })
 
   }
@@ -185,6 +194,7 @@ class AddRMDomestic extends Component {
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ RMSpec: newValue })
+      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
     } else {
       this.setState({ RMSpec: [] })
     }
@@ -506,8 +516,9 @@ class AddRMDomestic extends Component {
               this.setState({
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
               })
+              this.props.change('Code', specObj.RawMaterialCode ? specObj.RawMaterialCode : '')
             })
           })
         }
@@ -644,7 +655,7 @@ class AddRMDomestic extends Component {
     if (label === 'specification') {
       rmSpecification && rmSpecification.map((item) => {
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode })
         return null
       })
       return temp
@@ -1009,7 +1020,7 @@ class AddRMDomestic extends Component {
       formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
       formData.RawMaterialCode = values.Code
       formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
-      if (CheckApprovalApplicableMaster('1') === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"
         formData.IsSendForApproval = true
@@ -1017,7 +1028,7 @@ class AddRMDomestic extends Component {
       // }
 
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster('1') === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         this.setState({ approveDrawer: true, approvalObj: formData })
       } else {
         this.props.reset()
@@ -1043,14 +1054,7 @@ class AddRMDomestic extends Component {
     this.setState({ singlePlantSelected: newValue })
   }
 
-  checkUniqCode = (e) => {
-    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
-      if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
-        $('input[name="Code"]').focus()
-      }
-    })
-  }
+
 
   // sendForMasterApproval = () => {
 
@@ -1233,9 +1237,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              onBlur={this.checkUniqCode}
-                              // disabled={isEditFlag ? true : false} // NEED TO UNCOMMENT IT LATER
-                              disabled={false}
+                              disabled={true}
                             />
                           </Col>
 
@@ -1691,10 +1693,11 @@ class AddRMDomestic extends Component {
                             {"Cancel"}
                           </button>
                           {
-                            (CheckApprovalApplicableMaster('1') === true && !isEditFlag) ?
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                              // onClick={this.sendForMasterApproval}
+                                // onClick={this.sendForMasterApproval}
+                                disabled={this.state.isFinalApprovar}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1803,7 +1806,7 @@ class AddRMDomestic extends Component {
                 isOpen={this.state.approveDrawer}
                 closeDrawer={this.closeApprovalDrawer}
                 isEditFlag={false}
-                masterId={1}
+                masterId={RM_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}
@@ -1903,7 +1906,8 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  masterFinalLevelUser
 })(
   reduxForm({
     form: 'AddRMDomestic',

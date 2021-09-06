@@ -589,7 +589,7 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
         if (response.data.Result) {
           dispatch({
             type: GET_RM_SPECIFICATION_LIST_SUCCESS,
-            payload: response.data.SelectList,
+            payload: response.data.DataList,
           });
           callback(response);
         } else {

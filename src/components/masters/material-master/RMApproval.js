@@ -12,7 +12,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
-import { DRAFT } from '../../../config/constants';
+import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 
 
@@ -31,6 +31,7 @@ function RMApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [approvalObj, setApprovalObj] = useState([])
+    const [loader, setLoader] = useState(true)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -71,13 +72,15 @@ function RMApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
-        dispatch(getRMApprovalList((res) => { }))
+        dispatch(getRMApprovalList((res) => {
+            setLoader(false)
+        }))
     }
 
     const createdOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? cell : '';
     }
 
     const priceFormatter = (props) => {
@@ -188,12 +191,13 @@ function RMApproval(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
-                <div
-                    onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
-                    className={row.Status !== DRAFT ? 'link' : ''}
-                >
-                    {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
-                </div>
+                {
+                    row.Status !== DRAFT ?
+                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={row.Status !== DRAFT ? 'link' : ''}>
+                            {row.ApprovalNumber === 0 ? '-' : row.ApprovalNumber}
+                        </div> :
+                        row.ApprovalNumber === 0 ? '-' : row.ApprovalNumber
+                }
             </Fragment>
         )
     }
@@ -205,10 +209,12 @@ function RMApproval(props) {
    */
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
+        setLoader(true)
         getTableData()
     }
     const closeApprovalDrawer = (e = '') => {
         setApprovalDrawer(false)
+        setLoader(true)
         getTableData()
     }
 
@@ -228,6 +234,7 @@ function RMApproval(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
         getTableData()
     }
 
@@ -315,6 +322,7 @@ function RMApproval(props) {
             </Row>
             <Row>
                 <Col>
+                    {loader && <LoaderCustom />}
                     <div className={`ag-grid-react`}>
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
@@ -324,6 +332,7 @@ function RMApproval(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
+                                    floatingFilter={true}
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
@@ -333,7 +342,6 @@ function RMApproval(props) {
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
@@ -351,7 +359,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn width="145" field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn width="150"field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn width="150" field="RMSpec"></AgGridColumn>
                                     <AgGridColumn width="140" field="Category"></AgGridColumn>
                                     <AgGridColumn width="140" field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
@@ -363,7 +371,8 @@ function RMApproval(props) {
                                     <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                     <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn width="150" field="InitiatedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
+                                    <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
+                                    <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
@@ -395,7 +404,7 @@ function RMApproval(props) {
                     isOpen={approvalDrawer}
                     closeDrawer={closeApprovalDrawer}
                     isEditFlag={false}
-                    masterId={1}
+                    masterId={RM_MASTER_ID}
                     type={'Sender'}
                     anchor={"right"}
                     isBulkUpload={true}
