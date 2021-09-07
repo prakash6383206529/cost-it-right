@@ -27,7 +27,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, userDetails, getFilteredRMData } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -114,8 +114,7 @@ class RMDomesticListing extends Component {
 
     getFilterRMData = () => {
         if (this.props.isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
-            const list = this.props.rmDataList && this.props.rmDataList.filter((item => item.IsRMAssociated === true))
-            return list
+            return getFilteredRMData(this.props.rmDataList)
         } else {
             return this.props.rmDataList
         }
@@ -943,6 +942,7 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                    <AgGridColumn field="IsRMAssociated"></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

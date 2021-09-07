@@ -783,3 +783,8 @@ export function applyEditCondSimulation(master) {
   const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT]
   return ApplyEditCondition.includes(master)
 }
+
+export function getFilteredRMData(arr) {
+  const list = arr && arr.filter((item => item.IsRMAssociated === true))
+  return list
+}
