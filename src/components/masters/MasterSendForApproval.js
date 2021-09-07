@@ -261,7 +261,7 @@ function MasterSendForApproval(props) {
                                                 mandatory={false}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={false}
+                                                disabled={true}
                                             />
                                         </div>
                                         <div className="input-group form-group col-md-12 input-withouticon">
@@ -277,7 +277,7 @@ function MasterSendForApproval(props) {
                                                 options={approvalDropDown}
                                                 mandatory={false}
                                                 handleChange={() => { }}
-                                                disabled={false}
+                                                disabled={true}
                                                 errors={errors.approver}
                                             />
                                         </div>

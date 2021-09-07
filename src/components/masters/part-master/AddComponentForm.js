@@ -6,6 +6,7 @@ import { required, number, maxLength5, postiveNumber, minValue1, acceptAllExcept
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
+import AsyncSelect from 'react-select/async';
 
 class AddComponentForm extends Component {
   constructor(props) {
@@ -144,7 +145,26 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, } = this.props;
+    const { handleSubmit, isEditFlag, componentPartSelectList } = this.props;
+
+    const filterColors = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("part").filter(i =>
+        i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterColors(inputValue));
+      });
     return (
       <>
         <form
@@ -152,10 +172,12 @@ class AddComponentForm extends Component {
           className="form"
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-          >
+        >
           <Row>
             <Col md="6">
-              <Field
+              <label>{"Part No."}<span className="asterisk-required">*</span></label>
+              <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              {/* <Field
                 name="PartNumber"
                 type="text"
                 label={"Part No."}
@@ -171,7 +193,7 @@ class AddComponentForm extends Component {
                 required={true}
                 handleChangeDescription={this.handlePartChange}
                 valueDescription={this.state.part}
-              />
+              /> */}
             </Col>
             <Col md="6">
               <Field

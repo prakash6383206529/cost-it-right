@@ -168,6 +168,7 @@ export const SearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
+
             />
           )
 
