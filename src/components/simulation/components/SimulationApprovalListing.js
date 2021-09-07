@@ -357,6 +357,7 @@ function SimulationApprovalListing(props) {
 
     if (redirectCostingSimulation === true) {
 
+        // HERE FIRST IT WILL GO TO SIMULATION.JS COMPONENT FROM THERE IT WILL GO TO COSTING SIMULATION OR OTHER COSTINGSIMULATION.JS PAGE
         return <Redirect
             to={{
                 pathname: "/simulation",
@@ -365,6 +366,7 @@ function SimulationApprovalListing(props) {
                     approvalProcessId: approvalData.approvalProcessId,
                     master: approvalData.SimulationTechnologyId
                 }
+
             }}
         />
     }
@@ -408,8 +410,8 @@ function SimulationApprovalListing(props) {
     }
 
     const resetState = () => {
-       gridOptions.columnApi.resetColumnState();
-      gridOptions.api.setFilterModel(null);
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     const frameworkComponents = {
@@ -461,7 +463,7 @@ function SimulationApprovalListing(props) {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
-                                    floatingFilter = {true}
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
