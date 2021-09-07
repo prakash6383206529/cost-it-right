@@ -96,9 +96,7 @@ class ExchangeRateListing extends Component {
         }
     }
 
-    componentWillUnmount() {
-        this.props.getExchangeRateDataList(false, {}, (res) => { })
-    }
+
 
     /**
     * @method getTableListData
@@ -480,8 +478,8 @@ class ExchangeRateListing extends Component {
                             <div className="ag-theme-material">
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={this.props.exchangeRateDataList}
                                     pagination={true}
                                     paginationPageSize={10}
