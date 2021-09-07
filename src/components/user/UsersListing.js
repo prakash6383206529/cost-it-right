@@ -611,8 +611,8 @@ class UsersListing extends Component {
 								{getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
