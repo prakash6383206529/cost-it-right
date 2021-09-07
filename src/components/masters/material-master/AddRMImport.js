@@ -929,7 +929,7 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        IsCutOffApplicable: false,
         RawMaterialCode: values.Code
       }
       if (isEditFlag) {
@@ -1009,7 +1009,7 @@ class AddRMImport extends Component {
         RMShearingCost: values.ShearingCost,
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        IsCutOffApplicable: false,
         RawMaterialCode: values.Code
 
       }
@@ -1478,7 +1478,8 @@ class AddRMImport extends Component {
                               </div>
                             </div>
                           </Col>
-                          <Col md="4">
+                          {/* NOT APPLICABLE FOR RE */}
+                          {/* <Col md="4">
                             <Field
                               label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"cutOffPrice"}
@@ -1491,7 +1492,7 @@ class AddRMImport extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
-                          </Col>
+                          </Col> */}
                           <Col md="4">
                             <Field
                               label={`Basic Rate(${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}

@@ -926,7 +926,7 @@ class AddRMDomestic extends Component {
       IsConvertIntoCopy: isDateChange ? true : false,
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
       CutOffPrice: values.cutOffPrice,
-      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
+      IsCutOffApplicable: false,
       RawMaterialCode: values.Code
     }
     if (isEditFlag) {
@@ -1007,7 +1007,7 @@ class AddRMDomestic extends Component {
       formData.Attachements = files
       formData.DestinationPlantId = IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
       formData.CutOffPrice = values.cutOffPrice
-      formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
+      formData.IsCutOffApplicable = false
       formData.RawMaterialCode = values.Code
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         formData.NetLandedCostConversion = 0
@@ -1420,7 +1420,9 @@ class AddRMDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          <Col md="4">
+
+                          {/* NOT APPLICABLE IN RE */}
+                          {/* <Col md="4">
                             <Field
                               label={`Cut Off Price (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"cutOffPrice"}
@@ -1433,7 +1435,7 @@ class AddRMDomestic extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
-                          </Col>
+                          </Col> */}
                           <Col md="4">
                             <Field
                               label={`Basic Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
