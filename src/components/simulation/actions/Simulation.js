@@ -475,3 +475,51 @@ export function getAmmendentStatus(params, callback) {
         })
     }
 }
+
+export function runVerifyExchangeRateSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftExchangeRateSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getVerifyExchangeSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifyExchangeSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedExchangeCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedExchangeCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

@@ -5,7 +5,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 
@@ -766,12 +766,10 @@ export function findLostWeight(tableVal) {
   return sum
 }
 
+//THIS FUNCTION TO CHECK WHETHER RM APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
 export function CheckApprovalApplicableMaster(number) {
-  // UNCOMMENT IT AFTER DEV IS DONE
   const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
-  // const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number)
   return isApproval
-
 }
 
 export function isMultipleRMAllow(technology) {
@@ -779,11 +777,19 @@ export function isMultipleRMAllow(technology) {
   return allowedMultipleRM.includes(technology);
 }
 
+// THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
   const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT]
   return ApplyEditCondition.includes(master)
 }
 
+//THIS FUNCTION FOR CONDITION RNDERING OF COMPONENT FOR DIFFERENT MASTER
+export function getOtherCostingSimulation(master) {
+  const useOtherSimulationPage = [EXCHNAGERATE]
+  return useOtherSimulationPage.includes(master)
+}
+
+// THIS FUNCTION IS TO GET FILTERED DATA FOR RM WHERE IsRMAssociated IS TRUE (ONLY APPLICABLE IN CASE OF SIMULATION)
 export function getFilteredRMData(arr) {
   const list = arr && arr.filter((item => item.IsRMAssociated === true))
   return list

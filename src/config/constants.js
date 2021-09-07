@@ -852,7 +852,9 @@ export const API = {
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
   deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
   getAmmendentStatus: `${BASE_URL}/sap-sync/get-ammendent-status`,
-
+  draftExchangeRateSimulation: `${BASE_URL}/simulation/draft-simulation-exchange-rate`,
+  getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
+  runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
