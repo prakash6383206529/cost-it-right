@@ -695,7 +695,7 @@ domLayout='autoHeight'
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
                 {/* VBC Listing */}
