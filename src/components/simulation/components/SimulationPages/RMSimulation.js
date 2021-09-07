@@ -414,6 +414,7 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
                                             domLayout='autoHeight'
