@@ -395,8 +395,8 @@ export const RadioHookForm = (field) => {
 // }
 
 export const AsyncSearchableSelectHookForm = (field) => {
-  const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName } = field;
+  const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
+    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
 
 
 
@@ -416,25 +416,24 @@ export const AsyncSearchableSelectHookForm = (field) => {
         rules={rules}
         {...register}
         defaultValue={defaultValue}
-        render={({ field: { onChange, onBlur, value, name, options } }) => {
+        render={({ field: { onChange, onBlur, value, name } }) => {
           return (
             <AsyncSelect
               {...field}
               {...register}
               name={name}
               placeholder={placeholder}
-              isDisabled={isDisable}
+              isDisabled={disabled}
               onChange={(e) => {
                 handleChange(e);
                 onChange(e)
               }}
               menuPlacement="auto"
-              loadOptions={options}
+              loadOptions={asyncOptions}
               onBlur={onBlur}
               selected={value}
               value={value}
               isLoading={isLoader}
-
             />
           )
 
