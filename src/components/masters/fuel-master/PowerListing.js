@@ -678,6 +678,7 @@ class PowerListing extends Component {
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     domLayout='autoHeight'
+                    floatingFilter={true}
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -702,6 +703,7 @@ class PowerListing extends Component {
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     domLayout='autoHeight'
+                    floatingFilter={true}
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}

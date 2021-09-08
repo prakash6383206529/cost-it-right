@@ -575,6 +575,7 @@ function CostingSimulation(props) {
                                                     defaultColDef={defaultColDef}
 
                                                     domLayout='autoHeight'
+                                                    floatingFilter={true}
                                                     // columnDefs={c}
                                                     rowData={tableData}
                                                     pagination={true}

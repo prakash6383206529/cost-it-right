@@ -500,7 +500,7 @@ class SOBListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
+                  floatingFilter={true}
                   // columnDefs={c}
                   domLayout='autoHeight'
                   rowData={this.props.bopSobList}

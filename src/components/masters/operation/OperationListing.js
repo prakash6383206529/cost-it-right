@@ -712,6 +712,7 @@ class OperationListing extends Component {
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 domLayout='autoHeight'
+                                floatingFilter={true}
                                 // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}

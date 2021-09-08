@@ -203,7 +203,7 @@ export function Impactedmasterdata(props) {
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
                                         defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                        floatingFilter={true}
                                         domLayout='autoHeight'
                                         rowData={data}
                                         pagination={true}

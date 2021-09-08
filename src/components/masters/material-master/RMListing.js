@@ -351,7 +351,7 @@ class RMListing extends Component {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
                                     paginationPageSize={10}

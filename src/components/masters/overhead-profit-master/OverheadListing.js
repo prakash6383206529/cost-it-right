@@ -646,6 +646,7 @@ class OverheadListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
+                                    floatingFilter={true}
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
