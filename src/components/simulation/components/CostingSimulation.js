@@ -635,6 +635,7 @@ function CostingSimulation(props) {
 
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
+
                                                 </AgGridReact>
 
                                                 <div className="paging-container d-inline-block float-right">
