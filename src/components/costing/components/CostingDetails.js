@@ -26,7 +26,6 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
-import AsyncSelect from 'react-select/async';
 
 export const ViewCostingContext = React.createContext()
 
@@ -1350,24 +1349,6 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterColors = (inputValue) => {
-    let tempArr = []
-    tempArr = renderCostingOption('PartList').filter(i =>
-      i.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-    console.log(tempArr);
-
-    if (tempArr.length <= 100) {
-      return tempArr
-    } else {
-      return tempArr.slice(0, 100)
-    }
-  };
-
-  const promiseOptions = inputValue =>
-    new Promise(resolve => {
-      resolve(filterColors(inputValue));
-    });
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1424,9 +1405,6 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        {/* <label>{"Assembly No./Part No."}<span className="asterisk-required">*</span></label>
-                        <AsyncSelect cacheOptions defaultOptions loadOptions={(e) => promiseOptions(e)} onChange={(e) => handlePartChange(e)} isDisabled={technology.length === 0 ? true : false} /> */}
-
                         <SearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}

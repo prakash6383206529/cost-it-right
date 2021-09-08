@@ -61,7 +61,6 @@ function ERSimulation(props) {
     }
 
     const newBasicRateFormatter = (props) => {
-        console.log('props: ', props);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // let tempData = {...row,NewBasicRate:cell && value ? Number(cell) : Number(row.BasicRate)}

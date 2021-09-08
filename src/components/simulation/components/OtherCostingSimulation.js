@@ -85,7 +85,6 @@ function OtherCostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
-                console.log(Data.SimulatedCostingList, " Data.SimulatedCostingList");
                 Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)
@@ -168,7 +167,6 @@ function OtherCostingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        console.log('selectedRows: ', selectedRows);
         let temp = []
         let selectedTemp = []
         selectedRows && selectedRows.map(item => {
