@@ -31,7 +31,7 @@ function CopyCosting(props) {
       fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
-      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.DestinationPlantId, vendorId: copyCostingData.VendorId } : '',
     },
   })
 
@@ -239,6 +239,7 @@ function CopyCosting(props) {
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
+    console.log('value: ', value);
     getVendorPlantDropdown(value.value, 'to')
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       getDestinationPlant(value, 'to')
@@ -276,7 +277,7 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
-
+    console.log('value: ', value);
 
 
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
@@ -323,7 +324,7 @@ function CopyCosting(props) {
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.value
+      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
       obj.ToVendorname = value.toVendorName && value.toVendorName.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
@@ -348,11 +349,12 @@ function CopyCosting(props) {
 
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination && destination[1] && destination[1].split(')')[0]
+    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
     obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
+      console.log("res", res);
       const Data = res.data.Data
       const toastrConfirmOptions = {
         onOk: () => {
@@ -369,7 +371,7 @@ function CopyCosting(props) {
         onCancel: () => { },
         component: () => <ConfirmComponent />
       }
-
+      console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
       return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
 
     }))
@@ -667,7 +669,7 @@ function CopyCosting(props) {
                       mandatory={true}
                       handleChange={handleToVendorName}
                       errors={errors.toVendorName}
-                      disabled={true}
+                      disabled={false}
                     />
                   </div>
                   {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
