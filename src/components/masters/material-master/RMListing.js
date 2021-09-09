@@ -19,6 +19,7 @@ import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -266,6 +267,8 @@ class RMListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound
         };
 
 
@@ -350,7 +353,7 @@ class RMListing extends Component {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -368,7 +371,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

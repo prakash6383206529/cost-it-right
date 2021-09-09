@@ -357,6 +357,7 @@ function ReportListing(props) {
                         domLayout="autoHeight"
                         defaultColDef={defaultColDef}
                         domLayout='autoHeight'
+                        floatingFilter={true}
                         // columnDefs={c}
                         rowData={reportListingData}
                         pagination={true}
@@ -443,16 +444,16 @@ function ReportListing(props) {
 }
 
 
+export default ReportListing
+// function mapStateToProps({ report, auth }) {
+//     const { reportDataList, loading } = report;
+//     const { initialConfiguration } = auth;
+//     return { reportDataList, loading, initialConfiguration, }
+// }
 
-function mapStateToProps({ report, auth }) {
-    const { reportDataList, loading } = report;
-    const { initialConfiguration } = auth;
-    return { reportDataList, loading, initialConfiguration, }
-}
-
-export default connect(mapStateToProps, {
-    getReportListing,
-})(reduxForm({
-    form: 'ReportListing',
-    enableReinitialize: true,
-})(ReportListing));
+// export default connect(mapStateToProps, {
+//     getReportListing,
+// })(reduxForm({
+//     form: 'ReportListing',
+//     enableReinitialize: true,
+// })(ReportListing));

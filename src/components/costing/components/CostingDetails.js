@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
@@ -26,6 +26,7 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
+import AsyncSelect from 'react-select/async';
 
 export const ViewCostingContext = React.createContext()
 
@@ -82,6 +83,7 @@ function CostingDetails(props) {
   const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
+  const [partDropdown, setPartDropdown] = useState([])
 
 
   //FOR VIEW MODE COSTING
@@ -192,7 +194,6 @@ function CostingDetails(props) {
    */
   const renderListing = (label) => {
     const temp = []
-
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
         if (item.Value === '0') return false
@@ -208,8 +209,11 @@ function CostingDetails(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
+      setPartDropdown(temp)
+
       return temp
     }
+
 
 
   }
@@ -229,6 +233,10 @@ function CostingDetails(props) {
     })
     return temp
   }
+
+  // useEffect(() => {
+  //   promiseOptions()
+  // }, [partSelectListByTechnology])
 
   /**
    * @method handleTechnologyChange
@@ -251,6 +259,7 @@ function CostingDetails(props) {
       reset({
         Part: '',
       })
+
     } else {
       setTechnology([])
       setIsTechnologySelected(false)
@@ -1349,6 +1358,34 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
+  const filterColors = (inputValue) => {
+    if (inputValue) {
+      let tempArr = []
+      tempArr = partDropdown && partDropdown.filter(i => {
+        return i.label.toLowerCase().includes(inputValue.toLowerCase())
+      }
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    } else {
+      return partDropdown
+    }
+  };
+
+  const promiseOptions = inputValue =>
+    new Promise(resolve => {
+      resolve(filterColors(inputValue));
+    });
+
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
+
+
+
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1405,7 +1442,26 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        <SearchableSelectHookForm
+                        <AsyncSearchableSelectHookForm
+                          label={"Assembly No./Part No."}
+                          name={"Part"}
+                          placeholder={"Enter"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={part.length !== 0 ? part : ""}
+                          asyncOptions={promiseOptions}
+                          mandatory={true}
+                          isLoading={false}
+                          handleChange={handlePartChange}
+                          errors={errors.Part}
+                          message={"Enter"}
+                          disabled={technology.length === 0 ? true : false}
+                        />
+
+
+                        {/* <SearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
                           placeholder={"Select"}
@@ -1420,7 +1476,7 @@ function CostingDetails(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={technology.length === 0 ? true : false}
-                        />
+                        /> */}
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm

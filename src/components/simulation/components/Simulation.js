@@ -22,8 +22,9 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation } from '../../../helper';
+import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
+import OtherCostingSimulation from './OtherCostingSimulation';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -99,7 +100,8 @@ function Simulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        let temp1 = getFilteredRMData(TempData)
+        temp = temp1 && temp1.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -142,9 +144,9 @@ function Simulation(props) {
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, rmDomesticListing && rmDomesticListing.length > 0 ? rmDomesticListing : [])
+                return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmDomesticListing) : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, rmImportListing && rmImportListing.length > 0 ? rmImportListing : [])
+                return returnExcelColumn(RMImportSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmImportListing) : [])
             default:
                 return 'foo';
         }
@@ -279,9 +281,9 @@ function Simulation(props) {
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmDomesticListing)} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmImportListing)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
             default:
@@ -293,6 +295,10 @@ function Simulation(props) {
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
+        // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
+        if (getOtherCostingSimulation(location?.state?.master)) {
+            return <OtherCostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        }
         return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
 

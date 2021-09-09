@@ -800,6 +800,7 @@ class LabourListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
@@ -821,7 +822,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

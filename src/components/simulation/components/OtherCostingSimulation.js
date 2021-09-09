@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
@@ -28,7 +28,7 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-function CostingSimulation(props) {
+function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
 
     const { register, control, formState: { errors }, getValues, setValue } = useForm({
@@ -288,17 +288,17 @@ function CostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const oldRMFormatter = (props) => {
+    const oldExchangeFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const newRMFormatter = (props) => {
+    const newExchangeFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const overheadFormatter = (props) => {
@@ -355,67 +355,16 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell
     }
-
-    const NewOverheadCostReducer = (array) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewOverheadCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewProfitCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewProfitCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewRejectionCost = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewRejectionCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewICCCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewICCCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewPaymentTermsCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewPaymentTermsCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewOtherCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewOtherCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewDiscountCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewDiscountCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-    const NewNetOverheadAndProfitCostReducer = (array, type) => {
-        const arr = array.reduce((accumulator, currentValue) => {
-            return accumulator + checkForNull(currentValue.NewNetOverheadAndProfitCost)
-        }, 0)
-        return arr === 0 ? true : false
-    }
-
-
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && NewOverheadCostReducer(costingList, 'NewOverheadCost'),
-            hideProfit: costingList && NewProfitCostReducer(costingList, 'NewProfitCost'),
-            hideRejection: costingList && NewRejectionCost(costingList, 'NewRejectionCost'),
-            hideICC: costingList && NewICCCostReducer(costingList, 'NewICCCost'),
-            hidePayment: costingList && NewPaymentTermsCostReducer(costingList, 'NewPaymentTermsCost'),
-            hideOtherCost: costingList && NewOtherCostReducer(costingList, 'NewOtherCost'),
-            hideDiscount: costingList && NewDiscountCostReducer(costingList, 'NewDiscountCost'),
-            hideOveheadAndProfit: costingList && NewNetOverheadAndProfitCostReducer(costingList, 'NewNetOverheadAndProfitCost')
+            hideOverhead: costingList && costingList[0].NewOverheadCost === 0 ? true : false,
+            hideProfit: costingList && costingList[0].NewProfitCost === 0 ? true : false,
+            hideRejection: costingList && costingList[0].NewRejectionCost === 0 ? true : false,
+            hideICC: costingList && costingList[0].NewICCCost === 0 ? true : false,
+            hidePayment: costingList && costingList[0].NewPaymentTermsCost === 0 ? true : false,
+            hideOtherCost: costingList && costingList[0].NewOtherCost === 0 ? true : false,
+            hideDiscount: costingList && costingList[0].NewDiscountCost === 0 ? true : false,
+            hideOveheadAndProfit: costingList && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
         })
     }
 
@@ -484,6 +433,12 @@ function CostingSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        var allColumnIds = [];
+        params.columnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
+
+        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
 
     };
 
@@ -509,9 +464,9 @@ function CostingSimulation(props) {
         revisionFormatter: revisionFormatter,
         oldPOFormatter: oldPOFormatter,
         newPOFormatter: newPOFormatter,
-        oldRMFormatter: oldRMFormatter,
+        oldExchangeFormatter: oldExchangeFormatter,
         buttonFormatter: buttonFormatter,
-        newRMFormatter: newRMFormatter,
+        newExchangeFormatter: newExchangeFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         varianceFormatter: varianceFormatter,
@@ -568,14 +523,12 @@ function CostingSimulation(props) {
                                             </div>
                                             <div
                                                 className="ag-theme-material"
-                                                style={{ height: '100%', width: '100%' }}
                                             >
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
-
-                                                    domLayout='autoHeight'
                                                     floatingFilter={true}
+                                                    domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={tableData}
                                                     pagination={true}
@@ -595,46 +548,16 @@ function CostingSimulation(props) {
                                                 // isRowSelectable={isRowSelectable}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
-                                                    <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
-                                                    <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
-                                                    <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRMPrice" headerName='RM Cost Old' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRMPrice" headerName='RM Cost New' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
-
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
-
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
 
@@ -670,9 +593,8 @@ function CostingSimulation(props) {
                                         <div className={"back-icon"}></div>
                                         {"Go to History"}
                                     </button>
-                                    {/* DO NOT UNCOMMENT THIS CODE UNTIL SAID BY TR */}
-                                    {/* 
-                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+
+                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
                                     </button> */}
@@ -731,4 +653,5 @@ function CostingSimulation(props) {
     );
 }
 
-export default CostingSimulation;
+
+export default OtherCostingSimulation;

@@ -460,6 +460,7 @@ export default function costingReducer(state = initialState, action) {
         costingPlantList: action.payload
       }
     case GET_PART_SELECTLIST_BY_TECHNOLOGY:
+      console.log(action.payload, " action.payload");
       return {
         ...state,
         loading: false,

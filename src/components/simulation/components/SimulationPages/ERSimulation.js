@@ -7,7 +7,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
-import { runVerifySimulation } from '../../actions/Simulation';
+import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { useForm, Controller, useWatch } from 'react-hook-form'
@@ -18,6 +18,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
+import OtherVerifySimulation from '../OtherVerifySimulation';
 
 const gridOptions = {
 
@@ -60,7 +61,6 @@ function ERSimulation(props) {
     }
 
     const newBasicRateFormatter = (props) => {
-        console.log('props: ', props);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // let tempData = {...row,NewBasicRate:cell && value ? Number(cell) : Number(row.BasicRate)}
@@ -151,77 +151,48 @@ function ERSimulation(props) {
     };
 
     const verifySimulation = () => {
-        // let basicRateCount = 0
-        // let basicScrapCount = 0
+        let exchnageRateCount = 0
 
-        // list && list.map((li) => {
-        //     console.log('li: ', li);
-        //     if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
+        list && list.map((li) => {
+            if (Number(li.CurrencyExchangeRate) === Number(li.NewCurrencyExchangeRate) || li?.NewCurrencyExchangeRate === undefined) {
+                exchnageRateCount = exchnageRateCount + 1
+            }
+            return null;
+        })
 
-        //         basicRateCount = basicRateCount + 1
-        //     }
-        //     if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-        //         basicScrapCount = basicScrapCount + 1
-        //     }
-        //     return null;
-        // })
+        if (exchnageRateCount === list.length) {
+            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            return false
+        }
+        exchnageRateCount = 0
+        // setShowVerifyPage(true)
+        /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        let obj = {}
+        obj.SimulationTechnologyId = selectedMasterForSimulation.value
+        obj.LoggedInUserId = loggedInUserId()
+        let tempArr = []
+        list && list.map(item => {
+            if (item.NewCurrencyExchangeRate !== undefined && ((item.NewCurrencyExchangeRate !== undefined ? Number(item.NewCurrencyExchangeRate) : Number(item.CurrencyExchangeRate)) !== Number(item.CurrencyExchangeRate))) {
+                let tempObj = {}
 
-        // if (basicRateCount === list.length && basicScrapCount === list.length) {
-        //     toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
-        //     return false
-        // }
-        // basicRateCount = 0
-        // basicScrapCount = 0
-        // // setShowVerifyPage(true)
-        // /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
-        // let obj = {}
-        // obj.Technology = technology
-        // obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        // obj.Vendor = list[0].VendorName
-        // obj.Masters = master
-        // obj.LoggedInUserId = loggedInUserId()
-        // obj.VendorId = list[0].VendorId
-        // obj.TechnologyId = list[0].TechnologyId
-        // obj.VendorId = list[0].VendorId
-        // if (filteredRMData.plantId && filteredRMData.plantId.value) {
-        //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
-        // }
-        // let tempArr = []
-        // list && list.map(item => {
-        //     if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
-        //         let tempObj = {}
-        //         tempObj.CostingHead = item.CostingHead
-        //         tempObj.RawMaterialName = item.RawMaterial
-        //         tempObj.MaterialType = item.MaterialType
-        //         tempObj.RawMaterialGrade = item.RMGrade
-        //         tempObj.RawMaterialSpecification = item.RMSpec
-        //         tempObj.RawMaterialCategory = item.Category
-        //         tempObj.UOM = item.UOM
-        //         tempObj.OldBasicRate = item.BasicRate
-        //         tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-        //         tempObj.OldScrapRate = item.ScrapRate
-        //         tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-        //         tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-        //         tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-        //         tempObj.OldNetLandedCost = item.NetLandedCost
-        //         tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-        //         tempObj.EffectiveDate = item.EffectiveDate
-        //         tempObj.RawMaterialId = item.RawMaterialId
-        //         tempObj.PlantId = item.PlantId
-        //         tempObj.Delta = 0
-        //         tempArr.push(tempObj)
-        //     }
-        //     return null;
-        // })
-        // obj.SimulationRawMaterials = tempArr
+                tempObj.EffectiveDate = item.EffectiveDate
+                tempObj.Currency = item.Currency
+                tempObj.OldExchangeRate = item.CurrencyExchangeRate
+                tempObj.NewExchangeRate = item.NewCurrencyExchangeRate ? item.NewCurrencyExchangeRate : item.CurrencyExchangeRate
+                tempObj.Delta = 0
+                tempArr.push(tempObj)
+            }
+            return null;
+        })
+        obj.SimulationExchangeRates = tempArr
 
-        // dispatch(runVerifySimulation(obj, res => {
-
-        //     if (res.data.Result) {
-        //         setToken(res.data.Identity)
-        //         setShowVerifyPage(true)
-        //     }
-        // }))
+        dispatch(runVerifyExchangeRateSimulation(obj, res => {
+            if (res.data.Result) {
+                setToken(res.data.Identity)
+                setShowVerifyPage(true)
+            }
+        }))
+        // setShowVerifyPage(true)
     }
 
 
@@ -354,7 +325,7 @@ function ERSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <OtherVerifySimulation isExchangeRate={true} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

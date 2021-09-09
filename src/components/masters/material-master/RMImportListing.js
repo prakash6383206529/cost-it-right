@@ -29,7 +29,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, userDetails, getFilteredRMData } from '../../../helper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -144,7 +144,7 @@ class RMImportListing extends Component {
 
   getFilterRMData = () => {
     if (this.props.isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
-      const list = this.props.rmImportDataList && this.props.rmImportDataList.filter((item => item.IsRMAssociated === true))
+      const list = getFilteredRMData(this.props.rmImportDataList)
       return list
     } else {
       return this.props.rmImportDataList
@@ -963,7 +963,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                   {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>

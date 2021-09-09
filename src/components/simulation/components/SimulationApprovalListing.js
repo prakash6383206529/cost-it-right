@@ -357,6 +357,7 @@ function SimulationApprovalListing(props) {
 
     if (redirectCostingSimulation === true) {
 
+        // HERE FIRST IT WILL GO TO SIMULATION.JS COMPONENT FROM THERE IT WILL GO TO COSTING SIMULATION OR OTHER COSTINGSIMULATION.JS PAGE
         return <Redirect
             to={{
                 pathname: "/simulation",
@@ -365,6 +366,7 @@ function SimulationApprovalListing(props) {
                     approvalProcessId: approvalData.approvalProcessId,
                     master: approvalData.SimulationTechnologyId
                 }
+
             }}
         />
     }
@@ -462,7 +464,7 @@ function SimulationApprovalListing(props) {
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
@@ -490,7 +492,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={142} field="RequestedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

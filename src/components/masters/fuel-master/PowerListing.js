@@ -678,6 +678,7 @@ class PowerListing extends Component {
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     domLayout='autoHeight'
+                    floatingFilter={true}
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -694,7 +695,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantName"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
 
                 {/* VBC Listing */}
@@ -702,6 +703,7 @@ class PowerListing extends Component {
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     domLayout='autoHeight'
+                    floatingFilter={true}
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}

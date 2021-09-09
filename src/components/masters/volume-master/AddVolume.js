@@ -836,7 +836,6 @@ class AddVolume extends Component {
                                   style={{ height: '100%', width: '100%' }}
                                   defaultColDef={defaultColDef}
                                   domLayout='autoHeight'
-                                  domLayout='autoHeight'
                                   // columnDefs={c}
                                   rowData={this.state.tableData}
                                   pagination={true}

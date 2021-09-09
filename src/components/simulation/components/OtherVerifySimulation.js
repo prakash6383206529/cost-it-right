@@ -6,24 +6,24 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { getVerifySimulationList } from '../actions/Simulation';
+import { getVerifyExchangeSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { getPlantSelectListByType } from '../../../actions/Common';
-import { ZBC } from '../../../config/constants';
+import { EXCHNAGERATE, ZBC } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { node } from 'prop-types';
+import OtherCostingSimulation from './OtherCostingSimulation';
 const gridOptions = {};
 
-function VerifySimulation(props) {
-    const { cancelVerifyPage } = props
+function OtherVerifySimulation(props) {
+    const { cancelVerifyPage, isExchangeRate } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -39,6 +39,7 @@ function VerifySimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const { filteredRMData } = useSelector(state => state.material)
+    const [masterId, setMasterId] = useState('')
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -53,21 +54,23 @@ function VerifySimulation(props) {
         dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
-    const verifyCostingList = (plantId = '', rawMatrialId = '') => {
-        const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-        dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
-            if (res.data.Result) {
-                const data = res.data.Data
-                if (data.SimulationImpactedCostings.length === 0) {
-                    toastr.warning('No approved costing exist for this raw material.')
-                    setHideRunButton(true)
-                    return false
+    const verifyCostingList = () => {
+        if (isExchangeRate) {
+            dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                if (res.data.Result) {
+                    const data = res.data.Data
+                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {
+                        toastr.warning('No approved costing exist for this raw material.')
+                        setHideRunButton(true)
+                        return false
+                    }
+                    setTokenNo(data.TokenNumber)
+                    setSimualtionId(data.SimulationId)
+                    setMasterId(data.SimulationtechnologyId)
+                    setHideRunButton(false)
                 }
-                setTokenNo(data.TokenNumber)
-                setSimualtionId(data.SimulationId)
-                setHideRunButton(false)
-            }
-        }))
+            }))
+        }
     }
 
 
@@ -77,54 +80,6 @@ function VerifySimulation(props) {
 
     const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
-
-    const renderCostingNumber = () => {
-        return <>Costing <br /> Number </>
-    }
-
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
-
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
-
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldBR = () => {
-        return <>Old <br />Basic Rate</>
-    }
-
-    const renderNewBR = () => {
-        return <>New <br />Basic Rate</>
-    }
-
-    const renderOldSR = () => {
-        return <>Old <br />Scrap Rate</>
-    }
-
-    const renderNewSR = () => {
-        return <>New <br />Scrap Rate</>
-    }
-
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -132,18 +87,11 @@ function VerifySimulation(props) {
             </>
         )
     }
-    const newBRFormatter = (props) => {
+    const newExchangeRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value form-control' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
-    const newSRFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const descriptionFormatter = (props) => {
@@ -162,31 +110,6 @@ function VerifySimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
-    }
-
-    const renderPlant = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}` : '-'
-
-    }
-
-    const renderVendor = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
-    }
-
-    const renderRM = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
-    }
-
-    const onRowSelect = () => {
-
-        // setGridSelection(true)
-
     }
 
     const onRowSelected = (e) => {
@@ -209,50 +132,34 @@ function VerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    const renderDropdownListing = (label) => {
-        let temp = []
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-
-        if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-    }
-
-
-
     const runSimulation = () => {
-        if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
-            return false
-        }
+        // if (selectedRowData.length === 0) {
+        //     toastr.warning('Please select atleast one costing.')
+        //     return false
+        // }
+
         let obj = {};
         obj.SimulationId = simulationId
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
 
-        selectedRowData && selectedRowData.map(item => {
-            let tempObj = {}
-            tempObj.RawMaterialId = item.RawMaterialId
-            tempObj.CostingId = item.CostingId
-            tempArr.push(tempObj)
-            return null;
-        })
+        switch (masterId) {
+            case Number(EXCHNAGERATE):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
 
-        obj.RunSimualtionCostingInfo = tempArr
-        setObj(obj)
-        setSimulationDrawer(true)
+                obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+
+            default:
+                break;
+        }
+
 
     }
 
@@ -265,30 +172,12 @@ function VerifySimulation(props) {
         }
     }
 
-    const handleMaterial = (value) => {
-        setMaterial(value)
-    }
-
-
-    const filterList = () => {
-        const plant = getValues('plantCode').value
-
-        verifyCostingList(plant, material.value)
-    }
-    const resetFilter = () => {
-        setValue('plantCode', '')
-        setValue('rawMaterial', '')
-        setMaterial('')
-        verifyCostingList('', '')
-    }
-
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
 
         return thisIsFirstColumn;
     }
-
 
     const defaultColDef = {
         resizable: true,
@@ -302,7 +191,12 @@ function VerifySimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        var allColumnIds = [];
+        params.columnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
 
+        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -324,12 +218,8 @@ function VerifySimulation(props) {
         descriptionFormatter: descriptionFormatter,
         ecnFormatter: ecnFormatter,
         revisionFormatter: revisionFormatter,
-        renderVendor: renderVendor,
-        renderPlant: renderPlant,
-        renderRM: renderRM,
         buttonFormatter: buttonFormatter,
-        newBRFormatter: newBRFormatter,
-        newSRFormatter: newSRFormatter,
+        newExchangeRateFormatter: newExchangeRateFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
     };
@@ -369,10 +259,10 @@ function VerifySimulation(props) {
                                         </div>
                                         <div
                                             className="ag-theme-material"
-                                            style={{ height: '100%', width: '100%' }}
+
                                         >
                                             <AgGridReact
-                                                // style={{ height: '100%', width: '100%' }}
+                                                style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
@@ -388,28 +278,24 @@ function VerifySimulation(props) {
                                                     title: CONSTANT.EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
-                                                // suppressRowClickSelection={true}
                                                 rowSelection={'multiple'}
                                                 onRowSelected={onRowSelected}
-                                                // frameworkComponents={frameworkComponents}
-                                                onSelectionChanged={onRowSelect}
 
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
-                                                <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
+                                                {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
                                                 <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
-                                                <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
-                                                <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
+                                                {isExchangeRate &&
+                                                    <>
+                                                        <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
+                                                    </>
+                                                }
 
                                             </AgGridReact>
 
@@ -445,7 +331,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} />
+                <OtherCostingSimulation simulationId={simulationId} />
             }
             {
                 simulationDrawer &&
@@ -453,6 +339,7 @@ function VerifySimulation(props) {
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
                     objs={objs}
+                    masterId={masterId}
                     anchor={"right"}
                 />
             }
@@ -460,4 +347,5 @@ function VerifySimulation(props) {
     );
 }
 
-export default VerifySimulation;
+
+export default OtherVerifySimulation;

@@ -10,7 +10,7 @@ import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
 } from '../actions/Costing'
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
+import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
 import { formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
@@ -35,6 +35,8 @@ function CostingSummary(props) {
   const [TechnologyId, setTechnologyId] = useState('')
   const [disabled, setDisabled] = useState(false)
   const [showWarningMsg, setShowWarningMsg] = useState(false)
+  const [partDropdown, setPartDropdown] = useState([])
+
   const partNumber = useSelector(state => state.costing.partNo);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -136,6 +138,7 @@ function CostingSummary(props) {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
+      setPartDropdown(tempDropdownList)
       return tempDropdownList
     }
   }
@@ -301,6 +304,33 @@ function CostingSummary(props) {
     SetIsBulkOpen(false)
   }
 
+  const filterColors = (inputValue) => {
+    if (inputValue) {
+      let tempArr = []
+      tempArr = partDropdown && partDropdown.filter(i => {
+        return i.label.toLowerCase().includes(inputValue.toLowerCase())
+      }
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    } else {
+      return partDropdown
+    }
+  };
+
+  const promiseOptions = inputValue =>
+    new Promise(resolve => {
+      resolve(filterColors(inputValue));
+    });
+
+  useEffect(() => {
+    renderDropdownListing('PartList')
+  }, [partSelectListByTechnology])
+
+
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -362,19 +392,21 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        <SearchableSelectHookForm
-                          label={'Assembly No./Part No.'}
-                          name={'Part'}
-                          placeholder={'Select'}
+                        <AsyncSearchableSelectHookForm
+                          label={"Assembly No./Part No."}
+                          name={"Part"}
+                          placeholder={"Enter"}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
                           register={register}
-                          defaultValue={part.length !== 0 ? part : ''}
-                          options={renderDropdownListing('PartList')}
+                          defaultValue={part.length !== 0 ? part : ""}
+                          asyncOptions={promiseOptions}
                           mandatory={true}
+                          isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          message={"Enter"}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
                         />
                       </Col>

@@ -540,7 +540,7 @@ class SpecificationListing extends Component {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     rowData={this.props.rmSpecificationList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -557,7 +557,7 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
                                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
