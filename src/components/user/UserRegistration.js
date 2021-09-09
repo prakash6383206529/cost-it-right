@@ -1132,7 +1132,7 @@ class UserRegistration extends Component {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
           },
-          onCancel: () => { this.confirmUpdateUser(updatedData, false) },
+          onCancel: () => { },
           component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
