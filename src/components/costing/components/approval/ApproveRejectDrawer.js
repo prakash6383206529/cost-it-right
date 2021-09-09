@@ -124,25 +124,27 @@ function ApproveRejectDrawer(props) {
       let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
-      switch (Number(master)) {
-        case Number(RMDOMESTIC):
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
-          break;
-        case Number(RMIMPORT):
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
-          break;
+      dispatch(saveSimulationForRawMaterial(simObj, res => {
+        if (res.data.Result) {
+          toastr.success('Simulation has been saved successfully.')
+        }
+      }))
+      // switch (Number(master)) {
+      //   case Number(RMDOMESTIC):
 
-        default:
-          break;
-      }
+      //     break;
+      //   case Number(RMIMPORT):
+      //     dispatch(saveSimulationForRawMaterial(simObj, res => {
+      //       if (res.data.Result) {
+      //         toastr.success('Simulation has been saved successfully.')
+      //       }
+      //     }))
+      //   case 
+      //     break;
+
+      //   default:
+      //     break;
+      // }
     }
   }, [simulationDetail])
 
