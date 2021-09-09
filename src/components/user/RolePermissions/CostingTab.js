@@ -288,7 +288,7 @@ class CostingTab extends Component {
                 <tr>
                   <th>{`Module`}</th>
                   <th className=" pr-2">
-                    <label className="custom-checkbox align-middle">
+                    <label className="custom-checkbox align-middle select-all-label">
                       <input
                         type="checkbox"
                         value={"All"}
