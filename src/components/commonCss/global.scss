@@ -2971,3 +2971,10 @@ body {
 // ag-grid-react end
 
 }
+.graph-box  {
+  .ag-grid-react {
+    .ag-center-cols-clipper {
+      min-height: 180px;
+    }
+  }
+}
