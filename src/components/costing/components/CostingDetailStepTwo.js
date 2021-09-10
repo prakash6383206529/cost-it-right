@@ -7,7 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
-import CostingHeadTabs from './costingHeaderTabs/index'
+import CostingHeadTabs from './CostingHeaderTabs/index'
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
