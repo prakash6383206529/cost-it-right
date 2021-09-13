@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
-import { ZBC } from '../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -96,11 +96,18 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason, ImpactedMasterDataList } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
+                IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
+                SenderReason, ImpactedMasterDataList, AmendmentDetails } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList })
+            setSimulationDetail({
+                SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
+                SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
+                DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
+                ImpactedMasterDataList: ImpactedMasterDataList, SimulationTechnologyId: SimulationTechnologyId, AmendmentDetails: AmendmentDetails
+            })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -191,7 +198,12 @@ function SimulationApprovalSummary(props) {
     const DisplayCompareCosting = (el, data) => {
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
-        dispatch(getComparisionSimulationData(el, res => {
+        let obj = {
+            simulationApprovalProcessSummaryId: el,
+            simulationId: EMPTY_GUID,
+            costingId: EMPTY_GUID
+        }
+        dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
@@ -332,9 +344,7 @@ function SimulationApprovalSummary(props) {
         return cell != null ? cell : '-';
     }
 
-    const rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost</>
-    }
+
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -491,11 +501,11 @@ function SimulationApprovalSummary(props) {
                                         <tr>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Token No.:`}</span>
-                                                <span className="d-block">{simulationDetail.Token}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Technology:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
@@ -503,28 +513,28 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Costing Head:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].CostingHead}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
-                                                <span className="d-block">{simulationDetail.NumberOfCostings}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Reason:`}</span>
-                                                <span className="d-block">{simulationDetail.SenderReason}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</span>
                                             </th>
 
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Masters:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].SimulationTechnology}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -556,7 +566,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
 
                             <div className="accordian-content w-100">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} />}
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} />}
 
                             </div>
 
@@ -610,7 +620,7 @@ function SimulationApprovalSummary(props) {
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
-                                                                floatingFilter = {true}
+                                                                floatingFilter={true}
                                                                 domLayout='autoHeight'
                                                                 // columnDefs={c}
                                                                 rowData={costingList}

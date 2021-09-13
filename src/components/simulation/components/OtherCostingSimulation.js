@@ -11,7 +11,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EXCHNAGERATE, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
@@ -75,8 +75,6 @@ function OtherCostingSimulation(props) {
 
     useEffect(() => {
         getCostingList()
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
 
@@ -96,7 +94,7 @@ function OtherCostingSimulation(props) {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
             }
-            if (master === EXCHNAGERATE) {
+            if (Number(master) === Number(EXCHNAGERATE)) {
                 item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
             }
 
@@ -121,18 +119,8 @@ function OtherCostingSimulation(props) {
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
-
     useEffect(() => {
         hideColumn()
-        // costingList && costingList.map(item => {
-        //     item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        // })
-
-
-
     }, [costingList])
 
 
@@ -150,10 +138,18 @@ function OtherCostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-
+        let obj = {
+            simulationApprovalProcessSummaryId: EMPTY_GUID,
+            simulationId: simulationId,
+            costingId: data.CostingId
+        }
         setId(id)
-        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        dispatch(getComparisionSimulationData(data.SimulationCostingId, res => {
+        setPricesDetail({
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
+            CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
+            NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency
+        })
+        dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
@@ -353,15 +349,16 @@ function OtherCostingSimulation(props) {
         return cell
     }
     const hideColumn = (props) => {
+        // console.log(costingList && costingList[0].NewOverheadCost, "costingList");
         setHideDataColumn({
-            hideOverhead: costingList && costingList[0].NewOverheadCost === 0 ? true : false,
-            hideProfit: costingList && costingList[0].NewProfitCost === 0 ? true : false,
-            hideRejection: costingList && costingList[0].NewRejectionCost === 0 ? true : false,
-            hideICC: costingList && costingList[0].NewICCCost === 0 ? true : false,
-            hidePayment: costingList && costingList[0].NewPaymentTermsCost === 0 ? true : false,
-            hideOtherCost: costingList && costingList[0].NewOtherCost === 0 ? true : false,
-            hideDiscount: costingList && costingList[0].NewDiscountCost === 0 ? true : false,
-            hideOveheadAndProfit: costingList && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
+            hideOverhead: costingList && costingList.length > 0 && costingList[0]?.NewOverheadCost === 0 ? true : false,
+            hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost && costingList[0]?.NewProfitCost === 0 ? true : false,
+            hideRejection: costingList && costingList.length > 0 && costingList[0].NewRejectionCost && costingList[0]?.NewRejectionCost === 0 ? true : false,
+            hideICC: costingList && costingList.length > 0 && costingList[0].NewICCCost && costingList[0]?.NewICCCost === 0 ? true : false,
+            hidePayment: costingList && costingList.length > 0 && costingList[0].NewPaymentTermsCost && costingList[0]?.NewPaymentTermsCost === 0 ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && costingList[0].NewOtherCost && costingList[0]?.NewOtherCost === 0 ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost && costingList[0]?.NewDiscountCost === 0 ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost && costingList[0]?.NewNetOverheadAndProfitCost === 0 ? true : false
         })
     }
 
