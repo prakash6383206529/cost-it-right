@@ -450,6 +450,7 @@ class ReasonListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}

@@ -608,6 +608,7 @@ class BOPDomesticListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
+                                    floatingFilter={true}
                                     // columnDefs={c}
                                     rowData={this.props.bopDomesticList}
                                     pagination={true}

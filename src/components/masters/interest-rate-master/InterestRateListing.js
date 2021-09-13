@@ -703,6 +703,7 @@ class InterestRateListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.interestRateDataList}
                 pagination={true}

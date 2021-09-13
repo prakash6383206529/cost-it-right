@@ -609,6 +609,7 @@ class UsersListing extends Component {
 							<AgGridReact
 								defaultColDef={defaultColDef}
 								domLayout='autoHeight'
+								floatingFilter={true}
 								// columnDefs={c}
 								rowData={this.props.userDataList}
 								pagination={true}
@@ -632,7 +633,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Purchase Group"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">

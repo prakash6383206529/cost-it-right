@@ -437,6 +437,7 @@ class IndivisualPartListing extends Component {
                             style={{ height: '100%', width: '100%' }}
                             defaultColDef={defaultColDef}
                             domLayout='autoHeight'
+                            floatingFilter={true}
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
                             pagination={true}

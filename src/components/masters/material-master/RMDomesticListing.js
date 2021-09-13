@@ -876,7 +876,6 @@ class RMDomesticListing extends Component {
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
-
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.getFilterRMData()}

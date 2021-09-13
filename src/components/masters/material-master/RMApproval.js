@@ -374,7 +374,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
-                                    <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
+                                    <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" floatingFilter={false} field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
 
                                 <div className="paging-container d-inline-block float-right">
