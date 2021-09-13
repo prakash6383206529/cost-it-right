@@ -295,17 +295,18 @@ function ERSimulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency"></AgGridColumn>
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)"></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)"></AgGridColumn>
+                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={120}></AgGridColumn>
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={120}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={150}></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={140} headerName="Exchange Rate (INR)" marryChildren={true}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={130}></AgGridColumn>
                                             {/* <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn> */}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={120} field="CurrencyExchangeRate" editable='false' cellRenderer="oldERFormatter" headerName="Old" colId="CurrencyExchangeRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newERFormatter' editable={isImpactedMaster ? false : true} field="NewCurrencyExchangeRate" headerName="New" colId='NewCurrencyExchangeRate'></AgGridColumn>
+                                                <AgGridColumn  field="CurrencyExchangeRate" editable='false' cellRenderer="oldERFormatter" minWidth={140} headerName="Old" colId="CurrencyExchangeRate"></AgGridColumn>
+                                                <AgGridColumn cellRenderer='newERFormatter' editable={isImpactedMaster ? false : true} field="NewCurrencyExchangeRate" minWidth={140} headerName="New" colId='NewCurrencyExchangeRate'></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" field="DateOfModification" editable='false' headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" minWidth={140} editable='false' cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" field="DateOfModification" minWidth={140} editable='false' headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>
