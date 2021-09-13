@@ -2910,6 +2910,7 @@ button:disabled{pointer-events: none;}
     }
   }
 }// costing-details-page
+
 .costing-page-drawer{
   .nodate-section{
     margin: 12px 0;
@@ -4617,6 +4618,11 @@ body{
           }
         }
       }
+    }
+  }
+  .exchange-rate {
+    .ag-grid-wrapper {
+      min-height: calc(100vh - 262px) !important;
     }
   }
   // costing details page only end
