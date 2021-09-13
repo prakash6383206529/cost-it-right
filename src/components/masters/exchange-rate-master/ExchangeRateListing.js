@@ -443,7 +443,7 @@ class ExchangeRateListing extends Component {
                                                     <div className="filter mr-0"></div>
                                                 </button>
                                             )}
-                                            {AddAccessibility && <button
+                                            {(AddAccessibility && !this.props.isSimulation) && <button
                                                 type="button"
                                                 className={'user-btn mr5'}
                                                 title="Add"

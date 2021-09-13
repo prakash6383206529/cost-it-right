@@ -8,6 +8,7 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
+import { func } from 'joi'
 
 /**
  * @method  apiErrors
@@ -780,7 +781,7 @@ export function isMultipleRMAllow(technology) {
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
   const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT]
-  return ApplyEditCondition.includes(master)
+  return ApplyEditCondition.includes(String(master))
 }
 
 //THIS FUNCTION FOR CONDITION RNDERING OF COMPONENT FOR DIFFERENT MASTER
@@ -808,4 +809,9 @@ export function calculateScrapCost(scrapWeight, scrapRate) {
 export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRate) {
   const netLandedCost = (rmRate * grossWeight) - (scrapWeight * scrapRate)
   return netLandedCost
+}
+
+export function isUploadSimulation(master) {
+  const isUploadSimulation = [EXCHNAGERATE]
+  return isUploadSimulation.includes(String(master))
 }
