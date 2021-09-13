@@ -276,7 +276,7 @@ function ReportListing(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
-       gridOptions.api.setFilterModel(null);
+        gridOptions.api.setFilterModel(null);
     }
 
     const onRowSelect = () => {
@@ -362,7 +362,7 @@ function ReportListing(props) {
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
                         defaultColDef={defaultColDef}
-                        floatingFilter = {true}
+                        floatingFilter={true}
                         // columnDefs={c}
                         rowData={reportListingData}
                         pagination={true}
@@ -432,7 +432,7 @@ function ReportListing(props) {
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right">
                         <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
