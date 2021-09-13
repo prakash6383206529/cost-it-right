@@ -554,3 +554,21 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
         });
     };
 }
+
+export function getExchangeCostingSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}

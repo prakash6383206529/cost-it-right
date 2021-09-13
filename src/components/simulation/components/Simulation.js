@@ -292,11 +292,12 @@ function Simulation(props) {
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
+        const masterId = location?.state?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
         if (getOtherCostingSimulation(location?.state?.master)) {
-            return <OtherCostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+            return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
         }
-        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
 
 

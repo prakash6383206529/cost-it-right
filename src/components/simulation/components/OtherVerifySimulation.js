@@ -40,6 +40,7 @@ function OtherVerifySimulation(props) {
     const [rowData, setRowData] = useState(null);
     const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
+    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -331,7 +332,7 @@ function OtherVerifySimulation(props) {
             }
             {
                 costingPage &&
-                <OtherCostingSimulation simulationId={simulationId} />
+                <OtherCostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
