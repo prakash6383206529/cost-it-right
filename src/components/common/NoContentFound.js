@@ -2,9 +2,9 @@ import React from 'react';
 import { Container } from 'reactstrap'
 import img from '../../assests/images/no-record.png'
 
-const NoContentFound = ({ title }) => (
+const NoContentFound = ({ title,customClassName }) => (
     <Container>
-        <div className="text-center nodate-section">
+        <div className={`text-center nodate-section ${customClassName}`}>
             <img alt={''} src={img} />
             <div className="my-2">
                 <h5>{title}</h5>
