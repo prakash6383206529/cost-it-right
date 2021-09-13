@@ -1010,7 +1010,7 @@ a:hover {
       border-bottom: 1px solid #b4c5e2;
       text-align: center;
       color: $headinlightgblack;
-      font-size: $font-14;
+      font-size: $font-16;
 
       &:first-child {
         text-align: left;
@@ -2964,4 +2964,14 @@ body {
 }
 // ag-grid-react end
 
+}
+.graph-box  {
+  .ag-grid-react {
+    .ag-center-cols-clipper {
+      min-height: 180px;
+    }
+  }
+}
+.select-all-label {
+  padding-left: 13px;
 }
