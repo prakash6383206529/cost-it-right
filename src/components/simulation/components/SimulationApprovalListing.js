@@ -377,7 +377,8 @@ function SimulationApprovalListing(props) {
                 pathname: "/simulation-approval-summary",
                 state: {
                     approvalNumber: approvalData.approvalNumber,
-                    approvalId: approvalData.approvalProcessId
+                    approvalId: approvalData.approvalProcessId,
+                    SimulationTechnologyId: approvalData.SimulationTechnologyId
                 }
             }}
         />
