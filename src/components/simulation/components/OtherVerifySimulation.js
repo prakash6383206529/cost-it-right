@@ -277,6 +277,7 @@ function OtherVerifySimulation(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: CONSTANT.EMPTY_DATA,
+                                                    customClassName:'nodata-found-container'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}

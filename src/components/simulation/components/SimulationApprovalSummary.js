@@ -551,7 +551,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* } */}
 
-                        <Row className="mb-3">
+                        <Row>
                             <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
@@ -565,7 +565,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
 
-                            <div className="accordian-content w-100">
+                            <div className="accordian-content w-100 px-3 impacted-min-height">
                                 {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} />}
 
                             </div>
