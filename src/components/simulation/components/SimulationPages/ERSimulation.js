@@ -250,13 +250,13 @@ function ERSimulation(props) {
                                             // frameworkComponents={frameworkComponents}
                                             onSelectionChanged={onRowSelect}
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency"></AgGridColumn>
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)"></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)"></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
+                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>
 
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' cellRenderer='effectiveDateRenderer' minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>
