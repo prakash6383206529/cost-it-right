@@ -293,8 +293,10 @@ function Simulation(props) {
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
         const masterId = location?.state?.master
+        console.log('masterId: ', masterId);
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
-        if (getOtherCostingSimulation(location?.state?.master)) {
+        if (getOtherCostingSimulation(String(masterId))) {
+            console.log(masterId, "masterIdmasterId");
             return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />

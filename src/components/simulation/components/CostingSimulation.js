@@ -11,7 +11,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { ZBC } from '../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
@@ -85,7 +85,6 @@ function CostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
-                console.log(Data.SimulatedCostingList, " Data.SimulatedCostingList");
                 Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)
@@ -143,10 +142,14 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-
+        let obj = {
+            simulationApprovalProcessSummaryId: EMPTY_GUID,
+            simulationId: simulationId,
+            costingId: data.CostingId
+        }
         setId(id)
         setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        dispatch(getComparisionSimulationData(data.SimulationCostingId, res => {
+        dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
@@ -358,14 +361,14 @@ function CostingSimulation(props) {
     }
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && costingList[0].NewOverheadCost === 0 ? true : false,
-            hideProfit: costingList && costingList[0].NewProfitCost === 0 ? true : false,
-            hideRejection: costingList && costingList[0].NewRejectionCost === 0 ? true : false,
-            hideICC: costingList && costingList[0].NewICCCost === 0 ? true : false,
-            hidePayment: costingList && costingList[0].NewPaymentTermsCost === 0 ? true : false,
-            hideOtherCost: costingList && costingList[0].NewOtherCost === 0 ? true : false,
-            hideDiscount: costingList && costingList[0].NewDiscountCost === 0 ? true : false,
-            hideOveheadAndProfit: costingList && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
+            hideOverhead: costingList && costingList.length > 0 && costingList[0].NewOverheadCost === 0 ? true : false,
+            hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost === 0 ? true : false,
+            hideRejection: costingList && costingList.length > 0 && costingList[0].NewRejectionCost === 0 ? true : false,
+            hideICC: costingList && costingList.length > 0 && costingList[0].NewICCCost === 0 ? true : false,
+            hidePayment: costingList && costingList.length > 0 && costingList[0].NewPaymentTermsCost === 0 ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && costingList[0].NewOtherCost === 0 ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost === 0 ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
         })
     }
 
@@ -523,6 +526,7 @@ function CostingSimulation(props) {
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
+                                                    floatingFilter={true}
                                                     domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={tableData}

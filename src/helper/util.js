@@ -795,3 +795,18 @@ export function getFilteredRMData(arr) {
   const list = arr && arr.filter((item => item.IsRMAssociated === true))
   return list
 }
+
+export function calculateScrapWeight(grossWeight, finishWeight) {
+  const scrapWeight = checkForNull(grossWeight - finishWeight)
+  return scrapWeight
+}
+
+export function calculateScrapCost(scrapWeight, scrapRate) {
+  const scrapCost = scrapWeight * scrapRate
+  return scrapCost
+}
+
+export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRate) {
+  const netLandedCost = (rmRate * grossWeight) - (scrapWeight * scrapRate)
+  return netLandedCost
+}
