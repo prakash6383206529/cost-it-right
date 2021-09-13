@@ -61,7 +61,7 @@ function OtherVerifySimulation(props) {
                 if (res.data.Result) {
                     const data = res.data.Data
                     if (data.SimulationExchangeRateImpactedCostings.length === 0) {
-                        toastr.warning('No approved costing exist for this raw material.')
+                        toastr.warning('No approved costing exist for this exchange rate.')
                         setHideRunButton(true)
                         return false
                     }
@@ -134,10 +134,10 @@ function OtherVerifySimulation(props) {
     }
 
     const runSimulation = () => {
-        // if (selectedRowData.length === 0) {
-        //     toastr.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            toastr.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
