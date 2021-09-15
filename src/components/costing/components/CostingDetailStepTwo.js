@@ -48,6 +48,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM RM+CC TAB 
    */
   const setHeaderCostRMCCTab = (data) => {
+    console.log("COMING IN RMCC TAB HEADER  ");
     if (!CostingViewMode) {
       const headerIndex = 0;
 
@@ -80,6 +81,7 @@ function CostingDetailStepTwo(props) {
       }
 
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+      console.log('tempArr: ', tempArr);
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
