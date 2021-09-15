@@ -363,7 +363,8 @@ function CopyCosting(props) {
 
               if ((res.status = 200)) {
                 toastr.success("Copy costing done sucessfully!")
-                props.closeDrawer('')
+                const { CostingId, CostingType } = res.data.Data
+                props.closeDrawer('', CostingId, CostingType)
               }
             }),
           ) // for saving data

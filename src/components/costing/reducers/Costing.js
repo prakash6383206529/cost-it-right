@@ -282,6 +282,7 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_COSTING_DATALIST_BY_COSTINGID:
       const Costingdata1 = action.payload
+      console.log('Costingdata1: ', Costingdata1);
       return {
         ...state,
         loading: false,
