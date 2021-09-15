@@ -1461,6 +1461,7 @@ function CostingDetails(props) {
                           errors={errors.Technology}
                         />
                       </Col>
+
                       <Col className="col-md-15">
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
