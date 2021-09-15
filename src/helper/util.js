@@ -2,7 +2,7 @@ import { toastr } from 'react-redux-toastr'
 import Moment from 'moment'
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { checkForNull } from './validation'
+import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
@@ -814,4 +814,24 @@ export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRa
 export function isUploadSimulation(master) {
   const isUploadSimulation = [EXCHNAGERATE]
   return isUploadSimulation.includes(String(master))
+}
+
+export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
+  let netPo = 0
+  let quantity = 1
+  if (decimalValue === 'RoundOff') {
+    netPo = Math.round(PoPrice)
+    quantity = 1
+    return { netPo, quantity }
+  }
+  else if (decimalValue === 'Truncate') {
+    netPo = checkForDecimalAndNull(PoPrice, 2)
+    quantity = 1
+    return { netPo, quantity }
+  }
+  else if (decimalValue === 'Per100') {
+    netPo = PoPrice * 100
+    quantity = 100
+    return { netPo, quantity }
+  }
 }

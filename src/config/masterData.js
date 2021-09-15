@@ -2661,3 +2661,9 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
 ]
+
+export const decimalOption = [
+    { label: 'Round Off', value: 'RoundOff' },
+    { label: 'Truncate', value: 'Truncate' },
+    { label: 'Per 100', value: 'Per100' }
+]

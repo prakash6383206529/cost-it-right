@@ -497,7 +497,7 @@ class UsersListing extends Component {
 												name="DepartmentId"
 												type="text"
 												component={searchableSelect}
-												placeholder={"Department"}
+												placeholder={"Company"}
 												options={this.searchableSelectType("department")}
 												//onKeyUp={(e) => this.changeItemDesc(e)}
 												//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
@@ -585,6 +585,7 @@ class UsersListing extends Component {
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
+								floatingFilter={true}
 								domLayout='autoHeight'
 								// columnDefs={c}
 								domLayout='autoHeight'
@@ -611,7 +612,7 @@ class UsersListing extends Component {
 								{getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">

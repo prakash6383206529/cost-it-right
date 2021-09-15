@@ -11,7 +11,7 @@ import { useState } from 'react'
 // import { INR } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
-import { materialGroup, purchasingGroup } from '../../config/masterData';
+import { decimalOption, materialGroup, purchasingGroup } from '../../config/masterData';
 import { setSAPData } from '../costing/actions/Approval';
 import { userDetails } from '../../helper';
 
@@ -21,6 +21,7 @@ function PushSection(props) {
 
     const [MaterialGroup, setMaterialGroup] = useState([]);
     const [PurchasingGroup, setPurchasingGroup] = useState([]);
+    const [DecimalOption, setDecimalOption] = useState([]);
     const dispatch = useDispatch()
 
     /**
@@ -43,6 +44,13 @@ function PushSection(props) {
                 return null
             })
         }
+        if (label === 'DecimalOption') {
+            const decOption = decimalOption;
+            decimalOption && decimalOption.map(item => {
+                tempArr.push({ label: item.label, value: item.value })
+                return null
+            })
+        }
         return tempArr
     }
 
@@ -52,7 +60,7 @@ function PushSection(props) {
     const handleMaterialChange = (newValue) => {
         if (newValue && newValue !== '') {
             setMaterialGroup(newValue)
-            dispatch(setSAPData({ PurchasingGroup: PurchasingGroup, MaterialGroup: newValue, }))
+            dispatch(setSAPData({ PurchasingGroup: PurchasingGroup, MaterialGroup: newValue, DecimalOption: DecimalOption }))
         } else {
             setMaterialGroup([])
         }
@@ -64,9 +72,21 @@ function PushSection(props) {
     const handlePurchasingChange = (newValue) => {
         if (newValue && newValue !== '') {
             setPurchasingGroup(newValue)
-            dispatch(setSAPData({ PurchasingGroup: newValue, MaterialGroup: MaterialGroup }))
+            dispatch(setSAPData({ PurchasingGroup: newValue, MaterialGroup: MaterialGroup, DecimalOption: DecimalOption }))
         } else {
             setPurchasingGroup([])
+        }
+    }
+
+    /**
+  * @const handlePurchasingChange
+  */
+    const handleDecimalOption = (newValue) => {
+        if (newValue && newValue !== '') {
+            setDecimalOption(newValue)
+            dispatch(setSAPData({ PurchasingGroup: PurchasingGroup, MaterialGroup: MaterialGroup, DecimalOption: newValue }))
+        } else {
+            setDecimalOption([])
         }
     }
 
@@ -122,6 +142,22 @@ function PushSection(props) {
                         mandatory={true}
                         handleChange={handlePurchasingChange}
                         errors={errors.PurchasingGroup}
+                    />
+                </Col>
+                <Col md="6">
+                    <SearchableSelectHookForm
+                        label={"Decimal Option"}
+                        name={"DecimalOption"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={DecimalOption.length !== 0 ? DecimalOption : ""}
+                        options={renderListing("DecimalOption")}
+                        mandatory={true}
+                        handleChange={handleDecimalOption}
+                        errors={errors.DecimalOption}
                     />
                 </Col>
             </Row>

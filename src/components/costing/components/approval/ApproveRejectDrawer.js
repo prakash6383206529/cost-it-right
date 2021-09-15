@@ -259,6 +259,7 @@ function ApproveRejectDrawer(props) {
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
+
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
         senderObj.ReasonId = reason ? reason.value : ''
@@ -280,6 +281,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
         senderObj.MaterialGroup = SAPData.MaterialGroup?.label
+        senderObj.DecimalOption = SAPData.DecimalOption?.value
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
