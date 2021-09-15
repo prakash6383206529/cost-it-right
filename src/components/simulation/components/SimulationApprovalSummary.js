@@ -753,7 +753,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* Costing Summary page here */}
 
-                        <Row className="mb-4">
+                        {/* <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6">
                                 <div className={'right-details'}>
@@ -828,7 +828,7 @@ function SimulationApprovalSummary(props) {
                                     </div>
                                 </div>
                             }
-                        </Row>
+                        </Row> */}
 
                     </div>
 
