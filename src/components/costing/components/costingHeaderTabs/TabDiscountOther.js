@@ -117,6 +117,8 @@ function TabDiscountOther(props) {
             "OtherCostPercentage": '',
             "PercentageOtherCost": getValues('PercentageOtherCost'),
             "OtherCostType": otherCostType.value,
+            "SANumber": getValues('SANumber'),
+            "LineNumber": getValues('LineNumber')
           }
         },
         "Attachements": updatedFiles,
@@ -157,7 +159,8 @@ function TabDiscountOther(props) {
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
-
+            setValue('SANumber', OtherCostDetails.SANumber !== null ? OtherCostDetails.SANumber : '')
+            setValue('LineNumber', OtherCostDetails.LineNumber !== null ? OtherCostDetails.LineNumber : '')
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
               NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', initialConfiguration.NoOfDecimalForPrice),
@@ -467,6 +470,8 @@ function TabDiscountOther(props) {
           "OtherCostPercentage": '',
           "PercentageOtherCost": values.PercentageOtherCost,
           "OtherCostType": otherCostType.value,
+          "SANumber": values.SANumber,
+          "LineNumber": values.LineNumber
         }
       },
       "Attachements": updatedFiles
@@ -674,8 +679,39 @@ function TabDiscountOther(props) {
                       />
                     </Col>
 
-                    <Col md="4">
-
+                    <Col md="2">
+                      <TextFieldHookForm
+                        label="SA Number"
+                        name={'SANumber'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{}}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.SANumber}
+                        disabled={CostingViewMode ? true : false}
+                      />
+                    </Col>
+                    <Col md="2">
+                      <TextFieldHookForm
+                        label="Line Number"
+                        name={'LineNumber'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{}}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.LineNumber}
+                        disabled={CostingViewMode ? true : false}
+                      />
                     </Col>
                   </Row>
 
