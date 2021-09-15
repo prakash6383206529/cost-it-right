@@ -8,7 +8,7 @@ import { renderText, renderTextAreaField, focusOnError, renderDatePicker, render
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel,
+  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList
 } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -41,6 +41,7 @@ class AddAssemblyPart extends Component {
       effectiveDate: '',
       files: [],
       ProductGroup: [],
+      oldProductGroup: [],
 
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
@@ -59,6 +60,7 @@ class AddAssemblyPart extends Component {
   */
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
+    this.props.getProductGroupSelectList(() => { })
     this.getDetails()
   }
 
@@ -77,6 +79,11 @@ class AddAssemblyPart extends Component {
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
+          let productArray = []
+          Data && Data.ProductList.map((item) => {
+            productArray.push({ Text: item.ProductGroupCode, Value: item.ProductId })
+            return productArray
+          })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
           this.setState({ DataToCheck: Data })
@@ -88,6 +95,8 @@ class AddAssemblyPart extends Component {
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
+              ProductGroup: productArray,
+              oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
           }, 200)
         }
@@ -218,7 +227,7 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList } = this.props;
+    const { plantSelectList, productGroupSelectList } = this.props;
     const temp = [];
 
     if (label === 'plant') {
@@ -229,9 +238,15 @@ class AddAssemblyPart extends Component {
       });
       return temp;
     }
+
     if (label === 'ProductGroup') {
-      return []
+      productGroupSelectList && productGroupSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ Text: item.Text, Value: item.Value })
+      })
+      return temp;
     }
+
 
   }
 
@@ -439,10 +454,11 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+    let productArray = ProductGroup && ProductGroup.map((item) => ({ ProductId: item.Value, ProductGroupCode: item.Text }))
     let childPartArray = [];
 
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
@@ -503,6 +519,7 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
         IsForcefulUpdated: true,
         BOMLevelCount: BOMLevelCount,
+        ProductList: productArray
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -551,6 +568,7 @@ class AddAssemblyPart extends Component {
         Attachements: files,
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
+        ProductList: productArray
       }
 
       this.props.reset()
@@ -723,7 +741,7 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
-                        {/* <Col md="3">
+                        <Col md="3">
                           <Field
                             label="Product Group"
                             name="ProductGroup"
@@ -742,7 +760,7 @@ class AddAssemblyPart extends Component {
                             className="multiselect-with-border"
                           // disabled={this.state.IsVendor || isEditFlag ? true : false}
                           />
-                        </Col> */}
+                        </Col>
                         {/* <Col md="3">
                           <Field
                             label="Plant"
@@ -984,7 +1002,7 @@ function mapStateToProps(state) {
     'Description', 'DrawingNumber', 'GroupCode', 'Remark')
   const { comman, part, auth } = state;
   const { plantSelectList } = comman;
-  const { partData, actualBOMTreeData } = part;
+  const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
 
   let initialValues = {};
@@ -1002,7 +1020,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList }
 
 }
 
@@ -1020,6 +1038,7 @@ export default connect(mapStateToProps, {
   updateAssemblyPart,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
+  getProductGroupSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   onSubmitFail: errors => {

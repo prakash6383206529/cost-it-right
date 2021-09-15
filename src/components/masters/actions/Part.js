@@ -15,7 +15,8 @@ import {
     SET_ACTUAL_BOM_DATA,
     config,
     GET_PRODUCT_DATA_LIST,
-    GET_PRODUCT_UNIT_DATA
+    GET_PRODUCT_UNIT_DATA,
+    PRODUCT_GROUPCODE_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -714,4 +715,22 @@ export function fileUploadProduct(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getProductGroupSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(API.productGroupSelectList, headers)
+        request.then((response) => {
+            if (response && response.status === 200) {
+                dispatch({
+                    type: PRODUCT_GROUPCODE_SELECTLIST,
+                    payload: response.data.SelectList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
