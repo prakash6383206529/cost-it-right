@@ -1,0 +1,48 @@
+@import "../commonCss/cssVariable.scss";
+@import "../commonCss/global.scss";
+
+.breadcrumbs {
+	background-color: #edf0f5;
+	padding: 10px 15px;
+	top: 95px;
+	z-index: 9;
+	position: static;
+	ul {
+		li {
+			position: relative;
+			&:first-child {
+				a {
+					padding-left: 0;
+				}
+			}
+			a {
+				color: #95a5ba;
+				font-size: $font-14;
+				position: $positio-relative;
+				padding: 0 13px;
+				display: inline-block;
+				&::after {
+					content: "\f105";
+					font-family: "Fontawesome";
+					position: absolute;
+					right: 0;
+				}
+			}
+			a.active,
+			a.hover {
+				color: $colorPrimary;
+			}
+		}
+		li.active {
+			a {
+				color: $colorPrimary;
+				&::after {
+					content: "";
+				}
+			}
+			a.hover {
+				color: $colorPrimary;
+			}
+		}
+	}
+}

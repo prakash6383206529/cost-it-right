@@ -1,0 +1,447 @@
+import React from "react";
+import Select from "react-select";
+import "./formInputs.css";
+import ReactDatePicker from 'react-datepicker'
+import AsyncSelect from 'react-select/async';
+
+export const TextFieldHooks = (input) => {
+
+  const { register, rules, name, label, mandatory, errors, disabled, value, ...inputProps } = input;
+  const isDisabled = disabled === true ? true : false;
+  const className = `form-group inputbox ${input.customClassName ? input.customClassName : ""}`;
+  const InputClassName = `form-control ${input.className ? input.className : ""}`;
+  return (
+    <>
+      <div className={className}>
+        <label>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <input
+          {...input}
+          name={name}
+          ref={register}
+          className={InputClassName}
+          disabled={isDisabled}
+          value={value}
+          rules={rules}
+          {...inputProps}
+        />
+        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+      </div>
+    </>
+  )
+}
+
+
+
+export const TextFieldHookForm = (field) => {
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const isDisabled = field.disabled === true ? true : false;
+
+  return (
+    <>
+      <div className={className}>
+        <label>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          // ref={reg}
+          {...register}
+          defaultValue={defaultValue}
+          render={({ field: { onChange, onBlur, value } }) => {
+            return (
+              <input
+                {...field}
+                {...register}
+                name={name}
+                className={InputClassName}
+                disabled={isDisabled}
+                value={value}
+                onChange={(e) => {
+                  handleChange(e);
+                  onChange(e)
+                }}
+              />
+            )
+          }
+          }
+        />
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      </div>
+    </>
+  )
+}
+
+export const NumberFieldHookForm = (field) => {
+  const { label, Controller, control, register, defaultValue, mandatory, errors, rules, handleChange, name } = field
+  //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const isDisabled = field.disabled === true ? true : false;
+  return (
+    <>
+      <div className={className}>
+        <label>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          {...register}
+          defaultValue={defaultValue}
+          render={({ field: { onChange, onBlur, value, name } }) => {
+            return (
+              <input
+                {...field}
+                {...register}
+                type={'number'}
+                name={name}
+                className={InputClassName}
+                disabled={isDisabled}
+                value={value}
+                onChange={(e) => {
+                  handleChange(e);
+                  onChange(e)
+                }}
+              />
+            )
+          }
+          }
+        />
+
+
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      </div>
+    </>
+  )
+}
+
+export const SearchableSelectHookForm = (field) => {
+  const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
+    isClearable, control, errors, register, isLoading, customClassName } = field;
+
+
+  let isDisable = (disabled && disabled === true) ? true : false;
+  let isLoader = (isLoading && isLoading === true) ? true : false;
+
+  return (
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+      <label>
+        {label}
+        {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
+      </label>
+      <Controller
+
+        name={name}
+        control={control}
+        rules={rules}
+        {...register}
+        defaultValue={defaultValue}
+        render={({ field: { onChange, onBlur, value, name, } }) => {
+          return (
+            <Select
+              {...field}
+              {...register}
+              name={name}
+              placeholder={placeholder}
+              isDisabled={isDisable}
+              onChange={(e) => {
+                handleChange(e);
+                onChange(e)
+              }}
+              menuPlacement="auto"
+              options={options}
+              onBlur={onBlur}
+              selected={value}
+              value={value}
+              isLoading={isLoader}
+
+            />
+          )
+        }}
+      />
+
+      {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
+      {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
+      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+
+    </div>
+  )
+}
+
+
+/*
+@method: renderTextAreaField
+@desc: Render textarea input
+*/
+export const TextAreaHookForm = (field) => {
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const isDisabled = field.disabled === true ? true : false;
+  return (
+    <>
+      <div className={className}>
+        <label>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          {...register}
+          defaultValue={defaultValue}
+          render={({ field: { onChange, onBlur, value, name } }) => {
+            return (
+              <textarea
+                {...field}
+                {...register}
+                name={name}
+                className={InputClassName}
+                disabled={isDisabled}
+                value={value}
+                onChange={(e) => {
+                  handleChange(e);
+                  onChange(e)
+                }}
+              />
+            )
+          }
+          }
+        />
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      </div>
+    </>
+  )
+}
+
+/*
+@method: YearPickerHookForm
+@desc: Render yearPicker input
+*/
+export const DatePickerHookForm = (field) => {
+  const {
+    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, selected } = field
+  //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
+  const InputClassName = `form-control ${field.className ? field.className : ''}`
+  const isDisabled = field.disabled === true ? true : false
+  return (
+    <React.Fragment>
+      <div className={className}>
+        <label>
+          {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          {...register}
+          defaultValue={defaultValue}
+          render={({ field: { onChange, onBlur, value, name } }) => (
+
+            // return (
+            <ReactDatePicker
+              {...field}
+              {...register}
+              name={name}
+              value={value}
+              dateFormat="dd/MM/yyyy"
+              placeholderText={placeholder}
+              //maxDate={new Date()}
+              //minDate={new Date()}
+              showMonthDropdown
+              showYearDropdown
+              readonly="readonly"
+              onBlur={() => null}
+              selected={value}
+              className={field.className}
+              onChange={(e) => {
+                onChange(e)
+                handleChange(e)
+                // onselect(e)
+              }}
+              autoComplete={field.autoComplete}
+              disabledKeyboardNavigation
+              disabled={isDisabled}
+            />
+            // )
+          )}
+        />
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      </div>
+    </React.Fragment>
+  )
+}
+
+/**
+* @method:RadioHookForm
+* @desc: render radio button
+*/
+// import Typography from "../typography";
+// import "./radioButtons.less";
+export const RadioHookForm = (field) => {
+  const { dataArray = [], label = "label", optionsValue = "optionsValue", labelElement = '', className, selectedValue = "", register, name, onChange = null, defaultValue } = field
+
+  const onChangeSelect = (val) => {
+    onChange && onChange(val);
+  };
+  const flexContainer = {
+  };
+  return (
+    <div className={`te-radio-button ${className}`}>
+      <div>
+        {dataArray && dataArray.length !== 0 && (
+          <ul style={flexContainer} className={"radio-button-list d-flex"}>
+            {dataArray.map((data, index) => {
+              return (
+                <li className="p-3" key={index}>
+                  <label className="radio-button-wrapper radio-box">
+                    <input
+                      {...field}
+                      {...register}
+                      name={name}
+                      type="radio"
+                      value={data[optionsValue]}
+                      defaultValue={defaultValue}
+                      checked={defaultValue}
+                      onChange={e =>
+                        onChangeSelect(
+                          e.target.value
+                        )
+                      }
+                    />
+                    {" "}
+                    {/* {data[labelElement] && data[labelElement]} */}
+                    <span className="radio-label">{data[label]}</span>
+                  </label>
+                </li>)
+            })
+            }
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+
+
+
+
+// export const RadioHookForm = (field) => {
+//   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+//   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+//   const InputClassName = `form-control ${field.className ? field.className : ""}`;
+//   const isDisabled = field.disabled === true ? true : false;
+//   return (
+//     <>
+//       <div 
+//       //className={className}
+//       >
+//         <label>
+//           {label}
+//           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+//         </label>
+//         <Controller
+//           name={name}
+//           control={control}
+//           rules={rules}
+//           ref={register}
+//           defaultValue={defaultValue}
+//           render={({ onChange, onBlur, value, name }) => {
+//             return (
+//               <input
+//                 {...field}
+//                 type="radio"
+//                 name={name}
+//                 // className={InputClassName}
+//                 disabled={isDisabled}
+//                 value={value}
+//                 onChange={(e) => {
+//                   handleChange(e);
+//                   onChange(e)
+//                 }}
+//               />
+//             )
+//           }
+//           }
+//         />
+//         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+//       </div>
+//     </>
+//   )
+// }
+
+export const AsyncSearchableSelectHookForm = (field) => {
+  const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
+    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
+
+
+
+  let isDisable = (disabled && disabled === true) ? true : false;
+  let isLoader = (isLoading && isLoading === true) ? true : false;
+
+  return (
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+      <label>
+        {label}
+        {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
+      </label>
+      <Controller
+
+        name={name}
+        control={control}
+        rules={rules}
+        {...register}
+        defaultValue={defaultValue}
+        render={({ field: { onChange, onBlur, value, name } }) => {
+          return (
+            <AsyncSelect
+              {...field}
+              {...register}
+              name={name}
+              placeholder={placeholder}
+              isDisabled={disabled}
+              onChange={(e) => {
+                handleChange(e);
+                onChange(e)
+              }}
+              menuPlacement="auto"
+              loadOptions={asyncOptions}
+              onBlur={onBlur}
+              selected={value}
+              value={value}
+              isLoading={isLoader}
+            />
+          )
+
+        }}
+      />
+
+      {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
+      {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
+      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+
+    </div>
+  )
+}
