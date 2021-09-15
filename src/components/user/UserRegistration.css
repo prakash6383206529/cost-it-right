@@ -1,0 +1,31 @@
+.sf-signuppage{max-width:760px;margin-top:1.4rem}
+.signup-container .card-body{min-height:555px}
+.sf-matchwrap{background-color:#f5f5f5;border-radius:6px;border:2px solid #e3e3e3;padding:15px 15px 10px;box-shadow:0 1px 6px 2px rgba(0,0,0,.05);margin-bottom:20px}
+.sf-matchwrap h3{color:#040605;font-size:1.25rem;font-weight:600}
+.sf-matchwrap ul{list-style:none;padding-left:0;margin-bottom:0}
+.sf-matchwrap ul li{margin:8px 0;padding-left:25px;position:relative;color:#666;font-weight:600}
+.sf-passwordmatch li.sf-licheck{text-decoration:line-through}
+.sf-passwordmatch li.sf-licheck:before{content:'\2713';font-weight:700;display:inline-block;color:#32a764;margin-right:10px;font-size:1.2rem;position:absolute;left:0;top:-1px}
+.sf-cstmcheckbox input[type=checkbox]{position:absolute;opacity:0;cursor:pointer;height:0;width:0}
+.checkmark{position:absolute;top:0;left:0;height:25px;width:25px;background-color:#eee}
+.sf-animatecheckbox [type=checkbox]:checked,.sf-animatecheckbox [type=checkbox]:not(:checked){position:absolute;opacity:0;pointer-events:none}
+.sf-animatecheckbox [type=checkbox]+span:not(.lever){position:relative;padding-left:38px;cursor:pointer;display:inline-block;height:25px;line-height:25px;font-size:1.35rem;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.sf-animatecheckbox [type=checkbox]+span:not(.lever):before,.sf-animatecheckbox [type=checkbox]:not(.filled-in)+span:not(.lever):after{content:'';position:absolute;top:0;left:0;width:26px;height:26px;z-index:0;border:2px solid #86929f;-webkit-transition:.2s;transition:.2s;border-radius:3px}
+.sf-animatecheckbox [type=checkbox]:checked+span:not(.lever):before{top:-4px;left:-2px;width:12px;height:22px;border-top:2px solid transparent;border-left:2px solid transparent;border-right:2px solid #26a69a;border-bottom:2px solid #26a69a;-webkit-transform:rotate(40deg);transform:rotate(40deg);-webkit-backface-visibility:hidden;backface-visibility:hidden;-webkit-transform-origin:100% 100%;transform-origin:100% 100%}
+.sf-animatecheckbox [type=checkbox]:not(.filled-in)+span:not(.lever):after{border:0;-webkit-transform:scale(0);transform:scale(0)}
+.sf-termsfooter{color:#86929f}
+.sf-termsfooter a{font-weight:600;color:#040605;border-bottom:1px solid #040605;font-size:1.25rem;display:inline-block;margin-bottom:8px}
+.sf-termsfooter .sf-animatecheckbox [type=checkbox]:checked+span:not(.lever):before{top:0}
+.sf-signupheader h3{font-weight:600;font-size:1.3rem;color:rgba(255,255,255,.6)}
+@media (max-width:800px){
+.sf-signupcontainer{margin:15px}
+.signup-container .d-flex.justify-content-center{margin-left:15px;margin-right:15px}
+}
+@media (max-width:767px){
+.sf-matchwrap{margin-top:15px;}
+}
+.terms-link{margin:0 0 3px 3px;padding:0}
+.signup-container{padding-top:4%}
+.signup-container .container{padding:0!important;background-color:transparent}
+.agree-field label{margin-left:10px!important;vertical-align:middle!important;position:relative;top:3px}
+.password-left-block .form-group{margin-bottom:32px}

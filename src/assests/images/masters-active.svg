@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20.5" height="20.5" viewBox="0 0 20.5 20.5">
+  <g id="Group_12168" data-name="Group 12168" transform="translate(24176.25 14034.249)">
+    <rect id="Rectangle_2274" data-name="Rectangle 2274" width="18" height="18" rx="5" transform="translate(-24175 -14033)" fill="#d2e1f8"/>
+    <g id="list" transform="translate(-24176 -14033.999)">
+      <g id="Group_8744" data-name="Group 8744">
+        <g id="Group_8743" data-name="Group 8743">
+          <path id="Path_16186" data-name="Path 16186" d="M15.625,0H4.375A4.375,4.375,0,0,0,0,4.375v11.25A4.375,4.375,0,0,0,4.375,20h11.25A4.375,4.375,0,0,0,20,15.625V4.375A4.375,4.375,0,0,0,15.625,0ZM18.75,15.625a3.125,3.125,0,0,1-3.125,3.125H4.375A3.125,3.125,0,0,1,1.25,15.625V4.375A3.125,3.125,0,0,1,4.375,1.25h11.25A3.125,3.125,0,0,1,18.75,4.375Z" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+          <path id="Path_16187" data-name="Path 16187" d="M113.875,112h-1.25a.625.625,0,0,0-.625.625v1.25a.625.625,0,0,0,.625.625h1.25a.625.625,0,0,0,.625-.625v-1.25A.625.625,0,0,0,113.875,112Z" transform="translate(-107.625 -107.625)" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+          <path id="Path_16188" data-name="Path 16188" d="M113.875,224h-1.25a.625.625,0,0,0-.625.625v1.25a.625.625,0,0,0,.625.625h1.25a.625.625,0,0,0,.625-.625v-1.25A.625.625,0,0,0,113.875,224Z" transform="translate(-107.625 -215.25)" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+          <path id="Path_16189" data-name="Path 16189" d="M113.875,336h-1.25a.625.625,0,0,0-.625.625v1.25a.625.625,0,0,0,.625.625h1.25a.625.625,0,0,0,.625-.625v-1.25A.625.625,0,0,0,113.875,336Z" transform="translate(-107.625 -322.875)" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+          <rect id="Rectangle_1978" data-name="Rectangle 1978" width="7.5" height="1.25" transform="translate(8.125 5)" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+          <rect id="Rectangle_1979" data-name="Rectangle 1979" width="7.5" height="1.25" transform="translate(8.125 9.375)" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+          <rect id="Rectangle_1980" data-name="Rectangle 1980" width="7.5" height="1.25" transform="translate(8.125 13.75)" fill="#256bd1" stroke="#256bd1" stroke-width="0.5"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
