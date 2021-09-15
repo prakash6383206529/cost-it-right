@@ -53,6 +53,20 @@ function BOPCost(props) {
     selectedIds(gridData)
   }, [gridData]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      const Params = {
+        index: props.index,
+        BOMLevel: props.item.BOMLevel,
+        PartNumber: props.item.PartNumber,
+      }
+      if (!CostingViewMode) {
+        props.setBOPCost(gridData, Params)
+      }
+    }, 100)
+    selectedIds(gridData)
+  }, [props.data]);
+
   /**
   * @method DrawerToggle
   * @description TOGGLE DRAWER

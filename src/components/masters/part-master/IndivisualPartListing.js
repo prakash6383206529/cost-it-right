@@ -42,6 +42,7 @@ class IndivisualPartListing extends Component {
 
             isBulkUpload: false,
             ActivateAccessibility: true,
+            loader: true
         }
     }
 
@@ -52,7 +53,9 @@ class IndivisualPartListing extends Component {
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.getTableListData()
+        this.setState({ loader: true }, () => {
+            this.getTableListData()
+        })
     }
 
     /**
@@ -71,6 +74,7 @@ class IndivisualPartListing extends Component {
             } else {
 
             }
+            this.setState({ loader: false })
         })
     }
 
@@ -423,7 +427,7 @@ class IndivisualPartListing extends Component {
                         </div>
                     </Col>
                 </Row>
-
+                {this.state.loader && <LoaderCustom />}
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -436,15 +440,14 @@ class IndivisualPartListing extends Component {
                         <AgGridReact
                             style={{ height: '100%', width: '100%' }}
                             defaultColDef={defaultColDef}
-                            domLayout='autoHeight'
                             floatingFilter={true}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
                             pagination={true}
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: CONSTANT.EMPTY_DATA,
