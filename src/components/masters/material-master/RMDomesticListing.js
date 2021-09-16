@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
@@ -26,7 +26,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData, loggedInUserId, userDetails } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -81,8 +81,8 @@ class RMDomesticListing extends Component {
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            loader: true
-
+            loader: true,
+            isFinalApprovar: false
         }
     }
 
@@ -150,6 +150,7 @@ class RMDomesticListing extends Component {
                 this.setState({ loader: false })
             })
         }
+        this.checkIsFinalLevelApprover()
     }
 
     /**
@@ -166,6 +167,7 @@ class RMDomesticListing extends Component {
         this.props.getRawMaterialFilterSelectList(() => { })
         this.props.getTechnologySelectList(() => { })
         this.getDataList()
+        this.checkIsFinalLevelApprover()
         this.props.getPlantSelectListByType(ZBC, () => { })
 
     }
@@ -219,6 +221,22 @@ class RMDomesticListing extends Component {
                 }
             })
         }
+    }
+
+
+    checkIsFinalLevelApprover = () => {
+        let obj = {
+            MasterId: RM_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res.data.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+
+        })
     }
 
     /**
@@ -910,11 +928,10 @@ class RMDomesticListing extends Component {
                                     <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>}
-                                    {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned"  floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-                                                      
+
                                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                                    <AgGridColumn field="IsRMAssociated"></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -939,6 +956,7 @@ class RMDomesticListing extends Component {
                             isZBCVBCTemplate={true}
                             messageLabel={"RM Domestic"}
                             anchor={"right"}
+                            isFinalApprovar={this.state.isFinalApprovar}
                         />
                     )
                 }
@@ -982,7 +1000,8 @@ export default connect(mapStateToProps, {
     getGradeFilterByVendorSelectList,
     getPlantSelectListByType,
     getTechnologySelectList,
-    setFilterForRM
+    setFilterForRM,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'RMDomesticListing',
     enableReinitialize: true,
