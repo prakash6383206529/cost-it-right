@@ -1010,15 +1010,15 @@ class AddRMImport extends Component {
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: false,
-        RawMaterialCode: values.Code
-
+        RawMaterialCode: values.Code,
+        IsSendForApproval: false
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
       //   obj = {...formData,IsSendForApproval:true}
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
       } else {
         this.props.reset()
@@ -1704,7 +1704,7 @@ class AddRMImport extends Component {
                             {"Cancel"}
                           </button>
                           {
-                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag) ?
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 disabled={this.state.isFinalApprovar}
