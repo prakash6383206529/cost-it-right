@@ -350,8 +350,8 @@ function ApproveRejectDrawer(props) {
                   plant: item.PlantCode ? item.PlantCode : '1511',
                   currencyKey: INR,
                   basicUOM: 'NO',
-                  purchasingOrg: simulationDetail.PurchasingGroup ? simulationDetail.PurchasingGroup.split('(')[0] : '',
-                  purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL',
+                  purchasingOrg: item.DepartmentCode ? item.DepartmentCode : 'MRPL',
+                  purchasingGroup: simulationDetail.PurchasingGroup ? simulationDetail.PurchasingGroup.split('(')[0] : '',
                   materialGroup: simulationDetail.MaterialGroup ? simulationDetail.MaterialGroup.split('(')[0] : '',
                   taxCode: 'YW', TokenNumber: simulationDetail.Token,
                   // Quantity: quantity
