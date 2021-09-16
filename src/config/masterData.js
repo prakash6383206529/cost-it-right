@@ -1395,7 +1395,6 @@ export const BOMUpload = [
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
     { label: 'ProductGroupCode', value: "ProductGroupCode" }
-
 ]
 
 export const BOMUploadTempData = [
@@ -1417,7 +1416,6 @@ export const BOMUploadTempData = [
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
-
     },
     {
         "BOMNo": "BOM123",
