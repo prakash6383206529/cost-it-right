@@ -133,6 +133,7 @@ function ERSimulation(props) {
 
     }
     const isFirstColumn = (params) => {
+        if(isImpactedMaster) return false
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
 
