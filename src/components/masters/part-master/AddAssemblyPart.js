@@ -517,7 +517,9 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
         IsForcefulUpdated: true,
         BOMLevelCount: BOMLevelCount,
-        ProductList: productArray
+        ProductList: []
+        // ProductList: productArray
+
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -566,7 +568,8 @@ class AddAssemblyPart extends Component {
         Attachements: files,
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
-        ProductList: productArray
+        // ProductList: productArray
+        ProductList: []
       }
 
       this.props.reset()
@@ -739,7 +742,7 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
-                        <Col md="3">
+                        {/* <Col md="3">
                           <Field
                             label="Product Group"
                             name="ProductGroup"
@@ -758,7 +761,7 @@ class AddAssemblyPart extends Component {
                             className="multiselect-with-border"
                           // disabled={this.state.IsVendor || isEditFlag ? true : false}
                           />
-                        </Col>
+                        </Col> */}
                         {/* <Col md="3">
                           <Field
                             label="Plant"

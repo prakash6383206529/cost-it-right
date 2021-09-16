@@ -264,7 +264,8 @@ class AddIndivisualPart extends Component {
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
-        ProductList: productArray
+        // ProductList: productArray
+        ProductList: []
       }
 
       if (isEditFlag) {
@@ -304,7 +305,8 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         // Plants: [],
         Attachements: files,
-        ProductList: productArray
+        // ProductList: productArray
+        ProductList: []
       }
 
       this.props.reset()
@@ -433,7 +435,7 @@ class AddIndivisualPart extends Component {
                               </Col>
                             )}
 
-                          <Col md="3">
+                          {/* <Col md="3">
                             <Field
                               label="Product Group"
                               name="ProductGroup"
@@ -452,7 +454,7 @@ class AddIndivisualPart extends Component {
                               className="multiselect-with-border"
                             // disabled={this.state.IsVendor || isEditFlag ? true : false}
                             />
-                          </Col>
+                          </Col> */}
 
                         </Row>
 

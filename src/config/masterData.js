@@ -1297,6 +1297,7 @@ export const PartComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
+    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const PartComponentTempData = [
@@ -1310,6 +1311,7 @@ export const PartComponentTempData = [
         'DrawingNo': '1',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
+        "ProductGroupCode": "VB"
     }
 ]
 
@@ -1392,6 +1394,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
+    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 
 ]
 
@@ -1413,6 +1416,7 @@ export const BOMUploadTempData = [
         "Quantity": 2,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
+        "ProductGroupCode": "VB"
 
     },
     {
@@ -1432,7 +1436,7 @@ export const BOMUploadTempData = [
         "Quantity": 3,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     },
     {
         "BOMNo": "BOM123",
@@ -1451,7 +1455,7 @@ export const BOMUploadTempData = [
         "Quantity": 4,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     }
 ]
 export const EAccessType = [

@@ -196,31 +196,6 @@ function CostingSimulation(props) {
     }
 
     const onSaveSimulation = () => {
-
-        // const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
-
-
-        // switch (selectedMasterForSimulation.label) {
-        //     case RMDOMESTIC:
-        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
-        //             if (res.data.Result) {
-        //                 toastr.success('Simulation saved successfully.')
-        //                 setShowApprovalHistory(true)
-        //             }
-        //         }))
-        //         break;
-        //     case RMIMPORT:
-        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
-        //             if (res.data.Result) {
-        //                 toastr.success('Simulation saved successfully.')
-        //                 setShowApprovalHistory(true)
-        //             }
-        //         }))
-        //         break;
-
-        //     default:
-        //         break;
-        // }
         setShowApprovalHistory(true)
     }
 
@@ -609,6 +584,8 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>

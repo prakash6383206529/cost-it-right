@@ -535,7 +535,7 @@ function OtherCostingSimulation(props) {
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
                                                         title: CONSTANT.EMPTY_DATA,
-                                                        customClassName:'nodata-found-container'
+                                                        customClassName: 'nodata-found-container'
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                     suppressRowClickSelection={true}
@@ -549,6 +549,8 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
                                                     {
                                                         String(master) === EXCHNAGERATE &&
                                                         <>
