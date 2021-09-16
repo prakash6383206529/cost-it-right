@@ -813,7 +813,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : 'red-row' : '-'}`}>
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ?'red-row':'' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -992,7 +992,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : 'red-row' : '-'}`}>
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : viewCostingData[0].nOverheadProfit < viewCostingData[1].nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
                       <th>Net Overhead & Profits</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -1160,7 +1160,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : 'red-row' : '-'}`}>
+                      <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
                         <th>Net PO Price(INR)</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
@@ -1188,15 +1188,15 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     {
                       !simulationDrawer &&
-                      <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : 'red-row' : '-'}`}>
-                        <th>Net PO Price (in Currency)</th>
+                      <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
+                        <th>Net PO Price (in Currency) </th>
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
                         })} */}
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
-                            return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                           })}
                       </tr>
                     }
