@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
   getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
@@ -29,7 +29,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, userDetails, getFilteredRMData } from '../../../helper';
+import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDetails } from '../../../helper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -84,6 +84,7 @@ class RMImportListing extends Component {
       gridColumnApi: null,
       rowData: null,
       loader: true,
+      isFinalApprovar: false
     }
   }
 
@@ -108,6 +109,7 @@ class RMImportListing extends Component {
         this.props.getRawMaterialFilterSelectList(() => { })
       })
     }
+
   }
 
   /**
@@ -138,6 +140,7 @@ class RMImportListing extends Component {
       }
       this.setState({ loader: false })
     })
+    this.checkIsFinalLevelApprover()
   }
 
 
@@ -165,6 +168,7 @@ class RMImportListing extends Component {
     this.props.getRawMaterialFilterSelectList(() => { })
     this.props.getTechnologySelectList(() => { })
     this.getDataList()
+    this.checkIsFinalLevelApprover()
     this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
@@ -172,6 +176,8 @@ class RMImportListing extends Component {
   getUpdatedData = () => {
     this.getDataList()
   }
+
+
 
   getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
     const { value } = this.state;
@@ -207,6 +213,21 @@ class RMImportListing extends Component {
       } else {
         this.setState({ tableData: [], maxRange: 0, loader: false })
       }
+    })
+  }
+
+  checkIsFinalLevelApprover = () => {
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
     })
   }
 
@@ -987,6 +1008,7 @@ class RMImportListing extends Component {
           isZBCVBCTemplate={true}
           messageLabel={'RM Import'}
           anchor={'right'}
+          isFinalApprovar={this.state.isFinalApprovar}
         />}
       </div >
 
@@ -1028,7 +1050,8 @@ export default connect(mapStateToProps, {
   getGradeFilterByVendorSelectList,
   getPlantSelectListByType,
   getTechnologySelectList,
-  setFilterForRM
+  setFilterForRM,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'RMImportListing',
   enableReinitialize: true,

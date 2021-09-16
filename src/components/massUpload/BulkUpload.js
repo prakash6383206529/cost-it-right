@@ -198,27 +198,33 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
         }
 
+        let rmUploadData = {
+            Records: fileData,
+            LoggedInUserId: loggedInUserId(),
+            IsFinalApprover: this.props.isFinalApprovar
+        }
+
         if (fileName === 'RMDomestic' && costingHead === 'ZBC') {
 
-            this.props.bulkUploadRMDomesticZBC(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticZBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMDomestic' && costingHead === 'VBC') {
 
-            this.props.bulkUploadRMDomesticVBC(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticVBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'ZBC') {
 
-            this.props.bulkUploadRMImportZBC(uploadData, (res) => {
+            this.props.bulkUploadRMImportZBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'VBC') {
 
-            this.props.bulkUploadRMImportVBC(uploadData, (res) => {
+            this.props.bulkUploadRMImportVBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -464,7 +470,7 @@ class BulkUpload extends Component {
                                         type="submit"
                                         className="submit-button save-btn" >
                                         <div className={"save-icon"}></div>
-                                         {isEditFlag ? 'Update' : 'Save'}
+                                        {isEditFlag ? 'Update' : 'Save'}
                                     </button>
                                 </div>
                             </Row>
