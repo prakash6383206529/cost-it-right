@@ -4539,8 +4539,8 @@ body{
 .surface-treatment-btn{white-space: nowrap;}
 .impacted-min-height {
   .add-min-height {
-    min-height: calc(100vh - 372px);
-    height: calc(100vh - 369px);
+    min-height: calc(100vh - 350px);
+    height: calc(100vh - 350px);
   }
 }
 .nodata-found-container {
@@ -4688,7 +4688,14 @@ body{
   // costing details page only end
 
 }// 1600px media query end
-
+@media(min-width:1600px) {
+  .impacted-min-height {
+    .add-min-height {
+      min-height: calc(100vh - 500px);
+      height: calc(100vh - 500px);
+    }
+  }
+}
 @media(max-width:1366px){
   .overhead-profit-tab-costing{
     .form-control[disabled]{
@@ -5862,7 +5869,7 @@ body{
          width: 140px !important;
        }
        th:nth-child(7){
-         width: 120px !important;
+         width: 130px !important;
        } // th
      } // tr
     } // thead
@@ -5872,7 +5879,7 @@ body{
      thead{
        tr{
          th:nth-child(3){
-           width: 100px !important;
+           width: 120px !important;
          }
          th:nth-child(4){
           width: 150px !important;
