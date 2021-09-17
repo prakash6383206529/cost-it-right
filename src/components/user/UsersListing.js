@@ -487,7 +487,7 @@ class UsersListing extends Component {
 												name="DepartmentId"
 												type="text"
 												component={searchableSelect}
-												placeholder={"Department"}
+												placeholder={"Purchase Group"}
 												options={this.searchableSelectType("department")}
 												//onKeyUp={(e) => this.changeItemDesc(e)}
 												//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}

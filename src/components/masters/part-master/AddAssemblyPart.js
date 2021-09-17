@@ -724,7 +724,7 @@ class AddAssemblyPart extends Component {
                             customClassName={"withBorder"}
                           />
                         </Col>
-                        {initialConfiguration &&
+                        {/* {initialConfiguration &&
                           initialConfiguration.IsGroupCodeDisplay && (
                             <Col md="3">
                               <Field
@@ -739,7 +739,7 @@ class AddAssemblyPart extends Component {
                                 customClassName={"withBorder"}
                               />
                             </Col>
-                          )}
+                          )} */}
                       </Row>
 
                       <Row>

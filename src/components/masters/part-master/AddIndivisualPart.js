@@ -417,7 +417,7 @@ class AddIndivisualPart extends Component {
                             />
                           </Col>
 
-                          {initialConfiguration &&
+                          {/* {initialConfiguration &&
                             initialConfiguration.IsGroupCodeDisplay && (
                               <Col md="3">
                                 <Field
@@ -432,7 +432,7 @@ class AddIndivisualPart extends Component {
                                   customClassName={"withBorder"}
                                 />
                               </Col>
-                            )}
+                            )} */}
 
                           <Col md="3">
                             <Field
