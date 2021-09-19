@@ -983,8 +983,10 @@ class UserRegistration extends Component {
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
+    this.setState({ isLoader: true })
     this.props.updateUserAPI(updatedData, (res) => {
       if (res && res.data && res.data.Result) {
+        this.setState({ isLoader: false })
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
       this.cancel();
@@ -1510,7 +1512,7 @@ class UserRegistration extends Component {
                           onChange={this.onPressUserPermission}
                         >
                           Grant User Wise Permission
-                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                          <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                           <span
                             className=" before-box"
                             checked={this.state.IsShowAdditionalPermission}
@@ -1890,7 +1892,7 @@ class UserRegistration extends Component {
                         value="CANCEL"
                         className="mr15 cancel-btn">
                         <div className={"cancel-icon"}></div>
-                      CANCEL
+                        CANCEL
                       </button>
 
                       <button

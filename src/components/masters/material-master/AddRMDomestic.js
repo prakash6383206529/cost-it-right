@@ -91,7 +91,8 @@ class AddRMDomestic extends Component {
       isSourceChange: false,
       source: '',
       approveDrawer: false,
-      approvalObj: {}
+      approvalObj: {},
+      uploadAttachements: true
     }
   }
   /**
@@ -795,6 +796,8 @@ class AddRMDomestic extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files } = this.state
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name
       let tempArr = files.filter(
@@ -879,7 +882,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
 
     let plantArray = []
@@ -943,12 +946,17 @@ class AddRMDomestic extends Component {
         })
       } else {
 
-        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
+        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+          && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
+          && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
+          && DataToChange.RawMaterialCode === values.Code) {
 
           this.cancel()
           return false
         }
-        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+          Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+            values.cutOffPrice === undefined) || uploadAttachements === false)) {
 
           const toastrConfirmOptions = {
             onOk: () => {

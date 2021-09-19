@@ -32,7 +32,9 @@ class AddIndivisualProduct extends Component {
 
             files: [],
             DataToCheck: [],
-            DropdownChanged: true
+            DropdownChanged: true,
+            uploadAttachements: true
+
         }
     }
 
@@ -126,6 +128,8 @@ class AddIndivisualProduct extends Component {
     handleChangeStatus = ({ meta, file }, status) => {
         const { files, } = this.state;
 
+        this.setState({ uploadAttachements: false })
+
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -210,7 +214,7 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -219,7 +223,8 @@ class AddIndivisualProduct extends Component {
 
             if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
                 DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber
+                && uploadAttachements) {
                 this.cancel()
                 return false;
             }
@@ -544,7 +549,7 @@ class AddIndivisualProduct extends Component {
                                                     <Col md="3">
                                                         <label>
                                                             Upload Files (upload up to 3 files)
-                                </label>
+                                                        </label>
                                                         {this.state.files &&
                                                             this.state.files.length >= 3 ? (
                                                             <div class="alert alert-danger" role="alert">
@@ -572,8 +577,8 @@ class AddIndivisualProduct extends Component {
                                                                                     Browse
                                                                                 </span>
                                                                                 <br />
-                                                                                      file to upload
-                                                                             </span>
+                                                                                file to upload
+                                                                            </span>
                                                                         </div>
                                                                     )
                                                                 }

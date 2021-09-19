@@ -59,7 +59,9 @@ class AddOperation extends Component {
       effectiveDate: '',
       destinationPlant: [],
       changeValue: true,
-      dataToChange: ''
+      dataToChange: '',
+      uploadAttachements: true
+
     }
   }
 
@@ -357,6 +359,8 @@ class AddOperation extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -453,7 +457,7 @@ class AddOperation extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
@@ -491,7 +495,7 @@ class AddOperation extends Component {
         IsForcefulUpdated: true
       }
       if (this.state.isEditFlag) {
-        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate)) {
+        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
           this.cancel()
           return false
         }
@@ -506,7 +510,7 @@ class AddOperation extends Component {
             });
           },
           onCancel: () => { },
-          component:()=><ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -836,7 +840,7 @@ class AddOperation extends Component {
                           onChange={this.onPressSurfaceTreatment}
                         >
                           Surface Treatment Operation
-                              <input
+                          <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
                             disabled={isEditFlag ? true : false}
@@ -909,10 +913,10 @@ class AddOperation extends Component {
                                 Drag and Drop or{" "}
                                 <span className="text-primary">
                                   Browse
-                          </span>
+                                </span>
                                 <br />
-                          file to upload
-                        </span>
+                                file to upload
+                              </span>
                             </div>))}
                             styles={{
                               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },

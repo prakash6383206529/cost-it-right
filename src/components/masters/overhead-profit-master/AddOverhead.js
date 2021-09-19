@@ -56,7 +56,9 @@ class AddOverhead extends Component {
       isHideBOP: false,
       DropdownChanged: true,
       DataToChange: [],
-      effectiveDate: ''
+      effectiveDate: '',
+      uploadAttachements: true
+
     }
   }
 
@@ -426,6 +428,8 @@ class AddOverhead extends Component {
   handleChangeStatus = ({ meta, file, remove }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -532,7 +536,7 @@ class AddOverhead extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
@@ -555,7 +559,7 @@ class AddOverhead extends Component {
       if (
         DropdownChanged && DataToChange.OverheadPercentage == values.OverheadPercentage && DataToChange.OverheadRMPercentage == values.OverheadRMPercentage
         && DataToChange.OverheadMachiningCCPercentage == values.OverheadMachiningCCPercentage && DataToChange.OverheadBOPPercentage == values.OverheadBOPPercentage
-        && DataToChange.Remark == values.Remark) {
+        && DataToChange.Remark == values.Remark && uploadAttachements) {
 
         this.cancel()
         return false
@@ -601,7 +605,7 @@ class AddOverhead extends Component {
             })
           },
           onCancel: () => { },
-          component:()=><ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -968,10 +972,10 @@ class AddOverhead extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
