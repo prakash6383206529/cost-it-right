@@ -11,14 +11,14 @@ import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../common/NoContentFound'
 import { CONSTANT } from '../../helper/AllConastant'
-import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import { table } from 'react-dom-factories';
 
@@ -209,6 +209,11 @@ function ReportListing(props) {
         return cell
         // return params.value !== null ? params.value : '-'
     }
+    const requestterFormatter = (props) => {
+
+        return userDetails().Name
+        // return params.value !== null ? params.value : '-'
+    }
 
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -261,23 +266,38 @@ function ReportListing(props) {
     }
 
     const renderColumn = (fileName) => {
+        let tempData = []
+        switch (fileName) {
+            case ReportMaster:
+                if (selectedRowData.length == 0) {
+                    tempData = reportListingData
+                }
+                else {
+                    tempData = selectedRowData
+                }
+                return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
+            case ReportSAPMaster:
 
-        let tempData
-        if (selectedRowData.length == 0) {
-            tempData = reportListingData
+                if (selectedRowData.length == 0) {
+                    tempData = reportListingData
+                }
+                else {
+                    tempData = selectedRowData
+                }
+                return returnExcelColumn(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+            default:
+                break;
         }
-        else {
-            tempData = selectedRowData
-        }
-        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
+
 
     }
 
 
 
     const returnExcelColumn = (data = [], TempData) => {
+        console.log('TempData: ', TempData);
         let temp = []
-
 
 
         return (<ExcelSheet data={TempData} name={ReportMaster}>
@@ -315,7 +335,8 @@ function ReportListing(props) {
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
         customLoadingOverlay: LoaderCustom,
-        revisionFormatter: revisionFormatter
+        revisionFormatter: revisionFormatter,
+        requestterFormatter: requestterFormatter
     };
 
 
@@ -334,6 +355,9 @@ function ReportListing(props) {
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
+                                </ExcelFile>
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD-SAP</button>}>
+                                    {renderColumn(ReportSAPMaster)}
                                 </ExcelFile>
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
@@ -383,6 +407,8 @@ function ReportListing(props) {
                         <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
+                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>

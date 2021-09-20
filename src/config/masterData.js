@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { userDetails } from '../helper';
 /**
  * master listing used in Mass Upload
  * 
@@ -2662,6 +2663,17 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
+]
+export const REPORT_DOWNLOAD_SAP_EXCEl = [
+    { label: "Sr No", value: "SrNo" }, //Serial no
+    { label: "evrtn", value: "SANumber" },//SA no
+    { label: "ebelp", value: "LineNumber" },//Line no
+    { label: "datab", value: "CreatedDate", },//Date 
+    { label: "kbetr", value: "NetPOPrice" }, //Price
+    { label: "Reason", value: "Reason" }, //Reason
+    { label: "Text", value: "Text" }, //Text
+    { label: "Person Requesting Change", value: "PersonRequestingChange" }, //Person CLICKING DOWNLOAD BUTTON (lOGGED IN USER)
+
 ]
 
 export const decimalOption = [
