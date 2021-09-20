@@ -20,10 +20,7 @@ function ApproveRejectDrawer(props) {
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master,
     selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons } = props
-  console.log('showFinalLevelButtons: ', showFinalLevelButtons);
-  console.log('costingList: ', costingList);
 
-  console.log(simulationDetail, "simulationDetail");
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -238,6 +235,7 @@ function ApproveRejectDrawer(props) {
                 purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
                 purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
                 CostingId: approvalData[0].CostingId,
+                DecimalOption: approvalData[0].DecimalOption
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',
@@ -354,6 +352,7 @@ function ApproveRejectDrawer(props) {
                   purchasingGroup: simulationDetail.PurchasingGroup ? simulationDetail.PurchasingGroup.split('(')[0] : '',
                   materialGroup: simulationDetail.MaterialGroup ? simulationDetail.MaterialGroup.split('(')[0] : '',
                   taxCode: 'YW', TokenNumber: simulationDetail.Token,
+                  DecimalOption: simulationDetail.DecimalOption
                   // Quantity: quantity
                 })
               })
