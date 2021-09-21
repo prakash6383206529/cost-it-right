@@ -685,7 +685,7 @@ class RMDomesticListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
             costingHeadRenderer: this.costingHeadFormatter,
-            customLoadingOverlay: LoaderCustom,
+            // customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             costFormatter: this.costFormatter,
             freightCostFormatter: this.freightCostFormatter,

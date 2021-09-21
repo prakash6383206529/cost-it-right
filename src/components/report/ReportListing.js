@@ -266,41 +266,50 @@ function ReportListing(props) {
     }
 
     const renderColumn = (fileName) => {
-        let tempData = []
-        switch (fileName) {
-            case ReportMaster:
-                if (selectedRowData.length == 0) {
-                    tempData = reportListingData
-                }
-                else {
-                    tempData = selectedRowData
-                }
-                return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
-            case ReportSAPMaster:
 
-                if (selectedRowData.length == 0) {
-                    tempData = reportListingData
-                }
-                else {
-                    tempData = selectedRowData
-                }
-                return returnExcelColumn(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
-
-            default:
-                break;
+        let tempData
+        if (selectedRowData.length == 0) {
+            tempData = reportListingData
         }
+        else {
+            tempData = selectedRowData
+        }
+        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
+
+    }
+
+    const returnExcelColumn = (data = [], TempData) => {
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+
+        return (<ExcelSheet data={TempData} name={ReportMaster}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+    const renderColumnSAP = (fileName) => {
+        console.log('fileName: ', fileName);
+        let tempData = []
+
+        if (selectedRowData.length == 0) {
+            tempData = reportListingData
+        }
+        else {
+            tempData = selectedRowData
+        }
+        return returnExcelColumnSAP(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
 
 
     }
 
 
 
-    const returnExcelColumn = (data = [], TempData) => {
-        console.log('TempData: ', TempData);
+    const returnExcelColumnSAP = (data = [], TempData) => {
+        // console.log('TempData: ', TempData);
         let temp = []
 
 
-        return (<ExcelSheet data={TempData} name={ReportMaster}>
+        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
@@ -322,6 +331,7 @@ function ReportListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -357,7 +367,7 @@ function ReportListing(props) {
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
                                 <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
-                                    {renderColumn(ReportSAPMaster)}
+                                    {renderColumnSAP(ReportSAPMaster)}
                                 </ExcelFile>
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
@@ -396,6 +406,7 @@ function ReportListing(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>

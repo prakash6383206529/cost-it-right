@@ -2621,10 +2621,13 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingVersion", value: "CostingVersion", },
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Company", value: "Company" },
     { label: "CreatedDate", value: "CreatedDate", },
     { label: "Status", value: "Status", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "PartNumber", value: "PartNumber", },
+    { label: "PartName", value: "PartName", },
     { label: "Rev", value: "Rev", },
     { label: "ECN", value: "ECN", },
     { label: "PlantName", value: "PlantName", },

@@ -1060,8 +1060,8 @@ export function getRMDomesticDataList(data, callback) {
                     type: GET_RM_DOMESTIC_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList
                 })
-                callback(response);
             }
+            callback(response);
         }).catch((error) => {
 
 
