@@ -16,6 +16,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = 'http://10.10.0.43/RoyalEnfieldLocal/api/v1';
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -866,7 +867,7 @@ export const API = {
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
   simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
-  simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload`,
+  simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload-with-form-data`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
@@ -1675,5 +1676,14 @@ export const DashboardMaster = "Analytics and Reports"
 
 export const VARIANCE = 'Variance'
 
+//ATTACHMENT CATAGORY
+export const IMPACT_SHEET = 'Impact Sheet'
+export const SUPPLIER_CONFRIM = 'Supplier Confirmation'
+export const INVOICE_BACKUP = 'Invoice Backups'
+export const OTHER = 'Others'
+export const ATTACHMENTS = 'Attachments'
+
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
+
+

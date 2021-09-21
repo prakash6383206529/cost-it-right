@@ -620,7 +620,7 @@ function ApproveRejectDrawer(props) {
 
                 {
                   isSimulation &&
-                  <AttachmentSec token={simulationDetail.Token} type={type} />
+                  <AttachmentSec token={simulationDetail.TokenNo} type={type} />
                 }
 
               </Row>

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL } from '../../../../config/constants';
+import { ATTACHMENTS, FILE_URL, IMPACT_SHEET, INVOICE_BACKUP, OTHER, SUPPLIER_CONFRIM } from '../../../../config/constants';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { fileDeleteCosting, fileUploadCosting } from '../../actions/Costing'
 import { uploadSimulationAttachmentByCategory } from '../../../simulation/actions/Simulation'
@@ -21,6 +21,11 @@ function AttachmentSec(props) {
     const [acc5, setAcc5] = useState(false)
 
     const [files, setFiles] = useState([]);
+    const [supplierFiles, setSupplierFiles] = useState([]);
+    const [invoiceFiles, setInvoiceFiles] = useState([]);
+    const [otherFiles, setOtherFiles] = useState([]);
+    const [attachmentFiles, setAttachmentFiles] = useState([]);
+
     const [IsOpen, setIsOpen] = useState(false);
     const [initialFiles, setInitialFiles] = useState([]);
 
@@ -44,7 +49,10 @@ function AttachmentSec(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
-            dispatch(uploadSimulationAttachmentByCategory(data, 'Impact_Sheet', (res) => {
+            data.append('Token', token)
+            data.append('Folder', IMPACT_SHEET)
+
+            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
                 let Data = res.data[0]
                 files.push(Data)
                 setFiles(files)
@@ -62,24 +70,23 @@ function AttachmentSec(props) {
 
         if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
-            setFiles(tempArr)
+            let tempArr = supplierFiles && supplierFiles.filter(item => item.OriginalFileName !== removedFileName)
+            setSupplierFiles(tempArr)
             setIsOpen(!IsOpen)
         }
 
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
-            // let obj={
-            //     file:data,
+            data.append('Token', token)
+            data.append('Folder', SUPPLIER_CONFRIM)
 
-            // }
-            // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-            //   let Data = res.data[0]
-            //   files.push(Data)
-            //   setFiles(files)
-            //   setIsOpen(!IsOpen)
-            // }))
+            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
+                let Data = res.data[0]
+                supplierFiles.push(Data)
+                setSupplierFiles(supplierFiles)
+                setIsOpen(!IsOpen)
+            }))
         }
 
         if (status === 'rejected_file_type') {
@@ -93,20 +100,22 @@ function AttachmentSec(props) {
 
         if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
-            setFiles(tempArr)
+            let tempArr = invoiceFiles && invoiceFiles.filter(item => item.OriginalFileName !== removedFileName)
+            setInvoiceFiles(tempArr)
             setIsOpen(!IsOpen)
         }
 
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
-            // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-            //   let Data = res.data[0]
-            //   files.push(Data)
-            //   setFiles(files)
-            //   setIsOpen(!IsOpen)
-            // }))
+            data.append('Token', token)
+            data.append('Folder', INVOICE_BACKUP)
+            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
+                let Data = res.data[0]
+                invoiceFiles.push(Data)
+                setInvoiceFiles(invoiceFiles)
+                setIsOpen(!IsOpen)
+            }))
         }
 
         if (status === 'rejected_file_type') {
@@ -118,20 +127,22 @@ function AttachmentSec(props) {
 
         if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
-            setFiles(tempArr)
+            let tempArr = otherFiles && otherFiles.filter(item => item.OriginalFileName !== removedFileName)
+            setOtherFiles(tempArr)
             setIsOpen(!IsOpen)
         }
 
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
-            // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-            //   let Data = res.data[0]
-            //   files.push(Data)
-            //   setFiles(files)
-            //   setIsOpen(!IsOpen)
-            // }))
+            data.append('Token', token)
+            data.append('Folder', OTHER)
+            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
+                let Data = res.data[0]
+                otherFiles.push(Data)
+                setOtherFiles(otherFiles)
+                setIsOpen(!IsOpen)
+            }))
         }
 
         if (status === 'rejected_file_type') {
@@ -143,20 +154,22 @@ function AttachmentSec(props) {
 
         if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
-            setFiles(tempArr)
+            let tempArr = attachmentFiles && attachmentFiles.filter(item => item.OriginalFileName !== removedFileName)
+            setAttachmentFiles(tempArr)
             setIsOpen(!IsOpen)
         }
 
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
-            // dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-            //   let Data = res.data[0]
-            //   files.push(Data)
-            //   setFiles(files)
-            //   setIsOpen(!IsOpen)
-            // }))
+            data.append('Token', token)
+            data.append('Folder', ATTACHMENTS)
+            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
+                let Data = res.data[0]
+                attachmentFiles.push(Data)
+                setAttachmentFiles(attachmentFiles)
+                setIsOpen(!IsOpen)
+            }))
         }
 
         if (status === 'rejected_file_type') {
@@ -201,7 +214,7 @@ function AttachmentSec(props) {
             {/* FIRST ATTACHMENT SECTION */}
             <div className="col-md-12 drawer-attachment">
                 <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Impact Sheet</h6></Col>
+                    <Col md="8" className="p-0"><h6 className="mb-0">{IMPACT_SHEET}</h6></Col>
                     <Col md="4" className="text-right p-0">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
                             {acc1 ? (
@@ -287,7 +300,7 @@ function AttachmentSec(props) {
             {/* 2 ATTACHMENT SECTION STARTS HERE */}
             <div className="col-md-12 drawer-attachment">
                 <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Supplier Confirmation</h6></Col>
+                    <Col md="8" className="p-0"><h6 className="mb-0">{SUPPLIER_CONFRIM}</h6></Col>
                     <Col md="4" className="text-right p-0">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
                             {acc2 ? (
@@ -302,7 +315,7 @@ function AttachmentSec(props) {
                     {acc2 && <>
                         <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 2 files)</label>
-                            {files && files.length >= 2 ? (
+                            {supplierFiles && supplierFiles.length >= 2 ? (
                                 <div class="alert alert-danger" role="alert">
                                     Maximum file upload limit has been reached.
                                 </div>
@@ -326,8 +339,8 @@ function AttachmentSec(props) {
                                                     Drag and Drop or{" "}
                                                     <span className="text-primary">Browse</span>
                                                     <br />
-                            file to upload
-                        </span>
+                                                    file to upload
+                                                </span>
                                             </div>
                                         )
                                     }
@@ -346,8 +359,8 @@ function AttachmentSec(props) {
                         </Col>
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
-                                {files &&
-                                    files.map((f) => {
+                                {supplierFiles &&
+                                    supplierFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
@@ -374,7 +387,7 @@ function AttachmentSec(props) {
             {/* 3 ATTACHMNET STARTS HERE */}
             <div className="col-md-12 drawer-attachment">
                 <div className="d-flex w-100 flex-wrap">
-                    <Col md="8" className="p-0"><h6 className="mb-0">Invoice Backups</h6></Col>
+                    <Col md="8" className="p-0"><h6 className="mb-0">{INVOICE_BACKUP}</h6></Col>
                     <Col md="4" className="text-right p-0">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
                             {acc3 ? (
@@ -389,7 +402,7 @@ function AttachmentSec(props) {
                     {acc3 && <>
                         <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 10 files)</label>
-                            {files && files.length >= 10 ? (
+                            {invoiceFiles && invoiceFiles.length >= 10 ? (
                                 <div class="alert alert-danger" role="alert">
                                     Maximum file upload limit has been reached.
                                 </div>
@@ -433,8 +446,9 @@ function AttachmentSec(props) {
                         </Col>
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
-                                {files &&
-                                    files.map((f) => {
+                                Invoice
+                                {invoiceFiles &&
+                                    invoiceFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
@@ -475,7 +489,7 @@ function AttachmentSec(props) {
                     {acc4 && <>
                         <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 10 files)</label>
-                            {files && files.length >= 10 ? (
+                            {otherFiles && otherFiles.length >= 10 ? (
                                 <div class="alert alert-danger" role="alert">
                                     Maximum file upload limit has been reached.
                                 </div>
@@ -519,8 +533,8 @@ function AttachmentSec(props) {
                         </Col>
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
-                                {files &&
-                                    files.map((f) => {
+                                {otherFiles &&
+                                    otherFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
@@ -561,7 +575,7 @@ function AttachmentSec(props) {
                     {acc5 && <>
                         <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 4 files)</label>
-                            {files && files.length >= 4 ? (
+                            {attachmentFiles && attachmentFiles.length >= 4 ? (
                                 <div class="alert alert-danger" role="alert">
                                     Maximum file upload limit has been reached.
                                 </div>
@@ -605,8 +619,8 @@ function AttachmentSec(props) {
                         </Col>
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
-                                {files &&
-                                    files.map((f) => {
+                                {attachmentFiles &&
+                                    attachmentFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (

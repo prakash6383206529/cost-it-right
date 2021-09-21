@@ -473,10 +473,10 @@ export function deleteDraftSimulation(data, callback) {
     };
 }
 
-export function uploadSimulationAttachmentByCategory(data, category, callback) {
+export function uploadSimulationAttachmentByCategory(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.simulationUploadFileByCategory}/${category}`, data, headers)
+        axios.post(`${API.simulationUploadFileByCategory}`, data, headers)
             .then((response) => {
                 callback(response)
             }).catch(error => {
