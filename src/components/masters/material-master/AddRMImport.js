@@ -12,7 +12,7 @@ import {
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
-  masterFinalLevelUser
+  masterFinalLevelUser, fileDeleteRMDomestic
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -1900,11 +1900,8 @@ export default connect(mapStateToProps, {
   getExchangeRateByCurrency,
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
-<<<<<<< HEAD
-  fileDeleteRMDomestic
-=======
+  fileDeleteRMDomestic,
   masterFinalLevelUser
->>>>>>> m1-frontend
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
