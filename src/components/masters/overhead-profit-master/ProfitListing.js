@@ -472,6 +472,7 @@ class ProfitListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+       gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -698,7 +699,8 @@ class ProfitListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter = {true}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -722,7 +724,7 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="ProfitId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

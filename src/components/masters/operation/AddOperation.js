@@ -3,18 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
-import {
-  renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker
-} from "../../layout/FormInputs";
+import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
-import {
-  createOperationsAPI, getOperationDataAPI,
-  updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode
-} from '../actions/OtherOperation';
-import {
-  getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier,
-  getUOMSelectList,
-} from '../../../actions/Common';
+import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
+import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -60,8 +52,8 @@ class AddOperation extends Component {
       destinationPlant: [],
       changeValue: true,
       dataToChange: '',
-      uploadAttachements: true
-
+      uploadAttachements: true,
+      isDisableCode: false
     }
   }
 
@@ -84,12 +76,12 @@ class AddOperation extends Component {
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getVendorWithVendorCodeSelectList()
     this.getDetail()
-    if (initialConfiguration && initialConfiguration.IsOperationCodeConfigure && data.isEditFlag === false) {
-      this.props.checkAndGetOperationCode('', (res) => {
-        let Data = res.data.DynamicData;
-        this.props.change('OperationCode', Data.OperationCode)
-      })
-    }
+    // if (initialConfiguration && initialConfiguration.IsOperationCodeConfigure && data.isEditFlag === false) {
+    //   this.props.checkAndGetOperationCode('', (res) => {
+    //     let Data = res.data.DynamicData;
+    //     this.props.change('OperationCode', Data.OperationCode)
+    //   })
+    // }
 
   }
 
@@ -341,10 +333,23 @@ class AddOperation extends Component {
   }
 
   checkUniqCode = (e) => {
-    this.props.checkAndGetOperationCode(e.target.value, res => {
+    this.props.checkAndGetOperationCode(e.target.value, '', res => {
       if (res && res.data && res.data.Result === false) {
         toastr.warning(res.data.Message);
         $('input[name="OperationCode"]').focus()
+      }
+    })
+  }
+  checkUniqCodeByName = (e) => {
+    this.props.checkAndGetOperationCode('', e.target.value, res => {
+      if (res && res.data && res.data.Result === false) {
+
+        toastr.warning(res.data.Message);
+        $('input[name="OperationCode"]').focus()
+      } else {
+        this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
+          this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
+        })
       }
     })
   }
@@ -556,7 +561,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode } = this.state;
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -630,6 +635,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                          onBlur={this.checkUniqCodeByName}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -647,7 +653,7 @@ class AddOperation extends Component {
                           component={renderText}
                           //required={true}
                           onBlur={this.checkUniqCode}
-                          disabled={isEditFlag ? true : false}
+                          disabled={(isEditFlag || isDisableCode) ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />

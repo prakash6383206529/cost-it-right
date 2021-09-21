@@ -332,6 +332,7 @@ class SOBListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   createCustomExportCSVButton = (onClick) => {
@@ -500,6 +501,7 @@ class SOBListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  floatingFilter = {true}
 domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.bopSobList}
@@ -523,7 +525,7 @@ domLayout='autoHeight'
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action"  type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -9,6 +9,7 @@ import {
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 
 const initialState = {
     filterRMSelectList: {}
@@ -303,6 +304,14 @@ export default function materialReducer(state = initialState, action) {
                 deptList: action.payload
             }
         case GET_RM_APPROVAL_LIST:
+            // let temp1 = []
+            // let temp = action.payload
+            // temp && temp.map((item) => {
+            //     if (item.DepartmentName === userDetails().Department) {
+            //         temp1.push(item)
+            //     }
+            // })
+
             return {
                 ...state,
                 loading: false,

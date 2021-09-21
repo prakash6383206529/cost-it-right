@@ -175,11 +175,20 @@ class OperationListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
-        this.setState({
-            data: { isEditFlag: true, ID: Id },
+    // editItemDetails = (Id) => {
+    //     this.setState({
+    //         data: { isEditFlag: true, ID: Id },
+    //         toggleForm: true,
+    //     })
+    // }
+
+    editItemDetails = (Id, rowData) => {
+        let data = {
+            isEditFlag: true,
+            ID: Id,
             toggleForm: true,
-        })
+        }
+        this.props.getDetails(data);
     }
 
     /**
@@ -407,7 +416,8 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ toggleForm: true })
+        // this.setState({ toggleForm: true })
+        this.props.formToggle()
     }
 
     hideForm = () => {
@@ -488,6 +498,7 @@ class OperationListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     onFilterTextBoxChanged(e) {
@@ -544,10 +555,10 @@ class OperationListing extends Component {
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
                         {
-                            !this.props.isSimulation &&
-                            <Row>
-                                <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                            </Row>
+                            // !this.props.isSimulation &&
+                            // <Row>
+                            //     <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
+                            // </Row>
                         }
                         <Row className="pt-4 filter-row-large blue-before">
                             {this.state.shown &&
@@ -712,10 +723,14 @@ class OperationListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
-                                domLayout='autoHeight'
+                                floatingFilter = {true}
+domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
+
+                               // <AgGridColumn field="country" filter={true} floatingFilter={true} />
+
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
@@ -727,7 +742,7 @@ class OperationListing extends Component {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                                <AgGridColumn field="Technology"   filter={true} floatingFilter={true}      headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
@@ -735,7 +750,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

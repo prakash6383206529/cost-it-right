@@ -306,6 +306,7 @@ class ClientListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+       gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -400,7 +401,10 @@ class ClientListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
-                                domLayout='autoHeight'
+                                floatingFilter = {true}
+
+
+domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}
@@ -420,7 +424,7 @@ class ClientListing extends Component {
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

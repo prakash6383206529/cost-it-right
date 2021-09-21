@@ -8,11 +8,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultipleRMAllow, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import { EMPTY_GUID, G, KG, MG, PLASTIC } from '../../../../../config/constants'
+import { EMPTY_GUID, G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, getTechnologyForRecoveryPercent, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -105,11 +105,11 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
 
-      if (costData.TechnologyName === PLASTIC) {
+      if (isMultipleRMAllow(costData.TechnologyName)) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
-            RMRate: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
+            RMRate: (el.Currency === '-' || el.Currency === INR) ? el.NetLandedCost : el.NetLandedCostConversion,
             MaterialType: el.MaterialType,
             RMGrade: el.RMGrade,
             Density: el.Density,
@@ -131,7 +131,7 @@ function RawMaterialCost(props) {
       } else {
         let tempObj = {
           RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
-          RMRate: rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
+          RMRate: (rowData.Currency === '-' || rowData.Currency === INR) ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
           MaterialType: rowData.MaterialType,
           RMGrade: rowData.RMGrade,
           Density: rowData.Density,
@@ -154,7 +154,7 @@ function RawMaterialCost(props) {
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
       setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
-      setValue('MBPrice', rowData && rowData[0].Currency === '-' ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
+      setValue('MBPrice', rowData && (rowData[0].Currency === '-' || rowData[0].Currency === INR) ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
     setDrawerOpen(false)
   }
@@ -220,7 +220,7 @@ function RawMaterialCost(props) {
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
         tempData = {
           ...tempData,
-          GrossWeight: GrossWeight,
+          GrossWeight: GrossWeight ? GrossWeight : 0,
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -239,7 +239,7 @@ function RawMaterialCost(props) {
 
           tempData = {
             ...tempData,
-            GrossWeight: GrossWeight,
+            GrossWeight: GrossWeight ? GrossWeight : 0,
             NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -264,7 +264,7 @@ function RawMaterialCost(props) {
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
         tempData = {
           ...tempData,
-          GrossWeight: GrossWeight,
+          GrossWeight: GrossWeight ? GrossWeight : 0,
           FinishWeight: 0,
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
@@ -283,7 +283,7 @@ function RawMaterialCost(props) {
 
           tempData = {
             ...tempData,
-            GrossWeight: GrossWeight,
+            GrossWeight: GrossWeight ? GrossWeight : 0,
             NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -322,7 +322,7 @@ function RawMaterialCost(props) {
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       tempData = {
         ...tempData,
-        FinishWeight: FinishWeight,
+        FinishWeight: FinishWeight ? FinishWeight : 0,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
         WeightCalculatorRequest: {},
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -340,7 +340,7 @@ function RawMaterialCost(props) {
 
         tempData = {
           ...tempData,
-          GrossWeight: GrossWeight,
+          GrossWeight: GrossWeight ? GrossWeight : 0,
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -368,7 +368,7 @@ function RawMaterialCost(props) {
 
         tempData = {
           ...tempData,
-          FinishWeight: FinishWeight,
+          FinishWeight: FinishWeight ? FinishWeight : 0,
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -386,7 +386,7 @@ function RawMaterialCost(props) {
 
           tempData = {
             ...tempData,
-            GrossWeight: GrossWeight,
+            GrossWeight: GrossWeight ? GrossWeight : 0,
             NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -424,7 +424,7 @@ function RawMaterialCost(props) {
 
           tempData = {
             ...tempData,
-            GrossWeight: GrossWeight,
+            GrossWeight: GrossWeight ? GrossWeight : 0,
             NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -543,8 +543,8 @@ function RawMaterialCost(props) {
 
       tempData = {
         ...tempData,
-        FinishWeight: FinishWeight,
-        GrossWeight: GrossWeight,
+        FinishWeight: FinishWeight ? FinishWeight : 0,
+        GrossWeight: GrossWeight ? GrossWeight : 0,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
         WeightCalculatorRequest: weightData,
         WeightCalculationId: weightData.WeightCalculationId,
@@ -811,7 +811,9 @@ function RawMaterialCost(props) {
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
                       {isScrapRecoveryPercentageApplied && <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
+                      {/* //Add i here for MB+ */}
                       <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -957,7 +959,7 @@ function RawMaterialCost(props) {
                     className={`custom-checkbox mb-0 w-auto`}
                     onChange={onPressApplyMasterBatch}
                   >
-                    Apply Master Batch
+                    Apply Master Batch(MB)
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
@@ -981,7 +983,7 @@ function RawMaterialCost(props) {
                   </Col>
                   <Col md="2" >
                     <TextFieldHookForm
-                      label="RM"
+                      label="MB Name"
                       name={"MBName"}
                       Controller={Controller}
                       control={control}
@@ -998,7 +1000,7 @@ function RawMaterialCost(props) {
                   </Col>
                   <Col md="2">
                     <TextFieldHookForm
-                      label="Price"
+                      label="MB Rate"
                       name={'MBPrice'}
                       Controller={Controller}
                       control={control}
@@ -1045,7 +1047,7 @@ function RawMaterialCost(props) {
                   </Col>
                   <Col md="2">
                     <TextFieldHookForm
-                      label="Total"
+                      label="Effective MB Rate"
                       name={'RMTotal'}
                       Controller={Controller}
                       control={control}

@@ -252,6 +252,7 @@ class RMListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -363,7 +364,8 @@ class RMListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter = {true}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
@@ -382,7 +384,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -21,6 +21,9 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
+import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
+import ERSimulation from './SimulationPages/ERSimulation';
+import OtherCostingSimulation from './OtherCostingSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -32,6 +35,8 @@ function Simulation(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -49,21 +54,38 @@ function Simulation(props) {
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getCostingTechnologySelectList(() => { }))
         setShowEditTable(false)
+        if (props.isRMPage) {
+            setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+            setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+
+            setMaster({ label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+            setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+            setEditWarning(applyEditCondSimulation(getValues('Masters').value))
+            setShowMasterList(true)
+        }
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
+    const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
+
+
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setMaster(value)
         setShowMasterList(false)
+        setTechnology({ label: '', value: '' })
+        setValue('Technology', '')
         dispatch(setMasterForSimulation(value))
-        if (value !== '' && (Object.keys(technology).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+            // setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
+        setEditWarning(applyEditCondSimulation(value.value))
+
     }
 
     const handleTechnologyChange = (value) => {
@@ -78,7 +100,8 @@ function Simulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        let temp1 = getFilteredRMData(TempData)
+        temp = temp1 && temp1.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -121,9 +144,9 @@ function Simulation(props) {
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, rmDomesticListing && rmDomesticListing.length > 0 ? rmDomesticListing : [])
+                return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmDomesticListing) : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, rmImportListing && rmImportListing.length > 0 ? rmImportListing : [])
+                return returnExcelColumn(RMImportSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmImportListing) : [])
             default:
                 return 'foo';
         }
@@ -154,7 +177,7 @@ function Simulation(props) {
     const cancelEditPage = () => {
         setShowEditTable(false)
         setIsBulkUpload(false)
-        setTableData([])
+        // setTableData([])
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
     }
@@ -254,22 +277,28 @@ function Simulation(props) {
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmDomesticListing)} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmImportListing)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+            case EXCHNAGERATE:
+                return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
             default:
                 break;
         }
     }
 
-    useEffect(() => {
-
-    }, [rmDomesticListing])
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
-        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        const masterId = location?.state?.master
+        console.log('masterId: ', masterId);
+        // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
+        if (getOtherCostingSimulation(String(masterId))) {
+            console.log(masterId, "masterIdmasterId");
+            return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        }
+        return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
 
 
@@ -342,11 +371,16 @@ function Simulation(props) {
                                     {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant and Vendor from the filters before editing'} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                    <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                        {/* {true ? '' : renderColumn(master.label)} */}
-                                        {!editWarning ? renderColumn(master.value) : ''}
-                                    </ExcelFile>
-                                    <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                    {
+                                        !isUploadSimulation(master.value) &&
+                                        <>
+                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {/* {true ? '' : renderColumn(master.label)} */}
+                                                {!editWarning ? renderColumn(master.value) : ''}
+                                            </ExcelFile>
+                                            <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                        </>
+                                    }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
 
 

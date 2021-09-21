@@ -365,7 +365,6 @@ class UserRegistration extends Component {
             }
 
           }, 500)
-
           this.getUsersTechnologyLevelData(data.UserId)
           this.getUsersSimulationTechnologyLevelData(data.UserId)
           this.getUsersMasterLevelData(data.UserId)
@@ -474,6 +473,7 @@ class UserRegistration extends Component {
     */
   setInitialModuleData = (data) => {
     this.setState({ Modules: data })
+   
   }
 
   /**
@@ -492,6 +492,7 @@ class UserRegistration extends Component {
         tempArray.push(index)
       }
       return null;
+    
     })
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
@@ -983,10 +984,12 @@ class UserRegistration extends Component {
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
-    this.setState({ isLoader: true })
+    //set state here true
+    this.setState({isLoader:true})
     this.props.updateUserAPI(updatedData, (res) => {
       if (res && res.data && res.data.Result) {
-        this.setState({ isLoader: false })
+        //set state false
+        this.setState({isLoader:false})
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
       this.cancel();
@@ -1134,7 +1137,7 @@ class UserRegistration extends Component {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
           },
-          onCancel: () => { this.confirmUpdateUser(updatedData, false) },
+          onCancel: () => { },
           component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
@@ -1181,16 +1184,17 @@ class UserRegistration extends Component {
         SimulationTechnologyLevels: tempHeadLevelArray,
         MasterLevels: tempMasterLevelArray
       }
+      this.setState({isLoader:true})
       this.props.registerUserAPI(userData, res => {
+       
         this.setState({ isSubmitted: false, })
 
         if (res && res.data && res.data.Result) {
+          this.setState({isLoader:false})
           toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
-
         }
       })
-
     }
   }
 
@@ -1779,7 +1783,7 @@ class UserRegistration extends Component {
                           <Col md="4" className="text-right">
                             <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
 
-                              {this.state.acc2 ? (
+                              {this.state.acc3 ? (
                                 <i className="fa fa-minus" ></i>
                               ) : (
                                 <i className="fa fa-plus"></i>

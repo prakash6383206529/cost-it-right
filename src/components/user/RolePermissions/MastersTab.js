@@ -164,6 +164,7 @@ class MastersTab extends Component {
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
       this.setState({ Modules: tempArray, })
+      console.log(Modules, 'bbbbbbbbbb')
     }
   }
 

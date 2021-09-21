@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
   getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
@@ -23,13 +23,13 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RmImport } from '../../../config/constants'
+import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDetails } from '../../../helper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -83,6 +83,8 @@ class RMImportListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      loader: true,
+      isFinalApprovar: false
     }
   }
 
@@ -97,7 +99,7 @@ class RMImportListing extends Component {
         RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-        technology: [],
+        statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         value: { min: 0, max: 0 },
       }, () => {
         this.getInitialRange()
@@ -106,6 +108,7 @@ class RMImportListing extends Component {
         this.props.getRawMaterialFilterSelectList(() => { })
       })
     }
+
   }
 
   /**
@@ -127,13 +130,27 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
+      statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
         let DynamicData = res.data.DynamicData;
         this.setState({ value: { min: 0, max: DynamicData.MaxRange }, })
       }
+      this.setState({ loader: false })
     })
+    this.checkIsFinalLevelApprover()
+  }
+
+
+
+  getFilterRMData = () => {
+    if (this.props.isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+      const list = getFilteredRMData(this.props.rmImportDataList)
+      return list
+    } else {
+      return this.props.rmImportDataList
+    }
   }
 
 
@@ -150,6 +167,7 @@ class RMImportListing extends Component {
     this.props.getRawMaterialFilterSelectList(() => { })
     this.props.getTechnologySelectList(() => { })
     this.getDataList()
+    this.checkIsFinalLevelApprover()
     this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
@@ -157,6 +175,8 @@ class RMImportListing extends Component {
   getUpdatedData = () => {
     this.getDataList()
   }
+
+
 
   getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
     const { value } = this.state;
@@ -171,6 +191,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
+      statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -179,16 +200,32 @@ class RMImportListing extends Component {
         this.setState({
           tableData: Data,
           maxRange: DynamicData.MaxRange,
+          loader: false
         }, () => {
           if (isSimulation) {
             this.props.apply()
           }
         })
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [], maxRange: 0, })
+        this.setState({ tableData: [], maxRange: 0, loader: false })
       } else {
-        this.setState({ tableData: [], maxRange: 0, })
+        this.setState({ tableData: [], maxRange: 0, loader: false })
       }
+    })
+  }
+
+  checkIsFinalLevelApprover = () => {
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
     })
   }
 
@@ -266,6 +303,11 @@ class RMImportListing extends Component {
     return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
 
+  hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue != null ? cellValue : '-';
+  }
+
 
   /**
   * @method shearingCostFormatter
@@ -295,9 +337,19 @@ class RMImportListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { EditAccessibility, DeleteAccessibility } = this.props;
+    let isEditbale = false
+    if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+      if (EditAccessibility && !rowData.IsRMAssociated) {
+        isEditbale = true
+      } else {
+        isEditbale = false
+      }
+    } else {
+      isEditbale = EditAccessibility
+    }
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {isEditbale && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -309,7 +361,7 @@ class RMImportListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return (cellValue === true || cellValue === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+    return (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
   }
 
 
@@ -587,6 +639,7 @@ class RMImportListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -614,7 +667,8 @@ class RMImportListing extends Component {
       freightCostFormatter: this.freightCostFormatter,
       shearingCostFormatter: this.shearingCostFormatter,
       costFormatter: this.costFormatter,
-      statusFormatter: this.statusFormatter
+      statusFormatter: this.statusFormatter,
+      hyphenFormatter: this.hyphenFormatter
     };
 
 
@@ -830,7 +884,7 @@ class RMImportListing extends Component {
         </form>
         <Row>
           <Col>
-
+            {(this.state.loader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -840,9 +894,10 @@ class RMImportListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
+                  floatingFilter={true}
                   domLayout='autoHeight'
                   // columnDefs={c}
-                  rowData={this.props.rmImportDataList}
+                  rowData={this.getFilterRMData()}
                   pagination={true}
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
@@ -859,6 +914,7 @@ class RMImportListing extends Component {
                   <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
                   <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
                   <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                  <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                   <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
                   <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
@@ -870,8 +926,8 @@ class RMImportListing extends Component {
                   <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
                   <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  {CheckApprovalApplicableMaster('1') && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>}
+                  {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
+                  {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
                   <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                   <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                 </AgGridReact>
@@ -895,6 +951,7 @@ class RMImportListing extends Component {
           isZBCVBCTemplate={true}
           messageLabel={'RM Import'}
           anchor={'right'}
+          isFinalApprovar={this.state.isFinalApprovar}
         />}
       </div >
 
@@ -936,7 +993,8 @@ export default connect(mapStateToProps, {
   getGradeFilterByVendorSelectList,
   getPlantSelectListByType,
   getTechnologySelectList,
-  setFilterForRM
+  setFilterForRM,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'RMImportListing',
   enableReinitialize: true,

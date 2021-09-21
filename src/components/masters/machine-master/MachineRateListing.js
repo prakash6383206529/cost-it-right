@@ -486,6 +486,7 @@ class MachineRateListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -696,7 +697,8 @@ class MachineRateListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter = {true}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}
@@ -720,7 +722,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

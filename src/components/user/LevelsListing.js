@@ -350,6 +350,7 @@ class LevelsListing extends Component {
 
 	resetState() {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 
@@ -419,7 +420,9 @@ class LevelsListing extends Component {
 									<Row>
 										<Col md="6" className=""></Col>
 										<Col md="6" className="search-user-block mb-3 text-right">
-											<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+											<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+												<div className="refresh mr-0"></div>
+											</button>
 										</Col>
 									</Row>
 									<Row>
@@ -435,6 +438,7 @@ class LevelsListing extends Component {
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
+														floatingFilter = {true}
 														domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}

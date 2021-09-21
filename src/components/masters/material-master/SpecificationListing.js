@@ -359,8 +359,12 @@ class SpecificationListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
-
+    hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue != null ? cellValue : '-';
+    }
     /**
     * @method render
     * @description Renders the component
@@ -388,7 +392,7 @@ class SpecificationListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-
+            hyphenFormatter: this.hyphenFormatter
         };
 
 
@@ -533,7 +537,8 @@ class SpecificationListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter = {true}
+domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmSpecificationList}
                                     pagination={true}
@@ -550,7 +555,8 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
                                     <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

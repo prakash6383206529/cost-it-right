@@ -6,12 +6,13 @@ import { Controller, useForm } from 'react-hook-form';
 // import { runSimulation } from '../actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
 import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
+import { EXCHNAGERATE } from '../../../config/constants';
 
 function RunSimulationDrawer(props) {
-    const { objs } = props
+    const { objs, masterId } = props
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -84,15 +85,23 @@ function RunSimulationDrawer(props) {
         obj.IsPaymentTerms = PaymentTerms
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         temp.push(obj)
-        console.log('temp: ', temp);
 
-        //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-        dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-            if (res.data.Result) {
-                toastr.success('Simulation process has been run successfully.')
-                runSimulationCosting()
-            }
-        }))
+        if (masterId === Number(EXCHNAGERATE)) {
+            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                if (res.data.Result) {
+                    toastr.success('Simulation process has been run successfully.')
+                    runSimulationCosting()
+                }
+            }))
+        } else {
+            //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                if (res.data.Result) {
+                    toastr.success('Simulation process has been run successfully.')
+                    runSimulationCosting()
+                }
+            }))
+        }
     }
 
     const onSubmit = () => {
@@ -138,7 +147,7 @@ function RunSimulationDrawer(props) {
                                 <Row className="ml-0 pt-3">
                                     <Col md="12" className="mb-3">
                                         {
-                                            applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
+                                            masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                 if (el.Value === '0') return false;
                                                 return (
                                                     <Col md="12" className="mb-3 p-0">

@@ -42,6 +42,7 @@ class IndivisualPartListing extends Component {
 
             isBulkUpload: false,
             ActivateAccessibility: true,
+            loader: true
         }
     }
 
@@ -52,7 +53,9 @@ class IndivisualPartListing extends Component {
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.getTableListData()
+        this.setState({ loader: true }, () => {
+            this.getTableListData()
+        })
     }
 
     /**
@@ -71,6 +74,7 @@ class IndivisualPartListing extends Component {
             } else {
 
             }
+            this.setState({ loader: false })
         })
     }
 
@@ -320,6 +324,7 @@ class IndivisualPartListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     resetState() {
@@ -427,7 +432,7 @@ class IndivisualPartListing extends Component {
                         </div>
                     </Col>
                 </Row>
-
+                {this.state.loader && <LoaderCustom />}
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -438,6 +443,7 @@ class IndivisualPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
@@ -445,7 +451,6 @@ class IndivisualPartListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: CONSTANT.EMPTY_DATA,
@@ -459,7 +464,7 @@ class IndivisualPartListing extends Component {
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

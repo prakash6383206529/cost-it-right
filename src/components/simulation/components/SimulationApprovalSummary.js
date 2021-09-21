@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
-import { ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -31,7 +31,7 @@ const gridOptions = {};
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
     const { approvalDetails, approvalData, isbulkUpload, list, technology, master } = props;
-    const { approvalNumber, approvalId } = props.location.state
+    const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
     const [token, setToken] = useState('')
@@ -96,16 +96,26 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, SenderReason, ImpactedMasterDataList } = res.data.Data
+            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
+                IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
+                SenderReason, ImpactedMasterDataList, AmendmentDetails } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
-            setSimulationDetail({ SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings, SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId, DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason, ImpactedMasterDataList: ImpactedMasterDataList })
+            setSimulationDetail({
+                SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
+                SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
+                DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails
+            })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
-            setLoader(false)
+            setTimeout(() => {
+
+                setLoader(false)
+            }, 500);
         }))
     }, [])
 
@@ -191,7 +201,12 @@ function SimulationApprovalSummary(props) {
     const DisplayCompareCosting = (el, data) => {
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
-        dispatch(getComparisionSimulationData(el, res => {
+        let obj = {
+            simulationApprovalProcessSummaryId: el,
+            simulationId: EMPTY_GUID,
+            costingId: EMPTY_GUID
+        }
+        dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
@@ -277,7 +292,33 @@ function SimulationApprovalSummary(props) {
         const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+    const oldPOCurrencyFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
 
+    const newPOCurrencyFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const oldERFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newERFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
     const rmNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -286,7 +327,12 @@ function SimulationApprovalSummary(props) {
 
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return checkForDecimalAndNull(row.OldRMPrice - row.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+        if (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) {
+            return checkForDecimalAndNull(row.OldRMPrice - row.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
+        } else if (String(SimulationTechnologyId) === EXCHNAGERATE) {
+            return checkForDecimalAndNull(row.OldExchangeRate - row.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
+
+        }
     }
 
 
@@ -332,9 +378,7 @@ function SimulationApprovalSummary(props) {
         return cell != null ? cell : '-';
     }
 
-    const rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost</>
-    }
+
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -391,7 +435,7 @@ function SimulationApprovalSummary(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
-        window.screen.width >= 1921 && params.api.sizeColumnsToFit()
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
     };
 
 
@@ -407,6 +451,7 @@ function SimulationApprovalSummary(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     const frameworkComponents = {
@@ -431,7 +476,10 @@ function SimulationApprovalSummary(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         rawMaterailFormat: rawMaterailFormat,
         varianceFormatter: varianceFormatter,
-
+        newERFormatter: newERFormatter,
+        oldERFormatter: oldERFormatter,
+        oldPOCurrencyFormatter: oldPOCurrencyFormatter,
+        newPOCurrencyFormatter: newPOCurrencyFormatter
     };
 
     return (
@@ -490,11 +538,11 @@ function SimulationApprovalSummary(props) {
                                         <tr>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Token No.:`}</span>
-                                                <span className="d-block">{simulationDetail.Token}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Technology:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].Technology}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
@@ -502,28 +550,31 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].VendorName}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
                                             </th>
-                                            <th className="align-top">
-                                                <span className="d-block grey-text">{`Costing Head:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].CostingHead}</span>
-                                            </th>
+                                            {
+                                                String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                (<th className="align-top">
+                                                    <span className="d-block grey-text">{`Costing Head:`}</span>
+                                                    <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</span>
+                                                </th>)
+                                            }
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
-                                                <span className="d-block">{simulationDetail.NumberOfCostings}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Reason:`}</span>
-                                                <span className="d-block">{simulationDetail.SenderReason}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</span>
                                             </th>
 
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Masters:`}</span>
-                                                <span className="d-block">{costingList.length > 0 && costingList[0].SimulationTechnology}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{moment(simulationDetail.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -540,7 +591,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* } */}
 
-                        <Row className="mb-3">
+                        <Row>
                             <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
@@ -554,8 +605,8 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
 
-                            <div className="accordian-content w-100">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} />}
+                            <div className="accordian-content w-100 px-3 impacted-min-height">
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} />}
 
                             </div>
 
@@ -609,6 +660,7 @@ function SimulationApprovalSummary(props) {
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
+                                                                floatingFilter={true}
                                                                 domLayout='autoHeight'
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
@@ -625,18 +677,41 @@ function SimulationApprovalSummary(props) {
                                                             >
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
-                                                                <AgGridColumn width={192} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                {
+                                                                    (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
+                                                                    <AgGridColumn width={192} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
+                                                                }
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
-                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName="PO Price Old"></AgGridColumn>
-                                                                <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
-                                                                <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
-                                                                <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
-                                                                <AgGridColumn width={140} field="Variance" cellRenderer="varianceFormatter" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions" type="rightAligned"></AgGridColumn>
+
+                                                                {
+                                                                    !String(SimulationTechnologyId) === EXCHNAGERATE &&
+                                                                    <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                }
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "PO Price Old"}></AgGridColumn>
+                                                                {
+                                                                    (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                    </>
+                                                                }
+
+                                                                {
+
+                                                                    String(SimulationTechnologyId) === EXCHNAGERATE &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="PO Price Old(in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="PO Price New(in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
+                                                                    </>
+                                                                }
+                                                                <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
@@ -678,7 +753,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* Costing Summary page here */}
 
-                        <Row className="mb-4">
+                        {/* <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6">
                                 <div className={'right-details'}>
@@ -753,7 +828,7 @@ function SimulationApprovalSummary(props) {
                                     </div>
                                 </div>
                             }
-                        </Row>
+                        </Row> */}
 
                     </div>
 

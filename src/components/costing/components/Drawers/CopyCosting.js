@@ -6,12 +6,13 @@ import Drawer from '@material-ui/core/Drawer';
 import Switch from 'react-switch';
 import { SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { getPlantBySupplier, } from '../../../../actions/Common';
-import { getCostingSummaryByplantIdPartNo, saveCopyCosting, } from '../../actions/Costing';
+import { getCostingSummaryByplantIdPartNo, saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
 import { VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
 import { toastr } from 'react-redux-toastr';
+import ConfirmComponent from '../../../../helper/ConfirmComponent';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -48,7 +49,6 @@ function CopyCosting(props) {
   const [destinationPlant, setDestinationPlant] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [minDate, setMinDate] = useState('')
-  console.log('minDate: ', minDate);
 
   const [fromtype, setFromType] = useState(type === ZBC ? false : true)
   const [isFromZbc, setIsFromZbc] = useState(type === ZBC ? true : false)
@@ -101,7 +101,6 @@ function CopyCosting(props) {
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    console.log('date: ', date);
     setMinDate(date[0].EffectiveDate)
   }, [])
 
@@ -354,15 +353,31 @@ function CopyCosting(props) {
     obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
-    dispatch(
-      saveCopyCosting(obj, (res) => {
+    dispatch(checkDataForCopyCosting(obj, (res) => {
+      console.log("res", res);
+      const Data = res.data.Data
+      const toastrConfirmOptions = {
+        onOk: () => {
+          dispatch(
+            saveCopyCosting(obj, (res) => {
 
-        if ((res.status = 200)) {
-          toastr.success("Copy costing done sucessfully!")
-          props.closeDrawer('')
-        }
-      }),
-    ) // for saving data
+              if ((res.status = 200)) {
+                toastr.success("Copy costing done sucessfully!")
+                const { CostingId, CostingType } = res.data.Data
+                props.closeDrawer('', CostingId, CostingType)
+              }
+            }),
+          ) // for saving data
+        },
+        onCancel: () => { },
+        component: () => <ConfirmComponent />
+      }
+      console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
+      return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
+
+    }))
+
+
   }
   /**
    * @method toggleDrawer

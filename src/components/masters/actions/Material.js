@@ -1048,10 +1048,11 @@ export function getVendorWithVendorCodeSelectList() {
  * @description Used to get RM Domestic Datalist
  */
 export function getRMDomesticDataList(data, callback) {
+    console.log('data: ', data);
     return (dispatch) => {
 
-        dispatch({ type: API_REQUEST });
-        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        dispatch({ type: GET_RM_DOMESTIC_LIST });
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&statusId=${data.statusId}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1162,7 +1163,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, callback) {
     return (dispatch) => {
-        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&statusId=${data.statusId}`
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1704,6 +1705,7 @@ export function approvalRequestByMasterApprove(data, callback) {
             })
     }
 }
+
 /**
  * @method rejectRequestByApprove
  * @description rejecting approval Request
@@ -1749,6 +1751,31 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
                     callback(response)
                 } else {
                     toastr.error(MESSAGES.SOME_ERROR)
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+            })
+    }
+}
+
+/**
+ * @method rejectRequestByApprove
+ * @description rejecting approval Request
+ */
+export function masterFinalLevelUser(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterFinalLeveluser, data, headers)
+        request
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        toastr.error(response.data.Message)
+                    }
                 }
             })
             .catch((error) => {

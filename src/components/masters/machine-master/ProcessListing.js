@@ -466,6 +466,7 @@ class ProcessListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
 
@@ -639,7 +640,8 @@ class ProcessListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
+                  floatingFilter = {true}
+domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.processList}
                   pagination={true}
@@ -655,7 +657,7 @@ class ProcessListing extends Component {
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                  <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className="paging-container d-inline-block float-right">
                   <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

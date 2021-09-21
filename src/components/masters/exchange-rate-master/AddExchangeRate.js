@@ -13,6 +13,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -196,6 +197,7 @@ class AddExchangeRate extends Component {
             });
           },
           onCancel: () => { },
+          component:() => <ConfirmComponent/>,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }

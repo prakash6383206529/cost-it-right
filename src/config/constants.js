@@ -116,6 +116,7 @@ export const API = {
   deleteProduct: `${BASE_URL}/masters-product/delete`,
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+  productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -191,6 +192,7 @@ export const API = {
   approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
   rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
+  masterFinalLeveluser: `${BASE_URL}/masters-approval-raw-material/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -527,6 +529,7 @@ export const API = {
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
+  checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -849,6 +852,10 @@ export const API = {
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
   deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
+  draftExchangeRateSimulation: `${BASE_URL}/simulation/draft-simulation-exchange-rate`,
+  getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
+  runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
+  getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -924,6 +931,7 @@ export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
 //PRODUCT MASTER
 export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
 export const GET_PRODUCT_UNIT_DATA = 'GET_PRODUCT_UNIT_DATA'
+export const PRODUCT_GROUPCODE_SELECTLIST = 'PRODUCT_GROUPCODE_SELECTLIST'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
@@ -1418,6 +1426,7 @@ export const REJECTED = 'Rejected'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
+export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1662,3 +1671,6 @@ export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
+
+export const APPROVAL_ID = 3
+export const RM_MASTER_ID = 1

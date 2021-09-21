@@ -13,7 +13,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
   getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -484,9 +484,30 @@ function CostingDetails(props) {
    * @method closeCopyCostingDrawer
    * @description HIDE COPY COSTING DRAWER
    */
-  const closeCopyCostingDrawer = (e = '') => {
+  const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     nextToggle()
     setIsCopyCostingDrawer(false)
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    if (type === ZBC) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+
+    if (type === VBC) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+    // resetGrid()
   }
 
   /**
@@ -1602,7 +1623,7 @@ function CostingDetails(props) {
                                     let displayCopyBtn = (item.Status === DRAFT ||
                                       item.Status === PENDING ||
                                       item.Status === WAITING_FOR_APPROVAL ||
-                                      item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+                                      item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                     let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -1736,12 +1757,10 @@ function CostingDetails(props) {
                               </thead>
                               <tbody>
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
-                                  console.log('item: ', item);
-
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
                                     item.Status === WAITING_FOR_APPROVAL ||
-                                    item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+                                    item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -1807,7 +1826,7 @@ function CostingDetails(props) {
                                         {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                         {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                       </td>
