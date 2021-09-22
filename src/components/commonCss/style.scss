@@ -4539,8 +4539,8 @@ body{
 .surface-treatment-btn{white-space: nowrap;}
 .impacted-min-height {
   .add-min-height {
-    min-height: calc(100vh - 350px);
-    height: calc(100vh - 350px);
+    min-height: auto !important;
+    height: auto !important;
   }
 }
 .nodata-found-container {
@@ -4691,10 +4691,23 @@ body{
 @media(min-width:1600px) {
   .impacted-min-height {
     .add-min-height {
-      min-height: calc(100vh - 500px);
-      height: calc(100vh - 500px);
+      min-height: auto;
+      // height: calc(100vh - 260px);
     }
   }
+    .exchange-rate {
+      .ag-grid-wrapper {
+        min-height: calc(100vh - 268px) !important;
+      }
+    }
+}
+@media(max-height:900px) {
+  .impacted-min-height {
+    .add-min-height {
+  min-height: calc(100vh - 380px);
+  // height: calc(100vh - 380px);
+  }
+}
 }
 @media(max-width:1366px){
   .overhead-profit-tab-costing{
@@ -4795,8 +4808,8 @@ body{
   }
   .impacted-min-height {
     .add-min-height {
-      min-height: calc(100vh - 260px);
-      height: calc(100vh - 260px);
+      min-height: auto;
+      // height: calc(100vh - 260px);
     }
   }
   .tooltip-inner{
@@ -6161,4 +6174,10 @@ body{
   cursor: pointer;
   background-position: center;
   display: inline-block;
+}
+.grant-user-grid table  th:nth-child(1), .grant-user-grid table th:nth-child(2) span {
+  font-size: 14px;
+  @media (max-width:1366px) {
+    font-size: calc(14px * 80/100);
+  }
 }
