@@ -12,7 +12,7 @@ import { getPlantSelectListByType, getTechnologySelectList } from '../../../acti
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -26,6 +26,9 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
+import { pushAPI } from '../../simulation/actions/Simulation'
+
+
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -65,7 +68,7 @@ function SimulationApprovalSummary(props) {
     const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
     const [status, setStatus] = useState('')
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(false)
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [noContent, setNoContent] = useState(false)
 
     const dispatch = useDispatch()
@@ -86,7 +89,7 @@ function SimulationApprovalSummary(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
+    const userLoggedIn = loggedInUserId()
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
     useEffect(() => {
@@ -506,6 +509,19 @@ function SimulationApprovalSummary(props) {
         return temp
     }
 
+    const rePush = () => {
+        let pushObj = {}
+        let temp = []
+        costingList && costingList.map(item => {
+            const vendor = item.VendorName.split('(')[1]
+            temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: userDetails().DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+        })
+        pushObj.LoggedInUserId = userLoggedIn
+        pushObj.AmmendentDataRequests = temp
+        dispatch(pushAPI(pushObj, () => { }))
+        setShowListing(true)
+    }
+
     return (
         <>
             {showListing === false &&
@@ -882,19 +898,19 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
 
-                    {/* {
-                        showPushButton &&
+                    {
+                        showPushButton && isSuccessfullyInsert === false &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
-                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => rePush()}>
                                         <div className={"save-icon"}></div>{" "}
-                                        {"Push"}
+                                        {"RePush"}
                                     </button>
                                 </Fragment>
                             </div>
                         </Row>
-                    } */}
+                    }
                 </>
                 // :
                 // <SimulationApprovalListing />
