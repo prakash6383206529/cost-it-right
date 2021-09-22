@@ -96,7 +96,7 @@ class Department extends Component {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
 			}
-
+			this.setState({isLoader:true})
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
@@ -132,6 +132,7 @@ class Department extends Component {
 							CompanyId: id
 						}
 						this.props.addDepartmentAPI(formReq, (res) => {
+
 							if (res && res.data && res.data.Result) {
 								toastr.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
 								reset();

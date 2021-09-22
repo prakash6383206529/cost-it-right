@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { userDetails } from '../helper';
 /**
  * master listing used in Mass Upload
  * 
@@ -1297,6 +1298,7 @@ export const PartComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
+    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const PartComponentTempData = [
@@ -1310,6 +1312,7 @@ export const PartComponentTempData = [
         'DrawingNo': '1',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
+        "ProductGroupCode": "VB"
     }
 ]
 
@@ -1392,7 +1395,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-
+    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const BOMUploadTempData = [
@@ -1413,7 +1416,7 @@ export const BOMUploadTempData = [
         "Quantity": 2,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     },
     {
         "BOMNo": "BOM123",
@@ -1432,7 +1435,7 @@ export const BOMUploadTempData = [
         "Quantity": 3,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     },
     {
         "BOMNo": "BOM123",
@@ -1451,7 +1454,7 @@ export const BOMUploadTempData = [
         "Quantity": 4,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     }
 ]
 export const EAccessType = [
@@ -2368,7 +2371,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
     { label: "NoOfVendors", value: "NoOfVendors", },
-    { label: "Plant", value: "Plant", },
+    { label: " ", value: "Plant", },
     { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
     { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
 ]
@@ -2438,7 +2441,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
     { label: "Technologies", value: "Technologies", },
     { label: "VendorName", value: "VendorName", },
-    { label: "Plants", value: "Plants", },
+    { label: "Plant", value: "Plants", },
     { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName", },
@@ -2618,10 +2621,13 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingVersion", value: "CostingVersion", },
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Company", value: "Company" },
     { label: "CreatedDate", value: "CreatedDate", },
     { label: "Status", value: "Status", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "PartNumber", value: "PartNumber", },
+    { label: "PartName", value: "PartName", },
     { label: "Rev", value: "Rev", },
     { label: "ECN", value: "ECN", },
     { label: "PlantName", value: "PlantName", },
@@ -2660,4 +2666,21 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
+]
+export const REPORT_DOWNLOAD_SAP_EXCEl = [
+    { label: "Sr No", value: "SrNo" }, //Serial no
+    { label: "evrtn", value: "SANumber" },//SA no
+    { label: "ebelp", value: "LineNumber" },//Line no
+    { label: "datab", value: "CreatedDate", },//Date 
+    { label: "kbetr", value: "NetPOPrice" }, //Price
+    { label: "Reason", value: "Reason" }, //Reason
+    { label: "Text", value: "Text" }, //Text
+    { label: "Person Requesting Change", value: "PersonRequestingChange" }, //Person CLICKING DOWNLOAD BUTTON (lOGGED IN USER)
+
+]
+
+export const decimalOption = [
+    { label: 'Round Off', value: 'RoundOff' },
+    { label: 'Truncate', value: 'Truncate' },
+    { label: 'Per 100', value: 'Per100' }
 ]

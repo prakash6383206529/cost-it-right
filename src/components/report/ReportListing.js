@@ -11,14 +11,14 @@ import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../common/NoContentFound'
 import { CONSTANT } from '../../helper/AllConastant'
-import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import { table } from 'react-dom-factories';
 
@@ -209,6 +209,11 @@ function ReportListing(props) {
         return cell
         // return params.value !== null ? params.value : '-'
     }
+    const requestterFormatter = (props) => {
+
+        return userDetails().Name
+        // return params.value !== null ? params.value : '-'
+    }
 
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -273,14 +278,38 @@ function ReportListing(props) {
 
     }
 
-
-
     const returnExcelColumn = (data = [], TempData) => {
+        // console.log('TempData: ', TempData);
         let temp = []
 
 
-
         return (<ExcelSheet data={TempData} name={ReportMaster}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+    const renderColumnSAP = (fileName) => {
+        console.log('fileName: ', fileName);
+        let tempData = []
+
+        if (selectedRowData.length == 0) {
+            tempData = reportListingData
+        }
+        else {
+            tempData = selectedRowData
+        }
+        return returnExcelColumnSAP(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+
+    const returnExcelColumnSAP = (data = [], TempData) => {
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+
+        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
@@ -302,6 +331,7 @@ function ReportListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -315,7 +345,8 @@ function ReportListing(props) {
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
         customLoadingOverlay: LoaderCustom,
-        revisionFormatter: revisionFormatter
+        revisionFormatter: revisionFormatter,
+        requestterFormatter: requestterFormatter
     };
 
 
@@ -334,6 +365,9 @@ function ReportListing(props) {
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
+                                </ExcelFile>
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
+                                    {renderColumnSAP(ReportSAPMaster)}
                                 </ExcelFile>
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
@@ -356,7 +390,6 @@ function ReportListing(props) {
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
                         defaultColDef={defaultColDef}
-                        domLayout='autoHeight'
                         floatingFilter={true}
                         // columnDefs={c}
                         rowData={reportListingData}
@@ -373,6 +406,7 @@ function ReportListing(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
@@ -384,6 +418,8 @@ function ReportListing(props) {
                         <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
+                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -427,7 +463,7 @@ function ReportListing(props) {
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right">
                         <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">

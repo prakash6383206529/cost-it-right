@@ -1060,8 +1060,8 @@ export function getRMDomesticDataList(data, callback) {
                     type: GET_RM_DOMESTIC_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList
                 })
-                callback(response);
             }
+            callback(response);
         }).catch((error) => {
 
 
@@ -1156,13 +1156,14 @@ export function getRMImportDataById(data, isValid, callback) {
 }
 
 
+
 /**
  * @method getRMImportDataList
  * @description Used to get RM Import Datalist
  */
 export function getRMImportDataList(data, callback) {
     return (dispatch) => {
-        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}`
+        const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&statusId=${data.statusId}`
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1179,6 +1180,7 @@ export function getRMImportDataList(data, callback) {
         });
     };
 }
+
 
 /**
  * @method fileUpdateRMDomestic

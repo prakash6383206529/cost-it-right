@@ -3,12 +3,12 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
+import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap, } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
+import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { INR } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
@@ -20,6 +20,7 @@ function ApproveRejectDrawer(props) {
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master,
     selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons } = props
+
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -126,25 +127,27 @@ function ApproveRejectDrawer(props) {
       let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
-      switch (Number(master)) {
-        case Number(RMDOMESTIC):
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
-          break;
-        case Number(RMIMPORT):
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
-          break;
+      dispatch(saveSimulationForRawMaterial(simObj, res => {
+        if (res.data.Result) {
+          toastr.success('Simulation has been saved successfully.')
+        }
+      }))
+      // switch (Number(master)) {
+      //   case Number(RMDOMESTIC):
 
-        default:
-          break;
-      }
+      //     break;
+      //   case Number(RMIMPORT):
+      //     dispatch(saveSimulationForRawMaterial(simObj, res => {
+      //       if (res.data.Result) {
+      //         toastr.success('Simulation has been saved successfully.')
+      //       }
+      //     }))
+      //   case 
+      //     break;
+
+      //   default:
+      //     break;
+      // }
     }
   }, [simulationDetail])
 
@@ -218,7 +221,46 @@ function ApproveRejectDrawer(props) {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
               toastr.success('The costing has been approved')
-              setOpenPushButton(true)
+              // const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
+              let pushdata = {
+                effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+                vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+                materialNumber: dataSend[1].PartNumber,
+                netPrice: dataSend[0].NewPOPrice,
+                plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+                currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+                materialGroup: approvalData[0]?.MaterialGroup?.label ? approvalData[0]?.MaterialGroup.label.split('(')[0] : '',
+                taxCode: 'YW',
+                basicUOM: "NO",
+                purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
+                purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+                CostingId: approvalData[0].CostingId,
+                DecimalOption: approvalData[0].DecimalOption
+                // Quantity: quantity
+                // effectiveDate: '11/30/2021',
+                // vendorCode: '203670',
+                // materialNumber: 'S07004-003A0Y',
+                // materialGroup: 'M089',
+                // taxCode: 'YW',
+                // plant: '1401',
+                // netPrice: '30.00',
+                // currencyKey: 'INR',
+                // basicUOM: 'NO',
+                // purchasingOrg: 'MRPL',
+                // purchasingGroup: 'O02'
+
+              }
+              let obj = {
+                LoggedInUserId: loggedInUserId(),
+                Request: [pushdata]
+              }
+              dispatch(approvalPushedOnSap(obj, res => {
+                if (res && res.status && (res.status === 200 || res.status === 204)) {
+                  toastr.success('Approval pushed successfully.')
+                }
+                props.closeDrawer('', 'Push')
+              }))
+              // setOpenPushButton(true)
 
             } else {
               toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
@@ -257,6 +299,7 @@ function ApproveRejectDrawer(props) {
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
+
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
         senderObj.ReasonId = reason ? reason.value : ''
@@ -278,6 +321,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
         senderObj.MaterialGroup = SAPData.MaterialGroup?.label
+        senderObj.DecimalOption = SAPData.DecimalOption?.value
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -292,7 +336,36 @@ function ApproveRejectDrawer(props) {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
               toastr.success('The simulation token has been approved')
-              setOpenPushButton(true)
+              let temp = []
+              costingList && costingList.map(item => {
+                const vendor = item.VendorName.split('(')[1]
+                temp.push({
+                  CostingId: item.CostingId,
+                  effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'),
+                  vendorCode: vendor.split(')')[0],
+                  materialNumber: item.PartNo,
+                  netPrice: item.NewPOPrice,
+                  plant: item.PlantCode ? item.PlantCode : '1511',
+                  currencyKey: INR,
+                  basicUOM: 'NO',
+                  purchasingOrg: item.DepartmentCode ? item.DepartmentCode : 'MRPL',
+                  purchasingGroup: simulationDetail.PurchasingGroup ? simulationDetail.PurchasingGroup.split('(')[0] : '',
+                  materialGroup: simulationDetail.MaterialGroup ? simulationDetail.MaterialGroup.split('(')[0] : '',
+                  taxCode: 'YW', TokenNumber: simulationDetail.Token,
+                  DecimalOption: simulationDetail.DecimalOption
+                  // Quantity: quantity
+                })
+              })
+              let simObj = {
+                LoggedInUserId: loggedInUserId(),
+                Request: temp
+              }
+              dispatch(approvalPushedOnSap(simObj, res => {
+                if (res && res.status && (res.status === 200 || res.status === 204)) {
+                  toastr.success('Approval pushed successfully.')
+                }
+                props.closeDrawer('', 'Push')
+              }))
 
             } else {
               toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')

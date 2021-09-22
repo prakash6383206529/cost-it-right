@@ -259,6 +259,7 @@ class Role extends Component {
 
 										<div className="row form-group grant-user-grid">
 											<div className="col-md-12">
+											{isLoader && <Loader />}
 												<PermissionsTabIndex
 													onRef={ref => (this.child = ref)}
 													isEditFlag={this.state.isEditFlag}

@@ -115,6 +115,7 @@ export function formatGetPlanResult(result) {
 
 
 export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
+    console.log('selectedRowData: ', selectedRowData);
 
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
@@ -127,7 +128,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
                 }
                 return true
             })
-            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked })
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
         })
 
         const simulationObj = {

@@ -1,6 +1,7 @@
 import {
     API_REQUEST, CREATED_BY_ASSEMBLY, GET_REPORT_LIST,
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 
 const initialState = {
 
@@ -15,14 +16,24 @@ export default function ReportListingReducers(state = initialState, action) {
             };
         case GET_REPORT_LIST:
             let temp = action.payload
-            let Arr = temp && temp.map(item => {
+            let Arr = []
+            // if (item.Company === userDetails().Department) {
+            let sr = 0
+            temp && temp.map((item, index) => {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
                 } else {
-                    return item
+                    if (item.Company === userDetails().Department) {
+                        item.PersonRequestingChange = userDetails().Name
+                        sr = sr + 1
+                        item.SrNo = sr
+                        Arr.push(item)
+                    }
                 }
+
             })
 
+            console.log(Arr, "ArrArr");
             return {
                 ...state,
                 loading: false,
