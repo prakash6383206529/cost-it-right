@@ -356,25 +356,37 @@ function CopyCosting(props) {
     dispatch(checkDataForCopyCosting(obj, (res) => {
       console.log("res", res);
       const Data = res.data.Data
-      const toastrConfirmOptions = {
-        onOk: () => {
-          dispatch(
-            saveCopyCosting(obj, (res) => {
+      if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
+        dispatch(
+          saveCopyCosting(obj, (res) => {
 
-              if ((res.status = 200)) {
-                toastr.success("Copy costing done sucessfully!")
-                const { CostingId, CostingType } = res.data.Data
-                props.closeDrawer('', CostingId, CostingType)
-              }
-            }),
-          ) // for saving data
-        },
-        onCancel: () => { },
-        component: () => <ConfirmComponent />
+            if ((res.status = 200)) {
+              toastr.success("Copy costing done sucessfully!")
+              const { CostingId, CostingType } = res.data.Data
+              props.closeDrawer('', CostingId, CostingType)
+            }
+          }),
+        ) // for saving data
+      } else {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            dispatch(
+              saveCopyCosting(obj, (res) => {
+
+                if ((res.status = 200)) {
+                  toastr.success("Copy costing done sucessfully!")
+                  const { CostingId, CostingType } = res.data.Data
+                  props.closeDrawer('', CostingId, CostingType)
+                }
+              }),
+            ) // for saving data
+          },
+          onCancel: () => { },
+          component: () => <ConfirmComponent />
+        }
+        console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
+        return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
       }
-      console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
-      return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
-
     }))
 
 
