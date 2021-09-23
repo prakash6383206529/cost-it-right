@@ -4499,10 +4499,22 @@ body{
     height: auto !important;
   }
 }
+.simulation-main {
+   .nodate-section {
+        img {
+          margin-top: 25px;;
+        }
+  }
+}
 .nodata-found-container {
   margin-top: 120px !important;
 }
-
+// .operation-nodata {
+//   margin-top: 60px !important;
+//   img {
+//     margin-top: 10px;
+//   }
+// }
 // responsive media query start
 @media(max-width:1600px){
 
@@ -4794,7 +4806,7 @@ body{
     }
   }
   .simulation-page{
-    .empty-table-paecholder{min-height: 384px;}
+    .empty-table-paecholder{min-height: 494px;}
     .sf-btn-footer{
       margin: 0 -27px -12px;
     }

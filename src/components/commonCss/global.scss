@@ -2893,8 +2893,9 @@ body {
       }
       &.no-tab-page{
         .ag-grid-wrapper{
-          min-height: auto;
-          height: auto !important;
+        //  min-height: auto; //code comment by banti 
+         min-height: 470px;
+         height: auto !important;
         }
       }
       .search-user-block{
