@@ -742,6 +742,7 @@ a:hover {
           min-height: calc(100vh - 240px);
           height: calc(100vh - 240px) !important;
         }
+        
       }
       .search-user-block{
         // position: relative;
@@ -2974,4 +2975,21 @@ body {
 }
 .select-all-label {
   padding-left: 13px;
+}
+.impacted-min-height {
+  .add-min-height.sm-edit-page {
+  .ag-grid-wrapper {
+   
+    // height: calc(100vh - 500px);
+  }
+}
+}
+.impacted-min-height {
+:not(.content-page) :not(.tab-pane) .ag-grid-react .add-min-height.sm-edit-page .ag-grid-wrapper {
+  min-height: auto !important;
+  height: auto !important;
+}
+.add-min-height .ag-layout-auto-height .ag-center-cols-clipper {
+  min-height: 60px;
+}
 }
