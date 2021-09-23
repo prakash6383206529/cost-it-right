@@ -552,6 +552,7 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
                                                     {
                                                         String(master) === EXCHNAGERATE &&
                                                         <>

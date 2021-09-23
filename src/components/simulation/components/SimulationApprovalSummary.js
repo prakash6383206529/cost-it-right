@@ -597,11 +597,10 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
-
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
-                                            </th>
+                                            </th> */}
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -838,7 +837,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-
+                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
                                                                 {
                                                                     !String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>

@@ -83,12 +83,12 @@ function RMSimulation(props) {
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.Vendor = list[0].VendorName
+        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? "VBC" : "ZBC"
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
-        obj.VendorId = list[0].VendorId
+
         obj.TechnologyId = list[0].TechnologyId
-        obj.VendorId = list[0].VendorId
+
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         }
@@ -114,6 +114,7 @@ function RMSimulation(props) {
                 tempObj.EffectiveDate = item.EffectiveDate
                 tempObj.RawMaterialId = item.RawMaterialId
                 tempObj.PlantId = item.PlantId
+                tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
                 tempArr.push(tempObj)
             }
