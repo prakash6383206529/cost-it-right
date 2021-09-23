@@ -101,7 +101,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -109,7 +109,7 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
             })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
@@ -600,14 +600,14 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
                                                 <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
                                                 <span className="d-block">{'120'}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
                                                 <span className="d-block">{'12001'}</span>
-                                            </th>
+                                            </th> */}
                                         </tr>
                                     </thead>
                                 </Table>
@@ -637,12 +637,12 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        {/* <Row >
+                        <Row >
                             <Col md="12">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata /> */}
+                        <Fgwiseimactdata />
 
                         {/* FG wise Impact section end */}
 

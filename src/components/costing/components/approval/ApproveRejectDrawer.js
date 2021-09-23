@@ -38,9 +38,9 @@ function ApproveRejectDrawer(props) {
   const [showError, setShowError] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+  const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
+  console.log('attachmentsData: ', attachmentsData);
   const reasonsList = useSelector((state) => state.approval.reasonsList)
-
 
 
 
@@ -283,7 +283,7 @@ function ApproveRejectDrawer(props) {
         senderObj.EffectiveDate = moment(simulationDetail.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
-
+        senderObj.Attachements = attachmentsData
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -620,7 +620,7 @@ function ApproveRejectDrawer(props) {
 
                 {
                   isSimulation &&
-                  <AttachmentSec token={simulationDetail.TokenNo} type={type} />
+                  <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
                 }
 
               </Row>
