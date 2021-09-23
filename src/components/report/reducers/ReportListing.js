@@ -23,11 +23,18 @@ export default function ReportListingReducers(state = initialState, action) {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
                 } else {
-                    if (item.Company === userDetails().Department) {
+                    if (userDetails().Department === 'Corporate' || userDetails().Department === 'Administration') {
                         item.PersonRequestingChange = userDetails().Name
                         sr = sr + 1
                         item.SrNo = sr
                         Arr.push(item)
+                    } else {
+                        if (item.Company === userDetails().Department) {
+                            item.PersonRequestingChange = userDetails().Name
+                            sr = sr + 1
+                            item.SrNo = sr
+                            Arr.push(item)
+                        }
                     }
                 }
 
