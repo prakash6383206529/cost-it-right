@@ -15,7 +15,8 @@ import {
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
-    GET_AMMENDENT_STATUS_COSTING
+    GET_AMMENDENT_STATUS_COSTING,
+    SET_ATTACHMENT_FILE_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -573,3 +574,12 @@ export function getExchangeCostingSimulationList(token, callback) {
         })
     }
 }
+export function setAttachmentFileData(attachmentsData, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_ATTACHMENT_FILE_DATA,
+            payload: attachmentsData,
+        })
+        callback();
+    }
+};

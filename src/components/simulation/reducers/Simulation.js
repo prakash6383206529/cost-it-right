@@ -10,6 +10,7 @@ import {
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_AMMENDENT_STATUS_COSTING,
+    SET_ATTACHMENT_FILE_DATA
 } from '../../../config/constants';
 
 const initialState = {
@@ -76,6 +77,13 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 ammendentStatus: action.payload
+            }
+        case SET_ATTACHMENT_FILE_DATA:
+            const data = action.payload
+            return {
+                ...state,
+                loading: false,
+                attachmentsData: [...data]
             }
         default:
             return state;

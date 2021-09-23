@@ -6,14 +6,14 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { ATTACHMENTS, FILE_URL, IMPACT_SHEET, INVOICE_BACKUP, OTHER, SUPPLIER_CONFRIM } from '../../../../config/constants';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { fileDeleteCosting, fileUploadCosting } from '../../actions/Costing'
-import { uploadSimulationAttachmentByCategory } from '../../../simulation/actions/Simulation'
+import { setAttachmentFileData, uploadSimulationAttachmentByCategory } from '../../../simulation/actions/Simulation'
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from '../../../../helper';
 
 
 function AttachmentSec(props) {
     const dispatch = useDispatch()
-    const { token, type } = props
+    const { token, type, Attachements } = props
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
     const [acc3, setAcc3] = useState(false)
@@ -28,6 +28,36 @@ function AttachmentSec(props) {
 
     const [IsOpen, setIsOpen] = useState(false);
     const [initialFiles, setInitialFiles] = useState([]);
+
+
+    useEffect(() => {
+        let obj = [...files, ...supplierFiles, ...invoiceFiles, ...otherFiles, ...attachmentFiles]
+        dispatch(setAttachmentFileData(obj, () => { }))
+    }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
+
+
+    useEffect(() => {
+        Attachements && Attachements.map(item => {
+            if (item.AttachementCategory === IMPACT_SHEET) {
+                files.push(item)
+                setFiles(files)
+            } else if (item.AttachementCategory === SUPPLIER_CONFRIM) {
+                supplierFiles.push(item)
+                setSupplierFiles(supplierFiles)
+            } else if (item.AttachementCategory === INVOICE_BACKUP) {
+                invoiceFiles.push(item)
+                setInvoiceFiles(invoiceFiles)
+            } else if (item.AttachementCategory === OTHER) {
+                otherFiles.push(item)
+                setOtherFiles(otherFiles)
+            } else if (item.AttachementCategory === ATTACHMENTS) {
+                attachmentFiles.push(item)
+                setAttachmentFiles(attachmentFiles)
+            }
+
+        })
+        setIsOpen(!IsOpen)
+    }, [])
 
     // attacment section 
     // specify upload params and url for your files
@@ -176,6 +206,8 @@ function AttachmentSec(props) {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
+
+
 
 
 
@@ -446,7 +478,6 @@ function AttachmentSec(props) {
                         </Col>
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
-                                Invoice
                                 {invoiceFiles &&
                                     invoiceFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
