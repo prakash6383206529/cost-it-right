@@ -686,9 +686,10 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
+
                                                                 {
-                                                                    !String(SimulationTechnologyId) === EXCHNAGERATE &&
-                                                                    <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                    <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "PO Price Old"}></AgGridColumn>
                                                                 {

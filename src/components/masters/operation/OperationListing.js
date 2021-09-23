@@ -737,6 +737,7 @@ domLayout='autoHeight'
                                 loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
+                                    customClassName:"operation-nodata",
                                     title: CONSTANT.EMPTY_DATA,
                                 }}
                                 frameworkComponents={frameworkComponents}

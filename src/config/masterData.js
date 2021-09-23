@@ -2531,6 +2531,14 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "DrawingNumber", value: "DrawingNumber", },
     { label: "EffectiveDate", value: "EffectiveDate", },
 ]
+export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
+    { label: "ProductNumber", value: "ProductNumber", },
+    { label: "ProductName", value: "ProductName", },
+    { label: "ECNNumber", value: "ECNNumber", },
+    { label: "RevisionNumber", value: "RevisionNumber", },
+    { label: "DrawingNumber", value: "DrawingNumber", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
 
 export const VBCPLANT_DOWNLOAD_EXCEl = [
     { label: "VendorName", value: "VendorName", },
