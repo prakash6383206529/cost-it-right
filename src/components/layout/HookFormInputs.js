@@ -404,7 +404,6 @@ export const AsyncSearchableSelectHookForm = (field) => {
     isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
 
 
-
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
 
