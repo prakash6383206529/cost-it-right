@@ -187,7 +187,7 @@ function OtherCostingSimulation(props) {
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning('This costing is already sent for approval through another token number.')
+            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {

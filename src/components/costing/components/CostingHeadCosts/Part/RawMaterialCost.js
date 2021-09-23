@@ -28,6 +28,8 @@ function RawMaterialCost(props) {
       MBPrice: item?.CostingPartDetails?.MasterBatchRMPrice,
       MBPercentage: item?.CostingPartDetails?.MasterBatchPercentage,
       RMTotal: item?.CostingPartDetails?.MasterBatchTotal,
+      MBId: item?.CostingPartDetails?.MasterBatchRMId,
+
     }
   })
 
@@ -153,7 +155,9 @@ function RawMaterialCost(props) {
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
+
       setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
+      setValue('MBId', rowData && rowData[0].RawMaterialId !== undefined ? rowData[0].RawMaterialId : '')
       setValue('MBPrice', rowData && (rowData[0].Currency === '-' || rowData[0].Currency === INR) ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
     setDrawerOpen(false)
@@ -683,7 +687,7 @@ function RawMaterialCost(props) {
         }
 
         const MasterBatchObj = {
-          "MasterBatchRMId": tempArr[0].RawMaterialId,
+          "MasterBatchRMId": getValues('MBId'),
           "IsApplyMasterBatch": IsApplyMasterBatch,
           "MasterBatchRMName": getValues('MBName'),
           "MasterBatchRMPrice": getValues('MBPrice'),
@@ -953,6 +957,24 @@ function RawMaterialCost(props) {
                   <Col md="2">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
+                  {/* <Col md="2" > */}
+                  <TextFieldHookForm
+                    label="MB Id"
+                    name={"MBId"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{}}
+                    handleChange={(e) => { }}
+                    defaultValue={""}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.MBId}
+                    disabled={true}
+                    hidden={true}
+                  />
+                  {/* </Col> */}
                   <Col md="2" >
                     <TextFieldHookForm
                       label="MB Name"

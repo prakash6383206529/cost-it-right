@@ -83,7 +83,9 @@ function CostingDetailStepTwo(props) {
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
       console.log('tempArr: ', tempArr);
 
-      dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
+        console.log("SET COSTING FROM STEP TWO1");
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setRMCCBOPCostData(data, () => { }))
     }
@@ -119,7 +121,9 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
+        console.log("SET COSTING FROM STEP TW02");
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setSurfaceCostData(data, () => { }))
     }
@@ -156,7 +160,9 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => {
+        console.log("SET COSTING FROM STEP TWO3");
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setOverheadProfitCostData(data, () => { }))
     }
@@ -192,7 +198,9 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
+        console.log("SET COSTING FROM STEP TWO4");
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
     }
   }
@@ -231,7 +239,9 @@ function CostingDetailStepTwo(props) {
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-        dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
+        dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
+          console.log("SET COSTING FROM STEP TWO5");
+        }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
       }, 900)
@@ -289,7 +299,9 @@ function CostingDetailStepTwo(props) {
 
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-        dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => { }))
+        dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
+          console.log("SET COSTING FROM STEP TWO5");
+        }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
       }
