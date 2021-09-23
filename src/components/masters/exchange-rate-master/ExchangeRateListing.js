@@ -281,7 +281,7 @@ class ExchangeRateListing extends Component {
             allColumnIds.push(column.colId);
         });
 
-        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
 
     };
 

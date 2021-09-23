@@ -16,7 +16,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ComponentPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INDIVIDUALPART_DOWNLOAD_EXCEl, INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -287,16 +287,14 @@ class IndivisualProductListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
+
+        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, this.props.productDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -426,6 +424,7 @@ class IndivisualProductListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            floatingFilter={true}
                             domLayout='autoHeight'
                             floatingFilter={true}
                             // columnDefs={c}
