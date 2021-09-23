@@ -98,7 +98,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -106,7 +106,7 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
             })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
@@ -889,6 +889,7 @@ function SimulationApprovalSummary(props) {
                 simulationDetail={simulationDetail}
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
+                Attachements={simulationDetail.Attachements}
             // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
@@ -902,9 +903,10 @@ function SimulationApprovalSummary(props) {
                 //  tokenNo={approvalNumber}
                 anchor={'right'}
                 IsFinalLevel={!showFinalLevelButtons}
-            // reasonId={approvalDetails.ReasonId}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
+                // reasonId={approvalDetails.ReasonId}
+                // IsPushDrawer={showPushDrawer}
+                // dataSend={[approvalDetails, partDetail]}
+                Attachements={simulationDetail.Attachements}
             />}
 
             {/* {pushButton && <PushButtonDrawer
