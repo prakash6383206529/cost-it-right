@@ -813,7 +813,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ?'red-row':'' : '-'}`}>
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -866,7 +866,7 @@ const CostingSummaryTable = (props) => {
                           Surface Treatment
                         </span>
                         <span class="d-block small-grey-text">
-                          Transportation Cost
+                          Extra Surface Treatment Cost
                         </span>
                       </td>
                       {viewCostingData &&
