@@ -315,6 +315,17 @@ class AddRMDomestic extends Component {
       this.setState({ UOM: [] })
     }
   }
+
+  handleScrapRate = (newValue, actionMeta) => {
+    const { fieldsObj } = this.props
+    console.log('newValue: ', newValue.target.value);
+    console.log(fieldsObj.BasicRate, "fieldsObj.BasicRate");
+    if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
+      toastr.warning("Scrap rate should not be greater than basic rate")
+      return false
+    }
+  }
+
   /**
    * @method calculateNetCost
    * @description CALCUALTION NET COST
@@ -1445,7 +1456,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
-                              // onChange={thishandleBasicRate.}
+                              // onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
                               className=" "
@@ -1465,6 +1476,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
+                              onChange={this.handleScrapRate}
                             />
                           </Col>
                           <Col md="4">

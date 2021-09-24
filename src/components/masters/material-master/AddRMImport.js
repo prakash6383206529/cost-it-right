@@ -379,6 +379,14 @@ class AddRMImport extends Component {
     })
   }
 
+  handleScrapRate = (newValue, actionMeta) => {
+    const { fieldsObj } = this.props
+    if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
+      toastr.warning("Scrap rate should not be greater than basic rate")
+      return false
+    }
+  }
+
   /**
   * @method getDetails
   * @description Used to get Details
@@ -1519,6 +1527,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
+                              onChange={this.handleScrapRate}
                             />
                           </Col>
                           <Col md="4">
