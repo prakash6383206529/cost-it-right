@@ -44,7 +44,7 @@ function Plastic(props) {
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
-    burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? (WeightCalculatorRequest.BurningValue * checkForNull(totalRM)) : ''
+    burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BurningValue * checkForNull(totalRM), getConfigurationKey().NoOfDecimalForInputOutput) : ''
 
   }
 
@@ -56,7 +56,8 @@ function Plastic(props) {
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
-    burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : ''
+    burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
+    grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
 
 
@@ -87,6 +88,7 @@ function Plastic(props) {
   ]
 
   useEffect(() => {
+    // dispatch(setPlasticArray(WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : []))
     calculateGrossWeight()
     calculateRemainingCalculation(lostWeight)
   }, [fieldValues])
@@ -96,7 +98,10 @@ function Plastic(props) {
     calculateRemainingCalculation()
   }, [getPlasticData])
 
+  useEffect(() => {
+    setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '')
 
+  }, [])
 
 
 
@@ -109,7 +114,7 @@ function Plastic(props) {
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
 
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData))
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : []))
     setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
     let updatedValue = dataToSend
@@ -126,8 +131,7 @@ function Plastic(props) {
     const runnerWeight = Number(getValues('runnerWeight'))
     const finishedWeight = Number(getValues('finishedWeight'))
 
-
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData)) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
     // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
     if (finishedWeight > grossWeight) {
@@ -177,7 +181,7 @@ function Plastic(props) {
     obj.RawMaterialType = rmRowData.MaterialType
     obj.BasicRatePerUOM = totalRM
     obj.ScrapRate = rmRowData.ScrapRate
-    obj.NetLandedCost = dataToSend.grossWeight * totalRM - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
+    obj.NetLandedCost = dataToSend.materialCost
     obj.PartNumber = costData.PartNumber
     obj.TechnologyName = costData.TechnologyName
     obj.Density = rmRowData.Density
