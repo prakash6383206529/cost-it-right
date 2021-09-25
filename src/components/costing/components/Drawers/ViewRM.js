@@ -113,6 +113,7 @@ function ViewRM(props) {
                     <th>{`Calculator`}</th>
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>
+                    <th>{`Burning Loss Weight`}</th>
                     <th className="costing-border-right">{`Net RM Cost`}</th>
                   </tr>
                 </thead>
@@ -134,6 +135,7 @@ function ViewRM(props) {
                         /></td>
                         <td>{item.FreightCost ? item.FreightCost : '-'}</td>
                         <td>{item.ShearingCost ? item.ShearingCost : '-'}</td>
+                        <td>{item.BurningLossWeight ? item.BurningLossWeight : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
                       </tr>
