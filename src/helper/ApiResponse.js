@@ -47,7 +47,7 @@ export function formatLoginResult(res) {
             expires_in: res.expires_in,
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
-            Department: res.Department,
+            Department: JSON.parse(res.Department),
             DepartmentCode: res.DepartmentCode,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
