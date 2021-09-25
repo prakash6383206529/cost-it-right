@@ -8,18 +8,20 @@ import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFie
 import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { INR } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
+import { INR, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
+import redcrossImg from '../../../../assests/images/red-cross.png'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master,
-    selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements } = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -37,6 +39,9 @@ function ApproveRejectDrawer(props) {
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [showError, setShowError] = useState(false)
+  const [files, setFiles] = useState([]);
+  const [IsOpen, setIsOpen] = useState(false);
+  const [initialFiles, setInitialFiles] = useState([]);
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -114,6 +119,12 @@ function ApproveRejectDrawer(props) {
         )
 
       }))
+
+      Attachements && Attachements.map(item => {
+        files.push(item)
+        setFiles(files)
+        setIsOpen(!IsOpen)
+      })
     }
 
 
@@ -299,7 +310,9 @@ function ApproveRejectDrawer(props) {
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
-
+        let updatedFiles = files.map((file) => {
+          return { ...file, ContextId: simulationDetail.SimulationId }
+        })
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
         senderObj.ReasonId = reason ? reason.value : ''
@@ -322,6 +335,8 @@ function ApproveRejectDrawer(props) {
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
         senderObj.MaterialGroup = SAPData.MaterialGroup?.label
         senderObj.DecimalOption = SAPData.DecimalOption?.value
+        senderObj.Attachements = updatedFiles
+
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -466,6 +481,66 @@ function ApproveRejectDrawer(props) {
       setShowError(false)
     } else {
       setShowError(true)
+    }
+  }
+
+  const getUploadParams = ({ file, meta }) => {
+    return { url: 'https://httpbin.org/post', }
+  }
+
+  // called every time a file's `status` changes
+  const handleChangeStatus = ({ meta, file }, status) => {
+
+
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData()
+      data.append('file', file)
+      dispatch(uploadSimulationAttachment(data, (res) => {
+        let Data = res.data[0]
+        files.push(Data)
+        setFiles(files)
+        setIsOpen(!IsOpen)
+      }))
+    }
+
+    if (status === 'rejected_file_type') {
+      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+    }
+  }
+
+  const Preview = ({ meta }) => {
+    const { name, percent, status } = meta
+    return (
+      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+        {/* {Math.round(percent)}% */}
+      </span>
+    )
+  }
+
+  const deleteFile = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let deleteData = {
+        Id: FileId,
+        DeletedBy: loggedInUserId(),
+      }
+      // dispatch(fileDeleteCosting(deleteData, (res) => {
+      //     toastr.success('File has been deleted successfully.')
+      //   }))
+      let tempArr = files && files.filter(item => item.FileId !== FileId)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (FileId == null) {
+      let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
     }
   }
 
@@ -676,6 +751,85 @@ function ApproveRejectDrawer(props) {
                   />
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
+                {
+                  isSimulation &&
+                  <div className="col-md-12 drawer-attachment">
+                    <div className="d-flex w-100 flex-wrap">
+                      <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
+                    </div>
+                    <div className="d-flex w-100 flex-wrap pt-2">
+                      {<>
+                        <Col md="12" className="p-0">
+                          <label>Upload Attachment (upload up to 2 files)</label>
+                          {files && files.length >= 2 ? (
+                            <div class="alert alert-danger" role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                          ) : (
+                            <Dropzone
+                              getUploadParams={getUploadParams}
+                              onChangeStatus={handleChangeStatus}
+                              PreviewComponent={Preview}
+                              // onSubmit={handleImapctSubmit}
+                              accept="*"
+                              initialFiles={initialFiles}
+                              maxFiles={4}
+                              maxSizeBytes={2000000000}
+                              inputContent={(files, extra) =>
+                                extra.reject ? (
+                                  "Image, audio and video files only"
+                                ) : (
+                                  <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                      Drag and Drop or{" "}
+                                      <span className="text-primary">Browse</span>
+                                      <br />
+                              file to upload
+                          </span>
+                                  </div>
+                                )
+                              }
+                              styles={{
+                                dropzoneReject: {
+                                  borderColor: "red",
+                                  backgroundColor: "#DAA",
+                                },
+                                inputLabel: (files, extra) =>
+                                  extra.reject ? { color: "red" } : {},
+                              }}
+                              classNames="draper-drop"
+                              disabled={type === 'Sender' ? false : true}
+                            />
+                          )}
+                        </Col>
+                        <div className="w-100">
+                          <div className={"attachment-wrapper mt-0 mb-3"}>
+                            {files &&
+                              files.map((f) => {
+                                const withOutTild = f.FileURL.replace("~", "");
+                                const fileURL = `${FILE_URL}${withOutTild}`;
+                                return (
+                                  <div className={"attachment images"}>
+                                    <a href={fileURL} target="_blank">
+                                      {f.OriginalFileName}
+                                    </a>
+                                    <img
+                                      alt={""}
+                                      className="float-right"
+                                      onClick={() => deleteFile(f.FileId, f.FileName)}
+                                      src={redcrossImg}
+                                    ></img>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </>
+                      }
+                    </div>
+                  </div>
+                }
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">

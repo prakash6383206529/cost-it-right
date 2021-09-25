@@ -110,10 +110,10 @@ class IndivisualProductListing extends Component {
             LoggedInUserId: loggedInUserId()
         }
         this.props.deleteProduct(obj, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.getTableListData();
-            }
+            // if (res.data.Result === true) {
+            //     toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+            //     // this.getTableListData();
+            // }
         });
     }
 
