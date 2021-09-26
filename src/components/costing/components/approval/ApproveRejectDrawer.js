@@ -318,8 +318,8 @@ function ApproveRejectDrawer(props) {
         senderObj.ReasonId = reason ? reason.value : ''
         senderObj.Reason = reason ? reason.label : ''
         // senderObj.ApprovalToken = 0
-        senderObj.DepartmentId = userDetails().DepartmentId
-        senderObj.DepartmentName = userDetails().Department
+        senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+        senderObj.DepartmentName = dept && dept.label ? dept.label : ''
         senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
         senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
@@ -424,18 +424,25 @@ function ApproveRejectDrawer(props) {
   const handleDepartmentChange = (value) => {
     setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
     let tempDropdownList = []
-    let obj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: value.value,
-      TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+    let obj
+    let simObj
+    if (!isSimulation) {
+
+      obj = {
+        LoggedInUserId: loggedInUserId(), // user id
+        DepartmentId: value.value,
+        TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+      }
+    } else {
+
+      simObj = {
+        LoggedInUserId: loggedInUserId(), // user id
+        DepartmentId: value.value,
+        TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+        ReasonId: 0
+      }
     }
 
-    let simObj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: value.value,
-      TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-      ReasonId: 0
-    }
 
     if (!isSimulation) {
       dispatch(
@@ -584,7 +591,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={false}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={true}
+                        disabled={userData.Department.length > 1 ? false : true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -600,7 +607,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={false}
                         handleChange={() => { }}
-                        disabled={true}
+                        disabled={userData.Department.length > 1 ? false : true}
                         errors={errors.approver}
                       />
                     </div>
@@ -624,7 +631,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={true}
+                        disabled={userData.Department.length > 1 ? false : true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -641,7 +648,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.approver}
-                        disabled={true}
+                        disabled={userData.Department.length > 1 ? false : true}
                       />
                     </div>
                     {

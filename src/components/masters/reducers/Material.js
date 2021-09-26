@@ -1,3 +1,4 @@
+import { li } from 'react-dom-factories';
 import {
     API_REQUEST, API_FAILURE, CREATE_MATERIAL_SUCCESS, CREATE_MATERIAL_FAILURE, GET_RM_LIST_SUCCESS, GET_RM_GRADE_LIST_SUCCESS,
     GET_GRADE_DATA_SUCCESS, GET_RM_CATEGORY_LIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS, GET_SPECIFICATION_DATA_SUCCESS, GET_MATERIAL_LIST_SUCCESS,
@@ -298,19 +299,16 @@ export default function materialReducer(state = initialState, action) {
                 filteredRMData: action.payload
             }
         case GET_ALL_MASTER_APPROVAL_DEPARTMENT:
+            const list = action.payload
+            const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+            const updateList = list && list.filter(item => Departments.includes(item.Text))
+
             return {
                 ...state,
                 loading: false,
-                deptList: action.payload
+                deptList: updateList
             }
         case GET_RM_APPROVAL_LIST:
-            // let temp1 = []
-            // let temp = action.payload
-            // temp && temp.map((item) => {
-            //     if (item.DepartmentName === userDetails().Department) {
-            //         temp1.push(item)
-            //     }
-            // })
 
             return {
                 ...state,
