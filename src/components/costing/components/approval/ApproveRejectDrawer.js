@@ -94,7 +94,7 @@ function ApproveRejectDrawer(props) {
           DepartmentId: departObj[0].Value,
           //NEED TO MAKE THIS 2   
           TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-          ReasonId: 0
+          ReasonId: reasonId
         }
 
         dispatch(
