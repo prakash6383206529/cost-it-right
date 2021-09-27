@@ -713,7 +713,7 @@ class MachineRateListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter'></AgGridColumn>

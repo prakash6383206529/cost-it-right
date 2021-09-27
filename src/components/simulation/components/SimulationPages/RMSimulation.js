@@ -25,7 +25,6 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    console.log("RM SIMULATIOn");
     const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)

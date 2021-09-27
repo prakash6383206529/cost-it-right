@@ -324,8 +324,6 @@ class AddRMDomestic extends Component {
 
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
-    console.log('newValue: ', newValue.target.value);
-    console.log(fieldsObj.BasicRate, "fieldsObj.BasicRate");
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
       toastr.warning("Scrap rate should not be greater than basic rate")
       return false

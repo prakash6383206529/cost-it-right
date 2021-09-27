@@ -102,8 +102,6 @@ function AddPackaging(props) {
   const calculateApplicabilityCost = (Text) => {
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
-    console.log('OperationCostTotal: ', OperationCostTotal);
-    console.log('ProcessCostTotal: ', ProcessCostTotal);
     const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
     const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
     const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
@@ -114,7 +112,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), getConfigurationKey().No))
+          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), getConfigurationKey().NoOfDecimalForPrice))
         }
         break;
 
@@ -130,7 +128,6 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          console.log("Coming in CC else");
           setValue('PackagingCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(PackagingCostPercentage), getConfigurationKey().NoOfDecimalForPrice))
         }
         break;

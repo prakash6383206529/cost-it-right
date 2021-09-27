@@ -258,6 +258,9 @@ export default function materialReducer(state = initialState, action) {
                 MaterialSelectList: action.payload
             };
         case GET_RM_DOMESTIC_LIST:
+            // const list1 = action.payload
+            // const Departments1 = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+            // const updateList1 = list1 && list1.filter(item => Departments1.includes(item.DepartmentName))
             return {
                 ...state,
                 loading: false,
