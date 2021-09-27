@@ -93,7 +93,7 @@ function PushSection(props) {
     return (
         <>
             <Row className="pl-3">
-                <Col md="6">
+                {/* <Col md="6">
                     <TextFieldHookForm
                         label="Company Code"
                         name={"CompanyCode"}
@@ -108,7 +108,7 @@ function PushSection(props) {
                         errors={errors.CompanyCode}
                         disabled={true}
                     />
-                </Col>
+                </Col> */}
                 {/* </Row> */}
                 {/* <Row className="pl-3"> */}
                 <Col md="6">

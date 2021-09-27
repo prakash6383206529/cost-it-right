@@ -10,6 +10,7 @@ import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { setPlasticArray } from '../../actions/Costing'
+import { TRUE } from 'node-sass'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary } = props
@@ -142,7 +143,7 @@ function Plastic(props) {
       scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
-    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
+    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -275,7 +276,9 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode :
+                      getPlasticData && getPlasticData.length > 0 ? true :
+                        WeightCalculatorRequest.LossOfTypeDetails ? true : false}
                   />
                 </Col>
                 <Col md="3">
