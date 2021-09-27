@@ -729,6 +729,23 @@ class RMImportListing extends Component {
                   </div>
                   <div className="flex-fill">
                     <Field
+                      name="VendorId"
+                      type="text"
+                      label={""}
+                      component={searchableSelect}
+                      placeholder={"Vendor"}
+                      isClearable={false}
+                      options={this.renderListing("VendorNameList")}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={
+                        this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handleVendorName}
+                      valueDescription={this.state.vendorName}
+                    />
+                  </div>
+                  <div className="flex-fill">
+                    <Field
                       name="Plant"
                       type="text"
                       label=""
@@ -800,23 +817,7 @@ class RMImportListing extends Component {
                       valueDescription={this.state.RMGrade}
                     />
                   </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="VendorId"
-                      type="text"
-                      label={""}
-                      component={searchableSelect}
-                      placeholder={"Vendor"}
-                      isClearable={false}
-                      options={this.renderListing("VendorNameList")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={
-                        this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                      required={true}
-                      handleChangeDescription={this.handleVendorName}
-                      valueDescription={this.state.vendorName}
-                    />
-                  </div>
+
                   <div className="flex-fill sliderange">
                     <InputRange
                       maxValue={this.state.maxRange}
