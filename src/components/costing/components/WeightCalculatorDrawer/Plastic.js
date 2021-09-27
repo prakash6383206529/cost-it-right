@@ -10,7 +10,6 @@ import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { setPlasticArray } from '../../actions/Costing'
-import { TRUE } from 'node-sass'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary } = props
@@ -276,10 +275,12 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
+
                     disabled={props.CostingViewMode ? props.CostingViewMode :
                       getPlasticData && getPlasticData.length > 0 ? true :
                         WeightCalculatorRequest.LossOfTypeDetails ? true : false}
                   />
+
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
