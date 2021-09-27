@@ -354,7 +354,6 @@ function CopyCosting(props) {
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
-      console.log("res", res);
       const Data = res.data.Data
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
         dispatch(
@@ -385,7 +384,7 @@ function CopyCosting(props) {
           component: () => <ConfirmComponent />
         }
         console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
-        return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
+        return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsBOPExist ? 'Insert,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
       }
     }))
 

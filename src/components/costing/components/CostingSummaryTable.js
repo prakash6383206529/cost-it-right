@@ -840,7 +840,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class="background-light-blue">
-                      <th>Net BOP Cost</th>
+                      <th>Net Insert Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (

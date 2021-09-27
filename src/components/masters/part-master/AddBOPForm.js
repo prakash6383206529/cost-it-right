@@ -159,15 +159,15 @@ class AddBOPForm extends Component {
           className="form"
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-          >
+        >
           <Row>
             <Col md="6">
               <Field
                 name="BOPPartNumber"
                 type="text"
-                label={"BOP Part No."}
+                label={"Insert Part No."}
                 component={searchableSelect}
-                placeholder={"BOP Part"}
+                placeholder={"Insert Part"}
                 options={this.renderListing("BOPPart")}
                 //onKeyUp={(e) => this.changeItemDesc(e)}
                 validate={
@@ -183,7 +183,7 @@ class AddBOPForm extends Component {
             </Col>
             <Col md="6">
               <Field
-                label={`BOP Part Name`}
+                label={`Insert Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -198,7 +198,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`BOP Category`}
+                label={`Insert Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}

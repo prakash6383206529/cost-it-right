@@ -516,9 +516,9 @@ class SOBListing extends Component {
                   frameworkComponents={frameworkComponents}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                  <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                   <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="NoOfVendors" headerName="No of Vendors"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>

@@ -566,7 +566,7 @@ class BOPImportListing extends Component {
                                         DownloadAccessibility &&
                                         <>
 
-                                            <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={'Insert Import'} fileExtension={'.xls'} element={
                                                 <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                 </button>}>
@@ -617,9 +617,9 @@ class BOPImportListing extends Component {
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
@@ -647,9 +647,9 @@ class BOPImportListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'BOPImport'}
+                    fileName={'InsertImport'}
                     isZBCVBCTemplate={true}
-                    messageLabel={'BOP Import'}
+                    messageLabel={'Insert Import'}
                     anchor={'right'}
                 />}
             </div >
