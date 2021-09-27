@@ -1168,6 +1168,7 @@ function TabRMCC(props) {
                         <tbody>
                           {
                             RMCCTabData && RMCCTabData.map((item, index) => {
+                              console.log('RMCCTabData: ', RMCCTabData);
                               if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
 
                                 return (

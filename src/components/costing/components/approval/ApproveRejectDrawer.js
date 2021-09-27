@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFie
 import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { INR, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
@@ -94,7 +94,7 @@ function ApproveRejectDrawer(props) {
           DepartmentId: departObj[0].Value,
           //NEED TO MAKE THIS 2   
           TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-          ReasonId: reasonId
+          ReasonId: 0
         }
 
         dispatch(
@@ -591,7 +591,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={false}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={userData.Department.length > 1 ? false : true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -607,7 +607,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={false}
                         handleChange={() => { }}
-                        disabled={userData.Department.length > 1 ? false : true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                         errors={errors.approver}
                       />
                     </div>
@@ -631,7 +631,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={userData.Department.length > 1 ? false : true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -648,7 +648,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.approver}
-                        disabled={userData.Department.length > 1 ? false : true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     {

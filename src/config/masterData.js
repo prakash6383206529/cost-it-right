@@ -2630,7 +2630,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingVersion", value: "CostingVersion", },
     { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Company", value: "Company" },
+    { label: "Company", value: "DepartmentName" },
     { label: "CreatedDate", value: "CreatedDate", },
     { label: "Status", value: "Status", },
     { label: "NetPOPrice", value: "NetPOPrice", },
@@ -2673,7 +2673,9 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "AnyOtherCost", value: "AnyOtherCost", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
-    { label: "CreatedBy", value: "CreatedBy", }
+    { label: "CreatedBy", value: "CreatedBy", },
+    { label: 'SANumber', value: 'SANumber' },
+    { label: 'LineNumber', value: 'LineNumber' }
 ]
 export const REPORT_DOWNLOAD_SAP_EXCEl = [
     { label: "Sr No", value: "SrNo" }, //Serial no

@@ -277,8 +277,9 @@ function Plastic(props) {
                     errors={errors.netWeight}
 
                     disabled={props.CostingViewMode ? props.CostingViewMode :
-                      getPlasticData && getPlasticData.length > 0 ? true :
-                        WeightCalculatorRequest.LossOfTypeDetails ? true : false}
+                      getPlasticData ? getPlasticData.length > 0 ? true : false
+                        :
+                        WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
                   />
 
                 </Col>

@@ -497,7 +497,6 @@ function CostingDetails(props) {
     nextToggle()
     setIsCopyCostingDrawer(false)
     dispatch(getZBCCostingByCostingId('', (res) => { }))
-    console.log('res from after copy costig before if: ');
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
@@ -511,7 +510,6 @@ function CostingDetails(props) {
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
-        console.log('res from after copy costig: ', res);
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -722,7 +720,6 @@ function CostingDetails(props) {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
 
-            console.log('res from after copy costig add detail: ', res);
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -855,8 +852,6 @@ function CostingDetails(props) {
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
-
-          console.log('res from after copy costig from update costing confirm: ', res);
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -888,8 +883,6 @@ function CostingDetails(props) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
-
-        console.log('res from after copy costig move to costing : ', res);
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1058,8 +1051,6 @@ function CostingDetails(props) {
    */
   const backToFirstStep = () => {
     dispatch(getZBCCostingByCostingId('', (res) => {
-
-      console.log('res from after copy costig back to step one: ', res);
     }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER

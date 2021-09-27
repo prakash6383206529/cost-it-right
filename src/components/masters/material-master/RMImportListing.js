@@ -29,7 +29,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -99,7 +99,7 @@ class RMImportListing extends Component {
         RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-        departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+        departmentCode: isSimulation ? userDepartmetList() : "",
         statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         value: { min: 0, max: 0 },
       }, () => {
@@ -130,7 +130,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+      departmentCode: isSimulation ? userDepartmetList() : "",
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
@@ -192,7 +192,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+      departmentCode: isSimulation ? userDepartmetList() : "",
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
