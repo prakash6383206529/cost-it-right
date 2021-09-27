@@ -3174,6 +3174,14 @@ opacity: 0.5;
 .bs-tooltip-auto[x-placement^=top] .arrow::before, .bs-tooltip-top .arrow::before{
   border-top-color: #D0D8E5;
 }
+.fade.show {
+  z-index: 0 !important;
+  background-color: transparent;
+  color: transparent;
+}
+.tooltip.show.bs-tooltip-auto {
+  z-index: 9999;
+}
 // ========tooltip css=============
 .tooltip-n {
   position: relative;

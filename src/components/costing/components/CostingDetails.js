@@ -27,6 +27,7 @@ import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import AsyncSelect from 'react-select/async';
+import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
 
@@ -1463,8 +1464,8 @@ function CostingDetails(props) {
                           errors={errors.Technology}
                         />
                       </Col>
-
                       <Col className="col-md-15">
+                      <TooltipCustom tooltipText="Please enter first few digits to see the part numbers"/>
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
