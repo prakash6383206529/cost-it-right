@@ -279,7 +279,7 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'BOP Cost:'}
+                {'Insert Cost:'}
               </div>
             </Col>
             <Col md={'2'}>
@@ -287,7 +287,7 @@ function BOPCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD BOP</button>}
+                <div className={'plus'}></div>ADD INSERT</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -298,11 +298,11 @@ function BOPCost(props) {
                 <Table className="table cr-brdr-main costing-bop-cost-section" size="sm" >
                   <thead>
                     <tr>
-                      <th>{`BOP Part No.`}</th>
-                      <th>{`BOP Part Name`}</th>
-                      <th style={{ width: "220px" }} >{`BOP Cost(INR)`}</th>
+                      <th>{`Insert Part No.`}</th>
+                      <th>{`Insert Part Name`}</th>
+                      <th style={{ width: "220px" }} >{`Insert Cost(INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
-                      <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
+                      <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -384,7 +384,7 @@ function BOPCost(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
                   >
-                    Apply BOP Handling Charges
+                    Apply Insert Handling Charges
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}

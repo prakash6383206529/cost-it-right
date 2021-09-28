@@ -16,6 +16,7 @@ export const config = {
 
 // DEVELOPMENT MIL URL
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
 
 
 //DEVELOPMENT MIL URL
@@ -702,7 +703,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
-  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
+  getTopAndLeftMenuData: `${BASE_URL}/app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -856,6 +857,7 @@ export const API = {
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
+  uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,

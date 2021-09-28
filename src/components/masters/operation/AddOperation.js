@@ -645,9 +645,9 @@ class AddOperation extends Component {
                           name={"OperationCode"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength10, checkWhiteSpaces]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength10, checkWhiteSpaces, required]}
                           component={renderText}
-                          //required={true}
+                          required={true}
                           onBlur={this.checkUniqCode}
                           disabled={(isEditFlag || isDisableCode) ? true : false}
                           className=" "

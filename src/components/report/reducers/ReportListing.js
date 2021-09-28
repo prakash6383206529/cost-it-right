@@ -23,17 +23,13 @@ export default function ReportListingReducers(state = initialState, action) {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
                 } else {
-                    if (item.Company === userDetails().Department) {
-                        item.PersonRequestingChange = userDetails().Name
-                        sr = sr + 1
-                        item.SrNo = sr
-                        Arr.push(item)
-                    }
+                    item.PersonRequestingChange = userDetails().Name
+                    sr = ''
+                    item.SrNo = sr
+                    Arr.push(item)
                 }
 
             })
-
-            console.log(Arr, "ArrArr");
             return {
                 ...state,
                 loading: false,

@@ -31,6 +31,7 @@ function MasterSendForApproval(props) {
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
+    const Departments = userDetails().Department
 
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
@@ -140,8 +141,8 @@ function MasterSendForApproval(props) {
             senderObj.Reason = reason ? reason.label : ''
             senderObj.IsFinalApproved = false
             // senderObj.ApprovalToken = 0
-            senderObj.DepartmentId = userDetails().DepartmentId
-            senderObj.DepartmentName = userDetails().Department
+            senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+            senderObj.DepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
@@ -184,8 +185,8 @@ function MasterSendForApproval(props) {
             obj.SenderLevelId = userDetails().LoggedInMasterLevelId
             obj.SenderId = loggedInUserId()
             obj.SenderLevel = userDetails().LoggedInMasterLevel
-            obj.SenderDepartmentId = userDetails().DepartmentId
-            obj.SenderDepartmentName = userDetails().Department
+            obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
+            obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             obj.ApproverId = approver && approver.value ? approver.value : ''
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
@@ -254,14 +255,14 @@ function MasterSendForApproval(props) {
                                                 placeholder={"-Select-"}
                                                 Controller={Controller}
                                                 control={control}
-                                                rules={{ required: false }}
+                                                rules={{ required: true }}
                                                 register={register}
                                                 defaultValue={""}
                                                 options={renderDropdownListing("Dept")}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={true}
+                                                disabled={Departments.length > 1 ? false : true}
                                             />
                                         </div>
                                         <div className="input-group form-group col-md-12 input-withouticon">
@@ -271,13 +272,13 @@ function MasterSendForApproval(props) {
                                                 placeholder={'-Select-'}
                                                 Controller={Controller}
                                                 control={control}
-                                                rules={{ required: false }}
+                                                rules={{ required: true }}
                                                 register={register}
                                                 //defaultValue={isEditFlag ? plantName : ''}
                                                 options={approvalDropDown}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
-                                                disabled={true}
+                                                disabled={Departments.length > 1 ? false : true}
                                                 errors={errors.approver}
                                             />
                                         </div>

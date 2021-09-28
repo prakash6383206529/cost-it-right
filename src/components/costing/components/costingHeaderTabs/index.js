@@ -46,6 +46,7 @@ function CostingHeaderTabs(props) {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
+
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,

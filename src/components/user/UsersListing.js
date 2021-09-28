@@ -586,7 +586,6 @@ class UsersListing extends Component {
 								floatingFilter={true}
 								domLayout='autoHeight'
 								// columnDefs={c}
-								domLayout='autoHeight'
 								rowData={this.props.userDataList}
 								pagination={true}
 								paginationPageSize={10}
@@ -607,8 +606,8 @@ class UsersListing extends Component {
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								{getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
-								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>}
+								{getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
+								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

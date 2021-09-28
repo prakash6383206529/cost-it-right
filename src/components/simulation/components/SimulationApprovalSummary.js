@@ -107,7 +107,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -116,7 +116,7 @@ function SimulationApprovalSummary(props) {
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
-                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption
+                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId
             })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
@@ -593,14 +593,14 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Technology:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</span>
                                             </th>
-                                            {/* <th className="align-top">
-                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
-                                                <span className="d-block">{'121'}</span>
-                                            </th> */}
                                             <th className="align-top">
+                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
+                                            </th>
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
-                                            </th>
+                                            </th> */}
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -627,11 +627,11 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
-                                                <span className="d-block">{'120'}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForAnnum}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
-                                                <span className="d-block">{'12001'}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForTheQuarter}</span>
                                             </th> */}
                                         </tr>
                                     </thead>
@@ -837,10 +837,11 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
 
                                                                 {
-                                                                    !String(SimulationTechnologyId) === EXCHNAGERATE &&
-                                                                    <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                    <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "PO Price Old"}></AgGridColumn>
                                                                 {
@@ -1043,6 +1044,9 @@ domLayout='autoHeight'
                 IsFinalLevel={showFinalLevelButtons}
                 IsPushDrawer={showPushDrawer}
                 showFinalLevelButtons={showFinalLevelButtons}
+                Attachements={simulationDetail.Attachements}
+                reasonId={simulationDetail.SenderReasonId}
+            // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}
 
@@ -1055,9 +1059,11 @@ domLayout='autoHeight'
                 //  tokenNo={approvalNumber}
                 anchor={'right'}
                 IsFinalLevel={!showFinalLevelButtons}
-            // reasonId={approvalDetails.ReasonId}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
+                // reasonId={approvalDetails.ReasonId}
+                // IsPushDrawer={showPushDrawer}
+                // dataSend={[approvalDetails, partDetail]}
+                Attachements={simulationDetail.Attachements}
+                reasonId={simulationDetail.SenderReasonId}
             />}
 
             {pushButton && <PushButtonDrawer

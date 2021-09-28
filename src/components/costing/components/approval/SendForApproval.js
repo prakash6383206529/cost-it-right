@@ -680,7 +680,7 @@ const SendForApproval = (props) => {
                             register={register}
                             defaultValue={""}
                             options={renderDropdownListing("Dept")}
-                            disabled={true}
+                            disabled={userData.Department.length > 1 ? false : true}
                             mandatory={false}
                             handleChange={handleDepartmentChange}
                             errors={errors.dept}
@@ -698,7 +698,7 @@ const SendForApproval = (props) => {
                             defaultValue={""}
                             options={approvalDropDown}
                             mandatory={false}
-                            disabled={true}
+                            disabled={userData.Department.length > 1 ? false : true}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
                           />

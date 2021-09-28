@@ -7,7 +7,7 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
-
+import TooltipCustom from '../../common/Tooltip';
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
@@ -174,7 +174,9 @@ class AddComponentForm extends Component {
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
           <Row>
+          
             <Col md="6">
+            <TooltipCustom tooltipText="Please enter first few digits to see the part numbers"/>
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {/* <Field

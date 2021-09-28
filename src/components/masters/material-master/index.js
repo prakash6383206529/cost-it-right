@@ -214,7 +214,7 @@ class RowMaterialMaster extends Component {
                                         this.toggle('6');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
-                                        RM Approval
+                                        Approval Status
                                     </NavLink>
                                 </NavItem>}
                             </Nav>

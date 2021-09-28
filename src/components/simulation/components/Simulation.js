@@ -215,12 +215,12 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
-                            setEditWarning(true);
-                            vendorFlag = false
-                            return false
-                        }
+                        // if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
+                        //     // toastr.warning('Please select one vendor at a time.')
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        //     return false
+                        // }
                         if (userDetails().Role !== 'Group Category Head') {
                             if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
                                 // toastr.warning('Please select one Plant at a time.')
@@ -246,12 +246,12 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        if (element.VendorName !== rmImportListing[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
-                            setEditWarning(true);
-                            vendorFlag = false
-                            return false
-                        }
+                        // if (element.VendorName !== rmImportListing[index - 1].VendorName) {
+                        //     // toastr.warning('Please select one vendor at a time.')
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        //     return false
+                        // }
                         if (userDetails().Role !== 'Group Category Head') {
 
                             if (element.PlantId !== rmImportListing[index - 1].PlantId) {
@@ -298,10 +298,8 @@ function Simulation(props) {
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
         const masterId = location?.state?.master
-        console.log('masterId: ', masterId);
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
         if (getOtherCostingSimulation(String(masterId))) {
-            console.log(masterId, "masterIdmasterId");
             return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
@@ -373,7 +371,7 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant and Vendor from the filters before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant  from the filters before editing'} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {

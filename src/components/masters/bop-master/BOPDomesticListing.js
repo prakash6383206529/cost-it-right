@@ -574,7 +574,7 @@ class BOPDomesticListing extends Component {
                                         DownloadAccessibility &&
                                         <>
 
-                                            <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={'Insert Domestic'} fileExtension={'.xls'} element={
                                                 <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                 </button>}>
@@ -624,9 +624,9 @@ class BOPDomesticListing extends Component {
                                 >
 
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
@@ -654,9 +654,9 @@ class BOPDomesticListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'BOPDomestic'}
+                    fileName={'InsertDomestic'}
                     isZBCVBCTemplate={true}
-                    messageLabel={'BOP Domestic'}
+                    messageLabel={'Insert Domestic'}
                     anchor={'right'}
                 />}
             </div >

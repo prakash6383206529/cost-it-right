@@ -27,6 +27,7 @@ import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import AsyncSelect from 'react-select/async';
+import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
 
@@ -719,6 +720,7 @@ function CostingDetails(props) {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -1049,7 +1051,8 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getZBCCostingByCostingId('', (res) => {
+    }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
@@ -1461,8 +1464,8 @@ function CostingDetails(props) {
                           errors={errors.Technology}
                         />
                       </Col>
-
                       <Col className="col-md-15">
+                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
@@ -1747,7 +1750,7 @@ function CostingDetails(props) {
                                         </td>
                                         <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td style={{ width: "250px" }}>
-                                          {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
+                                          {/* {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />} */}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
                                           {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
@@ -1880,7 +1883,7 @@ function CostingDetails(props) {
                                       </td>
                                       <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
+                                        {/* {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />} */}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
                                         {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}

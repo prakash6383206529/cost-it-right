@@ -411,17 +411,16 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-                        <AgGridColumn field="Company" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                         <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
-                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -429,7 +428,7 @@ function ReportListing(props) {
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
-                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
+                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net Insert Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>
                         <AgGridColumn field="NetOperationCost" headerName="Operation Cost"></AgGridColumn>
                         <AgGridColumn field="SurfaceTreatmentCost" headerName="Surface Treatment"></AgGridColumn>
@@ -463,6 +462,8 @@ function ReportListing(props) {
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
+                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
+                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
                         <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right">

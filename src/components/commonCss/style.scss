@@ -3198,6 +3198,14 @@ opacity: 0.5;
 .bs-tooltip-auto[x-placement^=top] .arrow::before, .bs-tooltip-top .arrow::before{
   border-top-color: #D0D8E5;
 }
+.fade.show {
+  z-index: 0 !important;
+  background-color: transparent;
+  color: transparent;
+}
+.tooltip.show.bs-tooltip-auto {
+  z-index: 9999;
+}
 // ========tooltip css=============
 .tooltip-n {
   position: relative;
@@ -4539,14 +4547,26 @@ body{
 .surface-treatment-btn{white-space: nowrap;}
 .impacted-min-height {
   .add-min-height {
-    min-height: calc(100vh - 350px);
-    height: calc(100vh - 350px);
+    min-height: auto !important;
+    height: auto !important;
+  }
+}
+.simulation-main {
+   .nodate-section {
+        img {
+          margin-top: 25px;;
+        }
   }
 }
 .nodata-found-container {
   margin-top: 120px !important;
 }
-
+// .operation-nodata {
+//   margin-top: 60px !important;
+//   img {
+//     margin-top: 10px;
+//   }
+// }
 // responsive media query start
 @media(max-width:1600px){
 
@@ -4691,10 +4711,23 @@ body{
 @media(min-width:1600px) {
   .impacted-min-height {
     .add-min-height {
-      min-height: calc(100vh - 500px);
-      height: calc(100vh - 500px);
+      min-height: auto;
+      // height: calc(100vh - 260px);
     }
   }
+    .exchange-rate {
+      .ag-grid-wrapper {
+        min-height: calc(100vh - 268px) !important;
+      }
+    }
+}
+@media(max-height:900px) {
+  .impacted-min-height {
+    .add-min-height {
+  min-height: calc(100vh - 380px);
+  // height: calc(100vh - 380px);
+  }
+}
 }
 @media(max-width:1366px){
   .overhead-profit-tab-costing{
@@ -4795,8 +4828,8 @@ body{
   }
   .impacted-min-height {
     .add-min-height {
-      min-height: calc(100vh - 260px);
-      height: calc(100vh - 260px);
+      min-height: auto;
+      // height: calc(100vh - 260px);
     }
   }
   .tooltip-inner{
@@ -4828,7 +4861,7 @@ body{
     }
   }
   .simulation-page{
-    .empty-table-paecholder{min-height: 384px;}
+    .empty-table-paecholder{min-height: 494px;}
     .sf-btn-footer{
       margin: 0 -27px -12px;
     }
@@ -6161,4 +6194,10 @@ body{
   cursor: pointer;
   background-position: center;
   display: inline-block;
+}
+.grant-user-grid table  th:nth-child(1), .grant-user-grid table th:nth-child(2) span {
+  font-size: 14px;
+  @media (max-width:1366px) {
+    font-size: calc(14px * 80/100);
+  }
 }

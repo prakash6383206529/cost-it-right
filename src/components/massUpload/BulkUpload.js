@@ -297,25 +297,25 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'ZBC') {
+        } else if (fileName === 'InsertDomestic' && costingHead === 'ZBC') {
 
             this.props.bulkUploadBOPDomesticZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'VBC') {
+        } else if (fileName === 'InsertDomestic' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPDomesticVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'ZBC') {
+        } else if (fileName === 'InsertImport' && costingHead === 'ZBC') {
 
             this.props.bulkUploadBOPImportZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
+        } else if (fileName === 'InsertImport' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPImportVBC(uploadData, (res) => {
                 this.responseHandler(res)

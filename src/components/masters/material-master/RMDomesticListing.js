@@ -27,7 +27,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData, loggedInUserId, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -58,6 +58,8 @@ var filterParams = {
     browserDatePicker: true,
     minValidYear: 2000,
 };
+
+
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -98,7 +100,8 @@ class RMDomesticListing extends Component {
                 RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
                 RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
                 vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-                departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+                // departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+                departmentCode: isSimulation ? userDepartmetList() : "",
                 statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
                 value: { min: 0, max: 0 },
             }, () => {
@@ -138,7 +141,7 @@ class RMDomesticListing extends Component {
             technologyId: this.props.isSimulation ? this.props.technology : 0,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
-            departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+            departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
 
@@ -199,7 +202,7 @@ class RMDomesticListing extends Component {
             technologyId: this.props.isSimulation ? this.props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
-            departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+            departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
@@ -722,6 +725,23 @@ class RMDomesticListing extends Component {
                                     </div>
                                     <div className="flex-fill">
                                         <Field
+                                            name="VendorId"
+                                            type="text"
+                                            label={""}
+                                            component={searchableSelect}
+                                            placeholder={"Vendor"}
+                                            isClearable={false}
+                                            options={this.renderListing("VendorNameList")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleVendorName}
+                                            valueDescription={this.state.vendorName}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
                                             name="Plant"
                                             type="text"
                                             label=""
@@ -788,23 +808,7 @@ class RMDomesticListing extends Component {
                                             valueDescription={this.state.RMGrade}
                                         />
                                     </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorId"
-                                            type="text"
-                                            label={""}
-                                            component={searchableSelect}
-                                            placeholder={"Vendor"}
-                                            isClearable={false}
-                                            options={this.renderListing("VendorNameList")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                        />
-                                    </div>
+
                                     <div className="flex-fill sliderange ">
                                         <InputRange
                                             //formatLabel={value => `${value}cm`}
