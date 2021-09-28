@@ -536,9 +536,9 @@ class AddVendorDrawer extends Component {
                                             name={"Email"}
                                             type="email"
                                             //placeholder={'email@domain.com/co.us'}
-                                            validate={[required, email, minLength7, maxLength70]}
+                                            validate={[email, minLength7, maxLength70]}
                                             component={renderEmailInputField}
-                                            required={true}
+                                            required={false}
                                             customClassName={'withBorder '}
                                             className=" "
 

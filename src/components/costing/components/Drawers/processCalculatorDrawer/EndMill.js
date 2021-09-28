@@ -164,14 +164,14 @@ function EndMill(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={''}>
+            <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cutter Diameter(mm)`}
                         name={'cutterDiameter'}
@@ -196,7 +196,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Length of Area Cut(mm)`}
                         name={'cutLengthOfArea'}
@@ -221,7 +221,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Width of area to cut(mm)`}
                         name={'areaWidth'}
@@ -246,7 +246,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`No. of slots/T-nut entry`}
                         name={'slotNo'}
@@ -274,7 +274,7 @@ function EndMill(props) {
                   </Row>
 
                   <Row>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -299,7 +299,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Material To be removed`}
                         name={'removedMaterial'}
@@ -323,7 +323,7 @@ function EndMill(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -348,7 +348,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -364,7 +364,7 @@ function EndMill(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`No. of Teeth on Cutter`}
                         name={'toothNo'}
@@ -380,7 +380,7 @@ function EndMill(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/ Tooth`}
                         name={'toothFeed'}
@@ -404,7 +404,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -420,7 +420,7 @@ function EndMill(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -444,7 +444,7 @@ function EndMill(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -460,7 +460,7 @@ function EndMill(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -485,7 +485,7 @@ function EndMill(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
@@ -501,7 +501,7 @@ function EndMill(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4"></Col>
+                    <Col md="3"></Col>
                   </Row>
                 </Col>
 

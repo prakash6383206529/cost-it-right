@@ -602,6 +602,7 @@ class AddMachineRate extends Component {
       UOM: [],
       processGridEditIndex: '',
       isEditIndex: false,
+
     }, () => this.props.change('MachineRate', 0));
   };
 

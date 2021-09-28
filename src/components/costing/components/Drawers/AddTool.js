@@ -373,7 +373,7 @@ function AddTool(props) {
                       className="submit-button save-btn"
                       onClick={addRow}
                     >
-                      <div className={'save-icon'}></div>
+                                          <div className={'save-icon'}></div>
                       {'Save'}
                     </button>
                   </div>

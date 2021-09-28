@@ -72,7 +72,7 @@ class AddChildDrawer extends Component {
         const { isEditFlag, childType } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
@@ -122,7 +122,7 @@ class AddChildDrawer extends Component {
                                                 checked={childType === BOUGHTOUTPART ? true : false}
                                                 onClick={() => this.checkRadio(BOUGHTOUTPART)}
                                             />{' '}
-                                            <span>Bought Out Part</span>
+                                            <span>Insert</span>
                                         </Label>
                                     </Col>
                                 </Row>

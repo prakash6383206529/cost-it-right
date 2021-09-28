@@ -22,10 +22,9 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation } from '../../../helper';
+import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
-
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -83,9 +82,11 @@ function Simulation(props) {
         setValue('Technology', '')
         dispatch(setMasterForSimulation(value))
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
-            setEditWarning(applyEditCondSimulation(getValues('Masters').value))
+            // setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
+        setEditWarning(applyEditCondSimulation(value.value))
+
     }
 
     const handleTechnologyChange = (value) => {
@@ -154,6 +155,7 @@ function Simulation(props) {
 
     const renderListing = (label) => {
         let temp = []
+
         if (label === 'masters') {
             masterList && masterList.map((item) => {
                 if (item.Value === '0') return false
@@ -213,12 +215,12 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
-                            setEditWarning(true);
-                            vendorFlag = false
-                            return false
-                        }
+                        // if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
+                        //     // toastr.warning('Please select one vendor at a time.')
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        //     return false
+                        // }
                         if (userDetails().Role !== 'Group Category Head') {
                             if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
                                 // toastr.warning('Please select one Plant at a time.')
@@ -244,12 +246,12 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        if (element.VendorName !== rmImportListing[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
-                            setEditWarning(true);
-                            vendorFlag = false
-                            return false
-                        }
+                        // if (element.VendorName !== rmImportListing[index - 1].VendorName) {
+                        //     // toastr.warning('Please select one vendor at a time.')
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        //     return false
+                        // }
                         if (userDetails().Role !== 'Group Category Head') {
 
                             if (element.PlantId !== rmImportListing[index - 1].PlantId) {
@@ -295,11 +297,12 @@ function Simulation(props) {
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
+        const masterId = location?.state?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
-        if (getOtherCostingSimulation(location?.state?.master)) {
-            return <OtherCostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        if (getOtherCostingSimulation(String(masterId))) {
+            return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
         }
-        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
 
 
@@ -317,6 +320,7 @@ function Simulation(props) {
 
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
+
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">
@@ -368,14 +372,19 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant and Vendor from the filters before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant  from the filters before editing'} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                    <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                        {/* {true ? '' : renderColumn(master.label)} */}
-                                        {!editWarning ? renderColumn(master.value) : ''}
-                                    </ExcelFile>
-                                    <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                    {
+                                        !isUploadSimulation(master.value) &&
+                                        <>
+                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {/* {true ? '' : renderColumn(master.label)} */}
+                                                {!editWarning ? renderColumn(master.value) : ''}
+                                            </ExcelFile>
+                                            <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                        </>
+                                    }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
 
 

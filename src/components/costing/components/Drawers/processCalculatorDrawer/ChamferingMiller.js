@@ -183,14 +183,14 @@ function ChamferingMiller(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={''}>
+            <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="12">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cutter Diameter(mm)`}
                         name={'cutterDiameter'}
@@ -215,7 +215,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Length of Area Cut(mm)`}
                         name={'cutLengthOfArea'}
@@ -240,7 +240,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Width of area to cut(mm)`}
                         name={'areaWidth'}
@@ -265,7 +265,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`No. of slots/T-nut entry`}
                         name={'slotNo'}
@@ -293,7 +293,7 @@ function ChamferingMiller(props) {
                   </Row>
 
                   <Row>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -309,7 +309,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Material To be removed`}
                         name={'removedMaterial'}
@@ -334,7 +334,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Depth of cut(mm)`}
                         name={'doc'}
@@ -359,7 +359,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label="No. of Passes"
                         name={'numberOfPasses'}
@@ -383,7 +383,7 @@ function ChamferingMiller(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -408,7 +408,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -424,7 +424,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`No. of Teeth on Cutter`}
                         name={'toothNo'}
@@ -440,7 +440,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/ Tooth`}
                         name={'toothFeed'}
@@ -464,7 +464,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -480,7 +480,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -504,7 +504,7 @@ function ChamferingMiller(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -520,7 +520,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -545,7 +545,7 @@ function ChamferingMiller(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
@@ -561,7 +561,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4"></Col>
+                    <Col md="3"></Col>
                   </Row>
                 </Col>
                 <div className="bluefooter-butn border row">

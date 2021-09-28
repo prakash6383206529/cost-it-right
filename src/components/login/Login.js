@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import {
@@ -60,7 +59,18 @@ class Login extends Component {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
+        let departmentList = ''
+        const dept = userDetail && userDetail.Department.map((item) => {
+          if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
+            return ''
+          } else {
+            return item.DepartmentCode
+          }
+
+        })
+        departmentList = dept.join(',')
         reactLocalStorage.setObject("userDetail", userDetail);
+        reactLocalStorage.setObject("departmentList", departmentList);
         this.props.logUserIn();
         // this.setState({ isRedirect: true })
         setTimeout(() => {

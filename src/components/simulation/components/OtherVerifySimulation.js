@@ -40,6 +40,7 @@ function OtherVerifySimulation(props) {
     const [rowData, setRowData] = useState(null);
     const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
+    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -60,7 +61,7 @@ function OtherVerifySimulation(props) {
                 if (res.data.Result) {
                     const data = res.data.Data
                     if (data.SimulationExchangeRateImpactedCostings.length === 0) {
-                        toastr.warning('No approved costing exist for this raw material.')
+                        toastr.warning('No approved costing exist for this exchange rate.')
                         setHideRunButton(true)
                         return false
                     }
@@ -133,10 +134,10 @@ function OtherVerifySimulation(props) {
     }
 
     const runSimulation = () => {
-        // if (selectedRowData.length === 0) {
-        //     toastr.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            toastr.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -276,6 +277,7 @@ function OtherVerifySimulation(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: CONSTANT.EMPTY_DATA,
+                                                    customClassName:'nodata-found-container'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
@@ -331,7 +333,7 @@ function OtherVerifySimulation(props) {
             }
             {
                 costingPage &&
-                <OtherCostingSimulation simulationId={simulationId} />
+                <OtherCostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&

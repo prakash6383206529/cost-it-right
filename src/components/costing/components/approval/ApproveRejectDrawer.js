@@ -3,23 +3,26 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
+import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap, } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
+import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
+import { INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
+import redcrossImg from '../../../../assests/images/red-cross.png'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master,
-    selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements } = props
+
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -36,6 +39,9 @@ function ApproveRejectDrawer(props) {
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [showError, setShowError] = useState(false)
+  const [files, setFiles] = useState([]);
+  const [IsOpen, setIsOpen] = useState(false);
+  const [initialFiles, setInitialFiles] = useState([]);
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -113,6 +119,12 @@ function ApproveRejectDrawer(props) {
         )
 
       }))
+
+      Attachements && Attachements.map(item => {
+        files.push(item)
+        setFiles(files)
+        setIsOpen(!IsOpen)
+      })
     }
 
 
@@ -126,25 +138,27 @@ function ApproveRejectDrawer(props) {
       let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
-      switch (Number(master)) {
-        case Number(RMDOMESTIC):
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
-          break;
-        case Number(RMIMPORT):
-          dispatch(saveSimulationForRawMaterial(simObj, res => {
-            if (res.data.Result) {
-              toastr.success('Simulation has been saved successfully.')
-            }
-          }))
-          break;
+      dispatch(saveSimulationForRawMaterial(simObj, res => {
+        if (res.data.Result) {
+          toastr.success('Simulation has been saved successfully.')
+        }
+      }))
+      // switch (Number(master)) {
+      //   case Number(RMDOMESTIC):
 
-        default:
-          break;
-      }
+      //     break;
+      //   case Number(RMIMPORT):
+      //     dispatch(saveSimulationForRawMaterial(simObj, res => {
+      //       if (res.data.Result) {
+      //         toastr.success('Simulation has been saved successfully.')
+      //       }
+      //     }))
+      //   case 
+      //     break;
+
+      //   default:
+      //     break;
+      // }
     }
   }, [simulationDetail])
 
@@ -218,7 +232,46 @@ function ApproveRejectDrawer(props) {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
               toastr.success('The costing has been approved')
-              setOpenPushButton(true)
+              // const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
+              let pushdata = {
+                effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+                vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+                materialNumber: dataSend[1].PartNumber,
+                netPrice: dataSend[0].NewPOPrice,
+                plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+                currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+                materialGroup: approvalData[0]?.MaterialGroup?.label ? approvalData[0]?.MaterialGroup.label.split('(')[0] : '',
+                taxCode: 'YW',
+                basicUOM: "NO",
+                purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
+                purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+                CostingId: approvalData[0].CostingId,
+                DecimalOption: approvalData[0].DecimalOption
+                // Quantity: quantity
+                // effectiveDate: '11/30/2021',
+                // vendorCode: '203670',
+                // materialNumber: 'S07004-003A0Y',
+                // materialGroup: 'M089',
+                // taxCode: 'YW',
+                // plant: '1401',
+                // netPrice: '30.00',
+                // currencyKey: 'INR',
+                // basicUOM: 'NO',
+                // purchasingOrg: 'MRPL',
+                // purchasingGroup: 'O02'
+
+              }
+              let obj = {
+                LoggedInUserId: loggedInUserId(),
+                Request: [pushdata]
+              }
+              dispatch(approvalPushedOnSap(obj, res => {
+                if (res && res.status && (res.status === 200 || res.status === 204)) {
+                  toastr.success('Approval pushed successfully.')
+                }
+                props.closeDrawer('', 'Push')
+              }))
+              // setOpenPushButton(true)
 
             } else {
               toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
@@ -257,13 +310,16 @@ function ApproveRejectDrawer(props) {
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
+        let updatedFiles = files.map((file) => {
+          return { ...file, ContextId: simulationDetail.SimulationId }
+        })
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
         senderObj.ReasonId = reason ? reason.value : ''
         senderObj.Reason = reason ? reason.label : ''
         // senderObj.ApprovalToken = 0
-        senderObj.DepartmentId = userDetails().DepartmentId
-        senderObj.DepartmentName = userDetails().Department
+        senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+        senderObj.DepartmentName = dept && dept.label ? dept.label : ''
         senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
         senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
@@ -278,6 +334,9 @@ function ApproveRejectDrawer(props) {
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
         senderObj.MaterialGroup = SAPData.MaterialGroup?.label
+        senderObj.DecimalOption = SAPData.DecimalOption?.value
+        senderObj.Attachements = updatedFiles
+
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -292,7 +351,36 @@ function ApproveRejectDrawer(props) {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
               toastr.success('The simulation token has been approved')
-              setOpenPushButton(true)
+              let temp = []
+              costingList && costingList.map(item => {
+                const vendor = item.VendorName.split('(')[1]
+                temp.push({
+                  CostingId: item.CostingId,
+                  effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'),
+                  vendorCode: vendor.split(')')[0],
+                  materialNumber: item.PartNo,
+                  netPrice: item.NewPOPrice,
+                  plant: item.PlantCode ? item.PlantCode : '1511',
+                  currencyKey: INR,
+                  basicUOM: 'NO',
+                  purchasingOrg: item.DepartmentCode ? item.DepartmentCode : 'MRPL',
+                  purchasingGroup: simulationDetail.PurchasingGroup ? simulationDetail.PurchasingGroup.split('(')[0] : '',
+                  materialGroup: simulationDetail.MaterialGroup ? simulationDetail.MaterialGroup.split('(')[0] : '',
+                  taxCode: 'YW', TokenNumber: simulationDetail.Token,
+                  DecimalOption: simulationDetail.DecimalOption
+                  // Quantity: quantity
+                })
+              })
+              let simObj = {
+                LoggedInUserId: loggedInUserId(),
+                Request: temp
+              }
+              dispatch(approvalPushedOnSap(simObj, res => {
+                if (res && res.status && (res.status === 200 || res.status === 204)) {
+                  toastr.success('Approval pushed successfully.')
+                }
+                props.closeDrawer('', 'Push')
+              }))
 
             } else {
               toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
@@ -336,18 +424,25 @@ function ApproveRejectDrawer(props) {
   const handleDepartmentChange = (value) => {
     setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
     let tempDropdownList = []
-    let obj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: value.value,
-      TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+    let obj
+    let simObj
+    if (!isSimulation) {
+
+      obj = {
+        LoggedInUserId: loggedInUserId(), // user id
+        DepartmentId: value.value,
+        TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+      }
+    } else {
+
+      simObj = {
+        LoggedInUserId: loggedInUserId(), // user id
+        DepartmentId: value.value,
+        TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+        ReasonId: 0
+      }
     }
 
-    let simObj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: value.value,
-      TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-      ReasonId: 0
-    }
 
     if (!isSimulation) {
       dispatch(
@@ -396,6 +491,66 @@ function ApproveRejectDrawer(props) {
     }
   }
 
+  const getUploadParams = ({ file, meta }) => {
+    return { url: 'https://httpbin.org/post', }
+  }
+
+  // called every time a file's `status` changes
+  const handleChangeStatus = ({ meta, file }, status) => {
+
+
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData()
+      data.append('file', file)
+      dispatch(uploadSimulationAttachment(data, (res) => {
+        let Data = res.data[0]
+        files.push(Data)
+        setFiles(files)
+        setIsOpen(!IsOpen)
+      }))
+    }
+
+    if (status === 'rejected_file_type') {
+      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+    }
+  }
+
+  const Preview = ({ meta }) => {
+    const { name, percent, status } = meta
+    return (
+      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+        {/* {Math.round(percent)}% */}
+      </span>
+    )
+  }
+
+  const deleteFile = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let deleteData = {
+        Id: FileId,
+        DeletedBy: loggedInUserId(),
+      }
+      // dispatch(fileDeleteCosting(deleteData, (res) => {
+      //     toastr.success('File has been deleted successfully.')
+      //   }))
+      let tempArr = files && files.filter(item => item.FileId !== FileId)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (FileId == null) {
+      let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+  }
+
   return (
     <>
       <Drawer
@@ -436,7 +591,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={false}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -452,7 +607,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={false}
                         handleChange={() => { }}
-                        disabled={true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                         errors={errors.approver}
                       />
                     </div>
@@ -476,7 +631,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -493,7 +648,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.approver}
-                        disabled={true}
+                        disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     {
@@ -603,6 +758,85 @@ function ApproveRejectDrawer(props) {
                   />
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
+                {
+                  isSimulation &&
+                  <div className="col-md-12 drawer-attachment">
+                    <div className="d-flex w-100 flex-wrap">
+                      <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
+                    </div>
+                    <div className="d-flex w-100 flex-wrap pt-2">
+                      {<>
+                        <Col md="12" className="p-0">
+                          <label>Upload Attachment (upload up to 2 files)</label>
+                          {files && files.length >= 2 ? (
+                            <div class="alert alert-danger" role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                          ) : (
+                            <Dropzone
+                              getUploadParams={getUploadParams}
+                              onChangeStatus={handleChangeStatus}
+                              PreviewComponent={Preview}
+                              // onSubmit={handleImapctSubmit}
+                              accept="*"
+                              initialFiles={initialFiles}
+                              maxFiles={4}
+                              maxSizeBytes={2000000000}
+                              inputContent={(files, extra) =>
+                                extra.reject ? (
+                                  "Image, audio and video files only"
+                                ) : (
+                                  <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                      Drag and Drop or{" "}
+                                      <span className="text-primary">Browse</span>
+                                      <br />
+                              file to upload
+                          </span>
+                                  </div>
+                                )
+                              }
+                              styles={{
+                                dropzoneReject: {
+                                  borderColor: "red",
+                                  backgroundColor: "#DAA",
+                                },
+                                inputLabel: (files, extra) =>
+                                  extra.reject ? { color: "red" } : {},
+                              }}
+                              classNames="draper-drop"
+                              disabled={type === 'Sender' ? false : true}
+                            />
+                          )}
+                        </Col>
+                        <div className="w-100">
+                          <div className={"attachment-wrapper mt-0 mb-3"}>
+                            {files &&
+                              files.map((f) => {
+                                const withOutTild = f.FileURL.replace("~", "");
+                                const fileURL = `${FILE_URL}${withOutTild}`;
+                                return (
+                                  <div className={"attachment images"}>
+                                    <a href={fileURL} target="_blank">
+                                      {f.OriginalFileName}
+                                    </a>
+                                    <img
+                                      alt={""}
+                                      className="float-right"
+                                      onClick={() => deleteFile(f.FileId, f.FileName)}
+                                      src={redcrossImg}
+                                    ></img>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </>
+                      }
+                    </div>
+                  </div>
+                }
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">

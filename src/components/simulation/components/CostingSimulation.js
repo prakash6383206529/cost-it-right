@@ -11,7 +11,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { ZBC } from '../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
@@ -142,10 +142,14 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-
+        let obj = {
+            simulationApprovalProcessSummaryId: EMPTY_GUID,
+            simulationId: simulationId,
+            costingId: data.CostingId
+        }
         setId(id)
         setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        dispatch(getComparisionSimulationData(data.SimulationCostingId, res => {
+        dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
@@ -182,7 +186,7 @@ function CostingSimulation(props) {
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning('This costing is already sent for approval through another token number.')
+            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {
@@ -192,31 +196,6 @@ function CostingSimulation(props) {
     }
 
     const onSaveSimulation = () => {
-
-        // const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
-
-
-        // switch (selectedMasterForSimulation.label) {
-        //     case RMDOMESTIC:
-        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
-        //             if (res.data.Result) {
-        //                 toastr.success('Simulation saved successfully.')
-        //                 setShowApprovalHistory(true)
-        //             }
-        //         }))
-        //         break;
-        //     case RMIMPORT:
-        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
-        //             if (res.data.Result) {
-        //                 toastr.success('Simulation saved successfully.')
-        //                 setShowApprovalHistory(true)
-        //             }
-        //         }))
-        //         break;
-
-        //     default:
-        //         break;
-        // }
         setShowApprovalHistory(true)
     }
 
@@ -408,14 +387,14 @@ function CostingSimulation(props) {
 
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && NewOverheadCostReducer(costingList, 'NewOverheadCost'),
-            hideProfit: costingList && NewProfitCostReducer(costingList, 'NewProfitCost'),
-            hideRejection: costingList && NewRejectionCost(costingList, 'NewRejectionCost'),
-            hideICC: costingList && NewICCCostReducer(costingList, 'NewICCCost'),
-            hidePayment: costingList && NewPaymentTermsCostReducer(costingList, 'NewPaymentTermsCost'),
-            hideOtherCost: costingList && NewOtherCostReducer(costingList, 'NewOtherCost'),
-            hideDiscount: costingList && NewDiscountCostReducer(costingList, 'NewDiscountCost'),
-            hideOveheadAndProfit: costingList && NewNetOverheadAndProfitCostReducer(costingList, 'NewNetOverheadAndProfitCost')
+            hideOverhead: costingList && costingList.length > 0 && NewOverheadCostReducer(costingList, 'NewOverheadCost'),
+            hideProfit: costingList && costingList.length > 0 && NewProfitCostReducer(costingList, 'NewProfitCost'),
+            hideRejection: costingList && costingList.length > 0 && NewRejectionCost(costingList, 'NewRejectionCost'),
+            hideICC: costingList && costingList.length > 0 && NewICCCostReducer(costingList, 'NewICCCost'),
+            hidePayment: costingList && costingList.length > 0 && NewPaymentTermsCostReducer(costingList, 'NewPaymentTermsCost'),
+            hideOtherCost: costingList && costingList.length > 0 && NewOtherCostReducer(costingList, 'NewOtherCost'),
+            hideDiscount: costingList && costingList.length > 0 && NewDiscountCostReducer(costingList, 'NewDiscountCost'),
+            hideOveheadAndProfit: costingList && costingList.length > 0 && NewNetOverheadAndProfitCostReducer(costingList, 'NewNetOverheadAndProfitCost')
         })
     }
 
@@ -573,7 +552,7 @@ function CostingSimulation(props) {
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
-
+                                                    floatingFilter={true}
                                                     domLayout='autoHeight'
                                                     floatingFilter={true}
                                                     // columnDefs={c}
@@ -605,6 +584,8 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>

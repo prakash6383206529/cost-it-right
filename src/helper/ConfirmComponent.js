@@ -1,5 +1,5 @@
-import React from 'react'
-import confirmImg from '../assests/images/confirm.svg'
+import React from 'react';
+import confirmImg from '../assests/images/confirm.svg';
 
 function ConfirmComponent() {
   return (

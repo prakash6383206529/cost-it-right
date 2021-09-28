@@ -663,6 +663,7 @@ function TabRMCC(props) {
     dispatch(setRMCCData(arr, () => { }))
   }
 
+
   const setOperationCostInDataList = (operationGrid, params, arr) => {
     let tempArr = [];
     try {
@@ -1156,7 +1157,7 @@ function TabRMCC(props) {
                             <th className="py-3 align-middle" style={{ width: '70px' }}>{`Level`}</th>
                             <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                             <th className="py-3 align-middle" style={{ width: '100px' }}>{`RM Cost`}</th>
-                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`BOP Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`Insert Cost`}</th>
                             <th className="py-3 align-middle" style={{ width: '150px' }}>{`Conversion Cost`}</th>
                             <th className="py-3 align-middle" style={{ width: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                             <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM + CC Cost/Pc`}</th>

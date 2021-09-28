@@ -213,7 +213,7 @@ function AddAssemblyOperation(props) {
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >
-                  <div className={'save-icon'}></div>
+                                      <div className={'save-icon'}></div>
                   {'SAVE'}
                 </button>
               </div>

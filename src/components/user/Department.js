@@ -96,7 +96,7 @@ class Department extends Component {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
 			}
-
+			this.setState({isLoader:true})
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
@@ -115,6 +115,7 @@ class Department extends Component {
 			})
 
 		} else {
+
 			let obj = {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
@@ -132,6 +133,7 @@ class Department extends Component {
 							CompanyId: id
 						}
 						this.props.addDepartmentAPI(formReq, (res) => {
+
 							if (res && res.data && res.data.Result) {
 								toastr.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
 								reset();
@@ -244,8 +246,8 @@ class Department extends Component {
 													type="submit"
 													disabled={isSubmitted ? true : false}
 													className="user-btn save-btn"
-												>
-													<div className={"save-icon"}></div>
+												>	
+												<div className={"save-icon"}></div>
 													{isEditFlag ? 'Update' : 'Save'}
 												</button>
 											</div>

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { userDetails } from '../helper';
 /**
  * master listing used in Mass Upload
  * 
@@ -670,9 +671,9 @@ export const Plant = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'InsertPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'InsertPartName', value: 'BOPPartName', }, //*
+    { label: 'InsertCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
@@ -685,9 +686,9 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'InsertPartNumber': 'BOP Part123',
+        'InsertPartName': 'Screw',
+        'InsertCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
@@ -703,9 +704,9 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'InsertPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'InsertPartName', value: 'BOPPartName', }, //*
+    { label: 'InsertCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
@@ -723,9 +724,9 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'InsertPartNumber': 'BOP Part123',
+        'InsertPartName': 'Screw',
+        'InsertCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'DestinationPlant': 'Manesar',
@@ -747,9 +748,9 @@ export const BOP_VBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'InsertPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'InsertPartName', value: 'BOPPartName', }, //*
+    { label: 'InsertCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
@@ -764,9 +765,9 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'InsertPartNumber': 'BOP Part123',
+        'InsertPartName': 'Screw',
+        'InsertCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
@@ -784,9 +785,9 @@ export const BOP_ZBC_IMPORT_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'InsertPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'InsertPartName', value: 'BOPPartName', }, //*
+    { label: 'InsertCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', },
@@ -1297,6 +1298,7 @@ export const PartComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
+    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const PartComponentTempData = [
@@ -1310,6 +1312,7 @@ export const PartComponentTempData = [
         'DrawingNo': '1',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
+        "ProductGroupCode": "VB"
     }
 ]
 
@@ -1392,7 +1395,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-
+    { label: 'ProductGroupCode', value: "ProductGroupCode" }
 ]
 
 export const BOMUploadTempData = [
@@ -1413,7 +1416,7 @@ export const BOMUploadTempData = [
         "Quantity": 2,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     },
     {
         "BOMNo": "BOM123",
@@ -1432,7 +1435,7 @@ export const BOMUploadTempData = [
         "Quantity": 3,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     },
     {
         "BOMNo": "BOM123",
@@ -1451,7 +1454,7 @@ export const BOMUploadTempData = [
         "Quantity": 4,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-
+        "ProductGroupCode": "VB"
     }
 ]
 export const EAccessType = [
@@ -2332,9 +2335,9 @@ export const CostingSimulationDownload = [
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "InsertPartNumber", value: "BoughtOutPartNumber", },
+    { label: "InsertPartName", value: "BoughtOutPartName", },
+    { label: "InsertCategory", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "Plant", value: "Plants", },
@@ -2348,9 +2351,9 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "InsertPartNumber", value: "BoughtOutPartNumber", },
+    { label: "InsertPartName", value: "BoughtOutPartName", },
+    { label: "InsertCategory", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "Plant", value: "Plants", },
@@ -2368,7 +2371,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
     { label: "NoOfVendors", value: "NoOfVendors", },
-    { label: "Plant", value: "Plant", },
+    { label: " ", value: "Plant", },
     { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
     { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
 ]
@@ -2438,7 +2441,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
     { label: "Technologies", value: "Technologies", },
     { label: "VendorName", value: "VendorName", },
-    { label: "Plants", value: "Plants", },
+    { label: "Plant", value: "Plants", },
     { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName", },
@@ -2554,6 +2557,14 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "DrawingNumber", value: "DrawingNumber", },
     { label: "EffectiveDate", value: "EffectiveDate", },
 ]
+export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
+    { label: "ProductNumber", value: "ProductNumber", },
+    { label: "ProductName", value: "ProductName", },
+    { label: "ECNNumber", value: "ECNNumber", },
+    { label: "RevisionNumber", value: "RevisionNumber", },
+    { label: "DrawingNumber", value: "DrawingNumber", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+]
 
 export const VBCPLANT_DOWNLOAD_EXCEl = [
     { label: "VendorName", value: "VendorName", },
@@ -2618,10 +2629,13 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingVersion", value: "CostingVersion", },
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Company", value: "DepartmentName" },
     { label: "CreatedDate", value: "CreatedDate", },
     { label: "Status", value: "Status", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "PartNumber", value: "PartNumber", },
+    { label: "PartName", value: "PartName", },
     { label: "Rev", value: "Rev", },
     { label: "ECN", value: "ECN", },
     { label: "PlantName", value: "PlantName", },
@@ -2634,7 +2648,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "FinishWeight", value: "FinishWeight", },
     { label: "ScrapWeight", value: "ScrapWeight", },
     { label: "NetRawMaterialsCost", value: "NetRawMaterialsCost", },
-    { label: "NetBoughtOutPartCost", value: "NetBoughtOutPartCost", },
+    { label: "NetInsertCost", value: "NetBoughtOutPartCost", },
     { label: "NetProcessCost", value: "NetProcessCost", },
     { label: "NetOperationCost", value: "NetOperationCost", },
     { label: "SurfaceTreatmentCost", value: "SurfaceTreatmentCost", },
@@ -2659,5 +2673,24 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "AnyOtherCost", value: "AnyOtherCost", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
-    { label: "CreatedBy", value: "CreatedBy", }
+    { label: "CreatedBy", value: "CreatedBy", },
+    { label: 'SANumber', value: 'SANumber' },
+    { label: 'LineNumber', value: 'LineNumber' }
+]
+export const REPORT_DOWNLOAD_SAP_EXCEl = [
+    { label: "Sr No", value: "SrNo" }, //Serial no
+    { label: "evrtn", value: "SANumber" },//SA no
+    { label: "ebelp", value: "LineNumber" },//Line no
+    { label: "datab", value: "CreatedDate", },//Date 
+    { label: "kbetr", value: "NetPOPrice" }, //Price
+    { label: "Reason", value: "Reason" }, //Reason
+    { label: "Text", value: "Text" }, //Text
+    { label: "Person Requesting Change", value: "PersonRequestingChange" }, //Person CLICKING DOWNLOAD BUTTON (lOGGED IN USER)
+
+]
+
+export const decimalOption = [
+    { label: 'Round Off', value: 'RoundOff' },
+    { label: 'Truncate', value: 'Truncate' },
+    { label: 'Per 100', value: 'Per100' }
 ]

@@ -16,6 +16,7 @@ export const config = {
 
 // DEVELOPMENT MIL URL
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
 
 
 //DEVELOPMENT MIL URL
@@ -116,6 +117,7 @@ export const API = {
   deleteProduct: `${BASE_URL}/masters-product/delete`,
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+  productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -537,6 +539,7 @@ export const API = {
   getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
   saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
 
+
   // PROCESS COST CALCULATION
   getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
@@ -701,7 +704,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
-  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
+  getTopAndLeftMenuData: `${BASE_URL}/app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -854,6 +857,8 @@ export const API = {
   draftExchangeRateSimulation: `${BASE_URL}/simulation/draft-simulation-exchange-rate`,
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
+  getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
+  uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -930,6 +935,7 @@ export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
 //PRODUCT MASTER
 export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
 export const GET_PRODUCT_UNIT_DATA = 'GET_PRODUCT_UNIT_DATA'
+export const PRODUCT_GROUPCODE_SELECTLIST = 'PRODUCT_GROUPCODE_SELECTLIST'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
@@ -1663,6 +1669,7 @@ export const ExchangeMaster = "Exchange-rate"
 export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
+export const ReportSAPMaster = "SAP-Excel Download"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"

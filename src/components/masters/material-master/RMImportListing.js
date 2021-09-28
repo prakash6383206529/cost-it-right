@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
   getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
@@ -29,7 +29,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, userDetails, getFilteredRMData } from '../../../helper';
+import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -84,6 +84,7 @@ class RMImportListing extends Component {
       gridColumnApi: null,
       rowData: null,
       loader: true,
+      isFinalApprovar: false
     }
   }
 
@@ -98,7 +99,7 @@ class RMImportListing extends Component {
         RawMaterial: filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : [],
         RMGrade: filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : [],
         vendorName: filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : [],
-        departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+        departmentCode: isSimulation ? userDepartmetList() : "",
         statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         value: { min: 0, max: 0 },
       }, () => {
@@ -108,6 +109,7 @@ class RMImportListing extends Component {
         this.props.getRawMaterialFilterSelectList(() => { })
       })
     }
+
   }
 
   /**
@@ -128,7 +130,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+      departmentCode: isSimulation ? userDepartmetList() : "",
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
@@ -138,6 +140,7 @@ class RMImportListing extends Component {
       }
       this.setState({ loader: false })
     })
+    this.checkIsFinalLevelApprover()
   }
 
 
@@ -165,6 +168,7 @@ class RMImportListing extends Component {
     this.props.getRawMaterialFilterSelectList(() => { })
     this.props.getTechnologySelectList(() => { })
     this.getDataList()
+    this.checkIsFinalLevelApprover()
     this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
@@ -172,6 +176,8 @@ class RMImportListing extends Component {
   getUpdatedData = () => {
     this.getDataList()
   }
+
+
 
   getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
     const { value } = this.state;
@@ -186,7 +192,7 @@ class RMImportListing extends Component {
       technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
-      departmentCode: isSimulation ? (userDetails().Department !== 'Corporate' && userDetails().DepartmentCode !== 'Administration') ? userDetails().DepartmentCode : '' : '',
+      departmentCode: isSimulation ? userDepartmetList() : "",
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
     this.props.getRMImportDataList(filterData, (res) => {
@@ -207,6 +213,21 @@ class RMImportListing extends Component {
       } else {
         this.setState({ tableData: [], maxRange: 0, loader: false })
       }
+    })
+  }
+
+  checkIsFinalLevelApprover = () => {
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
     })
   }
 
@@ -708,6 +729,23 @@ class RMImportListing extends Component {
                   </div>
                   <div className="flex-fill">
                     <Field
+                      name="VendorId"
+                      type="text"
+                      label={""}
+                      component={searchableSelect}
+                      placeholder={"Vendor"}
+                      isClearable={false}
+                      options={this.renderListing("VendorNameList")}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={
+                        this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handleVendorName}
+                      valueDescription={this.state.vendorName}
+                    />
+                  </div>
+                  <div className="flex-fill">
+                    <Field
                       name="Plant"
                       type="text"
                       label=""
@@ -779,23 +817,7 @@ class RMImportListing extends Component {
                       valueDescription={this.state.RMGrade}
                     />
                   </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="VendorId"
-                      type="text"
-                      label={""}
-                      component={searchableSelect}
-                      placeholder={"Vendor"}
-                      isClearable={false}
-                      options={this.renderListing("VendorNameList")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={
-                        this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                      required={true}
-                      handleChangeDescription={this.handleVendorName}
-                      valueDescription={this.state.vendorName}
-                    />
-                  </div>
+
                   <div className="flex-fill sliderange">
                     <InputRange
                       maxValue={this.state.maxRange}
@@ -937,7 +959,7 @@ class RMImportListing extends Component {
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
-                  loadingOverlayComponent={'customLoadingOverlay'}
+                  // loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: CONSTANT.EMPTY_DATA,
@@ -987,8 +1009,10 @@ class RMImportListing extends Component {
           isZBCVBCTemplate={true}
           messageLabel={'RM Import'}
           anchor={'right'}
+          isFinalApprovar={this.state.isFinalApprovar}
         />}
       </div >
+
     );
   }
 }
@@ -1027,7 +1051,8 @@ export default connect(mapStateToProps, {
   getGradeFilterByVendorSelectList,
   getPlantSelectListByType,
   getTechnologySelectList,
-  setFilterForRM
+  setFilterForRM,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'RMImportListing',
   enableReinitialize: true,

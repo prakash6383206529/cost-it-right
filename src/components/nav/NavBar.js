@@ -34,7 +34,6 @@ import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 
-
 class SideBar extends Component {
   constructor(props) {
     super(props)

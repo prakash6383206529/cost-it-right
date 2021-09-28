@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
-import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
+import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -31,6 +31,7 @@ class AddIndivisualPart extends Component {
       selectedPlants: [],
       effectiveDate: '',
       ProductGroup: [],
+      oldProductGroup: [],
 
       files: [],
       DataToCheck: [],
@@ -44,6 +45,7 @@ class AddIndivisualPart extends Component {
   */
   componentDidMount() {
     this.props.getPlantSelectList(() => { })
+    this.props.getProductGroupSelectList(() => { })
     this.getDetails()
   }
 
@@ -61,8 +63,12 @@ class AddIndivisualPart extends Component {
       })
       this.props.getPartData(data.Id, res => {
         if (res && res.data && res.data.Result) {
-
           const Data = res.data.Data;
+          let productArray = []
+          Data && Data.ProductList.map((item) => {
+            productArray.push({ Text: item.ProductGroupCode, Value: item.ProductId })
+            return productArray
+          })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
@@ -71,6 +77,8 @@ class AddIndivisualPart extends Component {
               // isLoader: false,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
+              ProductGroup: productArray,
+              oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -110,7 +118,7 @@ class AddIndivisualPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList } = this.props;
+    const { plantSelectList, productGroupSelectList } = this.props;
     const temp = [];
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
@@ -120,7 +128,11 @@ class AddIndivisualPart extends Component {
       return temp;
     }
     if (label === 'ProductGroup') {
-      return []
+      productGroupSelectList && productGroupSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ Text: item.Text, Value: item.Value })
+      })
+      return temp;
     }
 
   }
@@ -220,16 +232,17 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
+    let productArray = ProductGroup && ProductGroup.map((item) => ({ ProductId: item.Value, ProductGroupCode: item.Text }))
     if (isEditFlag) {
 
 
       if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
         DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber && oldProductGroup === ProductGroup) {
         this.cancel()
         return false;
       }
@@ -250,7 +263,9 @@ class AddIndivisualPart extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
         // Plants: [],
         Attachements: updatedFiles,
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        // ProductList: productArray
+        ProductList: []
       }
 
       if (isEditFlag) {
@@ -289,7 +304,9 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         // Plants: [],
-        Attachements: files
+        Attachements: files,
+        // ProductList: productArray
+        ProductList: []
       }
 
       this.props.reset()
@@ -700,7 +717,7 @@ class AddIndivisualPart extends Component {
 */
 function mapStateToProps({ comman, part, auth }) {
   const { plantSelectList, } = comman;
-  const { partData } = part;
+  const { partData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
 
   let initialValues = {};
@@ -718,7 +735,7 @@ function mapStateToProps({ comman, part, auth }) {
     }
   }
 
-  return { plantSelectList, partData, initialValues, initialConfiguration, }
+  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList }
 }
 
 /**
@@ -734,6 +751,7 @@ export default connect(mapStateToProps, {
   getPartData,
   fileUploadPart,
   fileDeletePart,
+  getProductGroupSelectList
 })(reduxForm({
   form: 'AddIndivisualPart',
   enableReinitialize: true,

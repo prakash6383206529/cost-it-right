@@ -13,6 +13,10 @@ export function userDetails() {
   const userDetail = reactLocalStorage.getObject('userDetail')
   return userDetail
 }
+export function userDepartmetList() {
+  const userDetail = reactLocalStorage.getObject('departmentList')
+  return userDetail
+}
 
 export function loggedInUserId() {
   const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn')

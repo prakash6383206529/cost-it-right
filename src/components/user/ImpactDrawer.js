@@ -41,7 +41,7 @@ class ImpactDrawer extends Component {
         return (
             <div>
                 {/* {isLoader && <Loader />} */}
-                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen}
+                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen} 
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
@@ -128,8 +128,8 @@ class ImpactDrawer extends Component {
                                                 type="submit"
                                                 disabled={false}
                                                 className="btn-primary save-btn"
-                                            >
-                                                <div className={"save-icon"}></div>
+                                            >	
+                                            <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>
                                         </div>

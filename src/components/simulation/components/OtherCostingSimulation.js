@@ -6,12 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, ZBC } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
@@ -75,56 +75,52 @@ function OtherCostingSimulation(props) {
 
     useEffect(() => {
         getCostingList()
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
 
-    const getCostingList = (plantId = '', rawMatrialId = '') => {
-        dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+    const getCostingList = () => {
+        dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
             if (res.data.Result) {
-                const tokenNo = res.data.Data.SimulationTokenNumber
-                const Data = res.data.Data
-                Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                    if (item.IsLockedBySimulation) {
-                        setSelectedCostingIds(item.CostingId)
-                    }
-                    item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-
-                })
-                let uniqeArray = []
-                const map = new Map();
-                for (const item of Data.SimulatedCostingList) {
-                    if (!map.has(item.CostingNumber)) {
-                        map.set(item.CostingNumber, true);    // set any value to Map
-                        uniqeArray.push(item);
-                    }
-                }
-                setTableData(uniqeArray)
-                setTokenNo(tokenNo)
-                setCostingArr(Data.SimulatedCostingList)
-                setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                setLoader(false)
+                dataSet(res)
             }
         }))
     }
+
+
+    const dataSet = (res) => {
+        const tokenNo = res.data.Data.SimulationTokenNumber
+        const Data = res.data.Data
+        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
+            if (item.IsLockedBySimulation) {
+                setSelectedCostingIds(item.CostingId)
+            }
+            if (Number(master) === Number(EXCHNAGERATE)) {
+                item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
+            }
+
+        })
+        let uniqeArray = []
+        const map = new Map();
+        for (const item of Data.SimulatedCostingList) {
+            if (!map.has(item.CostingNumber)) {
+                map.set(item.CostingNumber, true);    // set any value to Map
+                uniqeArray.push(item);
+            }
+        }
+        setTableData(uniqeArray)
+        setTokenNo(tokenNo)
+        setCostingArr(Data.SimulatedCostingList)
+        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
+        setLoader(false)
+    }
+
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
-
     useEffect(() => {
         hideColumn()
-        // costingList && costingList.map(item => {
-        //     item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        // })
-
-
-
     }, [costingList])
 
 
@@ -142,10 +138,18 @@ function OtherCostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-
+        let obj = {
+            simulationApprovalProcessSummaryId: EMPTY_GUID,
+            simulationId: simulationId,
+            costingId: data.CostingId
+        }
         setId(id)
-        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        dispatch(getComparisionSimulationData(data.SimulationCostingId, res => {
+        setPricesDetail({
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
+            CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
+            NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency
+        })
+        dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
@@ -182,7 +186,7 @@ function OtherCostingSimulation(props) {
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning('This costing is already sent for approval through another token number.')
+            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {
@@ -192,31 +196,6 @@ function OtherCostingSimulation(props) {
     }
 
     const onSaveSimulation = () => {
-
-        // const simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
-
-
-        // switch (selectedMasterForSimulation.label) {
-        //     case RMDOMESTIC:
-        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
-        //             if (res.data.Result) {
-        //                 toastr.success('Simulation saved successfully.')
-        //                 setShowApprovalHistory(true)
-        //             }
-        //         }))
-        //         break;
-        //     case RMIMPORT:
-        //         dispatch(saveSimulationForRawMaterial(simObj, res => {
-        //             if (res.data.Result) {
-        //                 toastr.success('Simulation saved successfully.')
-        //                 setShowApprovalHistory(true)
-        //             }
-        //         }))
-        //         break;
-
-        //     default:
-        //         break;
-        // }
         setShowApprovalHistory(true)
     }
 
@@ -285,6 +264,19 @@ function OtherCostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const newPOCurrencyFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const oldPOCurrencyFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -356,15 +348,16 @@ function OtherCostingSimulation(props) {
         return cell
     }
     const hideColumn = (props) => {
+        // console.log(costingList && costingList[0].NewOverheadCost, "costingList");
         setHideDataColumn({
-            hideOverhead: costingList && costingList[0].NewOverheadCost === 0 ? true : false,
-            hideProfit: costingList && costingList[0].NewProfitCost === 0 ? true : false,
-            hideRejection: costingList && costingList[0].NewRejectionCost === 0 ? true : false,
-            hideICC: costingList && costingList[0].NewICCCost === 0 ? true : false,
-            hidePayment: costingList && costingList[0].NewPaymentTermsCost === 0 ? true : false,
-            hideOtherCost: costingList && costingList[0].NewOtherCost === 0 ? true : false,
-            hideDiscount: costingList && costingList[0].NewDiscountCost === 0 ? true : false,
-            hideOveheadAndProfit: costingList && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
+            hideOverhead: costingList && costingList.length > 0 && costingList[0]?.NewOverheadCost === 0 ? true : false,
+            hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost && costingList[0]?.NewProfitCost === 0 ? true : false,
+            hideRejection: costingList && costingList.length > 0 && costingList[0].NewRejectionCost && costingList[0]?.NewRejectionCost === 0 ? true : false,
+            hideICC: costingList && costingList.length > 0 && costingList[0].NewICCCost && costingList[0]?.NewICCCost === 0 ? true : false,
+            hidePayment: costingList && costingList.length > 0 && costingList[0].NewPaymentTermsCost && costingList[0]?.NewPaymentTermsCost === 0 ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && costingList[0].NewOtherCost && costingList[0]?.NewOtherCost === 0 ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost && costingList[0]?.NewDiscountCost === 0 ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost && costingList[0]?.NewNetOverheadAndProfitCost === 0 ? true : false
         })
     }
 
@@ -478,7 +471,10 @@ function OtherCostingSimulation(props) {
         otherCostFormatter: otherCostFormatter,
         discountCostFormatter: discountCostFormatter,
         netOverheadAndProfitFormatter: netOverheadAndProfitFormatter,
-        hideColumn: hideColumn
+        hideColumn: hideColumn,
+        oldPOCurrencyFormatter: oldPOCurrencyFormatter,
+        newPOCurrencyFormatter: newPOCurrencyFormatter
+
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -539,6 +535,7 @@ function OtherCostingSimulation(props) {
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
                                                         title: CONSTANT.EMPTY_DATA,
+                                                        customClassName: 'nodata-found-container'
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                     suppressRowClickSelection={true}
@@ -552,10 +549,25 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                    {
+                                                        String(master) === EXCHNAGERATE &&
+                                                        <>
+                                                            <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                        </>
+                                                    }
+                                                    {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
+                                                    {String(master) === EXCHNAGERATE &&
+                                                        <>
+                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
+                                                        </>
+                                                    }
                                                     <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 

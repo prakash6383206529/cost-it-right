@@ -1,6 +1,6 @@
 @import './cssVariable.scss';
 @import './style.scss';
-// @import '/public/assets/css/css2.css';
+// @import '../../../public/assets/css/css2.css';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
 // @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
 // @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap");
@@ -370,9 +370,9 @@ a:hover {
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  img,.cancel-icon-white{
-    width: 11px;
-    height: 11px;
+  img {
+    width: 16px;
+    height: auto;
     object-fit: contain;
   }
   &:hover{
@@ -742,6 +742,7 @@ a:hover {
           min-height: calc(100vh - 240px);
           height: calc(100vh - 240px) !important;
         }
+        
       }
       .search-user-block{
         // position: relative;
@@ -1010,7 +1011,7 @@ a:hover {
       border-bottom: 1px solid #b4c5e2;
       text-align: center;
       color: $headinlightgblack;
-      font-size: $font-14;
+      font-size: $font-16;
 
       &:first-child {
         text-align: left;
@@ -1019,7 +1020,7 @@ a:hover {
 
     .crud-label {
       font-size: $font-14;
-      vertical-align: top !important;
+      vertical-align: bottom !important;
     }
 
     th,
@@ -2396,10 +2397,6 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 5px 0;
-  >a{
-    padding-right: 10px;
-    word-break: break-word;
-  }
 }
 .attachment-row{
   border-bottom: 1px solid #e6e3e3;
@@ -2610,7 +2607,7 @@ input:disabled,
     }
   }
 }
-td,.ag-cell{
+td,.ag-cell {
   .Error,
   .Pushed,
   .Draft,
@@ -2805,10 +2802,8 @@ body {
   .drawer-wrapper {
     width: calc(486px * 80 / 100);
   }
-  :not(.view-conversion-cost-drawer),.view-conversion-cost-drawer{
-    .drawer-1500px {
-      width: 100%;
-    }
+  .drawer-1500px {
+    width: 100%;
   }
   .drawer-700px {
     width: 100%;
@@ -2898,8 +2893,9 @@ body {
       }
       &.no-tab-page{
         .ag-grid-wrapper{
-          min-height: auto;
-          height: auto !important;
+        //  min-height: auto; //code comment by banti 
+         min-height: 470px;
+         height: auto !important;
         }
       }
       .search-user-block{
@@ -2970,4 +2966,34 @@ body {
 }
 // ag-grid-react end
 
+}
+.ag-overlay-loading-center {
+  display: none;
+}
+.graph-box  {
+  .ag-grid-react {
+    .ag-center-cols-clipper {
+      min-height: 180px;
+    }
+  }
+}
+.select-all-label {
+  padding-left: 13px;
+}
+.impacted-min-height {
+  .add-min-height.sm-edit-page {
+  .ag-grid-wrapper {
+   
+    // height: calc(100vh - 500px);
+  }
+}
+}
+.impacted-min-height {
+:not(.content-page) :not(.tab-pane) .ag-grid-react .add-min-height.sm-edit-page .ag-grid-wrapper {
+  min-height: auto !important;
+  height: auto !important;
+}
+.add-min-height .ag-layout-auto-height .ag-center-cols-clipper {
+  min-height: 60px;
+}
 }

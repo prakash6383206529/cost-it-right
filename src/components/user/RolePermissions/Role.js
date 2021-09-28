@@ -259,6 +259,7 @@ class Role extends Component {
 
 										<div className="row form-group grant-user-grid">
 											<div className="col-md-12">
+											{isLoader && <Loader />}
 												<PermissionsTabIndex
 													onRef={ref => (this.child = ref)}
 													isEditFlag={this.state.isEditFlag}
@@ -283,8 +284,8 @@ class Role extends Component {
 												disabled={isSubmitted ? true : false}
 												type="submit"
 												className="user-btn save-btn"
-											>
-												<div className={"save-icon"}></div>
+											>	
+											<div className={"save-icon"}></div>
 												{isEditFlag ? 'Update' : 'Save'}
 											</button>
 										</div>

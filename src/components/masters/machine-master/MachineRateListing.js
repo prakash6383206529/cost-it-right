@@ -316,7 +316,7 @@ class MachineRateListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        return cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -366,7 +366,8 @@ class MachineRateListing extends Component {
 
     renderPlantFormatter = (props) => {
         const row = props?.data;
-        return row.IsVendor ? row.DestinationPlant : row.Plants
+        console.log('row: ', row);
+        return row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
     }
 
 
@@ -394,6 +395,7 @@ class MachineRateListing extends Component {
         const machineTypeId = machineType ? machineType.value : 0;
         const processId = processName ? processName.value : '';
         const plantId = plant ? plant.value : '';
+
 
         this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
     }
@@ -712,10 +714,10 @@ class MachineRateListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                                    <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter'></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter' filter={true} floatingFilter={true}></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number"></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>

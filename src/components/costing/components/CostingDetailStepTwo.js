@@ -81,7 +81,8 @@ function CostingDetailStepTwo(props) {
 
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setRMCCBOPCostData(data, () => { }))
     }
@@ -117,7 +118,8 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setSurfaceCostData(data, () => { }))
     }
@@ -154,7 +156,8 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => {
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setOverheadProfitCostData(data, () => { }))
     }
@@ -190,7 +193,8 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => { }))
+      dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
+      }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
     }
   }
@@ -229,7 +233,8 @@ function CostingDetailStepTwo(props) {
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-        dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
+        dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
+        }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
       }, 900)
@@ -287,7 +292,8 @@ function CostingDetailStepTwo(props) {
 
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-        dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => { }))
+        dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
+        }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
       }
@@ -346,7 +352,7 @@ function CostingDetailStepTwo(props) {
                         <tr>
                           <th style={{ width: '140px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Insert Cost/Assembly' : 'Insert Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>

@@ -453,7 +453,7 @@ class AddClientDrawer extends Component {
                                                 type="submit"
                                                 className="user-btn save-btn" >
                                                 <div className={"save-icon"}></div>
-                                                {this.props.isEditFlag ? 'Update' : 'Save'}
+                                                 {this.props.isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </div>

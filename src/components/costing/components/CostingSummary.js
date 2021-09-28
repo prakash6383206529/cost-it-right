@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -16,6 +15,7 @@ import { formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
+import TooltipCustom from '../../common/Tooltip';
 
 function CostingSummary(props) {
 
@@ -392,6 +392,8 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
+                        
+                      {/* <TooltipCustom tooltipText="Please enter first digit to see part numbers"/> */}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}

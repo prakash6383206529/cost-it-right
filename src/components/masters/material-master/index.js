@@ -8,6 +8,7 @@ import SpecificationListing from './SpecificationListing';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import { CONSTANT } from '../../../helper/AllConastant';
 import classnames from 'classnames';
+
 import { getRowMaterialDataAPI } from '../actions/Material';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
@@ -214,7 +215,7 @@ class RowMaterialMaster extends Component {
                                         this.toggle('6');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
-                                        RM Approval
+                                        Approval Status
                                     </NavLink>
                                 </NavItem>}
                             </Nav>

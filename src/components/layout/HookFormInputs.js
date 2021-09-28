@@ -36,7 +36,7 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -45,10 +45,13 @@ export const TextFieldHookForm = (field) => {
   return (
     <>
       <div className={className}>
-        <label>
-          {label}
-          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-        </label>
+        {
+          !hidden &&
+          <label>
+            {label}
+            {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+          </label>
+        }
         <Controller
           name={name}
           control={control}
@@ -56,6 +59,7 @@ export const TextFieldHookForm = (field) => {
           // ref={reg}
           {...register}
           defaultValue={defaultValue}
+          hidden={hidden}
           render={({ field: { onChange, onBlur, value } }) => {
             return (
               <input
@@ -69,6 +73,7 @@ export const TextFieldHookForm = (field) => {
                   handleChange(e);
                   onChange(e)
                 }}
+                hidden={hidden}
               />
             )
           }
@@ -87,6 +92,7 @@ export const NumberFieldHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+
   return (
     <>
       <div className={className}>
@@ -110,6 +116,7 @@ export const NumberFieldHookForm = (field) => {
                 className={InputClassName}
                 disabled={isDisabled}
                 value={value}
+
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)
@@ -170,6 +177,7 @@ export const SearchableSelectHookForm = (field) => {
 
             />
           )
+
         }}
       />
 
@@ -394,7 +402,6 @@ export const RadioHookForm = (field) => {
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
-
 
 
   let isDisable = (disabled && disabled === true) ? true : false;

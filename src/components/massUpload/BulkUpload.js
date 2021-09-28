@@ -109,6 +109,7 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
+
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
@@ -197,27 +198,33 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
         }
 
+        let rmUploadData = {
+            Records: fileData,
+            LoggedInUserId: loggedInUserId(),
+            IsFinalApprover: this.props.isFinalApprovar
+        }
+
         if (fileName === 'RMDomestic' && costingHead === 'ZBC') {
 
-            this.props.bulkUploadRMDomesticZBC(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticZBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMDomestic' && costingHead === 'VBC') {
 
-            this.props.bulkUploadRMDomesticVBC(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticVBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'ZBC') {
 
-            this.props.bulkUploadRMImportZBC(uploadData, (res) => {
+            this.props.bulkUploadRMImportZBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'VBC') {
 
-            this.props.bulkUploadRMImportVBC(uploadData, (res) => {
+            this.props.bulkUploadRMImportVBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -275,6 +282,7 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'Machine' && costingHead === 'VBC') {
+
             this.props.bulkUploadMachineVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
@@ -291,25 +299,25 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'ZBC') {
+        } else if (fileName === 'InsertDomestic' && costingHead === 'ZBC') {
 
             this.props.bulkUploadBOPDomesticZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'VBC') {
+        } else if (fileName === 'InsertDomestic' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPDomesticVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'ZBC') {
+        } else if (fileName === 'InsertImport' && costingHead === 'ZBC') {
 
             this.props.bulkUploadBOPImportZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
+        } else if (fileName === 'InsertImport' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPImportVBC(uploadData, (res) => {
                 this.responseHandler(res)
