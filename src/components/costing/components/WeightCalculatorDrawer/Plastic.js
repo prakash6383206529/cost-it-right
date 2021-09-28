@@ -142,8 +142,7 @@ function Plastic(props) {
       scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
-    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
-
+    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -276,7 +275,10 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode :
+                      getPlasticData ? getPlasticData.length > 0 ? true : false
+                        :
+                        WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
                   />
                 </Col>
                 <Col md="3">

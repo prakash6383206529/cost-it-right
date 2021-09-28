@@ -45,6 +45,7 @@ function RawMaterialCost(props) {
   const [gridData, setGridData] = useState(props.data)
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
   const [Ids, setIds] = useState([])
+  const [editCalculation, setEditCalculation] = useState(true)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -209,7 +210,7 @@ function RawMaterialCost(props) {
   const handleGrossWeightChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
-
+    setEditCalculation(false)
     if (checkForNull(event.target.value) >= 0) {
 
       if (IsFinishWeightValid(event.target.value, tempData.FinishWeight)) {
@@ -313,7 +314,7 @@ function RawMaterialCost(props) {
   const handleFinishWeightChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
-
+    setEditCalculation(false)
     if (checkForNull(event.target.value) <= 0) {
 
       const FinishWeight = checkForNull(event.target.value);
@@ -456,7 +457,7 @@ function RawMaterialCost(props) {
   const handleScrapRecoveryChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
-
+    setEditCalculation(false)
     if (checkForNull(event.target.value) > 0) {
       const ScrapRecoveryPercentage = checkForNull(event.target.value);
 
@@ -609,7 +610,7 @@ function RawMaterialCost(props) {
   }
 
   useEffect(() => {
-    if (IsApplyMasterBatch === false && gridData && gridData.length > 0) {
+    if (IsApplyMasterBatch === false && gridData && gridData.length > 0 && CostingViewMode === false && editCalculation === false) {
       let tempArr = []
       let tempData = gridData[0]
       const GrossWeight = tempData?.GrossWeight !== undefined ? tempData.GrossWeight : 0
@@ -692,6 +693,7 @@ function RawMaterialCost(props) {
   */
   const handleMBPercentage = (value) => {
     let tempData = gridData[0]
+    setEditCalculation(false)
     if (Number(value) && !isNaN(value)) {
 
       setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), value))
