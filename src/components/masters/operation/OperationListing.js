@@ -725,8 +725,8 @@ class OperationListing extends Component {
                                 loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
-                                    customClassName: "operation-nodata",
                                     title: CONSTANT.EMPTY_DATA,
+                                    imagClass:'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
