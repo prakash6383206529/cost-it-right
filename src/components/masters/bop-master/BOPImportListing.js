@@ -441,7 +441,7 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className="pt-4 filter-row-large bop-import-filter">
                         {this.state.shown && (
                             <Col md="12" lg="10" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">

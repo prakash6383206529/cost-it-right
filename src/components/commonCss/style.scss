@@ -6193,3 +6193,9 @@ body{
     font-size: calc(14px * 80/100);
   }
 }
+//simulation filter cancel button css 28-09-2021
+@media (max-width:1366px) {
+  .main-machine-rate .filter-block, .bop-import-filter .filter-block, .bop-domestic-filter .filter-block {
+    margin-bottom: 15px;
+  }
+}
