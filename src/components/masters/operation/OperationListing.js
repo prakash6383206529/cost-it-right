@@ -381,7 +381,23 @@ class OperationListing extends Component {
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return rowData.CostingHead ? rowData.DestinationPlant : rowData.Plants
+
+        let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
+
+        return data;
+
+    }
+
+    plantFilter = (params) => {
+        console.log("COMING IN FILTER");
+        console.log('params: ', params);
+
+        // if (params.value.length>2) {return params.value;}
+        // if (params.value.length===2){
+        //   const countries = JSON.parse(localStorage.getItem('scanCountries'));
+        //   var found = countries.filter(function (countries) { return countries.alpha2_Country_Code == params.value });
+        //   return found[0].Country_Name;
+        // }
     }
 
     /**
@@ -534,7 +550,8 @@ class OperationListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            statusButtonFormatter: this.statusButtonFormatter
+            statusButtonFormatter: this.statusButtonFormatter,
+            plantFilter: this.plantFilter
         };
 
         return (
@@ -735,7 +752,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} filter={true} getQuickFilterText={this.plantFilter}></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>

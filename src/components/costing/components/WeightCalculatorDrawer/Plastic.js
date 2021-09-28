@@ -34,6 +34,7 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
+  console.log('getPlasticData: ', getPlasticData);
 
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
@@ -275,11 +276,11 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-
-                    disabled={props.CostingViewMode ? props.CostingViewMode :
-                      getPlasticData ? getPlasticData.length > 0 ? true : false
-                        :
-                        WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                  // disabled={props.CostingViewMode ? props.CostingViewMode :
+                  //   getPlasticData !== undefined ? getPlasticData.length > 0 ? true : false
+                  //     :
+                  //     WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
                   />
 
                 </Col>
