@@ -4713,11 +4713,17 @@ body{
       }
     }
 }
+
 @media(max-height:900px) {
   .impacted-min-height {
     .add-min-height {
   min-height: calc(100vh - 380px);
   // height: calc(100vh - 380px);
+  }
+}
+.exchange-rate {
+  .ag-grid-wrapper {
+    min-height: calc(100vh - 150px) !important;
   }
 }
 }
