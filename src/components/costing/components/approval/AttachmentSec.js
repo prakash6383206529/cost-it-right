@@ -6,7 +6,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { ATTACHMENTS, FILE_URL, IMPACT_SHEET, INVOICE_BACKUP, OTHER, SUPPLIER_CONFRIM } from '../../../../config/constants';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { fileDeleteCosting, fileUploadCosting } from '../../actions/Costing'
-import { setAttachmentFileData, uploadSimulationAttachmentByCategory } from '../../../simulation/actions/Simulation'
+import { setAttachmentFileData, uploadSimulationAttachmentByCategory, uploadSimulationAttachmentonFTP } from '../../../simulation/actions/Simulation'
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from '../../../../helper';
 
@@ -87,6 +87,10 @@ function AttachmentSec(props) {
                 files.push(Data)
                 setFiles(files)
                 setIsOpen(!IsOpen)
+                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let uploadData = new FormData()
+                uploadData.append('path', path)
+                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -116,6 +120,10 @@ function AttachmentSec(props) {
                 supplierFiles.push(Data)
                 setSupplierFiles(supplierFiles)
                 setIsOpen(!IsOpen)
+                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let uploadData = new FormData()
+                uploadData.append('path', path)
+                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -172,6 +180,10 @@ function AttachmentSec(props) {
                 otherFiles.push(Data)
                 setOtherFiles(otherFiles)
                 setIsOpen(!IsOpen)
+                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let uploadData = new FormData()
+                uploadData.append('path', path)
+                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -199,6 +211,10 @@ function AttachmentSec(props) {
                 attachmentFiles.push(Data)
                 setAttachmentFiles(attachmentFiles)
                 setIsOpen(!IsOpen)
+                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let uploadData = new FormData()
+                uploadData.append('path', path)
+                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 

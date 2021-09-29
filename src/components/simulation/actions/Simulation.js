@@ -486,6 +486,18 @@ export function uploadSimulationAttachmentByCategory(data, callback) {
             })
     }
 }
+export function uploadSimulationAttachmentonFTP(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.simulationUploadFtp}`, data, headers)
+            .then((response) => {
+                callback(response)
+            }).catch(error => {
+                callback(error.response)
+                dispatch({ type: API_FAILURE })
+            })
+    }
+}
 
 export function getAmmendentStatus(params, callback) {
     return (dispatch) => {

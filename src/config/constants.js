@@ -868,6 +868,7 @@ export const API = {
   simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
   simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload-with-form-data`,
+  simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
