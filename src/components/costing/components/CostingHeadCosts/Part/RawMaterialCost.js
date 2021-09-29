@@ -27,7 +27,7 @@ function RawMaterialCost(props) {
       MBName: item?.CostingPartDetails?.MasterBatchRMName,
       MBPrice: item?.CostingPartDetails?.MasterBatchRMPrice,
       MBPercentage: item?.CostingPartDetails?.MasterBatchPercentage,
-      RMTotal: item?.CostingPartDetails?.MasterBatchTotal,
+      RMTotal: checkForDecimalAndNull(item?.CostingPartDetails?.MasterBatchTotal, getConfigurationKey().NoOfDecimalForPrice),
       MBId: item?.CostingPartDetails?.MasterBatchRMId,
 
     }
@@ -696,7 +696,7 @@ function RawMaterialCost(props) {
     setEditCalculation(false)
     if (Number(value) && !isNaN(value)) {
 
-      setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), value))
+      setValue('RMTotal', checkForDecimalAndNull(calculatePercentageValue(getValues('MBPrice'), value), getConfigurationKey().NoOfDecimalForPrice))
 
       const RMRate = calculatePercentageValue(tempData.RMRate, (100 - value));
 
@@ -734,7 +734,7 @@ function RawMaterialCost(props) {
       const NetLandedCost = (tempData.GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       let tempArr = Object.assign([...gridData], { [0]: tempData })
-      setValue('RMTotal', checkForNull(value))
+      setValue('RMTotal', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
       setGridData(tempArr)
 
     }
@@ -936,7 +936,7 @@ function RawMaterialCost(props) {
                                 />
                               </td>
                             }
-                            <td>{checkForDecimalAndNull(item.FinishWeight ? (item.GrossWeight - item.FinishWeight).toFixed(9) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.FinishWeight ? ((item.GrossWeight - item.FinishWeight).toFixed(9)) * (item.ScrapRecoveryPercentage ? calculatePercentage(item.ScrapRecoveryPercentage) : 1) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
