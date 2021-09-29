@@ -73,7 +73,7 @@ function CostingDetailSimulationDrawer(props) {
                                     <Col>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {"Costing Details"}
+                                                {" Old Costing Details"}
                                             </h3>
                                         </div>
                                         <div

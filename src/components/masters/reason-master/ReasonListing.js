@@ -341,7 +341,7 @@ class ReasonListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
+      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       statusButtonFormatter: this.statusButtonFormatter
     };
