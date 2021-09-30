@@ -991,7 +991,7 @@ function RawMaterialCost(props) {
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
                   <Col md="2">
-                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
+                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={CostingViewMode} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
