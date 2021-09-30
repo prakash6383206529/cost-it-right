@@ -123,6 +123,7 @@ class RMDomesticListing extends Component {
         }
     }
 
+
     /**
     * @method getInitialRange
     * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
