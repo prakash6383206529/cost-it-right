@@ -135,7 +135,6 @@ class SimulationUploadDrawer extends Component {
                     resp.rows.map((val, index) => {
                         console.log(val[10], 'val: ', val[9]);
                         if (index > 0) {
-
                             if (val[10] !== '' && val[10] !== undefined && val[9] !== val[10]) {
                                 basicRateCount = 1
                             }
