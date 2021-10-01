@@ -275,10 +275,11 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-                    disabled={props.CostingViewMode ? props.CostingViewMode :
-                      getPlasticData ? getPlasticData.length > 0 ? true : false
-                        :
-                        WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                  // disabled={props.CostingViewMode ? props.CostingViewMode :
+                  //   getPlasticData ? getPlasticData.length > 0 ? true : false
+                  //     :
+                  //     WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
                   />
                 </Col>
                 <Col md="3">
