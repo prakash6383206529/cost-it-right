@@ -125,6 +125,7 @@ class SimulationUploadDrawer extends Component {
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
 
+
                 } else {
                     fileHeads = resp.rows[0];
                     let fileData = [];
