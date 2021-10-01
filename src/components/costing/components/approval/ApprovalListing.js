@@ -64,9 +64,6 @@ function ApprovalListing(props) {
 
   }, [])
 
-  useEffect(() => {
-
-  }, [selectedIds])
 
   /**
    * @method getTableData
