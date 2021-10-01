@@ -19,18 +19,18 @@ function Dashboard(props) {
   const [acc3, setAcc3] = useState(false)
   const [hideDash, setShowHideDash] = useState(false)
 
-  useEffect(() => {
-    props.getMenuByUser(loggedInUserId(), () => {
-      if (menusData !== undefined) {
-        reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
-        props.getLeftMenu(
-          menusData[0].ModuleId,
-          loggedInUserId(),
-          (res) => { }
-        );
-      }
-    });
-  })
+  // useEffect(() => {
+  //   props.getMenuByUser(loggedInUserId(), () => {
+  //     if (menusData !== undefined) {
+  //       reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
+  //       props.getLeftMenu(
+  //         menusData[0].ModuleId,
+  //         loggedInUserId(),
+  //         (res) => { }
+  //       );
+  //     }
+  //   });
+  // })
 
   const closeDashboard = () => {
     setShowHideDash(true)
