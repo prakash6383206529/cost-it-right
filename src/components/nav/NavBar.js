@@ -47,12 +47,39 @@ class SideBar extends Component {
     };
   }
 
-  UNSAFE_componentWillMount() {
+  // UNSAFE_componentWillMount() {
+  //   // const { location } = this.props;
+  //   // this.setState({ isLoader: true });
+  //   // if (location && location !== undefined) {
+  //   //   this.props.getModuleIdByPathName(location.pathname, (res) => {
+  //   //     this.setLeftMenu(res.data.Data.ModuleId);
+  //   //     this.setState({ isLoader: false });
+  //   //   });
+
+  //   //   this.props.getTopAndLeftMenuData(() => { })
+  //   // }
+
+  //   // const loginUserId = loggedInUserId();
+  //   // this.props.getModuleSelectList(() => { });
+  //   // if (loginUserId != null) {
+  //   //   this.props.getMenuByUser(loginUserId, () => {
+  //   //     this.setState({ isLoader: false });
+  //   //   });
+  //   // }
+
+  // }
+
+
+  /**
+   * @method componentDidMount
+   * @description used to called after mounting component
+   */
+  componentDidMount() {
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
       this.props.getModuleIdByPathName(location.pathname, (res) => {
-        this.setLeftMenu(res.data.Data.ModuleId);
+        // this.setLeftMenu(res.data.Data.ModuleId);
         this.setState({ isLoader: false });
       });
 
@@ -60,21 +87,13 @@ class SideBar extends Component {
     }
 
     const loginUserId = loggedInUserId();
-    this.props.getModuleSelectList(() => { });
-    if (loginUserId != null) {
-      this.props.getMenuByUser(loginUserId, () => {
-        this.setState({ isLoader: false });
-      });
-    }
-
+    // this.props.getModuleSelectList(() => { });
+    // if (loginUserId != null) {
+    //   this.props.getMenuByUser(loginUserId, () => {
+    //     this.setState({ isLoader: false });
+    //   });
+    // }
   }
-
-
-  /**
-   * @method componentDidMount
-   * @description used to called after mounting component
-   */
-  componentDidMount() { }
 
   /**
    * @method toggleMenue
@@ -167,11 +186,6 @@ class SideBar extends Component {
     });
   };
 
-  setLeftMenuAccToMenu = (pathname) => {
-    this.props.getModuleIdByPathName(pathname, res => {
-      this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
-    })
-  }
 
   setModuleId = (ModuleId) => {
     reactLocalStorage.set('ModuleId', ModuleId)

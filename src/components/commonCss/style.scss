@@ -4677,11 +4677,17 @@ body{
       }
     }
 }
+
 @media(max-height:900px) {
   .impacted-min-height {
     .add-min-height {
   min-height: calc(100vh - 380px);
   // height: calc(100vh - 380px);
+  }
+}
+.exchange-rate {
+  .ag-grid-wrapper {
+    min-height: calc(100vh - 150px) !important;
   }
 }
 }
@@ -6141,4 +6147,18 @@ body{
   @media (max-width:1366px) {
     font-size: calc(14px * 80/100);
   }
+}
+//simulation filter cancel button css 28-09-2021
+@media (max-width:1366px) {
+  .simulation-filter {
+    .filter-block {
+      margin-bottom: 15px;
+    }
+  }
+}
+.imagClass {
+  margin-top: 30px;
+}
+.imagClass.power-listing {
+  margin-top: 50px;
 }

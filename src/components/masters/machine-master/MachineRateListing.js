@@ -518,7 +518,7 @@ class MachineRateListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large ${this.props.isSimulation  ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="11" className="filter-block machine-rate-filter">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -711,6 +711,7 @@ class MachineRateListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
