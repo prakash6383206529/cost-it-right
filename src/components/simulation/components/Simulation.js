@@ -68,11 +68,14 @@ function Simulation(props) {
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
+    console.log('rmDomesticListing: ', rmDomesticListing);
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
 
-
+    // useEffect(() => {
+    //     editTable()
+    // }, [rmDomesticListing, rmImportListing])
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -198,6 +201,7 @@ function Simulation(props) {
     }
 
     const editTable = () => {
+        console.log("EDIT TABLE");
         // alert('Hello')
         let flag = true;
         let vendorFlag = true;
@@ -205,9 +209,9 @@ function Simulation(props) {
         //  setShowEditTable(true)
         switch (master.value) {
             case RMDOMESTIC:
-
+                console.log(rmDomesticListing, "rmDomesticListingrmDomesticListing");
                 rmDomesticListing && rmDomesticListing.forEach((element, index) => {
-
+                    console.log(element.PlantId, "RMDOMESTIC", rmDomesticListing);
                     if (index !== 0) {
                         if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
                             //     toastr.warning('Please select either ZBC or VBC costing head at a time.')
