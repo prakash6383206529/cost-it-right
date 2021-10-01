@@ -378,7 +378,7 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                {this.state.isLoader && <LoaderCustom />}
+                {/* {this.state.isLoader && <LoaderCustom />} */}
                 <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <div className="container-fluid">
                         {/* {this.props.loading && <Loader />} */}
