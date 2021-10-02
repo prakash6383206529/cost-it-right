@@ -257,7 +257,6 @@ export default function materialReducer(state = initialState, action) {
                 MaterialSelectList: action.payload
             };
         case GET_RM_DOMESTIC_LIST:
-            console.log(action.payload, "IN GETRMDPOMESTIC");
             return {
                 ...state,
                 loading: false,
