@@ -61,8 +61,8 @@ var filterParams = {
     minValidYear: 2000,
 };
 
-function RMImportListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility, isSimulation } = props;
+function RMDomesticListing(props) {
+    const { AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility, isSimulation, apply } = props;
     const [tableData, settableData] = useState([]);
     const [RawMaterial, setRawMaterial] = useState([]);
     const [RMGrade, setRMGrade] = useState([]);
@@ -86,7 +86,7 @@ function RMImportListing(props) {
     const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
     const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
-
+    const [selectedRowData, setSelectedRowData] = useState([]);
 
 
     /**
@@ -207,9 +207,11 @@ function RMImportListing(props) {
                     settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
+
                     if (isSimulation) {
-                        props.apply()
+                        props.apply(Data)
                     }
+
                     // const func = () => {
                     // }
                     // func()
@@ -461,14 +463,9 @@ function RMImportListing(props) {
     const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setvendorName(newValue);
+            dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
+            dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
 
-            const fun = () => {
-
-                dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
-                dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
-            }
-
-            fun();
 
         } else {
             setvendorName([]);
@@ -481,21 +478,22 @@ function RMImportListing(props) {
     */
     const filterList = () => {
         // const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
+        const plants = getValues('Plant')
 
         const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
-        const plantId = plant ? plant.value : null;
+        const plantId = plants ? plants.value : null;
         const RMid = RawMaterial ? RawMaterial.value : null;
         const RMGradeid = RMGrade ? RMGrade.value : null;
         const Vendorid = vendorName ? vendorName.value : null;
         const technologyId = technology ? technology.value : 0
 
         if (isSimulation) {
-            dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plant.label, value: plant.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
+            dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plants.label, value: plants.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
             setTimeout(() => {
 
                 getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
                 // this.props.apply()  
-                props.apply()
+                // props.apply()
 
             }, 500);
         } else {
@@ -520,14 +518,14 @@ function RMImportListing(props) {
         setplant([]);
         settechnology([]);
         setvalue({ min: 0, max: 0 });
-
-        const fun = () => {
-            getInitialRange()
-            getDataList(null)
-
-            dispatch(getRawMaterialFilterSelectList(() => { }))
-        }
-        fun();
+        setValue('CostingHead', '')
+        setValue('Plant', '')
+        setValue('Technology', '')
+        setValue('RawMaterialId', '')
+        setValue('RawMaterialGradeId', '')
+        setValue('VendorId', '')
+        getDataList(null)
+        dispatch(getRawMaterialFilterSelectList(() => { }))
 
     }
 
@@ -541,12 +539,10 @@ function RMImportListing(props) {
 
     const closeBulkUploadDrawer = () => {
         setisBulkUpload(false);
+        getInitialRange()
+        getDataList(null, null, null)
 
-        const fun = () => {
-            getInitialRange()
-            getDataList(null, null, null)
-        }
-        fun();
+
     }
 
     /**
@@ -656,13 +652,34 @@ function RMImportListing(props) {
 
 
     //const { isBulkUpload, } = this.state;
+    const isFirstColumn = (params) => {
+        if (isSimulation) {
 
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+            return thisIsFirstColumn;
+        } else {
+            return false
+        }
+    }
+
+    const onRowSelect = () => {
+
+        var selectedRows = gridApi.getSelectedRows();
+        // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+        setSelectedRowData(selectedRows)
+        apply(selectedRows)
+
+    }
 
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
-
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -686,7 +703,7 @@ function RMImportListing(props) {
             {/* { this.props.loading && <Loader />} */}
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
                 <Row className="filter-row-large pt-4 ">
-                    {shown &&
+                    {(shown && !isSimulation) &&
                         <Col md="12" lg="11" className="filter-block ">
                             <div className="d-inline-flex justify-content-start  w100 rm-domestic-filter">
                                 <div className="flex-fills">
@@ -917,7 +934,6 @@ function RMImportListing(props) {
                                 style={{ height: '100%', width: '100%' }}
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
-
                                 domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={getFilterRMData()}
@@ -932,7 +948,8 @@ function RMImportListing(props) {
                                     imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
-
+                                rowSelection={'multiple'}
+                                onSelectionChanged={onRowSelect}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
 
@@ -1009,5 +1026,5 @@ function RMImportListing(props) {
 }
 
 
-export default RMImportListing;
+export default RMDomesticListing;
 
