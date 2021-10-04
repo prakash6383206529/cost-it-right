@@ -24,6 +24,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent'
 const gridOptions = {};
 
 function SimulationApprovalListing(props) {
+    const { isDashboard } = props
     const loggedUser = loggedInUserId()
     const [shown, setshown] = useState(false)
 
@@ -77,6 +78,7 @@ function SimulationApprovalListing(props) {
             simulated_by: createdBy,
             requestedBy: requestedBy,
             status: status,
+            isDashboard: isDashboard ?? false
             // partNo: partNo,
             // createdBy: createdBy,
         }

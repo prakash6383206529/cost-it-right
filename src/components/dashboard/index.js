@@ -63,7 +63,7 @@ function Dashboard(props) {
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} />}</Col>
+                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
                   </Row>
                 </div>
               </Row>
@@ -84,7 +84,7 @@ function Dashboard(props) {
                   </Row>
 
                   <Row>
-                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} />}</Col>
+                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} />}</Col>
                   </Row>
                 </div>
               </Row>
