@@ -6,13 +6,14 @@ import { Controller, useForm } from 'react-hook-form';
 // import { runSimulation } from '../actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
 import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, getSelectListOfSimulationLinkingTokens } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
 import { EXCHNAGERATE } from '../../../config/constants';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 
 function RunSimulationDrawer(props) {
-    const { objs, masterId } = props
+    const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -28,13 +29,20 @@ function RunSimulationDrawer(props) {
     const [opposite, setIsOpposite] = useState(false)
     const [selectedDate, setSelectedDate] = useState('')
     const [selectedData, setSelectedData] = useState([])
+    const [provisionalCheck, setProvisionalCheck] = useState(false)
+
+    const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
+
 
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
+        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
+
     }, [])
 
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
+    const { TokensList } = useSelector(state => state.simulation)
 
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -65,6 +73,46 @@ function RunSimulationDrawer(props) {
         setIsOpposite(!opposite)
     }
 
+    const Provision = (string) => {
+
+        if (string) {
+            setProvisionalCheck(!provisionalCheck)
+            setValue('Link', { label: tokenNo, value: '' })
+
+        }
+    }
+
+
+    const handleGradeChange = (value) => {
+
+        setLinkingTokenNumber(value)
+
+    }
+
+    const renderListing = () => {
+        let temp = []
+        console.log(TokensList, "as")
+        TokensList && TokensList.map((item) => {
+
+            if (item.Value === '0') return false
+            temp.push({ label: item.Text, value: item.Value })
+            return null
+
+
+        })
+        return temp
+        // if (label && label !== '') {
+        //     if (label === 'technology') {
+        //         technologySelectList && technologySelectList.map((item) => {
+        //             if (item.Value === '0') return false
+        //             temp.push({ label: item.Text, value: item.Value })
+        //             return null
+        //         })
+        //         return temp
+        //     }
+        // }
+    }
+
     const IsAvailable = (id) => { }
 
     const SimulationRun = () => {
@@ -84,6 +132,8 @@ function RunSimulationDrawer(props) {
         obj.IsInventory = Inventory
         obj.IsPaymentTerms = PaymentTerms
         obj.IsDiscountAndOtherCost = DiscountOtherCost
+        obj.IsProvisional = provisionalCheck
+        obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
 
         if (masterId === Number(EXCHNAGERATE)) {
@@ -157,6 +207,7 @@ function RunSimulationDrawer(props) {
                                                                 onChange={() => handleApplicabilityChange(el)}
                                                             >
                                                                 {el.Text}
+
                                                                 <input
                                                                     type="checkbox"
                                                                     value={"All"}
@@ -169,12 +220,60 @@ function RunSimulationDrawer(props) {
                                                                     onChange={() => handleApplicabilityChange(el)}
                                                                 />
                                                             </label>
+
+
                                                         </div>
+
                                                     </Col>
                                                 )
                                             })
                                         }
+
+
+
+
                                         <div className="input-group form-group col-md-12 px-0">
+
+                                            <label
+                                                className="custom-checkbox mb-0"
+                                                onChange={() => Provision(`Provisional`)}
+                                            >
+                                                Provisional
+                                                <input
+                                                    type="checkbox"
+                                                //value={"All"}
+                                                // disabled={true}
+                                                //checked={IsAvailable(el.Value)}
+                                                />
+                                                <span
+                                                    className=" before-box"
+                                                    // checked={IsAvailable(el.Value)}
+                                                    onChange={() => Provision(`Provisional`)}
+                                                />
+                                            </label>
+
+
+                                            {provisionalCheck &&
+
+
+                                                <SearchableSelectHookForm
+                                                    label={'Link Token Number'}
+                                                    name={'Link'}
+                                                    placeholder={'select'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    // defaultValue={technology.length !== 0 ? technology : ''}
+                                                    options={renderListing()}
+                                                    mandatory={true}
+                                                    handleChange={handleGradeChange}
+                                                    errors={errors.Masters}
+                                                    customClassName="mb-0"
+                                                />
+
+                                            }
+
                                             <div className="inputbox date-section">
                                                 <DatePickerHookForm
                                                     name={`EffectiveDate`}
@@ -236,5 +335,6 @@ function RunSimulationDrawer(props) {
         </div>
     );
 }
+
 
 export default RunSimulationDrawer;
