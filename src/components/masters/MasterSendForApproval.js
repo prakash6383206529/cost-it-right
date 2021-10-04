@@ -140,8 +140,8 @@ function MasterSendForApproval(props) {
             senderObj.Reason = reason ? reason.label : ''
             senderObj.IsFinalApproved = false
             // senderObj.ApprovalToken = 0
-            senderObj.DepartmentId = userDetails().DepartmentId
-            senderObj.DepartmentName = userDetails().Department
+            senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+            senderObj.DepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
@@ -184,8 +184,8 @@ function MasterSendForApproval(props) {
             obj.SenderLevelId = userDetails().LoggedInMasterLevelId
             obj.SenderId = loggedInUserId()
             obj.SenderLevel = userDetails().LoggedInMasterLevel
-            obj.SenderDepartmentId = userDetails().DepartmentId
-            obj.SenderDepartmentName = userDetails().Department
+            obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
+            obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             obj.ApproverId = approver && approver.value ? approver.value : ''
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''

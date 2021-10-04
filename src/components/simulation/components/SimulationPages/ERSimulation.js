@@ -33,6 +33,7 @@ function ERSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const [selectedRowData, setSelectedRowData] = useState([]);
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -131,25 +132,33 @@ function ERSimulation(props) {
         setShowRunSimulationDrawer(false)
 
     }
+    const isFirstColumn = (params) => {
+        if(isImpactedMaster) return false
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        return thisIsFirstColumn;
+    }
 
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
-        editable: true
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
 
-        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+        // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -169,38 +178,26 @@ function ERSimulation(props) {
         oldERFormatter: oldERFormatter,
     };
 
+    const onRowSelect = () => {
+        var selectedRows = gridApi.getSelectedRows();
+        setSelectedRowData(selectedRows)
+    }
+
     const verifySimulation = () => {
-        let exchnageRateCount = 0
-
-        list && list.map((li) => {
-            if (Number(li.CurrencyExchangeRate) === Number(li.NewCurrencyExchangeRate) || li?.NewCurrencyExchangeRate === undefined) {
-                exchnageRateCount = exchnageRateCount + 1
-            }
-            return null;
-        })
-
-        if (exchnageRateCount === list.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            return false
-        }
-        exchnageRateCount = 0
-        // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
-        list && list.map(item => {
-            if (item.NewCurrencyExchangeRate !== undefined && ((item.NewCurrencyExchangeRate !== undefined ? Number(item.NewCurrencyExchangeRate) : Number(item.CurrencyExchangeRate)) !== Number(item.CurrencyExchangeRate))) {
-                let tempObj = {}
-                tempObj.ExchangeRateId = item.ExchangeRateId
-                tempObj.EffectiveDate = item.EffectiveDate
-                tempObj.Currency = item.Currency
-                tempObj.OldExchangeRate = item.CurrencyExchangeRate
-                tempObj.NewExchangeRate = item.NewCurrencyExchangeRate ? item.NewCurrencyExchangeRate : item.CurrencyExchangeRate
-                tempObj.Delta = 0
-                tempArr.push(tempObj)
-            }
+        selectedRowData && selectedRowData.map(item => {
+            let tempObj = {}
+            tempObj.ExchangeRateId = item.ExchangeRateId
+            tempObj.EffectiveDate = item.EffectiveDate
+            tempObj.Currency = item.Currency
+            tempObj.NewExchangeRate = item.CurrencyExchangeRate
+            tempObj.Delta = 0
+            tempArr.push(tempObj)
+
             return null;
         })
         obj.SimulationExchangeRates = tempArr
@@ -224,51 +221,7 @@ function ERSimulation(props) {
 
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -294,19 +247,16 @@ function ERSimulation(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
+                                            rowSelection={'multiple'}
+                                            // frameworkComponents={frameworkComponents}
+                                            onSelectionChanged={onRowSelect}
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={120}></AgGridColumn>
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={120}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={150}></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={140} headerName="Exchange Rate (INR)" marryChildren={true}></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={130}></AgGridColumn>
-                                            {/* <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn> */}
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn  field="CurrencyExchangeRate" editable='false' cellRenderer="oldERFormatter" minWidth={140} headerName="Old" colId="CurrencyExchangeRate"></AgGridColumn>
-                                                <AgGridColumn cellRenderer='newERFormatter' editable={isImpactedMaster ? false : true} field="NewCurrencyExchangeRate" minWidth={140} headerName="New" colId='NewCurrencyExchangeRate'></AgGridColumn>
-                                            </AgGridColumn>
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" minWidth={140} editable='false' cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" field="DateOfModification" minWidth={140} editable='false' headerName="Date of Modification" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>
@@ -364,7 +314,7 @@ function ERSimulation(props) {
                     />
                 }
             </div>
-        </div>
+        </div >
     );
 }
 

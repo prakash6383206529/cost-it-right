@@ -202,7 +202,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
 
 export function getSimulationApprovalList(filterData, callback) {
     return (dispatch) => {
-        const queryParameter = `logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
+        const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
         request.then((response) => {
             if (response.data.Result) {
@@ -547,5 +547,19 @@ export function getExchangeCostingSimulationList(token, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
+    }
+}
+
+
+export function uploadSimulationAttachment(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.uploadFileOnSimulation}`, data, headers)
+            .then((response) => {
+                callback(response)
+            }).catch(error => {
+                callback(error.response)
+                dispatch({ type: API_FAILURE })
+            })
     }
 }

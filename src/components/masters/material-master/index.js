@@ -247,7 +247,7 @@ function  RowMaterialMaster (props) {
                                         toggle('5');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
-                                        RM Approval
+                                        Approval Status
                                     </NavLink>
                                 </NavItem>}
                             </Nav>

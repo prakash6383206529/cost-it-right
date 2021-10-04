@@ -315,6 +315,17 @@ class AddRMDomestic extends Component {
       this.setState({ UOM: [] })
     }
   }
+
+  handleScrapRate = (newValue, actionMeta) => {
+    const { fieldsObj } = this.props
+    console.log('newValue: ', newValue.target.value);
+    console.log(fieldsObj.BasicRate, "fieldsObj.BasicRate");
+    if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
+      toastr.warning("Scrap rate should not be greater than basic rate")
+      return false
+    }
+  }
+
   /**
    * @method calculateNetCost
    * @description CALCUALTION NET COST
@@ -1010,15 +1021,17 @@ class AddRMDomestic extends Component {
       formData.CutOffPrice = values.cutOffPrice
       formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
       formData.RawMaterialCode = values.Code
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"
         formData.IsSendForApproval = true
+      } else {
+        formData.IsSendForApproval = false
       }
       // }
 
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         this.setState({ approveDrawer: true, approvalObj: formData })
       } else {
         this.props.reset()
@@ -1443,7 +1456,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
-                              // onChange={thishandleBasicRate.}
+                              // onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
                               className=" "
@@ -1463,6 +1476,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
+                              onChange={this.handleScrapRate}
                             />
                           </Col>
                           <Col md="4">
@@ -1647,7 +1661,7 @@ class AddRMDomestic extends Component {
                             {"Cancel"}
                           </button>
                           {
-                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag) ?
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 // onClick={this.sendForMasterApproval}
@@ -1665,6 +1679,7 @@ class AddRMDomestic extends Component {
                                 {isEditFlag ? "Update" : "Save"}
                               </button>
                           }
+
                           {/* <button
                             type="submit"
                             className="user-btn mr5 save-btn"

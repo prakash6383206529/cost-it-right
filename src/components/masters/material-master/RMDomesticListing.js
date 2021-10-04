@@ -2,16 +2,13 @@ import React, { Component } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
     getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
 } from '../actions/Material';
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { searchableSelect } from "../../layout/FormInputs";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -31,9 +28,9 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData } from '../../../helper';
 import { func } from 'prop-types';
-import materialReducer from '../reducers/Material';
 //import {  Controller, useWatch } from 'react-hook-form'
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -64,101 +61,81 @@ var filterParams = {
     minValidYear: 2000,
 };
 
-function RMDomesticListing (props) {
-    const {  AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility,isSimulation } = props;
+function RMDomesticListing(props) {
+    const { AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility, isSimulation, apply } = props;
+    const [tableData, settableData] = useState([]);
+    const [RawMaterial, setRawMaterial] = useState([]);
+    const [RMGrade, setRMGrade] = useState([]);
+    const [vendorName, setvendorName] = useState([]);
+    const [costingHead, setcostingHead] = useState([]);
+    const [plant, setplant] = useState([]);
+    const [value, setvalue] = useState({ min: 0, max: 0 });
+    const [maxRange, setmaxRange] = useState(0);
+    const [isBulkUpload, setisBulkUpload] = useState(false);
+    const [shown, setshown] = useState(isSimulation ? true : false);
+    const [technology, settechnology] = useState([]);
+    const [gridApi, setgridApi] = useState(null);
+    const [gridColumnApi, setgridColumnApi] = useState(null);
+    const [loader, setloader] = useState(true);
+    const [statusId, setstatusId] = useState(0);
+    const [count, setCount] = useState(0)
+    const dispatch = useDispatch();
+
+    const rmDataList = useSelector((state) => state.material.rmDataList);
+    const filteredRMData = useSelector((state) => state.material.filteredRMData);
+    const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
+    const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
+    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+    const [selectedRowData, setSelectedRowData] = useState([]);
 
 
-        
-        
-                          
-            const [isOpen, setisOpen] = useState(false);
-            const [isEditFlag, setisEditFlag] = useState(false);
-            const [ tableData, settableData] = useState([]);
-            const [ RawMaterial, setRawMaterial] = useState([]);
-            const [ RMGrade, setRMGrade] = useState([]);
-            const [  vendorName,  setvendorName] = useState([]);
-            const [  costingHead,  setcostingHead] = useState([]);
-            const [    plant,  setplant] = useState([]);
-            const [ value, setvalue] = useState({ min: 0, max: 0 });
-            const [maxRange, setmaxRange] = useState(0);
-            const [ isBulkUpload, setisBulkUpload] = useState(false);
-            const [ shown, setshown] = useState(isSimulation ? true : false);
-            const [  technology, settechnology] = useState([]);
-            const [  gridApi, setgridApi] = useState(null);
-            const [  gridColumnApi, setgridColumnApi] = useState(null);
-            const [  rowData, setrowData] = useState(null);
-            const [   sideBar, setsideBar] = useState({ toolPanels: ['columns'] });
-            const [ showData, setshowData] = useState(false);
-            const [  loader, setloader] = useState(true);
-            const [  statusId, setstatusId] = useState(0);
-            const dispatch = useDispatch();
-          
-            const rmDataList= useSelector((state) => state.material.rmDataList );
-            const  filteredRMData= useSelector((state) => state.material.filteredRMData);
-            const filterRMSelectList= useSelector((state) => state.material.filterRMSelectList);
+    /**
+    * @method FIRST RNDER COMPONENT
+    * @description Called after rendering the component
+    */
 
-            
-                          // shown: false,
-            
+    //////////
+    // useEffect(() => {
+    //     // callFilterApi()
+    //     getDataList()
+    // }, [])
 
+    const callFilterApi = () => {
+        if (isSimulation || shown) {
+            dispatch(getRawMaterialNameChild(() => { }))
+            dispatch(getGradeSelectList(() => { }))
+            dispatch(getVendorListByVendorType(false, () => { }))
+            dispatch(getRawMaterialFilterSelectList(() => { }))
+            dispatch(getTechnologySelectList(() => { }))
+            dispatch(getPlantSelectListByType(ZBC, () => { }))
+        }
+    }
 
-                        
+    useEffect(() => {
+        callFilterApi()
+    }, [shown])
 
-            
-                          const {
-                            register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
-                              mode: 'onChange',
-                              reValidateMode: 'onChange',
-                              
-                            })
-            
-                      
-                   
+    // const handleFilterButton = ()=>{
+    //     setshown(!shown)
+    //     callFilterApi()
+    // }
+
     useEffect(() => {
 
-        console.log(props.isSimulation,"props");
-  
-         getInitialRange()
-        
         if (isSimulation) {
-      
-
-                setcostingHead(filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : []);
-                setplant( filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : []);
-                setRawMaterial(filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : []);
-                setRMGrade(filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : []);
-                setvendorName(filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : []);
-                setstatusId(CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0);
-                setvalue( { min: 0, max: 0 });
-               
-               
-                // technology: []
-                
-            const fun= () => {
-
-                getInitialRange()
-                getDataList(null)
-
-                dispatch(getRawMaterialFilterSelectList(() => { }))
-            }
-            fun();
+            setcostingHead(filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : []);
+            setplant(filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : []);
+            setRawMaterial(filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : []);
+            setRMGrade(filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : []);
+            setvendorName(filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : []);
+            setstatusId(CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0);
+            setvalue({ min: 0, max: 0 });
         }
-
-
-
-
-        
-
-
-
+        getDataList()
     }, [])
 
 
- 
-           
-
-
-  const  getFilterRMData = () => {
+    const getFilterRMData = () => {
         if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
             return getFilteredRMData(rmDataList)
         } else {
@@ -170,74 +147,44 @@ function RMDomesticListing (props) {
     * @method getInitialRange
     * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
     */
-   const getInitialRange = () => {
-       // const { value } = this.state;
-        
+    const getInitialRange = () => {
+        // const { value } = this.state;
+
         // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
-        const filterData = {
-            costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
-            plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
-            material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
-            grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
-            vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
-            // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
-            technologyId: isSimulation ? props.technology : 0,
-            net_landed_min_range: value.min,
-            net_landed_max_range: value.max,
-            statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
-        }
+        // const filterData = {
+        //     costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
+        //     plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
+        //     material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
+        //     grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
+        //     vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
+        //     // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
+        //     technologyId: isSimulation ? props.technology : 0,
+        //     net_landed_min_range: value.min,
+        //     net_landed_max_range: value.max,
+        //     statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
+        // }
 
-        //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
-        if (!props.isMasterSummaryDrawer) {
-            dispatch(getRMDomesticDataList(filterData, (res) => {
-                if (res && res.status === 200) {
-                    let DynamicData = res.data.DynamicData;
-                    setvalue( { min: 0, max: DynamicData.MaxRange });
-                }
-                setloader(false);
-            }))
-        }
+        // //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+        // if (!props.isMasterSummaryDrawer) {
+        //     dispatch(getRMDomesticDataList(filterData, (res) => {
+        //         if (res && res.status === 200) {
+        //             let DynamicData = res.data.DynamicData;
+        //             setvalue({ min: 0, max: DynamicData.MaxRange });
+        //         }
+        //         setloader(false);
+        //     }))
+        // }
     }
 
-    /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
 
-//////////
-     useEffect(() => {
 
-    
-        const { isSimulation } = props
-
-        dispatch(getRawMaterialNameChild(() => { }))
-        dispatch(getGradeSelectList(() => { }))
-        dispatch(getVendorListByVendorType(false, () => { }))
-
-        dispatch(getRawMaterialFilterSelectList(() => { }))
-        dispatch(getTechnologySelectList(() => { }))
-        getDataList()
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
-
-    
-
-}, [])
-
-    /**
-    * @method hideForm
-    * @description Get updated Table data list after any action performed.
-    */
-   const getUpdatedData = () => {
-        getDataList()
-    }
 
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const  getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
-        
-        const {  isSimulation } = props
+    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
+        const { isSimulation } = props
 
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
@@ -252,41 +199,33 @@ function RMDomesticListing (props) {
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (!props.isMasterSummaryDrawer) {
-           dispatch( getRMDomesticDataList(filterData, (res) => {
-               
+            dispatch(getRMDomesticDataList(filterData, (res) => {
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
-                       
-                             settableData(Data);
-                    
-                         setmaxRange( DynamicData.MaxRange);
-                        setloader( false);
+                    settableData(Data);
+                    setmaxRange(DynamicData.MaxRange);
+                    setloader(false);
 
-                        
-                     const func=() => {
-                        if (isSimulation) {
-                            props.apply()
-                        } }
-                    
-                    func()
+                    if (isSimulation) {
+                        props.apply(Data)
+                    }
+
+                    // const func = () => {
+                    // }
+                    // func()
 
                 } else if (res && res.response && res.response.status === 412) {
-
                     settableData([]);
                     setmaxRange(0);
-                    setloader(false);     
-                    
+                    setloader(false);
 
                 } else {
-                      
                     settableData([]);
                     setmaxRange(0);
-                    setloader(false);     
-                    
-
+                    setloader(false);
                 }
-            }) )
+            }))
         }
     }
 
@@ -322,7 +261,7 @@ function RMDomesticListing (props) {
     * @method confirmDelete
     * @description confirm delete Raw Material details
     */
-   const  confirmDelete = (ID) => {
+    const confirmDelete = (ID) => {
         dispatch(deleteRawMaterialAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
                 toastr.warning(res.data.Message)
@@ -353,7 +292,6 @@ function RMDomesticListing (props) {
         }
         return (
             <>
-
                 {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
@@ -364,11 +302,11 @@ function RMDomesticListing (props) {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-   const costingHeadFormatter = (props) => {
+    const costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    
-        let data= (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
-         
+
+        let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
+
         return data;
     }
 
@@ -389,7 +327,7 @@ function RMDomesticListing (props) {
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
-   const  hyphenFormatter = (props) => {
+    const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return cellValue != null ? cellValue : '-';
     }
@@ -403,7 +341,7 @@ function RMDomesticListing (props) {
         return cell != null ? cell : '-';
     }
 
-   const  statusFormatter = (props) => {
+    const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // CHANGE IN STATUS IN AFTER KAMAL SIR API
@@ -424,8 +362,7 @@ function RMDomesticListing (props) {
     * @method renderListing
     * @description Used to show type of listing
     */
-   const  renderListing = (label) => {
-        const {  plantSelectList, technologySelectList } = props;
+    const renderListing = (label) => {
 
         const temp = [];
         if (label === 'costingHead') {
@@ -476,28 +413,24 @@ function RMDomesticListing (props) {
     * @method handleRMChange
     * @description  used to handle row material selection
     */
-   const  handleRMChange = (newValue, actionMeta) => {
+    const handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            
-                setRawMaterial( newValue);
-              const fun= () => {
-                
+
+            setRawMaterial(newValue);
+            const fun = () => {
                 dispatch(getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
                 dispatch(getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-               }
+            }
 
-               fun();
+            fun();
         } else {
 
-            setRawMaterial( []);
-
-            
-    
-             const fun= () => {
+            setRawMaterial([]);
+            const fun = () => {
                 props.getGradeSelectList(res => { });
-            
-             }
-             func();
+
+            }
+            func();
         }
     }
 
@@ -507,16 +440,16 @@ function RMDomesticListing (props) {
     */
     const handleGradeChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-                 setRMGrade(newValue);
-                
-                const fun= () => {
-                
+            setRMGrade(newValue);
+
+            const fun = () => {
+
                 dispatch(getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { }))
                 dispatch(getVendorFilterByGradeSelectList(RMGrade.value, () => { }))
             }
             fun();
         } else {
-           setRMGrade([]);
+            setRMGrade([]);
         }
     }
 
@@ -524,20 +457,15 @@ function RMDomesticListing (props) {
      * @method handleVendorName
      * @description called
      */
-   const  handleVendorName = (newValue, actionMeta) => {
+    const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-              setvendorName(newValue);
-                
-               const fun= () => {
-                
-                dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
-                dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }) )
-            }
+            setvendorName(newValue);
+            dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
+            dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
 
-            fun();
-        
+
         } else {
-             setvendorName([]);
+            setvendorName([]);
         }
     }
 
@@ -545,27 +473,28 @@ function RMDomesticListing (props) {
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
-   const  filterList = () => {
-       // const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
+    const filterList = () => {
+        // const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
+        const plants = getValues('Plant')
 
         const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
-        const plantId = plant ? plant.value : null;
+        const plantId = plants ? plants.value : null;
         const RMid = RawMaterial ? RawMaterial.value : null;
         const RMGradeid = RMGrade ? RMGrade.value : null;
         const Vendorid = vendorName ? vendorName.value : null;
         const technologyId = technology ? technology.value : 0
 
         if (isSimulation) {
-            dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plant.label, value: plant.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
+            dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plants.label, value: plants.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
             setTimeout(() => {
 
                 getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
                 // this.props.apply()  
-                props.apply()
+                // props.apply()
 
             }, 500);
         } else {
-        getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
+            getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
 
         }
     }
@@ -574,52 +503,50 @@ function RMDomesticListing (props) {
     * @method resetFilter
     * @description Reset user filter
     */
-   const  resetFilter = () => {
+    const resetFilter = () => {
         if (isSimulation) {
             dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         }
-        
-            setcostingHead([]);
-            setRawMaterial([]);
-            setRMGrade ([]);
-            setvendorName([]);
-            setplant  ([]);
-            settechnology([]);
-            setvalue ({ min: 0, max: 0 });
 
-        const fun= () => {
-            getInitialRange()
-            getDataList(null)
-
-            dispatch(getRawMaterialFilterSelectList(() => { }))
-        }
-        fun();
+        setcostingHead([]);
+        setRawMaterial([]);
+        setRMGrade([]);
+        setvendorName([]);
+        setplant([]);
+        settechnology([]);
+        setvalue({ min: 0, max: 0 });
+        setValue('CostingHead', '')
+        setValue('Plant', '')
+        setValue('Technology', '')
+        setValue('RawMaterialId', '')
+        setValue('RawMaterialGradeId', '')
+        setValue('VendorId', '')
+        getDataList(null)
+        dispatch(getRawMaterialFilterSelectList(() => { }))
 
     }
 
-   const formToggle = () => {
+    const formToggle = () => {
         props.formToggle()
     }
 
-   const bulkToggle = () => {
-        setisBulkUpload(true); 
+    const bulkToggle = () => {
+        setisBulkUpload(true);
     }
 
     const closeBulkUploadDrawer = () => {
-          setisBulkUpload(false); 
-            
-            const fun=() => {
-            getInitialRange()
-            getDataList(null, null, null)
-        }
-        fun();
+        setisBulkUpload(false);
+        getInitialRange()
+        getDataList(null, null, null)
+
+
     }
 
     /**
     * @method densityAlert
     * @description confirm Redirection to Material tab.
     */
-   const  densityAlert = () => {
+    const densityAlert = () => {
         const toastrConfirmOptions = {
             onOk: () => {
                 confirmDensity()
@@ -629,34 +556,34 @@ function RMDomesticListing (props) {
         return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
-   const  handleHeadChange = (newValue, actionMeta) => {
+    const handleHeadChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            setcostingHead(newValue); 
+            setcostingHead(newValue);
         } else {
-             setcostingHead([]);
+            setcostingHead([]);
         }
     };
 
-   const  handlePlantChange = (newValue, actionMeta) => {
+    const handlePlantChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            setplant( newValue); 
+            setplant(newValue);
         } else {
-             setplant([]);
+            setplant([]);
         }
     }
 
     const handleTechnologyChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-           settechnology(newValue);
+            settechnology(newValue);
         } else {
-            settechnology ([]);
+            settechnology([]);
         }
     }
     /**
     * @method confirmDensity
     * @description confirm density popup.
     */
-   const  confirmDensity = () => {
+    const confirmDensity = () => {
         props.toggle('4')
     }
 
@@ -666,10 +593,10 @@ function RMDomesticListing (props) {
     */
     const onSubmit = (values) => { }
 
-   const  onGridReady = (params) => {
-        setgridApi( params.api); 
-            
-            setgridColumnApi( params.columnApi);
+    const onGridReady = (params) => {
+        setgridApi(params.api);
+
+        setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
 
@@ -678,9 +605,9 @@ function RMDomesticListing (props) {
         gridApi.paginationSetPageSize(Number(value));
     };
 
-   const  returnExcelColumn = (data = [], TempData) => {
+    const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -697,7 +624,7 @@ function RMDomesticListing (props) {
 
 
 
-   const  onBtExport = () => {
+    const onBtExport = () => {
         let tempArr = []
         const data = gridApi && gridApi.getModel().rowsToDisplay
         data && data.map((item => {
@@ -706,11 +633,11 @@ function RMDomesticListing (props) {
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
-   const  onFilterTextBoxChanged = (e) => {
+    const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
 
-   const  resetState = () => {
+    const resetState = () => {
         gridOptions.columnApi.resetColumnState(null);
         gridOptions.api.setFilterModel(null);
     }
@@ -719,354 +646,359 @@ function RMDomesticListing (props) {
     * @method render
     * @description Renders the component
     */
-    
-       
-        //const { isBulkUpload, } = this.state;
 
 
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: true,
+    //const { isBulkUpload, } = this.state;
+    const isFirstColumn = (params) => {
+        if (isSimulation) {
 
-        };
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-        const frameworkComponents = {
-            totalValueRenderer: buttonFormatter,
-            effectiveDateRenderer: effectiveDateFormatter,
-            costingHeadRenderer: costingHeadFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound,
-            costFormatter: costFormatter,
-            freightCostFormatter: freightCostFormatter,
-            shearingCostFormatter: shearingCostFormatter,
-            statusFormatter: statusFormatter,
-            hyphenFormatter: hyphenFormatter
+            return thisIsFirstColumn;
+        } else {
+            return false
+        }
+    }
 
-        };
+    const onRowSelect = () => {
 
-        return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* { this.props.loading && <Loader />} */}
-                < form onSubmit={handleSubmit(onSubmit.bind())} noValidate >
-                    <Row className="filter-row-large pt-4 ">
-                        {shown &&
-                            <Col md="12" lg="11" className="filter-block ">
-                                <div className="d-inline-flex justify-content-start  w100 rm-domestic-filter">
-                                    <div className="flex-fills">
-                                    
-                                        <h5>{`Filter By:`}</h5>
-                                        
-                                    </div>
-                                    <div className="flex-fill">
+        var selectedRows = gridApi.getSelectedRows();
+        // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+        setSelectedRowData(selectedRows)
+        apply(selectedRows)
 
-                                    
+    }
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
+    };
+
+    const frameworkComponents = {
+        totalValueRenderer: buttonFormatter,
+        effectiveDateRenderer: effectiveDateFormatter,
+        costingHeadRenderer: costingHeadFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+        costFormatter: costFormatter,
+        freightCostFormatter: freightCostFormatter,
+        shearingCostFormatter: shearingCostFormatter,
+        statusFormatter: statusFormatter,
+        hyphenFormatter: hyphenFormatter
+
+    };
+
+    return (
+        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            {/* { this.props.loading && <Loader />} */}
+            < form onSubmit={handleSubmit(onSubmit)} noValidate >
+                <Row className="filter-row-large pt-4 ">
+                    {(shown && !isSimulation) &&
+                        <Col md="12" lg="11" className="filter-block ">
+                            <div className="d-inline-flex justify-content-start  w100 rm-domestic-filter">
+                                <div className="flex-fills">
+                                    <h5>{`Filter By:`}</h5>
+                                </div>
+                                <div className="flex-fill">
                                     <SearchableSelectHookForm
-                                       label={""}
-                                    name={"CostingHead"}
-                                    placeholder={'CostingHead'}
-                                     Controller={Controller}
-                                    control={control}
-                                     rules={{ required: true }}
-                                    register={register}
-                                 defaultValue={(costingHead === null || costingHead.length === 0) ? [required] : []}
-                                  options={renderListing('costingHead')}
-                                    mandatory={false}
-                                  handleChange={handleHeadChange}
-                                    errors={errors}
-                                      disabled={false}
-                              />
-                              
-                                    </div>
-
-
-
-
-
-                                    <div className="flex-fill">
-                                    
-                                    <SearchableSelectHookForm
-                                       label={""}
-                                   name={"Plant"}
-                                        placeholder={'Plant'}
-                                       Controller={Controller}
-                                      control={control}
+                                        label={""}
+                                        name={"CostingHead"}
+                                        placeholder={'CostingHead'}
+                                        Controller={Controller}
+                                        control={control}
                                         rules={{ required: true }}
-                                      register={register}
-                                    defaultValue={(plant === null || plant.length === 0) ? [] : []}
-                                       options={renderListing('plant')}
-                                        mandatory={false}
-                                      handleChange={handlePlantChange}
-                                         errors={errors}
-                                        disabled={false}
-                              />
-                        
-
-                                    </div>
-                                    {
-                                        !isSimulation &&
-                                        <div className="flex-fill">
-                                        
-                                            <SearchableSelectHookForm
-                                                  label={""}
-                                                  name={"Technology"}
-                                                 placeholder={'Technology'}
-                                                 Controller={Controller}
-                                                    control={control}
-                                                rules={{ required: true }}
-                                                    register={register}
-                                         defaultValue={(technology === null || technology.length === 0) ? [] : []}
-                                              options={renderListing('technology')}
-                                                mandatory={false}
-                                        handleChange={handleTechnologyChange}
-                                                    errors={errors}
-                                                 disabled={false}
-                                 />
-                                 
-                                        </div>
-                                    }
-                                    <div className="flex-fill">
-                                    
-
-
-                                    <SearchableSelectHookForm
-                                            label={""}
-                                       name={"RawMaterialId"}
-                                      placeholder={"Raw Material"}
-                                         Controller={Controller}
-                                          control={control}
-                                         rules={{ required: true }}
-                                            register={register}
-                                      defaultValue={RawMaterial === null || RawMaterial.length === 0 ? [required] : []}
-                                        options={renderListing("material")}
-                                           mandatory={false}
-                                        handleChange={handleRMChange}
-                                          errors={errors}
-                                           disabled={false}
-                               />
-                               
-                                          
-                                    </div>
-                                    <div className="flex-fill">
-                                
-                                    <SearchableSelectHookForm
-                                       label={""}
-                                       name={"RawMaterialGradeId"}
-                                       placeholder={"RM Grade"}
-                                      Controller={Controller}
-                                       control={control}
-                                       rules={{ required: true }}
                                         register={register}
-                                     defaultValue={ RMGrade === null || RMGrade.length === 0 ? [required] : []}
-                                        options={renderListing("grade")}
-                                       mandatory={false}
-                                       handleChange={handleGradeChange}
-                                       errors={errors}
-                                       disabled={false}
-                             />
-                            
-                                    </div>
-                                    <div className="flex-fill">
-                                    
-                                    <SearchableSelectHookForm
-                                     label={""}
-                                    name={"VendorId"}
-                                    placeholder={"Vendor"}
-                                    Controller={Controller}
-                                      control={control}
-                                      rules={{ required: true }}
-                                      register={register}
-                                       defaultValue={ vendorName == null || vendorName.length === 0 ? [required] : []}
-                                       options={renderListing("VendorNameList")}
-                                      mandatory={false}
-                                       handleChange={handleVendorName}
-                                      errors={errors}
+                                        // defaultValue={(costingHead === null || costingHead.length === 0) ? [required] : []}
+                                        options={renderListing('costingHead')}
+                                        mandatory={false}
+                                        handleChange={handleHeadChange}
+                                        errors={errors}
                                         disabled={false}
-                             />
-                             
-                                    </div>
-                                    <div className="flex-fill sliderange ">
-                                        <InputRange
-                                            //formatLabel={value => `${value}cm`}
-                                            maxValue={maxRange}
-                                            minValue={0}
-                                            value={value}
-                                            height={2}
-                                            onChange={(value) => setvalue(value)}
-                                        />
-                                    </div>
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <SearchableSelectHookForm
+                                        label={""}
+                                        name={"Plant"}
+                                        placeholder={'Plant'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={(plant === null || plant.length === 0) ? [] : []}
+                                        options={renderListing('plant')}
+                                        mandatory={false}
+                                        handleChange={handlePlantChange}
+                                        errors={errors}
+                                        disabled={false}
+                                    />
+
+                                </div>
+                                {
+                                    !isSimulation &&
                                     <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
 
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={filterList}
-                                            className="user-btn"
-                                        >
-                                            {"Apply"}
-                                        </button>
+                                        <SearchableSelectHookForm
+                                            label={""}
+                                            name={"Technology"}
+                                            placeholder={'Technology'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            defaultValue={(technology === null || technology.length === 0) ? [] : []}
+                                            options={renderListing('technology')}
+                                            mandatory={false}
+                                            handleChange={handleTechnologyChange}
+                                            errors={errors}
+                                            disabled={false}
+                                        />
+
                                     </div>
+                                }
+                                <div className="flex-fill">
+                                    <SearchableSelectHookForm
+                                        label={""}
+                                        name={"RawMaterialId"}
+                                        placeholder={"Raw Material"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        // defaultValue={RawMaterial === null || RawMaterial.length === 0 ? [required] : []}
+                                        options={renderListing("material")}
+                                        mandatory={false}
+                                        handleChange={handleRMChange}
+                                        errors={errors}
+                                        disabled={false}
+                                    />
                                 </div>
-                            </Col>
-                            // ) : ("")
-                        }
-                        {
-                            // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                            (!isSimulation && !props.isMasterSummaryDrawer) &&
-                            <Col md="6" lg="6" className="search-user-block mb-3">
-                                <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        <>
-                                            {shown ? (
-                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() =>{ setshown(!shown)}}>
-                                                    <div className="cancel-icon-white"></div>
-                                                </button>
-                                            ) : (
-                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() =>{ setshown(!shown)}}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
-                                            )}
-                                            {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
+                                <div className="flex-fill">
 
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                            {/* DOWNLOAD */}
-                                                        </button>}>
+                                    <SearchableSelectHookForm
+                                        label={""}
+                                        name={"RawMaterialGradeId"}
+                                        placeholder={"RM Grade"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        // defaultValue={RMGrade === null || RMGrade.length === 0 ? [required] : []}
+                                        options={renderListing("grade")}
+                                        mandatory={false}
+                                        handleChange={handleGradeChange}
+                                        errors={errors}
+                                        disabled={false}
+                                    />
 
-                                                        {onBtExport()}
-                                                    </ExcelFile>
-
-
-                                                </>
-
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-                                        </>
-                                    </div>
                                 </div>
-                            </Col>
-                        }
-                    </Row>
-                </form >
-                <Row>
-                    <Col>
-                        {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <div className="flex-fill">
+
+                                    <SearchableSelectHookForm
+                                        label={""}
+                                        name={"VendorId"}
+                                        placeholder={"Vendor"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        // defaultValue={vendorName == null || vendorName.length === 0 ? [required] : []}
+                                        options={renderListing("VendorNameList")}
+                                        mandatory={false}
+                                        handleChange={handleVendorName}
+                                        errors={errors}
+                                        disabled={false}
+                                    />
+
+                                </div>
+                                <div className="flex-fill sliderange ">
+                                    <InputRange
+                                        //formatLabel={value => `${value}cm`}
+                                        maxValue={maxRange}
+                                        minValue={0}
+                                        value={value}
+                                        height={2}
+                                        onChange={(value) => setvalue(value)}
+                                    />
+                                </div>
+                                <div className="flex-fill">
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={resetFilter}
+                                        className="reset mr10"
+                                    >
+                                        {"Reset"}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={filterList}
+                                        className="user-btn"
+                                    >
+                                        {"Apply"}
+                                    </button>
+                                </div>
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
-                                <AgGridReact
-                                    style={{ height: '100%', width: '100%' }}
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
+                        </Col>
+                        // ) : ("")
+                    }
+                    {
+                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                        (!isSimulation && !props.isMasterSummaryDrawer) &&
+                        <Col md="6" lg="6" className="search-user-block mb-3">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                    <>
+                                        {shown ? (
+                                            <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
+                                                <div className="cancel-icon-white"></div>
+                                            </button>
+                                        ) : (
+                                            <button title="Filter" type="button" className="user-btn mr5" onClick={() => { setshown(!shown) }}>
+                                                <div className="filter mr-0"></div>
+                                            </button>
+                                        )}
+                                        {AddAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={formToggle}
+                                                title="Add"
+                                            >
+                                                <div className={"plus mr-0"}></div>
+                                                {/* ADD */}
+                                            </button>
+                                        )}
+                                        {BulkUploadAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={bulkToggle}
+                                                title="Bulk Upload"
+                                            >
+                                                <div className={"upload mr-0"}></div>
+                                                {/* Bulk Upload */}
+                                            </button>
+                                        )}
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
 
-                                    domLayout='autoHeight'
-                                    // columnDefs={c}
-                                    rowData={getFilterRMData()}
-                                    pagination={true}
-                                    paginationPageSize={10}
-                                    onGridReady={onGridReady}
-                                    gridOptions={gridOptions}
-                                    // loadingOverlayComponent={'customLoadingOverlay'}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                    }}
-                                    frameworkComponents={frameworkComponents}
+                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>}>
 
-                                >
-                                    <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec"></AgGridColumn>
-                                    <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                    <AgGridColumn field="Category"></AgGridColumn>
-                                    <AgGridColumn field="MaterialType"></AgGridColumn>
-                                    <AgGridColumn field="Plant"></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                                    <AgGridColumn field="UOM"></AgGridColumn>
-                                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                                    <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                    <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                                    <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>}
-                                    {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned"  floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-                                                      
-                                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                                    <AgGridColumn field="IsRMAssociated"></AgGridColumn>
+                                                    {onBtExport()}
+                                                </ExcelFile>
 
-                                </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
+
+                                            </>
+
+                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                        }
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
+                                    </>
                                 </div>
+                            </div>
+                        </Col>
+                    }
+                </Row>
+            </form >
+            <Row>
+                <Col>
+                    {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                        </div>
+                        <div
+                            className="ag-theme-material"
+                        >
+                            <AgGridReact
+                                style={{ height: '100%', width: '100%' }}
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                // columnDefs={c}
+                                rowData={getFilterRMData()}
+                                pagination={true}
+                                paginationPageSize={10}
+                                onGridReady={onGridReady}
+                                gridOptions={gridOptions}
+                                // loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: CONSTANT.EMPTY_DATA,
+                                    imagClass: 'imagClass'
+                                }}
+                                frameworkComponents={frameworkComponents}
+                                rowSelection={'multiple'}
+                                onSelectionChanged={onRowSelect}
+                            >
+                                <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                                <AgGridColumn field="RMGrade"></AgGridColumn>
+                                <AgGridColumn field="RMSpec"></AgGridColumn>
+                                <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                <AgGridColumn field="Category"></AgGridColumn>
+                                <AgGridColumn field="MaterialType"></AgGridColumn>
+                                <AgGridColumn field="Plant"></AgGridColumn>
+                                <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                                <AgGridColumn field="UOM"></AgGridColumn>
+                                <AgGridColumn field="BasicRate"></AgGridColumn>
+                                <AgGridColumn field="ScrapRate"></AgGridColumn>
+                                <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>}
+                                {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+
+                                <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                <AgGridColumn field="IsRMAssociated"></AgGridColumn>
+
+                            </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
                             </div>
                         </div>
-                    </Col>
-                </Row>
-                {
-                    isBulkUpload && (
-                        <BulkUpload
-                            isOpen={isBulkUpload}
-                            closeDrawer={closeBulkUploadDrawer}
-                            isEditFlag={false}
-                            densityAlert={densityAlert}
-                            fileName={"RMDomestic"}
-                            isZBCVBCTemplate={true}
-                            messageLabel={"RM Domestic"}
-                            anchor={"right"}
-                        />
-                    )
-                }
-            </div >
-        );
-    }
+                    </div>
+                </Col>
+            </Row>
+            {
+                isBulkUpload && (
+                    <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        densityAlert={densityAlert}
+                        fileName={"RMDomestic"}
+                        isZBCVBCTemplate={true}
+                        messageLabel={"RM Domestic"}
+                        anchor={"right"}
+                    />
+                )
+            }
+        </div >
+    );
+}
 
 
 /**

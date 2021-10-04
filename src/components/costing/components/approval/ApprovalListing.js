@@ -26,6 +26,7 @@ import { Redirect } from 'react-router'
 const gridOptions = {};
 
 function ApprovalListing(props) {
+  const { isDashboard } = props
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
   const [dShown, setDshown] = useState(false)
@@ -64,9 +65,6 @@ function ApprovalListing(props) {
 
   }, [])
 
-  useEffect(() => {
-
-  }, [selectedIds])
 
   /**
    * @method getTableData
@@ -86,6 +84,7 @@ function ApprovalListing(props) {
       createdBy: createdBy,
       requestedBy: requestedBy,
       status: status,
+      isDashboard: isDashboard ?? false
     }
 
     dispatch(
@@ -380,7 +379,7 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-            {isLoader && <LoaderCustom />}
+            {/* {isLoader && <LoaderCustom />} */}
             <Row className="pt-4 blue-before">
               {shown &&
                 <Col lg="10" md="12" className="filter-block">
@@ -517,7 +516,7 @@ function ApprovalListing(props) {
                       paginationPageSize={10}
                       onGridReady={onGridReady}
                       gridOptions={gridOptions}
-                      // loadingOverlayComponent={'customLoadingOverlay'}
+                      loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: CONSTANT.EMPTY_DATA,
