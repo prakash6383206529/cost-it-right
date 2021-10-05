@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import {
-    deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
+    deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser, getVendorListByVendorType
+    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -72,7 +72,7 @@ function RMDomesticListing(props) {
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
-    const [shown, setshown] = useState(isSimulation ? true : false);
+    const [shown, setshown] = useState(false);
     const [technology, settechnology] = useState([]);
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
@@ -200,7 +200,7 @@ function RMDomesticListing(props) {
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (!props.isMasterSummaryDrawer) {
-            dispatch(getRMImportDataList(filterData, (res) => {
+            dispatch(getRMDomesticDataList(filterData, (res) => {
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
@@ -861,7 +861,7 @@ function RMDomesticListing(props) {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     <>
-                                        {shown ? (
+                                        {/* {shown ? (
                                             <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
                                                 <div className="cancel-icon-white"></div>
                                             </button>
@@ -869,7 +869,7 @@ function RMDomesticListing(props) {
                                             <button title="Filter" type="button" className="user-btn mr5" onClick={() => { setshown(!shown) }}>
                                                 <div className="filter mr-0"></div>
                                             </button>
-                                        )}
+                                        )} */}
                                         {AddAccessibility && (
                                             <button
                                                 type="button"
@@ -989,7 +989,7 @@ function RMDomesticListing(props) {
 
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
 
-                                {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
+                                {!isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
 
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
@@ -1024,7 +1024,5 @@ function RMDomesticListing(props) {
         </div >
     );
 }
-
-
 export default RMDomesticListing;
 

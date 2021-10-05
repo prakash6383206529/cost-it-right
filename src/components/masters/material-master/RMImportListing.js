@@ -72,7 +72,7 @@ function RMImportListing(props) {
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
-  const [shown, setshown] = useState(isSimulation ? true : false);
+  const [shown, setshown] = useState(false);
   const [technology, settechnology] = useState([]);
   const [gridApi, setgridApi] = useState(null);
   const [gridColumnApi, setgridColumnApi] = useState(null);
@@ -869,7 +869,7 @@ function RMImportListing(props) {
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
                   <>
-                    {shown ? (
+                    {/* {shown ? (
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
                         <div className="cancel-icon-white"></div>
                       </button>
@@ -877,7 +877,7 @@ function RMImportListing(props) {
                       <button title="Filter" type="button" className="user-btn mr5" onClick={() => { setshown(!shown) }}>
                         <div className="filter mr-0"></div>
                       </button>
-                    )}
+                    )} */}
                     {AddAccessibility && (
                       <button
                         type="button"
@@ -998,7 +998,7 @@ function RMImportListing(props) {
 
                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
 
-                {!this.props.isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
+                {!isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
 
                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 

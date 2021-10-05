@@ -15,14 +15,13 @@ import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
 import WarningMessage from '../../common/WarningMessage';
-import { userDetails } from '../../../helper';
 import MachineRateListing from '../../masters/machine-master/MachineRateListing';
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing';
 import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
+import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 
@@ -222,25 +221,32 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        // if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-                        //     // toastr.warning('Please select one vendor at a time.')
-                        //     setEditWarning(true);
-                        //     vendorFlag = false
-                        //     return false
-                        // }
-                        if (userDetails().Role !== 'Group Category Head') {
+                        if (userDetails().Role !== 'Group Category Head') {
+
                             if (element.VendorName !== Data[index - 1].VendorName) {
-                                // toastr.warning('Please select one vendor at a time.')
+
+                                // toastr.warning('Please select one vendor at a time.')
+
                                 setEditWarning(true);
+
                                 vendorFlag = false
+
                                 return false
+
                             }
+
                             if (element.PlantId !== Data[index - 1].PlantId) {
-                                // toastr.warning('Please select one Plant at a time.')
+
+                                // toastr.warning('Please select one Plant at a time.')
+
                                 setEditWarning(true);
+
                                 plantFlag = false
+
                                 return false
+
                             }
+
                         }
                     }
                 });
@@ -262,19 +268,32 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        if (userDetails().Role !== 'Group Category Head') {
+                        if (userDetails().Role !== 'Group Category Head') {
+
                             if (element.VendorName !== Data[index - 1].VendorName) {
-                                // toastr.warning('Please select one vendor at a time.')
+
+                                // toastr.warning('Please select one vendor at a time.')
+
                                 setEditWarning(true);
+
                                 vendorFlag = false
+
                                 return false
+
                             }
+
                             if (element.PlantId !== Data[index - 1].PlantId) {
-                                // toastr.warning('Please select one Plant at a time.')
+
+                                // toastr.warning('Please select one Plant at a time.')
+
                                 setEditWarning(true);
+
                                 plantFlag = false
+
                                 return false
+
                             }
+
                         }
                     }
                 })
@@ -313,8 +332,10 @@ function Simulation(props) {
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
         const masterId = location?.state?.master
+        console.log('masterId: ', masterId);
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
         if (getOtherCostingSimulation(String(masterId))) {
+            console.log(masterId, "masterIdmasterId");
             return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
