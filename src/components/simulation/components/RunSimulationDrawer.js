@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
@@ -11,6 +11,8 @@ import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
 import { EXCHNAGERATE } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
+import { getConfigurationKey } from '../../../helper';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
@@ -19,6 +21,8 @@ function RunSimulationDrawer(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+
 
 
 
@@ -34,10 +38,21 @@ function RunSimulationDrawer(props) {
     const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
 
 
+    const runSimulationDrawerData = {
+        vendorId: vendorId,
+        simulationTechnologyId: simulationTechnologyId,
+        isProvisional: provisionalCheck
+
+    };
+
+    const runSimulationDrawerDataContext = React.createContext(runSimulationDrawerData);
+
+
+
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
-        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
+        // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
 
     }, [])
 
@@ -77,7 +92,6 @@ function RunSimulationDrawer(props) {
 
         if (string) {
             setProvisionalCheck(!provisionalCheck)
-            setValue('Link', { label: tokenNo, value: '' })
 
         }
     }
@@ -91,16 +105,16 @@ function RunSimulationDrawer(props) {
 
     const renderListing = () => {
         let temp = []
-        console.log(TokensList, "as")
-        TokensList && TokensList.map((item) => {
 
-            if (item.Value === '0') return false
-            temp.push({ label: item.Text, value: item.Value })
-            return null
+        // TokensList && TokensList.map((item) => {
+
+        //     if (item.Value === '0') return false
+        //     temp.push({ label: item.Text, value: item.Value })
+        //     return null
 
 
-        })
-        return temp
+        // })
+        // return temp
         // if (label && label !== '') {
         //     if (label === 'technology') {
         //         technologySelectList && technologySelectList.map((item) => {
@@ -132,12 +146,12 @@ function RunSimulationDrawer(props) {
         obj.IsInventory = Inventory
         obj.IsPaymentTerms = PaymentTerms
         obj.IsDiscountAndOtherCost = DiscountOtherCost
-        obj.IsProvisional = provisionalCheck
-        obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
+        // obj.IsProvisional = provisionalCheck
+        // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
 
         if (masterId === Number(EXCHNAGERATE)) {
-            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                 if (res.data.Result) {
                     toastr.success('Simulation process has been run successfully.')
                     runSimulationCosting()
@@ -145,7 +159,7 @@ function RunSimulationDrawer(props) {
             }))
         } else {
             //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                 if (res.data.Result) {
                     toastr.success('Simulation process has been run successfully.')
                     runSimulationCosting()
@@ -170,90 +184,104 @@ function RunSimulationDrawer(props) {
     }
 
     return (
-        <div>
-            <>
-                <Drawer
-                    anchor={props.anchor}
-                    open={props.isOpen}
-                // onClose={(e) => this.toggleDrawer(e)}
-                >
-                    <Container>
-                        <div className={"drawer-wrapper"}>
-                            <form noValidate className="form" onSubmit={handleSubmit(SimulationRun)}>
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={"header-wrapper left"}>
-                                            <h3>
-                                                {"Apply Simulation Applicability"}
-                                            </h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => toggleDrawer(e)}
-                                            className={"close-button right"}
-                                        ></div>
-                                    </Col>
-                                </Row>
+        <>
+            {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
+                < ApproveRejectDrawer />
 
-                                <Row className="ml-0 pt-3">
-                                    <Col md="12" className="mb-3">
-                                        {
-                                            masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
-                                                if (el.Value === '0') return false;
-                                                return (
-                                                    <Col md="12" className="mb-3 p-0">
-                                                        <div class="custom-check1 d-inline-block">
-                                                            <label
-                                                                className="custom-checkbox mb-0"
-                                                                onChange={() => handleApplicabilityChange(el)}
-                                                            >
-                                                                {el.Text}
+            </runSimulationDrawerDataContext.Provider> */}
 
-                                                                <input
-                                                                    type="checkbox"
-                                                                    value={"All"}
-                                                                    // disabled={true}
-                                                                    checked={IsAvailable(el.Value)}
-                                                                />
-                                                                <span
-                                                                    className=" before-box"
-                                                                    checked={IsAvailable(el.Value)}
+
+
+
+            <div>
+                <>
+                    <Drawer
+                        anchor={props.anchor}
+                        open={props.isOpen}
+                    // onClose={(e) => this.toggleDrawer(e)}
+                    >
+                        <Container>
+                            <div className={"drawer-wrapper"}>
+                                <form noValidate className="form" onSubmit={handleSubmit(SimulationRun)}>
+                                    <Row className="drawer-heading">
+                                        <Col>
+                                            <div className={"header-wrapper left"}>
+                                                <h3>
+                                                    {"Apply Simulation Applicability"}
+                                                </h3>
+                                            </div>
+                                            <div
+                                                onClick={(e) => toggleDrawer(e)}
+                                                className={"close-button right"}
+                                            ></div>
+                                        </Col>
+                                    </Row>
+
+                                    <Row className="ml-0 pt-3">
+                                        <Col md="12" className="mb-3">
+                                            {
+                                                masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
+                                                    if (el.Value === '0') return false;
+                                                    return (
+                                                        <Col md="12" className="mb-3 p-0">
+                                                            <div class="custom-check1 d-inline-block">
+                                                                <label
+                                                                    className="custom-checkbox mb-0"
                                                                     onChange={() => handleApplicabilityChange(el)}
-                                                                />
-                                                            </label>
+                                                                >
+                                                                    {el.Text}
+
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        value={"All"}
+                                                                        // disabled={true}
+                                                                        checked={IsAvailable(el.Value)}
+                                                                    />
+                                                                    <span
+                                                                        className=" before-box"
+                                                                        checked={IsAvailable(el.Value)}
+                                                                        onChange={() => handleApplicabilityChange(el)}
+                                                                    />
+                                                                </label>
 
 
-                                                        </div>
+                                                            </div>
 
-                                                    </Col>
-                                                )
-                                            })
-                                        }
-
-
+                                                        </Col>
+                                                    )
+                                                })
+                                            }
 
 
-                                        <div className="input-group form-group col-md-12 px-0">
 
-                                            <label
-                                                className="custom-checkbox mb-0"
-                                                onChange={() => Provision(`Provisional`)}
-                                            >
-                                                Provisional
-                                                <input
-                                                    type="checkbox"
-                                                //value={"All"}
-                                                // disabled={true}
-                                                //checked={IsAvailable(el.Value)}
-                                                />
-                                                <span
-                                                    className=" before-box"
-                                                    // checked={IsAvailable(el.Value)}
-                                                    onChange={() => Provision(`Provisional`)}
-                                                />
-                                            </label>
+                                            {getConfigurationKey().IsProvisionalSimulation && (
+                                                <div className="input-group form-group col-md-12 px-0">
+
+                                                    <label
+                                                        className="custom-checkbox mb-0"
+                                                        onChange={() => Provision(`Provisional`)}
+                                                    >
+                                                        Provisional
+                                                        <input
+                                                            type="checkbox"
+                                                        //value={"All"}
+                                                        // disabled={true}
+                                                        //checked={IsAvailable(el.Value)}
+                                                        />
+                                                        <span
+                                                            className=" before-box"
+                                                            // checked={IsAvailable(el.Value)}
+                                                            onChange={() => Provision(`Provisional`)}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            )
+
+                                            }
 
 
-                                            {provisionalCheck &&
+
+                                            {/* {provisionalCheck &&
 
 
                                                 <SearchableSelectHookForm
@@ -272,7 +300,8 @@ function RunSimulationDrawer(props) {
                                                     customClassName="mb-0"
                                                 />
 
-                                            }
+                                            } */}
+
 
                                             <div className="inputbox date-section">
                                                 <DatePickerHookForm
@@ -303,38 +332,43 @@ function RunSimulationDrawer(props) {
                                                     errors={errors.EffectiveDate}
                                                 />
                                             </div>
+
+
+                                        </Col>
+
+                                    </Row>
+
+
+
+                                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                                        <div className="col-md-12 px-3">
+                                            <div className="text-right px-3">
+                                                <button type="submit" className="user-btn mr5 save-btn">
+                                                    <div className={"Run-icon"}>
+                                                    </div>{" "}
+                                                    {"RUN SIMULATION"}
+                                                </button>
+                                                <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
+                                                    <div className={"cross-icon"}>
+                                                        <div className="cancel-icon"></div>
+                                                    </div>{" "}
+                                                    {"Cancel"}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </Col>
-                                </Row>
+                                    </Row>
+                                </form>
+                            </div>
+                        </Container>
+                    </Drawer>
+                </>
 
-
-
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12 px-3">
-                                        <div className="text-right px-3">
-                                            <button type="submit" className="user-btn mr5 save-btn">
-                                                <div className={"Run-icon"}>
-                                                </div>{" "}
-                                                {"RUN SIMULATION"}
-                                            </button>
-                                            <button className="cancel-btn mr-2" type={"button"} onClick={toggleDrawer} >
-                                                <div className={"cross-icon"}>
-                                                    <div className="cancel-icon"></div>
-                                                </div>{" "}
-                                                {"Cancel"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Row>
-                            </form>
-                        </div>
-                    </Container>
-                </Drawer>
-            </>
-
-        </div>
+            </div>
+        </>
     );
+
 }
 
 
 export default RunSimulationDrawer;
+//export { runSimulationDrawerDataContext }

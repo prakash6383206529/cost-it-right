@@ -860,16 +860,16 @@ export const API = {
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
 
   //SIMULATION APPROVAL
-  getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get - all - simulation - approval - department`,
-  getSimulationApprovalListByDepartment: `${BASE_URL} /app-simulation-approval-system/get - all - simulation - approval - users - level - filter - by - department`,
-  simulationApprove: `${BASE_URL} /app-simulation-approval-system/approved - simulated - costing - by - approver`,
-  simulationReject: `${BASE_URL} /app-simulation-approval-system/rejected - simulated - costing - by - approver`,
-  simulationSendToApprover: `${BASE_URL} /app-simulation-approval-system/simulation - send - to - approver - by - sender`,
-  simulationComparisionData: `${BASE_URL} /app-simulation-approval-system/get - simulation - costing - comparison`,
-  getallSimualtionStatus: `${BASE_URL} /app-simulation-approval-system/get - all - approval - status`,
+  getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
+  getSimulationApprovalListByDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-users-level-filter-by-department`,
+  simulationApprove: `${BASE_URL}/app-simulation-approval-system/approved-simulated-costing-by-approver`,
+  simulationReject: `${BASE_URL}/app-simulation-approval-system/rejected-simulated-costing-by-approver`,
+  simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
+  simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
+  getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
 
   //REPORT
-  getReportListing: `${BASE_URL} /dashboard/get - costings -for-dashboard`,
+  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
 
 }
 
