@@ -246,14 +246,13 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        // if (element.VendorName !== rmImportListing[index - 1].VendorName) {
-                        //     // toastr.warning('Please select one vendor at a time.')
-                        //     setEditWarning(true);
-                        //     vendorFlag = false
-                        //     return false
-                        // }
                         if (userDetails().Role !== 'Group Category Head') {
-
+                            if (element.VendorName !== rmImportListing[index - 1].VendorName) {
+                                // toastr.warning('Please select one vendor at a time.')
+                                setEditWarning(true);
+                                vendorFlag = false
+                                return false
+                            }
                             if (element.PlantId !== rmImportListing[index - 1].PlantId) {
                                 // toastr.warning('Please select one Plant at a time.')
                                 setEditWarning(true);
