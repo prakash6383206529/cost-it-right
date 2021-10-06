@@ -685,6 +685,12 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
 
+
+  // ApproveReject Drawer
+
+
+
+
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
   moduleSelectList: `${BASE_URL}/app-privilege-permission/get-module-select-list`,
@@ -862,6 +868,7 @@ export const API = {
   getverifyCombinedProcessSimulationList: `${BASE_URL}/simulation/get-all-combined-process-impacted-simulation-costings`,
   runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-combined-process-costing`,
   getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
+  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
 
 
   //SIMULATION APPROVAL 
@@ -877,7 +884,7 @@ export const API = {
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,
 
   //REPORT
-  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
+  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
 
 }
 
@@ -1333,6 +1340,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+export const GET_SELECTLIST_SIMULATION_TOKENS = 'GET_SELECTLIST_SIMULATION_TOKENS'
 
 
 //PRIVILEGE
@@ -1696,3 +1704,5 @@ export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
 
 
+//approve reject drawer
+export const provisional = "Provisional"

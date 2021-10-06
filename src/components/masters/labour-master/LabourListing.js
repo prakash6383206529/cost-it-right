@@ -605,7 +605,7 @@ class LabourListing extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {/* {this.state.isLoader && <LoaderCustom />} */}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form
@@ -810,6 +810,7 @@ class LabourListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
+                  imagClass:'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >

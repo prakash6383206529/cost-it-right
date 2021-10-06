@@ -4196,7 +4196,8 @@ body{
   border-color: #DBF4E2;
   color: #4DC771;
   line-height: initial;
-  min-width: 100px;
+  min-width: 70px;
+  max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -4205,7 +4206,8 @@ body{
   border-color: #FEDCE2;;
   color: #FC5774;
   line-height: initial;
-  min-width: 100px;
+  min-width: 70px;
+  max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -4672,11 +4674,17 @@ body{
       }
     }
 }
+
 @media(max-height:900px) {
   .impacted-min-height {
     .add-min-height {
   min-height: calc(100vh - 380px);
   // height: calc(100vh - 380px);
+  }
+}
+.exchange-rate {
+  .ag-grid-wrapper {
+    min-height: calc(100vh - 150px) !important;
   }
 }
 }
@@ -6138,4 +6146,21 @@ body{
   @media (max-width:1366px) {
     font-size: calc(14px * 80/100);
   }
+}
+//simulation filter cancel button css 28-09-2021
+@media (max-width:1366px) {
+  .simulation-filter {
+    .filter-block {
+      margin-bottom: 15px;
+    }
+  }
+}
+.imagClass {
+  margin-top: 30px;
+}
+.imagClass.power-listing {
+  margin-top: 50px;
+}
+.m-height-auto {
+  min-height: auto !important;
 }

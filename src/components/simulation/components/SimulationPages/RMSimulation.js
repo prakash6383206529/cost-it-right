@@ -472,6 +472,7 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
                                             <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
                                             <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
                                             <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
                                             <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>

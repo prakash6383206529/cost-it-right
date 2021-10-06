@@ -10,7 +10,8 @@ import {
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_AMMENDENT_STATUS_COSTING,
     SET_ATTACHMENT_FILE_DATA,
-    GET_COMBINED_PROCESS_LIST
+    GET_COMBINED_PROCESS_LIST,
+    GET_SELECTLIST_SIMULATION_TOKENS,
 } from '../../../config/constants';
 
 const initialState = {
@@ -90,6 +91,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 combinedProcessList: action.payload
+            }
+        case GET_SELECTLIST_SIMULATION_TOKENS:
+            return {
+                ...state,
+                loading: false,
+                TokensList: action.payload
             }
         default:
             return state;

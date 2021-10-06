@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
@@ -16,14 +16,21 @@ import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AttachmentSec from './AttachmentSec'
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
+import redcrossImg from '../../../../assests/images/red-cross.png'
+import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
+import { provisional } from '../../../../config/constants'
+
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
+  const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
     mode: 'onChange',
@@ -35,17 +42,17 @@ function ApproveRejectDrawer(props) {
   const [reason, setReason] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
+  const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
   const [showError, setShowError] = useState(false)
+  const [tokenDropdown, setTokenDropdown] = useState(true)
+  const [files, setFiles] = useState([]);
+  const [IsOpen, setIsOpen] = useState(false);
+  const [initialFiles, setInitialFiles] = useState([]);
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
   console.log('attachmentsData: ', attachmentsData);
   const reasonsList = useSelector((state) => state.approval.reasonsList)
-
-
-
-
-
 
 
 
@@ -119,12 +126,35 @@ function ApproveRejectDrawer(props) {
         )
 
       }))
+      dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+
+
+
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
+        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+      }
+
+      if (SimulationType !== null && SimulationType === 'provisional') {
+        setTokenDropdown(false)
+      }
     }
 
 
-    // DO IT AFTER GETTING DATA
-  }, [])
 
+  }
+
+
+    // DO IT AFTER GETTING DATA
+    , [])
+
+
+
+
+  const handleTokenDropDownChange = (value) => {
+
+    setLinkingTokenDropDown(value)
+
+  }
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
@@ -217,6 +247,7 @@ function ApproveRejectDrawer(props) {
           Remark: remark,
           IsApproved: type === 'Approve' ? true : false,
           IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
+
         })
       })
       if (type === 'Approve') {
@@ -261,6 +292,7 @@ function ApproveRejectDrawer(props) {
       objs.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       objs.IsFinalApprovalProcess = false
       objs.SimulationApprovalProcessSummaryId = simulationDetail.SimulationApprovalProcessSummaryId
+      //objs.LinkedTokenNumber = linkingTokenDropDown
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
@@ -269,8 +301,8 @@ function ApproveRejectDrawer(props) {
         senderObj.ReasonId = reason ? reason.value : ''
         senderObj.Reason = reason ? reason.label : ''
         // senderObj.ApprovalToken = 0
-        senderObj.DepartmentId = userDetails().DepartmentId
-        senderObj.DepartmentName = userDetails().Department
+        senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+        senderObj.DepartmentName = dept && dept.label ? dept.label : ''
         senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
         senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
@@ -284,6 +316,9 @@ function ApproveRejectDrawer(props) {
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.Attachements = attachmentsData
+        senderObj.LinkedTokenNumber = linkingTokenDropDown.value
+        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
+        console.log('senderObj: ', senderObj);
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -351,23 +386,44 @@ function ApproveRejectDrawer(props) {
       })
       return tempDropdownList
     }
+
+
+    if (label === 'Link') {
+      TokensList && TokensList.map((item) => {
+
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+
+
+      })
+      return tempDropdownList
+    }
+
+
+
   }
 
   const handleDepartmentChange = (value) => {
     setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
     let tempDropdownList = []
-    let obj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: value.value,
-      TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+    let obj
+    let simObj
+    if (!isSimulation) {
+      obj = {
+        LoggedInUserId: loggedInUserId(), // user id
+        DepartmentId: value.value,
+        TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+      }
+    } else {
+      simObj = {
+        LoggedInUserId: loggedInUserId(), // user id
+        DepartmentId: value.value,
+        TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+        ReasonId: 0
+      }
     }
 
-    let simObj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: value.value,
-      TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-      ReasonId: 0
-    }
 
     if (!isSimulation) {
       dispatch(
@@ -448,11 +504,11 @@ function ApproveRejectDrawer(props) {
                         placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: false }}
+                        rules={{ required: true }}
                         register={register}
                         defaultValue={""}
                         options={renderDropdownListing("Dept")}
-                        mandatory={false}
+                        mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
                         disabled={true}
@@ -465,11 +521,11 @@ function ApproveRejectDrawer(props) {
                         placeholder={'-Select-'}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: false }}
+                        rules={{ required: true }}
                         register={register}
                         //defaultValue={isEditFlag ? plantName : ''}
                         options={approvalDropDown}
-                        mandatory={false}
+                        mandatory={true}
                         handleChange={() => { }}
                         disabled={true}
                         errors={errors.approver}
@@ -587,19 +643,35 @@ function ApproveRejectDrawer(props) {
                         </div>
                       </>
                     }
-                    {/* <Row className="px-3">
-                      <Col md="12">
-                        <div className="left-border">{"Push Drawer"}</div>
-                      </Col>
-                      <Col md="12">
 
-                        <PushSection />
-                      </Col>
-                    </Row> */}
 
                   </>
                 }
-                <div className="input-group form-group col-md-12 pb-3">
+
+
+                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' &&
+
+                  < div className="input-group form-group col-md-12">
+
+                    <SearchableSelectHookForm
+                      label={'Link Token Number'}
+                      name={'Link'}
+                      placeholder={'select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: false }}
+                      register={register}
+                      // defaultValue={technology.length !== 0 ? technology : ''}
+                      options={renderDropdownListing('Link')}
+                      mandatory={false}
+                      handleChange={handleTokenDropDownChange}
+                      errors={errors.Masters}
+                      customClassName="mb-0"
+                    />
+                  </div>
+                }
+
+                <div className="input-group form-group col-md-12">
                   <TextAreaHookForm
                     label="Remark"
                     name={'remark'}

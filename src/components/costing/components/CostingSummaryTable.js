@@ -56,6 +56,7 @@ const CostingSummaryTable = (props) => {
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
   const [rmMBDetail, setrmMBDetail] = useState({})
+  const [viewAtttachments, setViewAttachment] = useState([])
 
 
   const [flag, setFlag] = useState(false)
@@ -213,6 +214,15 @@ const CostingSummaryTable = (props) => {
     let data = viewCostingData[index].netToolCostView
     setIsViewToolCost(true)
     setViewToolCost(data)
+  }
+
+
+  const viewAttachmentData = (index) => {
+    console.log('index: ', index);
+    console.log(viewCostingData, "viewCostingData");
+    let data = viewCostingData[index].attachment
+    setAttachment(true)
+    setViewAttachment(index)
   }
 
   const deleteCostingFromView = (index) => {
@@ -783,6 +793,7 @@ const CostingSummaryTable = (props) => {
                         <span class="d-block small-grey-text">Scrap Rate</span>
                         <span class="d-block small-grey-text">Gross Weight</span>
                         <span class="d-block small-grey-text">Finish Weight</span>
+                        <span class="d-block small-grey-text">Burning Loss Weight</span>
                         <span class="d-block small-grey-text">Scrap Weight</span>
                       </td>
                       {viewCostingData &&
@@ -806,6 +817,10 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                              </span>
+                              <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                             </td>
@@ -813,7 +828,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ?'red-row':'' : '-'}`}>
+                    <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -866,7 +881,7 @@ const CostingSummaryTable = (props) => {
                           Surface Treatment
                         </span>
                         <span class="d-block small-grey-text">
-                          Transportation Cost
+                          Extra Surface Treatment Cost
                         </span>
                       </td>
                       {viewCostingData &&
@@ -1204,7 +1219,7 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
-                        viewCostingData.map((data) => {
+                        viewCostingData.map((data, index) => {
                           return (
 
                             <td>
@@ -1235,7 +1250,7 @@ const CostingSummaryTable = (props) => {
 
                                     <a
                                       href="javascript:void(0)"
-                                      onClick={() => setAttachment(true)}
+                                      onClick={() => viewAttachmentData(index)}
                                     > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</a>
                                   )
                               }
@@ -1362,6 +1377,7 @@ const CostingSummaryTable = (props) => {
       {isAttachment && (
         <Attachament
           isOpen={isAttachment}
+          index={viewAtttachments}
           closeDrawer={closeAttachmentDrawer}
           anchor={'right'}
         />
