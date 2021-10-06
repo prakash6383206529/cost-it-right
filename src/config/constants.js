@@ -857,6 +857,7 @@ export const API = {
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
+  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -871,7 +872,7 @@ export const API = {
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,
 
   //REPORT
-  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
+  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
 
 }
 
@@ -1327,6 +1328,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+export const GET_SELECTLIST_SIMULATION_TOKENS = 'GET_SELECTLIST_SIMULATION_TOKENS'
 
 
 //PRIVILEGE

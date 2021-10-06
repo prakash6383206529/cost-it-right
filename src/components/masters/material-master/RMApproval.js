@@ -36,6 +36,7 @@ function RMApproval(props) {
 
     useEffect(() => {
         getTableData()
+        
     }, [])
 
 

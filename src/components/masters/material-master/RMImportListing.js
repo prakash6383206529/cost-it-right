@@ -356,70 +356,6 @@ function RMImportListing(props) {
 
 
   /**
-  * @method indexFormatter
-  * @description Renders serial number
-  */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = this.refs;
-    let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    let serialNumber = '';
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1;
-    } else {
-      serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    }
-    return serialNumber;
-  }
-
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
-
-  renderCostingHead = () => {
-    return <>Costing <br />Head </>
-  }
-
-  renderRawMaterial = () => {
-    return <>Raw <br />Material </>
-  }
-
-  renderRMGrade = () => {
-    return <>RM <br />Grade </>
-  }
-
-  renderRMSpec = () => {
-    return <>RM <br />Spec </>
-  }
-
-  renderVendorLocation = () => {
-    return <>Vendor <br />Location </>
-  }
-
-  renderBasicRate = () => {
-    return <>Basic <br />Rate(INR) </>
-  }
-
-  rendorFreightRate = () => {
-    return <>RM Freight <br /> Cost(INR)</>
-  }
-
-  renderShearingCost = () => {
-    return <>Shearing <br /> Cost(INR)</>
-  }
-  renderScrapRate = () => {
-    return <>Scrap <br />Rate(INR) </>
-  }
-
-  renderNetCost = () => {
-    return <>Net <br />Cost(INR) </>
-  }
-
-  renderEffectiveDate = () => {
-    return <>Effective <br />Date</>
-  }
-
-  /**
   * @method renderListing
   * @description Used to show type of listing
   */
@@ -679,12 +615,7 @@ function RMImportListing(props) {
       </ExcelSheet>);
   }
 
-  handleExportCSVButtonClick = (onClick) => {
-    onClick();
-    let products = []
-    products = this.props.rmImportDataList
-    return products; // must return the data which you want to be exported
-  }
+
 
   const onBtExport = () => {
     let tempArr = []

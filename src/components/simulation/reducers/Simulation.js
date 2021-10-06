@@ -9,8 +9,12 @@ import {
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
+<<<<<<< HEAD
     GET_AMMENDENT_STATUS_COSTING,
     SET_ATTACHMENT_FILE_DATA
+=======
+    GET_SELECTLIST_SIMULATION_TOKENS,
+>>>>>>> a442251f4 ( simulation changes by ashok 4 october)
 } from '../../../config/constants';
 
 const initialState = {
@@ -84,6 +88,13 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 attachmentsData: [...data]
+            }
+
+        case GET_SELECTLIST_SIMULATION_TOKENS:
+            return {
+                ...state,
+                loading: false,
+                TokensList: action.payload
             }
         default:
             return state;

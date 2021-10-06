@@ -13,15 +13,13 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs, RMDomesticSimulation, RMDomesticZBC, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { costingHeadObjs, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -355,11 +353,6 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
-    }
-
-    plantFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
