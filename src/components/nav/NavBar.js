@@ -87,12 +87,12 @@ class SideBar extends Component {
     }
 
     const loginUserId = loggedInUserId();
-    // this.props.getModuleSelectList(() => { });
-    // if (loginUserId != null) {
-    //   this.props.getMenuByUser(loginUserId, () => {
-    //     this.setState({ isLoader: false });
-    //   });
-    // }
+    this.props.getModuleSelectList(() => { });
+    if (loginUserId != null) {
+      this.props.getMenuByUser(loginUserId, () => {
+        this.setState({ isLoader: false });
+      });
+    }
   }
 
   /**
