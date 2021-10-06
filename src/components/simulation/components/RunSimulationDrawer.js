@@ -242,7 +242,7 @@ function RunSimulationDrawer(props) {
 
 
                                             {getConfigurationKey().IsProvisionalSimulation && (
-                                                <div className="input-group form-group col-md-12 px-0">
+                                                <div className="input-group form-group col-md-12 px-0 m-height-auto">
 
                                                     <label
                                                         className="custom-checkbox mb-0"
@@ -289,8 +289,8 @@ function RunSimulationDrawer(props) {
 
                                             } */}
 
-
-                                            <div className="inputbox date-section">
+                                             <Row>
+                                            <Col md="12" className="inputbox date-section">
                                                 <DatePickerHookForm
                                                     name={`EffectiveDate`}
                                                     label={'Effective Date'}
@@ -318,8 +318,8 @@ function RunSimulationDrawer(props) {
                                                     mandatory={true}
                                                     errors={errors.EffectiveDate}
                                                 />
-                                            </div>
-
+                                            </Col>
+                                           </Row>
 
                                         </Col>
 
@@ -327,9 +327,9 @@ function RunSimulationDrawer(props) {
 
 
 
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-md-12 px-3">
-                                            <div className="text-right px-3">
+                                    <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
+                                        <div className="col-md-12 ">
+                                            <div className="text-right px-2">
                                                 <button type="submit" className="user-btn mr5 save-btn">
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}

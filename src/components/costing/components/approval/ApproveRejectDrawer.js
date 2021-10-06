@@ -130,7 +130,7 @@ function ApproveRejectDrawer(props) {
 
 
 
-      if (vendorId !== null && SimulationTechnologyId !== null) {
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
 
@@ -316,7 +316,9 @@ function ApproveRejectDrawer(props) {
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.Attachements = attachmentsData
-        senderObj.LinkedTokenNumber = linkingTokenDropDown.Value
+        senderObj.LinkedTokenNumber = linkingTokenDropDown.value
+        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
+        console.log('senderObj: ', senderObj);
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -647,7 +649,7 @@ function ApproveRejectDrawer(props) {
                 }
 
 
-                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown &&
+                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' &&
 
                   < div className="input-group form-group col-md-12">
 
