@@ -221,18 +221,18 @@ function Simulation(props) {
                             flag = false
                             return false
                         }
-                        // if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-                        //     // toastr.warning('Please select one vendor at a time.')
-                        //     setEditWarning(true);
-                        //     vendorFlag = false
-                        //     return false
-                        // }
-                        if (element.PlantId !== Data[index - 1].PlantId) {
-                            console.log("PLANT ");
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
-                            plantFlag = false
+                            vendorFlag = false
                             return false
                         }
+                        // if (element.PlantId !== Data[index - 1].PlantId) {
+                        //     console.log("PLANT ");
+                        //     setEditWarning(true);
+                        //     plantFlag = false
+                        //     return false
+                        // }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
@@ -259,12 +259,12 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
-                        if (element.PlantId !== Data[index - 1].PlantId) {
-                            // toastr.warning('Please select one Plant at a time.')
-                            setEditWarning(true);
-                            plantFlag = false
-                            return false
-                        }
+                        // if (element.PlantId !== Data[index - 1].PlantId) {
+                        //     // toastr.warning('Please select one Plant at a time.')
+                        //     setEditWarning(true);
+                        //     plantFlag = false
+                        //     return false
+                        // }
                     }
                 })
                 if (flag === true && vendorFlag === true && plantFlag === true) {
@@ -378,7 +378,7 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant,Vendor from the filters before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head,vendor from the filters before editing'} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
