@@ -315,7 +315,9 @@ function ApproveRejectDrawer(props) {
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.Attachements = updatedFiles
-        senderObj.LinkedTokenNumber = linkingTokenDropDown.Value
+        senderObj.LinkedTokenNumber = linkingTokenDropDown.value
+        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
+        console.log('senderObj: ', senderObj);
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
