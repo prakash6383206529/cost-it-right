@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
@@ -19,9 +19,8 @@ import AttachmentSec from './AttachmentSec'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
-import RunSimulationDrawer from '../../../simulation/components/RunSimulationDrawer'
-//import { runSimulationDrawerDataContext } from '../../../simulation/components/RunSimulationDrawer'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
+import { provisional } from '../../../../config/constants'
 
 
 function ApproveRejectDrawer(props) {
@@ -31,6 +30,7 @@ function ApproveRejectDrawer(props) {
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
+  const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
     mode: 'onChange',
@@ -54,8 +54,6 @@ function ApproveRejectDrawer(props) {
   console.log('attachmentsData: ', attachmentsData);
   const reasonsList = useSelector((state) => state.approval.reasonsList)
 
-
-  //const runSimulationDrawerDetails = React.useContext(runSimulationDrawerDataContext);
 
 
   // const simulationDeptList = useSelector((state)=> state.simulation)
@@ -128,53 +126,35 @@ function ApproveRejectDrawer(props) {
         )
 
       }))
+      dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+
+
+
+      if (vendorId !== null && SimulationTechnologyId !== null) {
+        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+      }
+
+      if (SimulationType !== null && SimulationType === 'provisional') {
+        setTokenDropdown(false)
+      }
     }
 
 
-    dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
 
-
-
-
-    if (SimulationType === `Provisional`) {
-      setTokenDropdown(false)
-    }
-
-
-
-
+  }
 
 
     // DO IT AFTER GETTING DATA
-  }, [])
-
-  const { TokensList } = useSelector(state => state.simulation)
+    , [])
 
 
 
-  const renderListing = () => {
-    let temp = []
 
-    TokensList && TokensList.map((item) => {
-
-      if (item.Value === '0') return false
-      temp.push({ label: item.Text, value: item.Value })
-      return null
-
-
-    })
-    return temp
-  }
-
-
-
-  const handleGradeChange = (value) => {
+  const handleTokenDropDownChange = (value) => {
 
     setLinkingTokenDropDown(value)
 
-
   }
-
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
@@ -312,7 +292,7 @@ function ApproveRejectDrawer(props) {
       objs.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       objs.IsFinalApprovalProcess = false
       objs.SimulationApprovalProcessSummaryId = simulationDetail.SimulationApprovalProcessSummaryId
-      objs.LinkedTokenNumber = linkingTokenDropDown
+      //objs.LinkedTokenNumber = linkingTokenDropDown
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
@@ -336,7 +316,7 @@ function ApproveRejectDrawer(props) {
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.Attachements = attachmentsData
-        senderObj.LinkedTokenNumber = linkingTokenDropDown
+        senderObj.LinkedTokenNumber = linkingTokenDropDown.Value
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -404,6 +384,22 @@ function ApproveRejectDrawer(props) {
       })
       return tempDropdownList
     }
+
+
+    if (label === 'Link') {
+      TokensList && TokensList.map((item) => {
+
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+
+
+      })
+      return tempDropdownList
+    }
+
+
+
   }
 
   const handleDepartmentChange = (value) => {
@@ -664,9 +660,9 @@ function ApproveRejectDrawer(props) {
                       rules={{ required: false }}
                       register={register}
                       // defaultValue={technology.length !== 0 ? technology : ''}
-                      options={renderListing()}
+                      options={renderDropdownListing('Link')}
                       mandatory={false}
-                      handleChange={handleGradeChange}
+                      handleChange={handleTokenDropDownChange}
                       errors={errors.Masters}
                       customClassName="mb-0"
                     />
