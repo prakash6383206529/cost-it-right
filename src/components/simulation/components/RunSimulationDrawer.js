@@ -5,11 +5,10 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 // import { runSimulation } from '../actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
-import { EXCHNAGERATE } from '../../../config/constants';
+import { EXCHNAGERATE, PROCESS } from '../../../config/constants';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId } = props
@@ -86,8 +85,15 @@ function RunSimulationDrawer(props) {
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         temp.push(obj)
 
-        if (masterId === Number(EXCHNAGERATE)) {
+        if (Number(masterId) === Number(EXCHNAGERATE)) {
             dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                if (res.data.Result) {
+                    toastr.success('Simulation process has been run successfully.')
+                    runSimulationCosting()
+                }
+            }))
+        } if (Number(masterId) === Number(PROCESS)) {
+            dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                 if (res.data.Result) {
                     toastr.success('Simulation process has been run successfully.')
                     runSimulationCosting()
@@ -102,6 +108,7 @@ function RunSimulationDrawer(props) {
                 }
             }))
         }
+        runSimulationCosting()                       ///remove this
     }
 
     const onSubmit = () => {

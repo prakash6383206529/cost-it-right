@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
-import { useForm, Controller, } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { getComparisionSimulationData, getExchangeCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, EXCHNAGERATE, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, PROCESS } from '../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
-import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownload } from '../../../config/masterData'
+import { CombinedProcessSimulationFinal, CostingSimulationDownload } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -59,7 +57,75 @@ function OtherCostingSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
-    const [tableData, setTableData] = useState([])
+    const [tableData, setTableData] = useState([{
+        CostingNumber: "12345",
+        PartNo: "12345",
+        PartName: "12345",
+        ECNNumber: "12345",
+        RevisionNumber: "12345",
+        VendorName: "qwerty",
+        OldCC: 3,
+        NewCC: 2,
+        Variance: 1,
+        CostingId: "12345"
+    }, {
+        CostingNumber: "12345",
+        PartNo: "12345",
+        PartName: "12345",
+        ECNNumber: "12345",
+        RevisionNumber: "12345",
+        VendorName: "qwerty",
+        OldCC: 3,
+        NewCC: 2,
+        Variance: 1,
+        CostingId: "12346"
+    }, {
+        CostingNumber: "12345",
+        PartNo: "12345",
+        PartName: "12345",
+        ECNNumber: "12345",
+        RevisionNumber: "12345",
+        VendorName: "qwerty",
+        OldCC: 3,
+        NewCC: 2,
+        Variance: 1,
+        CostingId: "12347"
+    }, {
+        CostingNumber: "12345",
+        PartNo: "12345",
+        PartName: "12345",
+        ECNNumber: "12345",
+        RevisionNumber: "12345",
+        VendorName: "qwerty",
+        OldCC: 3,
+        NewCC: 2,
+        Variance: 1,
+        CostingId: "12348"
+    }, {
+        CostingNumber: "12345",
+        PartNo: "12345",
+        PartName: "12345",
+        ECNNumber: "12345",
+        RevisionNumber: "12345",
+        VendorName: "qwerty",
+        OldCC: 3,
+        NewCC: 2,
+        Variance: 1,
+        CostingId: "12349"
+    }, {
+        CostingNumber: "12345",
+        PartNo: "12345",
+        PartName: "12345",
+        ECNNumber: "12345",
+        RevisionNumber: "12345",
+        VendorName: "qwerty",
+        OldCC: 3,
+        NewCC: 2,
+        Variance: 1,
+        CostingId: "123411"
+    },
+
+    ])
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -70,7 +136,6 @@ function OtherCostingSimulation(props) {
         hideDiscount: false,
         hideOveheadAndProfit: false
     })
-
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -79,11 +144,24 @@ function OtherCostingSimulation(props) {
 
 
     const getCostingList = () => {
-        dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
-            if (res.data.Result) {
-                dataSet(res)
-            }
-        }))
+
+        switch (Number(selectedMasterForSimulation.value)) {
+            case Number(EXCHNAGERATE):
+                dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                    if (res.data.Result) {
+                        dataSet(res)
+                    }
+                }))
+            case Number(PROCESS):
+                dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                    if (res.data.Result) {
+                        dataSet(res)
+                    }
+                }))
+
+            default:
+                break;
+        }
     }
 
 
@@ -207,8 +285,7 @@ function OtherCostingSimulation(props) {
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
         if (!isFromApprovalListing) {
-
-            const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
+            const isChanged = JSON.stringify(oldArr) === JSON.stringify(selectedRowData)
             if (isChanged) {
                 setSaveDone(true)
             } else {
@@ -398,8 +475,13 @@ function OtherCostingSimulation(props) {
         </ExcelSheet>);
     }
 
-    const renderColumn = () => returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
-
+    const renderColumn = () => {
+        if (master === '3') {
+            return returnExcelColumn(CombinedProcessSimulationFinal, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+        } else {
+            return returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+        }
+    }
 
     useEffect(() => {
         if (userDetails().Role === 'SuperAdmin') {
@@ -477,12 +559,11 @@ function OtherCostingSimulation(props) {
         newPOCurrencyFormatter: newPOCurrencyFormatter
 
     };
-
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
     return (
         <>
             {
-                loader ? <LoaderCustom /> :
+                false ? <LoaderCustom /> :          //loader
 
                     !showApprovalHistory &&
 
@@ -565,6 +646,12 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
+                                                        </>
+                                                    }
+                                                    {String(master) === PROCESS &&
+                                                        <>
+                                                            <AgGridColumn width={140} field="OldCC" headerName='Old CC' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewCC" headerName='New CC' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
                                                     <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>

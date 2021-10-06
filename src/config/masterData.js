@@ -2648,3 +2648,28 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
 ]
+
+export const CombinedProcessSimulation = [
+    { label: "Technology", value: "Technology" },
+    { label: "Plant", value: "Plant" },
+    { label: "NetCC", value: "NetCC" },
+    { label: "NewCC", value: "NewCC" },
+    { label: "RemainingFieldsTotal", value: "RemainingFieldsTotal" },
+    { label: "Total", value: "Total" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "DisplayStatus", value: "DisplayStatus" }
+]
+
+export const CombinedProcessSimulationFinal = [
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "PartNo", value: "PartNo" },
+    { label: "PartName", value: "PartName" },
+    { label: "ECNNumber", value: "ECNNumber" },
+    { label: "RevisionNumber", value: "RevisionNumber" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "OldCC", value: "OldCC" },
+    { label: "NewCC", value: "NewCC" },
+    { label: "Variance", value: "Variance" },
+    { label: "Actions", value: "Actions" },
+    { label: "CostingId", value: "CostingId" },
+]

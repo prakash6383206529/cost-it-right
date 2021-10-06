@@ -857,8 +857,14 @@ export const API = {
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
+  getCombinedProcessList: `${BASE_URL}/masters-combined-process/get-all-combined-process`,
+  draftCombinedProcessSimulation: `${BASE_URL}/simulation/draft-simulation-combined-process`,
+  getverifyCombinedProcessSimulationList: `${BASE_URL}/simulation/get-all-combined-process-impacted-simulation-costings`,
+  runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-combined-process-costing`,
+  getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
 
-  //SIMULATION APPROVAL
+
+  //SIMULATION APPROVAL 
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
   getSimulationApprovalListByDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-users-level-filter-by-department`,
   simulationApprove: `${BASE_URL}/app-simulation-approval-system/approved-simulated-costing-by-approver`,
@@ -1414,6 +1420,7 @@ export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMUL
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
+export const GET_COMBINED_PROCESS_LIST = 'GET_COMBINED_PROCESS_LIST'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'

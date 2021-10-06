@@ -132,34 +132,62 @@ class SimulationUploadDrawer extends Component {
                     let scrapRateCount = 0
                     let correctRowCount = 0
                     let NoOfRowsWithoutChange = 0
-                    resp.rows.map((val, index) => {
-                        if (index > 0) {
-                            if (val[10] !== '' && val[10] !== undefined) {
-                                basicRateCount = 1
-                            }
-                            if (val[10] === '' && val[14] === '') {
-                                NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                return false
-                            }
-                            correctRowCount = correctRowCount + 1
-                            let obj = {}
-                            val.map((el, i) => {
-                                if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                                    el = getJsDateFromExcel(el)
+                    if (this.props.master.value === '3') {
+                        resp.rows.map((val, index) => {
+                            if (index > 0) {
+                                if (val[3] !== '' && val[3] !== undefined) {
+                                    basicRateCount = 1
                                 }
-                                obj[fileHeads[i]] = el;
-                                return null;
-                            })
-                            fileData.push(obj)
-                            obj = {}
+                                if (val[3] === '') {
+                                    NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                    return false
+                                }
+                                correctRowCount = correctRowCount + 1
+                                let obj = {}
+                                val.map((el, i) => {
+                                    if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                        el = getJsDateFromExcel(el)
+                                    }
+                                    obj[fileHeads[i]] = el;
+                                    return null;
+                                })
+                                fileData.push(obj)
 
-                        }
-                        return null;
-                    })
-                    if (basicRateCount === 0) {
-                        toastr.warning('Please fill at least one basic rate.')
-                        return false
+                                obj = {}
+
+                            }
+                            return null;
+                        })
+                    } else {
+                        resp.rows.map((val, index) => {
+                            if (index > 0) {
+                                if (val[10] !== '' && val[10] !== undefined) {
+                                    basicRateCount = 1
+                                }
+                                if (val[10] === '' && val[14] === '') {
+                                    NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                    return false
+                                }
+                                correctRowCount = correctRowCount + 1
+                                let obj = {}
+                                val.map((el, i) => {
+                                    if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                        el = getJsDateFromExcel(el)
+                                    }
+                                    obj[fileHeads[i]] = el;
+                                    return null;
+                                })
+                                fileData.push(obj)
+                                obj = {}
+
+                            }
+                            return null;
+                        })
                     }
+                    // if (basicRateCount === 0) {
+                    //     toastr.warning('Please fill at least one basic rate.')
+                    //     return false
+                    // }
                     this.setState({
                         fileData: fileData,
                         uploadfileName: uploadfileName,

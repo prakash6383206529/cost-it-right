@@ -1,29 +1,26 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { getVerifyExchangeSimulationList } from '../actions/Simulation';
+import { getVerifyExchangeSimulationList, getverifyCombinedProcessSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
-import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { getPlantSelectListByType } from '../../../actions/Common';
-import { EXCHNAGERATE, ZBC } from '../../../config/constants';
+import { EXCHNAGERATE, ZBC, PROCESS } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { node } from 'prop-types';
 import OtherCostingSimulation from './OtherCostingSimulation';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
-    const { cancelVerifyPage, isExchangeRate } = props
+    const { cancelVerifyPage, isExchangeRate, isCombinedProcess } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -56,11 +53,28 @@ function OtherVerifySimulation(props) {
     }, [])
 
     const verifyCostingList = () => {
+        console.log(isExchangeRate, 'isExchangeRateisExchangeRateisExchangeRate')
+        console.log(isCombinedProcess, 'isExchangeRateisExchangeRateisExchangeRateisCombinedProcess')
         if (isExchangeRate) {
             dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
                 if (res.data.Result) {
                     const data = res.data.Data
-                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {
+                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
+                        toastr.warning('No approved costing exist for this exchange rate.')
+                        setHideRunButton(true)
+                        return false
+                    }
+                    setTokenNo(data.TokenNumber)
+                    setSimualtionId(data.SimulationId)
+                    setMasterId(data.SimulationtechnologyId)
+                    setHideRunButton(false)
+                }
+            }))
+        } else if (isCombinedProcess) {
+            dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                if (res.data.Result) {
+                    const data = res.data.Data
+                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
                         toastr.warning('No approved costing exist for this exchange rate.')
                         setHideRunButton(true)
                         return false
@@ -75,7 +89,70 @@ function OtherVerifySimulation(props) {
     }
 
 
-    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+    // const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+
+    const verifyList = [{
+        CostingId: 0,
+        CostingNumber: 1221,
+        PartNo: "part1",
+        PartName: 10,
+        ECNNumber: 20,
+        RevisionNumber: 30,
+        POPrice: 12,
+        OldProcessRate: 11,
+        NewProcessRate: 10
+    }, {
+        CostingId: 1,
+        CostingNumber: 1222,
+        PartNo: "part1",
+        PartName: 10,
+        ECNNumber: 20,
+        RevisionNumber: 30,
+        POPrice: 12,
+        OldProcessRate: 11,
+        NewProcessRate: 10
+    }, {
+        CostingId: 2,
+        CostingNumber: 1223,
+        PartNo: "part1",
+        PartName: 10,
+        ECNNumber: 20,
+        RevisionNumber: 30,
+        POPrice: 12,
+        OldProcessRate: 11,
+        NewProcessRate: 10
+    }, {
+        CostingId: 3,
+        CostingNumber: 1224,
+        PartNo: "part1",
+        PartName: 10,
+        ECNNumber: 20,
+        RevisionNumber: 30,
+        POPrice: 12,
+        OldProcessRate: 11,
+        NewProcessRate: 10
+    }, {
+        CostingId: 4,
+        CostingNumber: 1225,
+        PartNo: "part1",
+        PartName: 10,
+        ECNNumber: 20,
+        RevisionNumber: 30,
+        POPrice: 12,
+        OldProcessRate: 11,
+        NewProcessRate: 10
+    }, {
+        CostingId: 5,
+        CostingNumber: 1226,
+        PartNo: "part1",
+        PartName: 10,
+        ECNNumber: 20,
+        RevisionNumber: 30,
+        POPrice: 12,
+        OldProcessRate: 11,
+        NewProcessRate: 10
+    }
+    ]
 
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
 
@@ -134,17 +211,16 @@ function OtherVerifySimulation(props) {
     }
 
     const runSimulation = () => {
-        if (selectedRowData.length === 0) {
+        if (selectedRowData.length === 0) {             //     for condition
             toastr.warning('Please select atleast one costing.')
             return false
         }
-
         let obj = {};
-        obj.SimulationId = simulationId
+        obj.SimulationId = simulationId                   //for condition
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
 
-        switch (masterId) {
+        switch (Number(selectedMasterForSimulation.value)) {
             case Number(EXCHNAGERATE):
                 selectedRowData && selectedRowData.map(item => {
                     let tempObj = {}
@@ -154,6 +230,17 @@ function OtherVerifySimulation(props) {
                 })
 
                 obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+            case Number(PROCESS):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+
+                obj.RunSimualtionCombinedProcessCostingInfos = tempArr
                 setObj(obj)
                 setSimulationDrawer(true)
 
@@ -226,7 +313,7 @@ function OtherVerifySimulation(props) {
     };
 
 
-
+    console.log(masterId, 'masterIdmasterIdd')
     return (
         <>
             {
@@ -277,7 +364,7 @@ function OtherVerifySimulation(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: CONSTANT.EMPTY_DATA,
-                                                    customClassName:'nodata-found-container'
+                                                    customClassName: 'nodata-found-container'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
@@ -291,6 +378,7 @@ function OtherVerifySimulation(props) {
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                 {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
+                                                {/* {isCombinedProcess !== true && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>} */}
                                                 <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
                                                 {isExchangeRate &&
                                                     <>
@@ -298,7 +386,12 @@ function OtherVerifySimulation(props) {
                                                         <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
                                                     </>
                                                 }
-
+                                                {isCombinedProcess &&
+                                                    <>
+                                                        <AgGridColumn width={145} field="OldProcessRate" headerName="Old CC"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewProcessRate" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
+                                                    </>
+                                                }
                                             </AgGridReact>
 
                                             <div className="paging-container d-inline-block float-right">
@@ -322,7 +415,9 @@ function OtherVerifySimulation(props) {
                                 <div className={"cancel-icon"}></div>
                                 {"CANCEL"}
                             </button>
-                            <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} type="submit"
+                                //  disabled={hideRunButton}
+                                className="user-btn mr5 save-btn">
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
@@ -341,7 +436,7 @@ function OtherVerifySimulation(props) {
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
                     objs={objs}
-                    masterId={masterId}
+                    masterId={selectedMasterForSimulation.value}
                     anchor={"right"}
                 />
             }

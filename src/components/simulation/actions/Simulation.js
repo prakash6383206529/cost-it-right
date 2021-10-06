@@ -12,14 +12,13 @@ import {
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     config,
-    GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
     GET_AMMENDENT_STATUS_COSTING,
-    SET_ATTACHMENT_FILE_DATA
+    SET_ATTACHMENT_FILE_DATA,
+    GET_COMBINED_PROCESS_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr'
 
 const headers = config
@@ -595,3 +594,100 @@ export function setAttachmentFileData(attachmentsData, callback) {
         callback();
     }
 };
+
+/**
+ * @method getCombinedProcessList
+ * @description GET PROCESS DATALIST
+ */
+export function getCombinedProcessList(isAPICall, data, callback) {
+    return (dispatch) => {
+        if (isAPICall) {
+            dispatch({ type: API_REQUEST });
+            axios.get(`${API.getCombinedProcessList}?currencyId=${data.currencyId}`, headers)
+                .then((response) => {
+                    if (response.data.Result === true) {
+                        dispatch({
+                            type: GET_COMBINED_PROCESS_LIST,
+                            payload: response.data.DataList,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+        } else {
+            dispatch({
+                type: GET_COMBINED_PROCESS_LIST,
+                payload: [],
+            });
+        }
+    };
+}
+
+export function runVerifyCombinedProcessSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftCombinedProcessSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getverifyCombinedProcessSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedCombinedProcessCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedCombinedProcessCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getCombinedProcessCostingSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCombinedProcessCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}

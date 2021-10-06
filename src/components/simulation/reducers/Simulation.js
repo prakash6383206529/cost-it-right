@@ -1,7 +1,6 @@
 import {
     API_REQUEST,
     GET_SELECTLIST_MASTERS,
-    GET_SIMULATION_HISTORY,
     GET_VERIFY_SIMULATION_LIST,
     GET_COSTING_SIMULATION_LIST,
     GET_SIMULATION_APPROVAL_LIST,
@@ -10,7 +9,8 @@ import {
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_AMMENDENT_STATUS_COSTING,
-    SET_ATTACHMENT_FILE_DATA
+    SET_ATTACHMENT_FILE_DATA,
+    GET_COMBINED_PROCESS_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -84,6 +84,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 attachmentsData: [...data]
+            }
+        case GET_COMBINED_PROCESS_LIST:
+            return {
+                ...state,
+                loading: false,
+                combinedProcessList: action.payload
             }
         default:
             return state;
