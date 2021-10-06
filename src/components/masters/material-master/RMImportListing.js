@@ -79,6 +79,7 @@ function RMImportListing(props) {
   const [loader, setloader] = useState(true);
   const [statusId, setstatusId] = useState(0);
   const [count, setCount] = useState(0)
+  const [selectedRowData, setSelectedRowData] = useState([]);
   const dispatch = useDispatch();
 
   const rmDataList = useSelector((state) => state.material.rmDataList);
@@ -207,11 +208,9 @@ function RMImportListing(props) {
           setmaxRange(DynamicData.MaxRange);
           setloader(false);
           if (isSimulation) {
-            props.apply()
+            props.apply(Data)
           }
-          // const func = () => {
-          // }
-          // func()
+
 
         } else if (res && res.response && res.response.status === 412) {
           settableData([]);
@@ -546,8 +545,6 @@ function RMImportListing(props) {
       setTimeout(() => {
 
         getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-        // this.props.apply()  
-        props.apply()
 
       }, 500);
     } else {
@@ -572,14 +569,15 @@ function RMImportListing(props) {
     setplant([]);
     settechnology([]);
     setvalue({ min: 0, max: 0 });
-
-    const fun = () => {
-      getInitialRange()
-      getDataList(null)
-
-      dispatch(getRawMaterialFilterSelectList(() => { }))
-    }
-    fun();
+    getInitialRange()
+    getDataList(null)
+    setValue('CostingHead', '')
+    setValue('Plant', '')
+    setValue('Technology', '')
+    setValue('RawMaterialId', '')
+    setValue('RawMaterialGradeId', '')
+    setValue('VendorId', '')
+    dispatch(getRawMaterialFilterSelectList(() => { }))
 
   }
 
@@ -715,12 +713,39 @@ function RMImportListing(props) {
   //const { isBulkUpload, } = this.state;
 
 
+
+  //const { isBulkUpload, } = this.state;
+  const isFirstColumn = (params) => {
+    if (isSimulation) {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+      return thisIsFirstColumn;
+    } else {
+      return false
+    }
+  }
+
+  const onRowSelect = () => {
+
+    var selectedRows = gridApi.getSelectedRows();
+    // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+    setSelectedRowData(selectedRows)
+    props.apply(selectedRows)
+
+  }
+
   const defaultColDef = {
     resizable: true,
     filter: true,
     sortable: true,
-
+    headerCheckboxSelectionFilteredOnly: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
   };
+
+
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -987,7 +1012,8 @@ function RMImportListing(props) {
                   imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
-
+                rowSelection={'multiple'}
+                onSelectionChanged={onRowSelect}
               >
                 <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
