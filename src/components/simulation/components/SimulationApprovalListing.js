@@ -11,7 +11,7 @@ import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { DRAFT, EMPTY_GUID } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID, APPROVED, DRAFT } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
@@ -244,14 +244,14 @@ function SimulationApprovalListing(props) {
 
     const conditionFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props.rowData;
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
         const status = props.node.data.DisplayStatus;
 
-        if (status == `Draft`) {
+        if (status === DRAFT) {
             return `Y`;
         }
-        else if (status == `Approved`) {
+        else if (status === APPROVED) {
             return `R`
         } else {
             return `U`

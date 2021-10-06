@@ -1,17 +1,15 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
-// import { runSimulation } from '../actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, getSelectListOfSimulationLinkingTokens } from '../actions/Simulation';
+//import CostingSimulation from './CostingSimulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
 import { EXCHNAGERATE } from '../../../config/constants';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
+//import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
 
 function RunSimulationDrawer(props) {
@@ -36,17 +34,6 @@ function RunSimulationDrawer(props) {
     const [provisionalCheck, setProvisionalCheck] = useState(false)
 
     const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
-
-
-    const runSimulationDrawerData = {
-        vendorId: vendorId,
-        simulationTechnologyId: simulationTechnologyId,
-        isProvisional: provisionalCheck
-
-    };
-
-    const runSimulationDrawerDataContext = React.createContext(runSimulationDrawerData);
-
 
 
 
@@ -371,4 +358,4 @@ function RunSimulationDrawer(props) {
 
 
 export default RunSimulationDrawer;
-//export { runSimulationDrawerDataContext }
+

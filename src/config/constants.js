@@ -685,6 +685,12 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
 
+
+  // ApproveReject Drawer
+
+
+
+
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
   moduleSelectList: `${BASE_URL}/app-privilege-permission/get-module-select-list`,
@@ -1677,3 +1683,7 @@ export const VARIANCE = 'Variance'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
+
+
+//approve reject drawer
+export const provisional = "Provisional"
