@@ -131,7 +131,7 @@ function ApproveRejectDrawer(props) {
         setIsOpen(!IsOpen)
       })
 
-      if (vendorId !== null && SimulationTechnologyId !== null) {
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }
@@ -694,7 +694,7 @@ function ApproveRejectDrawer(props) {
                 }
 
 
-                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown &&
+                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' &&
 
                   < div className="input-group form-group col-md-12">
 
