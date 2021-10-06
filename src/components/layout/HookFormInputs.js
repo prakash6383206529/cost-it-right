@@ -353,7 +353,6 @@ export const RadioHookForm = (field) => {
 
 
 
-<<<<<<< HEAD
 // export const RadioHookForm = (field) => {
 //   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
 //   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
@@ -397,51 +396,3 @@ export const RadioHookForm = (field) => {
 //     </>
 //   )
 // }
-=======
-export const RadioHookForm = (field) => {
-  // console.log('field: ', field);
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
-  const className = `${field.customClassName ? field.customClassName : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
-  const isDisabled = field.disabled === true ? true : false;
-  return (
-    <>
-      <div
-        className={className}
-      >
-        <label>
-          {label}
-          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-        </label>
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => {
-            return (
-              <input
-                {...field}
-                {...register}
-                type="radio"
-                name={name}
-                checked={defaultValue}
-                // className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-              />
-            )
-          }
-          }
-        />
-        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
-      </div>
-    </>
-  )
-}
->>>>>>> a442251f4 ( simulation changes by ashok 4 october)
