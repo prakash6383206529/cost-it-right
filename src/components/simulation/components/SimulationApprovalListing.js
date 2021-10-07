@@ -195,6 +195,7 @@ function SimulationApprovalListing(props) {
 
     const buttonFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <>
                 <button className="View" type={'button'} onClick={() => viewDetails(row)} />
@@ -205,7 +206,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.DisplayStatus === 'Draft') {
+        if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
