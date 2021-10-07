@@ -53,8 +53,6 @@ function OtherVerifySimulation(props) {
     }, [])
 
     const verifyCostingList = () => {
-        console.log(isExchangeRate, 'isExchangeRateisExchangeRateisExchangeRate')
-        console.log(isCombinedProcess, 'isExchangeRateisExchangeRateisExchangeRateisCombinedProcess')
         if (isExchangeRate) {
             dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
                 if (res.data.Result) {
@@ -89,7 +87,7 @@ function OtherVerifySimulation(props) {
     }
 
 
-    // const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+    const verifyListExchangeRate = useSelector(state => state.simulation.simulationVerifyList)
 
     const verifyList = [{
         CostingId: 0,
@@ -313,7 +311,6 @@ function OtherVerifySimulation(props) {
     };
 
 
-    console.log(masterId, 'masterIdmasterIdd')
     return (
         <>
             {
@@ -355,7 +352,7 @@ function OtherVerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={verifyList}
+                                                rowData={isCombinedProcess ? verifyList : verifyListExchangeRate}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}

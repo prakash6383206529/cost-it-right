@@ -730,7 +730,7 @@ class ProcessListingSimulation extends Component {
                                     <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="Total" headerName="Total" minWidth={190}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                                    <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>
+                                    {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
                                     {/* 
                                     <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>

@@ -786,8 +786,8 @@ export function applyEditCondSimulation(master) {
 
 //THIS FUNCTION FOR CONDITION RNDERING OF COMPONENT FOR DIFFERENT MASTER
 export function getOtherCostingSimulation(master) {
-  const useOtherSimulationPage = [EXCHNAGERATE]
-  return useOtherSimulationPage.includes(master)
+  const useOtherSimulationPage = [Number(EXCHNAGERATE), Number(PROCESS)]
+  return useOtherSimulationPage.includes(Number(master))
 }
 
 // THIS FUNCTION IS TO GET FILTERED DATA FOR RM WHERE IsRMAssociated IS TRUE (ONLY APPLICABLE IN CASE OF SIMULATION)

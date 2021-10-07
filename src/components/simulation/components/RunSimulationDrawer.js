@@ -137,31 +137,34 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-
-        if (masterId === Number(EXCHNAGERATE)) {
-            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
-        } if (Number(masterId) === Number(PROCESS)) {
-            dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
-        } else {
-            //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
+        switch (Number(masterId)) {
+            case Number(EXCHNAGERATE):
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(PROCESS):
+                dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            default:
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
         }
-        runSimulationCosting()                       ///remove this
+        // runSimulationCosting()                       ///remove this
     }
 
     const onSubmit = () => {

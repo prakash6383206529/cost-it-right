@@ -121,9 +121,6 @@ function CPSimulation(props) {
             setDummyData(list)
         }
 
-        console.log(rowCount, 'rowCountrowCountrowCountrowCountrowCount')
-        console.log(isbulkUpload, 'isbulkUploadisbulkUploadisbulkUploadisbulkUpload')
-
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
@@ -299,6 +296,8 @@ function CPSimulation(props) {
             if (Number(li.NetCC) === Number(li.NewCC) || li?.NewCC === undefined) {
                 ccCount = ccCount + 1
             } else {
+                li.NewTotal = Number(li.NewCC ? li.NewCC : li.NetCC) + checkForNull(li.RemainingFieldsTotal)
+
                 arr.push(li)
             }
             return null;
@@ -429,12 +428,10 @@ function CPSimulation(props) {
                                                 <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
                                                     <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.NetCC) + Number(data.RemainingFieldsTotal)' field="Total" editable='false' headerName="Old" cellRenderer='oldERFormatter' colId="Total"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingFieldsTotal)' headerName="New" colId='NewTotal'></AgGridColumn>
-                                                    {/* <AgGridColumn width={100} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn> */}
-
+                                                    <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingFieldsTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                                <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>
+                                                {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
 
                                                 {/* <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn> */}
                                                 <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>

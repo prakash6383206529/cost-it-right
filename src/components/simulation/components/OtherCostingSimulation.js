@@ -149,7 +149,6 @@ function OtherCostingSimulation(props) {
 
 
     const getCostingList = () => {
-
         switch (Number(selectedMasterForSimulation.value)) {
             case Number(EXCHNAGERATE):
                 dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
@@ -157,13 +156,15 @@ function OtherCostingSimulation(props) {
                         dataSet(res)
                     }
                 }))
+                break;
             case Number(PROCESS):
                 dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
                     if (res.data.Result) {
                         dataSet(res)
                     }
                 }))
-
+                setLoader(false)  // REMOVE IT AFTER API INTEGRATTION todo
+                break;
             default:
                 break;
         }
@@ -264,6 +265,7 @@ function OtherCostingSimulation(props) {
         console.log('selectedRows: ', selectedRows);
         let temp = []
         let selectedTemp = []
+
         selectedRows && selectedRows.map(item => {
             if (item.IsLockedBySimulation) {
                 temp.push(item.CostingNumber)
@@ -438,7 +440,6 @@ function OtherCostingSimulation(props) {
         return cell
     }
     const hideColumn = (props) => {
-        // console.log(costingList && costingList[0].NewOverheadCost, "costingList");
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && costingList[0]?.NewOverheadCost === 0 ? true : false,
             hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost && costingList[0]?.NewProfitCost === 0 ? true : false,
@@ -575,7 +576,7 @@ function OtherCostingSimulation(props) {
     return (
         <>
             {
-                false ? <LoaderCustom /> :          //loader
+                loader ? <LoaderCustom /> :          //loader
 
                     !showApprovalHistory &&
 
@@ -645,14 +646,14 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
                                                     {
-                                                        String(master) === EXCHNAGERATE &&
+                                                        String(master) === String(EXCHNAGERATE) &&
                                                         <>
                                                             <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                         </>
                                                     }
                                                     {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
-                                                    {String(master) === EXCHNAGERATE &&
+                                                    {String(master) === String(EXCHNAGERATE) &&
                                                         <>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
@@ -660,7 +661,7 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    {String(master) === PROCESS &&
+                                                    {String(master) === String(PROCESS) &&
                                                         <>
                                                             <AgGridColumn width={140} field="OldCC" headerName='Old CC' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewCC" headerName='New CC' cellRenderer='newExchangeFormatter'></AgGridColumn>

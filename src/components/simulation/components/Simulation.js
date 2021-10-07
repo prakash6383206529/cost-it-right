@@ -128,7 +128,6 @@ function Simulation(props) {
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    console.log('rmDomesticListing: ', rmDomesticListing);
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
@@ -148,6 +147,7 @@ function Simulation(props) {
             // setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
+
         setEditWarning(applyEditCondSimulation(value.value))
 
     }
@@ -155,6 +155,7 @@ function Simulation(props) {
     const handleTechnologyChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
+        setValue('Vendor', '')
         dispatch(setTechnologyForSimulation(value))
         if (value !== '' && Object.keys(master).length > 0 && !(master.value === '3')) {
             setShowMasterList(true)
@@ -162,7 +163,7 @@ function Simulation(props) {
     }
 
     const handleVendorChange = (value) => {
-        if (value !== '' && Object.keys(master).length > 0) {
+        if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
             setShowMasterList(true)
         }
         setVendor(value)
@@ -292,7 +293,6 @@ function Simulation(props) {
         //  setShowEditTable(true)
         switch (master.value) {
             case RMDOMESTIC:
-                console.log(Data, "rmDomesticListingrmDomesticListing");
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -419,7 +419,6 @@ function Simulation(props) {
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
         const masterId = location?.state?.master
-        console.log('masterId: ', masterId);
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
         if (getOtherCostingSimulation(String(masterId))) {
             return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
