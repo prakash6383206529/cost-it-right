@@ -66,8 +66,9 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           let productArray = []
-          Data && Data.ProductList.map((item) => {
-            productArray.push({ Text: item.ProductGroupCode, Value: item.ProductId })
+          console.log(Data, "new")
+          Data && Data.GroupCodeList.map((item) => {
+            productArray.push({ Text: item.GroupCode, Value: "", })
             return productArray
           })
           this.setState({ DataToCheck: Data })
