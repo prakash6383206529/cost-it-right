@@ -692,11 +692,11 @@ class SideBar extends Component {
                           <DropdownToggle caret>
                             {isLoggedIn ? (
                               <>
-                                <img
+                                  {/* <img
                                   className="img-xs rounded-circle"
                                   alt={""}
                                   src={UserImg}
-                                />
+                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */} 
                                 {userData.Name}
                               </>
                             ) : (
