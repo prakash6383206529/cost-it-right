@@ -235,7 +235,7 @@ class AddIndivisualPart extends Component {
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
-    let productArray = ProductGroup && ProductGroup.map((item) => ({ ProductId: item.Value, ProductGroupCode: item.Text }))
+    let productArray = ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text }))
     if (isEditFlag) {
 
 
@@ -263,7 +263,7 @@ class AddIndivisualPart extends Component {
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
-        ProductList: productArray
+        GroupCodeList: productArray
       }
 
       if (isEditFlag) {
@@ -303,7 +303,7 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         // Plants: [],
         Attachements: files,
-        ProductList: productArray
+        GroupCodeList: productArray
       }
 
       this.props.reset()
@@ -415,7 +415,7 @@ class AddIndivisualPart extends Component {
                             />
                           </Col>
 
-                          {initialConfiguration &&
+                          {false &&
                             initialConfiguration.IsGroupCodeDisplay && (
                               <Col md="3">
                                 <Field
@@ -434,7 +434,7 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <Field
-                              label="Product Group"
+                              label="Group Code"
                               name="ProductGroup"
                               placeholder={"Select"}
                               selection={
@@ -591,7 +591,7 @@ class AddIndivisualPart extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -617,10 +617,10 @@ class AddIndivisualPart extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
