@@ -64,9 +64,9 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           let productArray = []
-          console.log(Data, "new")
+
           Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: "", })
+            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
             return productArray
           })
           this.setState({ DataToCheck: Data })
@@ -437,6 +437,7 @@ class AddIndivisualPart extends Component {
                             <Field
                               label="Group Code"
                               name="ProductGroup"
+                              type="text"
                               placeholder={"Select"}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
