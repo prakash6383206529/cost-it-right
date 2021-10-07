@@ -378,7 +378,7 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant,Vendor from the filters before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant,Vendor from the filters and click on checkbox before editing'} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
