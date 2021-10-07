@@ -745,7 +745,7 @@ class AddAssemblyPart extends Component {
                       <Row>
                         <Col md="3">
                           <Field
-                            label="Product Group"
+                            label="Group Code"
                             name="ProductGroup"
                             placeholder={"Select"}
                             selection={
