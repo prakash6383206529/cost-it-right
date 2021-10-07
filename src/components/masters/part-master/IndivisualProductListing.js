@@ -124,7 +124,7 @@ class IndivisualProductListing extends Component {
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        console.log(cellValue, 'cellValuecellValuecellValue')
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
@@ -229,6 +229,22 @@ class IndivisualProductListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
+
+    /**
+    * @method trueFalseFormatter
+    * @description Renders buttons
+    */
+    trueFalseFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let val = ''
+        if (cellValue === true) {
+            val = 'Yes'
+        } else if (cellValue === false) {
+            val = 'No'
+        }
+        return val
+    }
+
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
     }
@@ -332,7 +348,7 @@ class IndivisualProductListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-
+        console.log(loggedInUserId(), 'loggedInUserId()loggedInUserId()loggedInUserId()loggedInUserId()loggedInUserId()')
         const onExportToCSV = (row) => {
             // ...
             let products = []
@@ -366,7 +382,8 @@ class IndivisualProductListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            trueFalseFormatter: this.trueFalseFormatter
         };
 
         return (
@@ -446,6 +463,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'trueFalseFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
