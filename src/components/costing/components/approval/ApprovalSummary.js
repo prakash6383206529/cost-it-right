@@ -385,14 +385,14 @@ function ApprovalSummary(props) {
                     <div className={'save-icon'}></div>
                     {'Approve'}
                   </button>
-                  {
+                  {/* {
                     showFinalLevelButtons &&
                     <button
                       type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                       <div className={'save-icon'}></div>
                       {'Approve & Push'}
                     </button>
-                  }
+                  } */}
                 </Fragment>
 
               </div>

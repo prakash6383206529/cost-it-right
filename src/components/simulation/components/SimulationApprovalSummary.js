@@ -12,7 +12,7 @@ import { getPlantSelectListByType, getTechnologySelectList } from '../../../acti
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -26,6 +26,9 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
+import { pushAPI } from '../../simulation/actions/Simulation'
+
+
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -65,7 +68,7 @@ function SimulationApprovalSummary(props) {
     const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
     const [status, setStatus] = useState('')
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(false)
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [noContent, setNoContent] = useState(false)
 
     const dispatch = useDispatch()
@@ -86,7 +89,7 @@ function SimulationApprovalSummary(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
+    const userLoggedIn = loggedInUserId()
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
     useEffect(() => {
@@ -101,7 +104,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -109,7 +112,7 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
             })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
@@ -506,6 +509,19 @@ function SimulationApprovalSummary(props) {
         return temp
     }
 
+    const rePush = () => {
+        let pushObj = {}
+        let temp = []
+        costingList && costingList.map(item => {
+            const vendor = item.VendorName.split('(')[1]
+            temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: userDetails().DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+        })
+        pushObj.LoggedInUserId = userLoggedIn
+        pushObj.AmmendentDataRequests = temp
+        dispatch(pushAPI(pushObj, () => { }))
+        setShowListing(true)
+    }
+
     return (
         <>
             {showListing === false &&
@@ -570,12 +586,12 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
-                                                <span className="d-block">{'121'}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Vendor Name:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
-                                            </th>
+                                            </th> */}
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -600,14 +616,14 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
                                                 <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
-                                            <th className="align-top">
+                                            {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
-                                                <span className="d-block">{'120'}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForAnnum}</span>
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
-                                                <span className="d-block">{'12001'}</span>
-                                            </th>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForTheQuarter}</span>
+                                            </th> */}
                                         </tr>
                                     </thead>
                                 </Table>
@@ -637,12 +653,12 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        {/* <Row >
+                        <Row >
                             <Col md="12">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata /> */}
+                        <Fgwiseimactdata />
 
                         {/* FG wise Impact section end */}
 
@@ -709,10 +725,11 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
 
                                                                 {
-                                                                    !String(SimulationTechnologyId) === EXCHNAGERATE &&
-                                                                    <AgGridColumn width={150} field="PlantCode" headerName='Plant Code' ></AgGridColumn>
+                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                    <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "PO Price Old"}></AgGridColumn>
                                                                 {
@@ -882,19 +899,19 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
 
-                    {/* {
-                        showPushButton &&
+                    {
+                        showPushButton && isSuccessfullyInsert === false &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
-                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => rePush()}>
                                         <div className={"save-icon"}></div>{" "}
-                                        {"Push"}
+                                        {"RePush"}
                                     </button>
                                 </Fragment>
                             </div>
                         </Row>
-                    } */}
+                    }
                 </>
                 // :
                 // <SimulationApprovalListing />

@@ -564,7 +564,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
-                      disabled={CostingViewMode || !IsCheckBoxDisabled ? true : false}
+                      disabled={CostingViewMode ? true : false}
                     />
                     <span
                       className=" before-box"

@@ -284,7 +284,7 @@ function Sheet(props) {
             TechnologyName: costData.TechnologyName,
             Density: rmRowData.Density,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
-            UOMForDimension: UOMDimension ? UOMDimension.label : '',
+            UOMForDimension: UOMDimension ? UOMDimension.label : '', // till here common
             Cavity: values.Cavity,
             Thickness: values.SheetThickness,
             LengthOfSheet: values.SheetLength,
@@ -298,6 +298,7 @@ function Sheet(props) {
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
+            //Common
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
             FinishWeight: getValues('FinishWeightOfSheet'),
             LoggedInUserId: loggedInUserId()

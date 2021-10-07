@@ -685,6 +685,12 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
 
+
+  // ApproveReject Drawer
+
+
+
+
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
   moduleSelectList: `${BASE_URL}/app-privilege-permission/get-module-select-list`,
@@ -857,6 +863,7 @@ export const API = {
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
+  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -868,9 +875,10 @@ export const API = {
   simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
   simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload-with-form-data`,
+  simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,
 
   //REPORT
-  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
+  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
 
 }
 
@@ -1326,6 +1334,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+export const GET_SELECTLIST_SIMULATION_TOKENS = 'GET_SELECTLIST_SIMULATION_TOKENS'
 
 
 //PRIVILEGE
@@ -1412,6 +1421,7 @@ export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_H
 export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMULATION'
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
+export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1687,3 +1697,5 @@ export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
 
 
+//approve reject drawer
+export const provisional = "Provisional"

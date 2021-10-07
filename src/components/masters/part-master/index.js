@@ -153,7 +153,7 @@ class PartMaster extends Component {
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                        Manage Assembly Part
+                                        Manage Assembly
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>

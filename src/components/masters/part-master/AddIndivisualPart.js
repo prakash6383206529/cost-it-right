@@ -436,7 +436,7 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <Field
-                              label="Product Group"
+                              label="Group Code"
                               name="ProductGroup"
                               placeholder={"Select"}
                               selection={

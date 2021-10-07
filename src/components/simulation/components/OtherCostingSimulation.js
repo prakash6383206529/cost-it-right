@@ -60,6 +60,10 @@ function OtherCostingSimulation(props) {
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
     const [tableData, setTableData] = useState([])
+    const [vendorIdState, setVendorIdState] = useState("")
+    const [simulationTypeState, setSimulationTypeState] = useState("")
+    const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
+
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -90,6 +94,13 @@ function OtherCostingSimulation(props) {
     const dataSet = (res) => {
         const tokenNo = res.data.Data.SimulationTokenNumber
         const Data = res.data.Data
+        var vendorId = Data.VendorId
+        var SimulationTechnologyId = Data.SimulationTechnologyId
+        var SimulationType = Data.SimulationType
+        setVendorIdState(vendorId)
+        setSimulationTechnologyIdState(SimulationTechnologyId)
+        setSimulationTypeState(SimulationType)
+
         Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
@@ -187,7 +198,7 @@ function OtherCostingSimulation(props) {
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning('This costing is already sent for approval through another token number.')
+            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {
@@ -536,7 +547,7 @@ function OtherCostingSimulation(props) {
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
                                                         title: CONSTANT.EMPTY_DATA,
-                                                        customClassName:'nodata-found-container'
+                                                        customClassName: 'nodata-found-container'
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                     suppressRowClickSelection={true}
@@ -550,6 +561,7 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
                                                     {
                                                         String(master) === EXCHNAGERATE &&
                                                         <>
@@ -626,6 +638,10 @@ function OtherCostingSimulation(props) {
                                 master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
+                                vendorId={vendorIdState}
+                                SimulationTechnologyId={SimulationTechnologyIdState}
+                                SimulationType={simulationTypeState}
+
                             // isSaveDone={isSaveDone}
                             />}
 

@@ -36,6 +36,7 @@ function RMApproval(props) {
 
     useEffect(() => {
         getTableData()
+        
     }, [])
 
 
@@ -345,6 +346,7 @@ function RMApproval(props) {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     suppressRowClickSelection={true}

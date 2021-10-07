@@ -727,10 +727,10 @@ a:hover {
       }
       .ag-grid-wrapper{
         min-height: calc(100vh - 300px);
-        height: calc(100vh - 300px) !important;
+        // height: calc(100vh - 300px) !important;
         &.add-volume-table{
           min-height: calc(100vh - 250px);
-          height: calc(100vh - 250px) !important;
+          // height: calc(100vh - 250px) !important;
         }
         &.rminsights_table{
           min-height: auto;
@@ -740,8 +740,9 @@ a:hover {
       .drawer-wrapper{
         .ag-grid-wrapper{
           min-height: calc(100vh - 240px);
-          height: calc(100vh - 240px) !important;
+          // height: calc(100vh - 240px) !important;
         }
+        
       }
       .search-user-block{
         // position: relative;
@@ -868,7 +869,7 @@ a:hover {
       &.no-tab-page{
         .ag-grid-wrapper{
           min-height: calc(100vh - 295px);
-          height: calc(100vh - 295px) !important;
+          // height: calc(100vh - 295px) !important;
         }
       }
 
@@ -893,7 +894,7 @@ a:hover {
       .sm-edit-page{
         .ag-grid-wrapper{
           min-height: calc(100vh - 274px);
-          height: calc(100vh - 274px) !important;
+          // height: calc(100vh - 274px) !important;
         }
       }  
     }
@@ -2907,8 +2908,9 @@ body {
       }
       &.no-tab-page{
         .ag-grid-wrapper{
-          min-height: auto;
-          height: auto !important;
+        //  min-height: auto; //code comment by banti 
+         min-height: 470px;
+         height: auto !important;
         }
       }
       .search-user-block{
@@ -2944,7 +2946,7 @@ body {
       .sm-edit-page{
         .ag-grid-wrapper{
           min-height: calc(100vh - 213px);
-          height: calc(100vh - 213px) !important;
+          // height: calc(100vh - 213px) !important;
         }
       }  
     }
@@ -2980,6 +2982,9 @@ body {
 // ag-grid-react end
 
 }
+.ag-overlay-loading-center {
+  display: none;
+}
 .graph-box  {
   .ag-grid-react {
     .ag-center-cols-clipper {
@@ -2989,4 +2994,21 @@ body {
 }
 .select-all-label {
   padding-left: 13px;
+}
+.impacted-min-height {
+  .add-min-height.sm-edit-page {
+  .ag-grid-wrapper {
+   
+    // height: calc(100vh - 500px);
+  }
+}
+}
+.impacted-min-height {
+:not(.content-page) :not(.tab-pane) .ag-grid-react .add-min-height.sm-edit-page .ag-grid-wrapper {
+  min-height: auto !important;
+  height: auto !important;
+}
+.add-min-height .ag-layout-auto-height .ag-center-cols-clipper {
+  min-height: 60px;
+}
 }
