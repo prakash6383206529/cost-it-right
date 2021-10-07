@@ -350,7 +350,7 @@ function RMSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-
+        // window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
     };
 

@@ -4499,7 +4499,7 @@ body{
 .impacted-min-height {
   .add-min-height {
     min-height: calc(100vh - 350px);
-    height: calc(100vh - 350px);
+    // height: calc(100vh - 350px);
   }
 }
 .nodata-found-container {
@@ -4755,7 +4755,7 @@ body{
   .impacted-min-height {
     .add-min-height {
       min-height: calc(100vh - 260px);
-      height: calc(100vh - 260px);
+      // height: calc(100vh - 260px);
     }
   }
   .tooltip-inner{
