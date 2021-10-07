@@ -60,6 +60,11 @@ function OtherCostingSimulation(props) {
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
     const [tableData, setTableData] = useState([])
+    const [vendorIdState, setVendorIdState] = useState("")
+    const [simulationTypeState, setSimulationTypeState] = useState("")
+    const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
+
+
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
