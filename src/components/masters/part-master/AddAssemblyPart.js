@@ -460,7 +460,7 @@ class AddAssemblyPart extends Component {
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
-    let productArray = ProductGroup && ProductGroup.map((item) => ({ ProductId: item.Value, ProductGroupCode: item.Text }))
+    let productArray = ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text }))
     let childPartArray = [];
 
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
@@ -521,7 +521,7 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
         IsForcefulUpdated: true,
         BOMLevelCount: BOMLevelCount,
-        ProductList: productArray
+        GroupCodeList: productArray
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -570,7 +570,7 @@ class AddAssemblyPart extends Component {
         Attachements: files,
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
-        ProductList: productArray
+        GroupCodeList: productArray
       }
 
       this.props.reset()
