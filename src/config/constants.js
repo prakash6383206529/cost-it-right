@@ -878,7 +878,7 @@ export const API = {
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,
 
   //REPORT
-  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
+  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
 }
 
