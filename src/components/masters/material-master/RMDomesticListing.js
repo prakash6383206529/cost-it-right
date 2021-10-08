@@ -136,7 +136,7 @@ function RMDomesticListing(props) {
 
 
     const getFilterRMData = () => {
-        if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+        if (isSimulation) {
             return getFilteredRMData(rmDataList)
         } else {
             return rmDataList
@@ -946,7 +946,7 @@ function RMDomesticListing(props) {
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
                             >
-                                <AgGridColumn field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                 <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                 <AgGridColumn field="RMGrade"></AgGridColumn>

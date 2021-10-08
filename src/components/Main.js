@@ -56,6 +56,7 @@ import SimulationApprovalSummary from './simulation/components/SimulationApprova
 import productMaster from './masters/product-master'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
+import NewReport from './report/NewReport'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -290,7 +291,7 @@ class Main extends Component {
                 )}
 
               <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={`${isLogin ? `middleContainer ${Simulation ? 'h-auto': ''}` : '' }`}>
+                <div className={`${isLogin ? `middleContainer ${Simulation ? 'h-auto' : ''}` : ''}`}>
                   <Switch>
 
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
@@ -372,6 +373,9 @@ class Main extends Component {
                     <Route path="/simulation" component={Simulation} />
 
                     {/* <Route path="/simulation-upload" component={SimulationUpload} /> */}
+
+                    <Route path="/new-report" component={NewReport} />
+
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 
