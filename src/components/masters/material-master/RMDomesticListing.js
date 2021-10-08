@@ -136,7 +136,7 @@ function RMDomesticListing(props) {
 
 
     const getFilterRMData = () => {
-        if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+        if (isSimulation) {
             return getFilteredRMData(rmDataList)
         } else {
             return rmDataList
@@ -968,6 +968,7 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                <AgGridColumn field="IsRMAssociated"></AgGridColumn>
 
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">

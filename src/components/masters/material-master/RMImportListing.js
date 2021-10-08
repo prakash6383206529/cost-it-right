@@ -137,7 +137,7 @@ function RMImportListing(props) {
 
 
   const getFilterRMData = () => {
-    if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+    if (isSimulation) {
       return getFilteredRMData(rmDataList)
     } else {
       return rmDataList
