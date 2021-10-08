@@ -289,7 +289,7 @@ function AttachmentSec(props) {
                                     // onSubmit={handleImapctSubmit}
                                     accept="*"
                                     initialFiles={initialFiles}
-                                    maxFiles={4}
+                                    maxFiles={2}
                                     maxSizeBytes={2000000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
@@ -375,7 +375,7 @@ function AttachmentSec(props) {
                                     //onSubmit={this.handleSubmit}
                                     accept="*"
                                     initialFiles={initialFiles}
-                                    maxFiles={4}
+                                    maxFiles={2}
                                     maxSizeBytes={2000000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
@@ -462,7 +462,7 @@ function AttachmentSec(props) {
                                     //onSubmit={this.handleSubmit}
                                     accept="*"
                                     initialFiles={initialFiles}
-                                    maxFiles={4}
+                                    maxFiles={10}
                                     maxSizeBytes={2000000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
@@ -548,7 +548,7 @@ function AttachmentSec(props) {
                                     //onSubmit={this.handleSubmit}
                                     accept="*"
                                     initialFiles={initialFiles}
-                                    maxFiles={4}
+                                    maxFiles={10}
                                     maxSizeBytes={2000000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
