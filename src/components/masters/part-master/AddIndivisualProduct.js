@@ -235,7 +235,7 @@ class AddIndivisualProduct extends Component {
                 ECNNumber: values.ECNNumber,
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
-                GroupCode: values.GroupCode,
+                ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
                 EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
@@ -544,7 +544,7 @@ class AddIndivisualProduct extends Component {
                                                     <Col md="3">
                                                         <label>
                                                             Upload Files (upload up to 3 files)
-                                </label>
+                                                        </label>
                                                         {this.state.files &&
                                                             this.state.files.length >= 3 ? (
                                                             <div class="alert alert-danger" role="alert">
@@ -572,8 +572,8 @@ class AddIndivisualProduct extends Component {
                                                                                     Browse
                                                                                 </span>
                                                                                 <br />
-                                                                                      file to upload
-                                                                             </span>
+                                                                                file to upload
+                                                                            </span>
                                                                         </div>
                                                                     )
                                                                 }
