@@ -686,10 +686,10 @@ export function getProductData(ProductId, callback) {
  * @method deletePart
  * @description delete part
  */
-export function deleteProduct(obj, callback) {
+export function deleteProduct(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProduct}`, obj, headers)
+        axios.delete(`${API.deleteProduct}?ProductId=${Id}&LoggedInUserId=${loggedInUserId()}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {

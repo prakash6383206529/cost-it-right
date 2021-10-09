@@ -109,10 +109,10 @@ class IndivisualProductListing extends Component {
             ProductId: ID,
             LoggedInUserId: loggedInUserId()
         }
-        this.props.deleteProduct(obj, (res) => {
+        this.props.deleteProduct(ID, (res) => {
             // if (res.data.Result === true) {
             //     toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-            //     // this.getTableListData();
+            //     this.getTableListData();
             // }
         });
     }
@@ -229,6 +229,22 @@ class IndivisualProductListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
+
+    /**
+    * @method impactCalculationFormatter
+    * @description Renders buttons
+    */
+    impactCalculationFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let val = ''
+        if (cellValue === true) {
+            val = 'Yes'
+        } else if (cellValue === false) {
+            val = 'No'
+        }
+        return val
+    }
+
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
     }
@@ -366,7 +382,8 @@ class IndivisualProductListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            impactCalculationFormatter: this.impactCalculationFormatter
         };
 
         return (
@@ -445,6 +462,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
