@@ -10,7 +10,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
-import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
+import { CLIENT, Clientmaster, CUSTOMER, MASTERS } from '../../../config/constants';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -73,7 +73,7 @@ class ClientListing extends Component {
     applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
-            const accessData = Data && Data.Pages.find(el => el.PageName === CLIENT)
+            const accessData = Data && Data.Pages.find(el => el.PageName === CUSTOMER)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {

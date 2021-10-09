@@ -1483,6 +1483,7 @@ export const PART = 'Part'
 export const MACHINE = 'Machine'
 export const VENDOR = 'Vendor'
 export const CLIENT = 'Client'
+export const CUSTOMER = 'Customer'
 export const PLANT = 'Plant'
 
 export const PRODUCT = 'Product'
