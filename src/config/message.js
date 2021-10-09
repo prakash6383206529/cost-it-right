@@ -15,6 +15,7 @@ export const MESSAGES = {
   UPDATE_PRODUCT_SUCESS: 'Product updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message has been sent except the user',
   CONFIRM_DELETE: 'Are you sure you want to delete this part?',
+  CONFIRM_PRODUCT_DELETE: 'Are you sure you want to delete this product?',
 
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Vendor added successfully',
