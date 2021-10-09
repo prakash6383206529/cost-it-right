@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
@@ -6,12 +6,12 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { Col, Container, Row } from "reactstrap";
 import { DashboardMaster } from "../../config/constants";
 import { Field, reduxForm } from "redux-form";
-import {  searchableSelect} from '../layout/FormInputs'
+import { searchableSelect } from '../layout/FormInputs'
 import { Costmovementgraph } from "./CostMovementGraph";
 import { Costcomparisonplantgraph } from "./CostComparisonPlantGraph";
-import {Suppliercontributiongraph} from './SupplierContributionGraph';
+import { Suppliercontributiongraph } from './SupplierContributionGraph';
 import { Costratiograph } from "./CostRatioGraph";
-import {Costratiobuyinggraph} from './CostRatioBuyingGraph';
+import { Costratiobuyinggraph } from './CostRatioBuyingGraph';
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 export function Dashboardwithgraph(props) {
@@ -19,19 +19,19 @@ export function Dashboardwithgraph(props) {
 
     const [acc1, setAcc1] = useState(true)
     const [acc2, setAcc2] = useState(false)
-    
-    useEffect(() => {
-        props.getMenuByUser(loggedInUserId(), () => {
-          if (menusData !== undefined) {
-            reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
-            props.getLeftMenu(
-              menusData[0].ModuleId,
-              loggedInUserId(),
-              (res) => {}
-            );
-          }
-        });
-      })
+
+    // useEffect(() => {
+    //     // props.getMenuByUser(loggedInUserId(), () => {
+    //     //     if (menusData !== undefined) {
+    //     //         reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
+    //     //         // props.getLeftMenu(
+    //     //         //   menusData[0].ModuleId,
+    //     //         //   loggedInUserId(),
+    //     //         //   (res) => {}
+    //     //         // );
+    //     //     }
+    //     // });
+    // })
 
     return (
         <>
@@ -57,7 +57,7 @@ export function Dashboardwithgraph(props) {
                                     </button>
                                 </Col>
                             </Row>
-                            {acc1 && <ApprovalListing isApproval={true}/> }
+                            {acc1 && <ApprovalListing isApproval={true} />}
                         </div>
                     </Row>
 
@@ -75,7 +75,7 @@ export function Dashboardwithgraph(props) {
                                     </button>
                                 </Col>
                             </Row>
-                            {acc2 && <SimulationApprovalListing isSmApprovalListing={true}/>}
+                            {acc2 && <SimulationApprovalListing isSmApprovalListing={true} />}
                         </div>
                     </Row>
 
@@ -83,29 +83,29 @@ export function Dashboardwithgraph(props) {
                         <div className="graph-box w-100 d-flex pb-0">
                             <Col md="3">
                                 <Field
-                                name="Business"
-                                type="text"
-                                label="Business"
-                                component={searchableSelect}
-                                placeholder={"Select"}              
+                                    name="Business"
+                                    type="text"
+                                    label="Business"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
                                 />
                             </Col>
                             <Col md="3">
                                 <Field
-                                name="Plant"
-                                type="text"
-                                label="Plant"
-                                component={searchableSelect}
-                                placeholder={"Select"}              
+                                    name="Plant"
+                                    type="text"
+                                    label="Plant"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
                                 />
                             </Col>
                             <Col md="3">
                                 <Field
-                                name="Part Number"
-                                type="text"
-                                label="Part Number"
-                                component={searchableSelect}
-                                placeholder={"Select"}              
+                                    name="Part Number"
+                                    type="text"
+                                    label="Part Number"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
                                 />
                             </Col>
                         </div>
@@ -114,13 +114,13 @@ export function Dashboardwithgraph(props) {
                         <Col md="6">
                             <div className="graph-box">
                                 <h3 className="mb-3">Cost Movement by Cost Drivers</h3>
-                                <Costmovementgraph/>
+                                <Costmovementgraph />
                             </div>
                         </Col>
                         <Col md="6">
                             <div className="graph-box">
                                 <h3 className="mb-3">Cost Comparison by Plant</h3>
-                                <Costcomparisonplantgraph/>
+                                <Costcomparisonplantgraph />
                             </div>
                         </Col>
                     </Row>
@@ -128,19 +128,19 @@ export function Dashboardwithgraph(props) {
                         <Col md="3">
                             <div className="graph-box">
                                 <h3 className="mb-3">Supplier Contribution(SOB)</h3>
-                                <Suppliercontributiongraph/>
+                                <Suppliercontributiongraph />
                             </div>
                         </Col>
                         <Col md="3">
                             <div className="graph-box">
                                 <h3 className="mb-3">Cost Ratio(PFS)</h3>
-                                <Costratiograph/>
+                                <Costratiograph />
                             </div>
                         </Col>
                         <Col md="6">
                             <div className="graph-box">
                                 <h3 className="mb-3">Cost Ratio(Buying)</h3>
-                                <Costratiobuyinggraph/>
+                                <Costratiobuyinggraph />
                             </div>
                         </Col>
                     </Row>
@@ -153,11 +153,11 @@ export function Dashboardwithgraph(props) {
 function mapStateToProps({ auth }) {
     const { menusData } = auth;
     return { menusData };
-  }
+}
 
 export default connect(mapStateToProps, {
     getMenuByUser,
-  })(reduxForm({
+})(reduxForm({
     form: 'Dashboardwithgraph',
     enableReinitialize: true,
-  })(Dashboardwithgraph));
+})(Dashboardwithgraph));

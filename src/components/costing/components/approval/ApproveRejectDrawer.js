@@ -18,14 +18,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
+import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
+import { provisional } from '../../../../config/constants'
+
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, Attachements } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
+  const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
     mode: 'onChange',
@@ -37,7 +41,9 @@ function ApproveRejectDrawer(props) {
   const [reason, setReason] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
+  const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
   const [showError, setShowError] = useState(false)
+  const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
@@ -45,6 +51,7 @@ function ApproveRejectDrawer(props) {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
+
 
 
   // const simulationDeptList = useSelector((state)=> state.simulation)
@@ -123,12 +130,27 @@ function ApproveRejectDrawer(props) {
         setFiles(files)
         setIsOpen(!IsOpen)
       })
+
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
+        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+      }
     }
 
+    if (SimulationType !== null && SimulationType === provisional) {
+      setTokenDropdown(false)
+    }
 
     // DO IT AFTER GETTING DATA
   }, [])
 
+
+
+
+  const handleTokenDropDownChange = (value) => {
+
+    setLinkingTokenDropDown(value)
+
+  }
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
@@ -221,6 +243,7 @@ function ApproveRejectDrawer(props) {
           Remark: remark,
           IsApproved: type === 'Approve' ? true : false,
           IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
+
         })
       })
       if (type === 'Approve') {
@@ -265,6 +288,7 @@ function ApproveRejectDrawer(props) {
       objs.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       objs.IsFinalApprovalProcess = false
       objs.SimulationApprovalProcessSummaryId = simulationDetail.SimulationApprovalProcessSummaryId
+      //objs.LinkedTokenNumber = linkingTokenDropDown
 
       if (type === 'Sender') {
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
@@ -291,6 +315,9 @@ function ApproveRejectDrawer(props) {
         senderObj.LoggedInUserId = userLoggedIn
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.Attachements = updatedFiles
+        senderObj.LinkedTokenNumber = linkingTokenDropDown.value
+        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
+        console.log('senderObj: ', senderObj);
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -345,6 +372,22 @@ function ApproveRejectDrawer(props) {
       })
       return tempDropdownList
     }
+
+
+    if (label === 'Link') {
+      TokensList && TokensList.map((item) => {
+
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+
+
+      })
+      return tempDropdownList
+    }
+
+
+
   }
 
   const handleDepartmentChange = (value) => {
@@ -647,18 +690,48 @@ function ApproveRejectDrawer(props) {
                         </div>
                       </>
                     }
-                    {/* <Row className="px-3">
-                      <Col md="12">
-                        <div className="left-border">{"Push Drawer"}</div>
-                      </Col>
-                      <Col md="12">
 
-                        <PushSection />
-                      </Col>
-                    </Row> */}
 
                   </>
                 }
+
+
+                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' &&
+
+                  < div className="input-group form-group col-md-12">
+
+                    <SearchableSelectHookForm
+                      label={'Link Token Number'}
+                      name={'Link'}
+                      placeholder={'select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: false }}
+                      register={register}
+                      // defaultValue={technology.length !== 0 ? technology : ''}
+                      options={renderDropdownListing('Link')}
+                      mandatory={false}
+                      handleChange={handleTokenDropDownChange}
+                      errors={errors.Masters}
+                      customClassName="mb-0"
+                    />
+
+
+
+                  </div>
+                }
+
+
+
+
+
+
+
+
+
+
+
+
                 <div className="input-group form-group col-md-12">
                   <TextAreaHookForm
                     label="Remark"
@@ -711,8 +784,8 @@ function ApproveRejectDrawer(props) {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">Browse</span>
                                       <br />
-                              file to upload
-                          </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
@@ -782,15 +855,17 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
       </Drawer>
-      {openPushButton && (
-        <PushButtonDrawer
-          isOpen={openPushButton}
-          closeDrawer={closePushButton}
-          approvalData={[approvalData]}
-          dataSend={dataSend}
-          anchor={'right'}
-        />
-      )}
+      {
+        openPushButton && (
+          <PushButtonDrawer
+            isOpen={openPushButton}
+            closeDrawer={closePushButton}
+            approvalData={[approvalData]}
+            dataSend={dataSend}
+            anchor={'right'}
+          />
+        )
+      }
     </>
   )
 }

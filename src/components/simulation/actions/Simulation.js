@@ -14,7 +14,8 @@ import {
     config,
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
-    GET_SELECTED_COSTING_STATUS
+    GET_SELECTED_COSTING_STATUS,
+    GET_SELECTLIST_SIMULATION_TOKENS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -201,7 +202,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
 
 export function getSimulationApprovalList(filterData, callback) {
     return (dispatch) => {
-        const queryParameter = `logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
+        const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
         request.then((response) => {
             if (response.data.Result) {
@@ -255,6 +256,37 @@ export function getSelectListOfSimulationApplicability(callback) {
         });
     };
 }
+
+
+
+
+export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParameter = `vendorId=${vendorId}`
+        const queryParameter1 = `simulationtechnologyId=${simulationTechnologyId}`
+        const request = axios.get(`${API.getSelectListOfSimulationLinkingTokens}?${queryParameter}&${queryParameter1}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTLIST_SIMULATION_TOKENS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+
+
+}
+
+
+
 
 export function saveSimulationForRawMaterial(data, callback) {
     return (dispatch) => {

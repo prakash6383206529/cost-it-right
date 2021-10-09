@@ -9,6 +9,7 @@ import {
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
+    GET_SELECTLIST_SIMULATION_TOKENS,
 } from '../../../config/constants';
 
 const initialState = {
@@ -70,6 +71,18 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 approvalSimulatedCostingSummary: action.payload
             }
+
+        case GET_SELECTLIST_SIMULATION_TOKENS:
+            return {
+                ...state,
+                loading: false,
+                TokensList: action.payload
+            }
+
+
+
+
+
         default:
             return state;
     }

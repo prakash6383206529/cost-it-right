@@ -11,7 +11,7 @@ import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { DRAFT, EMPTY_GUID } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID, APPROVED } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
@@ -21,9 +21,12 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
+import { getConfigurationKey } from '../../../helper'
+
 const gridOptions = {};
 
 function SimulationApprovalListing(props) {
+    const { isDashboard } = props
     const loggedUser = loggedInUserId()
     const [shown, setshown] = useState(false)
 
@@ -77,6 +80,7 @@ function SimulationApprovalListing(props) {
             simulated_by: createdBy,
             requestedBy: requestedBy,
             status: status,
+            isDashboard: isDashboard ?? false
             // partNo: partNo,
             // createdBy: createdBy,
         }
@@ -191,6 +195,7 @@ function SimulationApprovalListing(props) {
 
     const buttonFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <>
                 <button className="View" type={'button'} onClick={() => viewDetails(row)} />
@@ -201,7 +206,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.DisplayStatus === 'Draft') {
+        if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -236,6 +241,26 @@ function SimulationApprovalListing(props) {
     const requestedByFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
+    }
+
+    const conditionFormatter = (props) => {
+
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        const status = props.node.data.DisplayStatus;
+
+        if (status === DRAFT) {
+            return `Y`;
+        }
+        else if (status === APPROVED) {
+            return `R`
+        } else {
+            return `U`
+        }
+
+
+
+
     }
 
     const renderVendor = (props) => {
@@ -427,7 +452,8 @@ function SimulationApprovalListing(props) {
         buttonFormatter: buttonFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        reasonFormatter: reasonFormatter
+        reasonFormatter: reasonFormatter,
+        conditionFormatter: conditionFormatter
     };
 
 
@@ -491,6 +517,13 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+
+
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' cellRenderer='conditionFormatter' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
+
+
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
