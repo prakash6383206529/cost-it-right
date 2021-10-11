@@ -246,19 +246,18 @@ class IndivisualProductListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
-        })
+        this.getTableListData()
+        this.setState({ isBulkUpload: false })
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
+    // closeBulkUploadDrawer = () => {
+    //     this.setState({ isBulkUpload: false }, () => {
+    //     })
+    // }
 
 
 
