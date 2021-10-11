@@ -211,6 +211,25 @@ export function partComponentBulkUpload(data, callback) {
     };
 }
 
+
+// productComponentBulkUpload
+
+export function productComponentBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.productComponentBulkUpload, data, headers);
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+
+
+
 /**
  * @method activeInactivePartStatus
  * @description UPDATE PART STATUS ACTIVE/INACTIVE
