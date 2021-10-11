@@ -27,13 +27,14 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import { pushAPI } from '../../simulation/actions/Simulation'
+import AttachmentSec from '../../costing/components/approval/AttachmentSec';
 
 
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master } = props;
+    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
@@ -791,6 +792,9 @@ function SimulationApprovalSummary(props) {
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
+                        </Row>
+                        <Row>
+                         <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} /> 
                         </Row>
                         {/* Costing Summary page here */}
 
