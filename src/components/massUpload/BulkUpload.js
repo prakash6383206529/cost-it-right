@@ -109,7 +109,6 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
-
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
@@ -282,7 +281,6 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'Machine' && costingHead === 'VBC') {
-
             this.props.bulkUploadMachineVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });

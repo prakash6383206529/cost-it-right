@@ -96,7 +96,6 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-
             <Row className="mx-0">
               <Col md="12">
                 <hr />

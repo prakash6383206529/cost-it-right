@@ -325,7 +325,6 @@ class Level extends Component {
           this.setState({ isLoader: false })
         })
       }
-
     }
 
     if (isShowMappingForm) {

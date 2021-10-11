@@ -219,7 +219,7 @@ class BOMUpload extends Component {
                     type="submit"
                     className="submit-button save-btn" >
                     <div className={"save-icon"}></div>
-                     {isEditFlag ? 'Update' : 'Save'}
+                    {isEditFlag ? 'Update' : 'Save'}
                   </button>
                 </div>
               </Row>

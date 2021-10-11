@@ -100,7 +100,6 @@ class UsersListing extends Component {
 				})
 			}
 		})
-
 	}
 
 
@@ -409,7 +408,6 @@ class UsersListing extends Component {
 			this.getUsersListData(filterDepartment, filterRole)
 		})
 	}
-
 	formToggle = () => {
 		this.props.formToggle()
 	}

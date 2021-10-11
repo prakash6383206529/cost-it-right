@@ -333,7 +333,6 @@ function CostingHeaderTabs(props) {
           </TabContent>
         </div>
       </div >
-
       {IsOpenViewHirarchy && <BOMViewer
         isOpen={IsOpenViewHirarchy}
         closeDrawer={closeVisualDrawer}
@@ -343,7 +342,6 @@ function CostingHeaderTabs(props) {
         isFromVishualAd={true}
         NewAddedLevelOneChilds={[]}
       />}
-
     </ >
   );
 }

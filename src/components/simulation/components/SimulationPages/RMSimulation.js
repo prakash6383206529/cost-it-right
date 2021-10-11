@@ -59,7 +59,6 @@ function RMSimulation(props) {
     const verifySimulation = () => {
         let basicRateCount = 0
         let basicScrapCount = 0
-
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
@@ -288,7 +287,6 @@ function RMSimulation(props) {
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
-
 
     const runSimulation = () => {
         let basicRateCount = 0
@@ -548,6 +546,5 @@ function RMSimulation(props) {
         </div>
     );
 }
-
 
 export default RMSimulation;

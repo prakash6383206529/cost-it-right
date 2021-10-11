@@ -82,4 +82,3 @@ export default function SimulationReducer(state = initialState, action) {
             return state;
     }
 }
-

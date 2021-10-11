@@ -326,9 +326,9 @@ class BOMViewer extends Component {
                                 })
                               }
                             >
-                              
+
                               <div className="trashred-icon"></div>
-                              
+
                               {"Delete"}
                             </button>
                             <button

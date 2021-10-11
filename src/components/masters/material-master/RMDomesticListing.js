@@ -550,7 +550,6 @@ class RMDomesticListing extends Component {
         }, () => {
             this.getInitialRange()
             this.getDataList(null)
-
             this.props.getRawMaterialFilterSelectList(() => { })
         })
 
@@ -584,7 +583,6 @@ class RMDomesticListing extends Component {
         };
         return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
-
     handleHeadChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ costingHead: newValue, });

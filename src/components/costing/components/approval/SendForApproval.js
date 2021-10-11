@@ -743,7 +743,6 @@ const SendForApproval = (props) => {
                         />
                       </Col>
                     </Row>
-
                 }
                 <Row className="mb-4">
                   <Col

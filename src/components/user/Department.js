@@ -115,7 +115,6 @@ class Department extends Component {
 			})
 
 		} else {
-
 			let obj = {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
@@ -246,8 +245,8 @@ class Department extends Component {
 													type="submit"
 													disabled={isSubmitted ? true : false}
 													className="user-btn save-btn"
-												>	
-												<div className={"save-icon"}></div>
+												>
+													<div className={"save-icon"}></div>
 													{isEditFlag ? 'Update' : 'Save'}
 												</button>
 											</div>

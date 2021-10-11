@@ -828,7 +828,6 @@ function RawMaterialCost(props) {
                   <tbody>
                     {gridData &&
                       gridData.map((item, index) => {
-
                         return (
                           <tr key={index}>
                             <td>{item.RMName}</td>

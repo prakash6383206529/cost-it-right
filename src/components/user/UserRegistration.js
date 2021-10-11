@@ -1197,7 +1197,6 @@ class UserRegistration extends Component {
       })
     }
   }
-
   handleKeyDown = function (e, cb) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();

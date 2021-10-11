@@ -1,4 +1,4 @@
-import { userDetails } from "./auth";
+import { userDetails } from "./auth"
 
 export function formatLoginResult(res) {
     if (res) {

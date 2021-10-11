@@ -396,7 +396,6 @@ class MachineRateListing extends Component {
         const processId = processName ? processName.value : '';
         const plantId = plant ? plant.value : '';
 
-
         this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
     }
 

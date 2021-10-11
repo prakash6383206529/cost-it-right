@@ -220,7 +220,6 @@ class AddOperation extends Component {
   */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-
       this.setState({ UOM: newValue, })
     } else {
       this.setState({ UOM: [] })

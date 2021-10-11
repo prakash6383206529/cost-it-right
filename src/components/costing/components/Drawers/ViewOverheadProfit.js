@@ -38,7 +38,6 @@ function ViewOverheadProfit(props) {
     }
     props.closeDrawer('')
   }
-
   return (
     <>
       <Drawer

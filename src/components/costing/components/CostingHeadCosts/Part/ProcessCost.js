@@ -696,4 +696,3 @@ function ProcessCost(props) {
 }
 
 export default ProcessCost
-

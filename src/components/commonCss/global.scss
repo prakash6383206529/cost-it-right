@@ -1,6 +1,6 @@
 @import './cssVariable.scss';
 @import './style.scss';
-// @import '../../../public/assets/css/css2.css';
+// @import '/public/assets/css/css2.css';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
 // @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
 // @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap");
@@ -370,9 +370,9 @@ a:hover {
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  img {
-    width: 16px;
-    height: auto;
+  img,.cancel-icon-white{
+    width: 11px;
+    height: 11px;
     object-fit: contain;
   }
   &:hover{
@@ -1020,7 +1020,7 @@ a:hover {
 
     .crud-label {
       font-size: $font-14;
-      vertical-align: bottom !important;
+      vertical-align: top !important;
     }
 
     th,
@@ -2397,6 +2397,10 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 5px 0;
+  >a{
+    padding-right: 10px;
+    word-break: break-word;
+  }
 }
 .attachment-row{
   border-bottom: 1px solid #e6e3e3;
@@ -2607,7 +2611,7 @@ input:disabled,
     }
   }
 }
-td,.ag-cell {
+td,.ag-cell{
   .Error,
   .Pushed,
   .Draft,
@@ -2802,8 +2806,10 @@ body {
   .drawer-wrapper {
     width: calc(486px * 80 / 100);
   }
-  .drawer-1500px {
-    width: 100%;
+  :not(.view-conversion-cost-drawer),.view-conversion-cost-drawer{
+    .drawer-1500px {
+      width: 100%;
+    }
   }
   .drawer-700px {
     width: 100%;

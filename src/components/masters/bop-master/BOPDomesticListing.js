@@ -199,7 +199,6 @@ class BOPDomesticListing extends Component {
     }
 
 
-
     /**
     * @method buttonFormatter
     * @description Renders buttons

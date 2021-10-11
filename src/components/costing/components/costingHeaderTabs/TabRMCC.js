@@ -663,7 +663,6 @@ function TabRMCC(props) {
     dispatch(setRMCCData(arr, () => { }))
   }
 
-
   const setOperationCostInDataList = (operationGrid, params, arr) => {
     let tempArr = [];
     try {

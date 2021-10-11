@@ -26,6 +26,7 @@ import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, 
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -155,7 +156,6 @@ function Simulation(props) {
 
     const renderListing = (label) => {
         let temp = []
-
         if (label === 'masters') {
             masterList && masterList.map((item) => {
                 if (item.Value === '0') return false
@@ -320,7 +320,6 @@ function Simulation(props) {
 
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
-
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">

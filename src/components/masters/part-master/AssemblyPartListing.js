@@ -164,7 +164,6 @@ class AssemblyPartListing extends Component {
         this.setState({ isOpenVisualDrawer: false, visualAdId: '', })
     }
 
-
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -203,7 +202,6 @@ class AssemblyPartListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-
     }
 
     /**

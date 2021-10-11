@@ -184,7 +184,6 @@ class BOPImportListing extends Component {
     handleVendorChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ vendor: newValue });
-
         } else {
             this.setState({ vendor: [], });
 

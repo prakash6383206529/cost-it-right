@@ -310,7 +310,7 @@ function LossStandardTable(props) {
             <thead>
               <tr>
                 <th>{`Type of Loss`}</th>
-                <th>{`Lost(%)`}</th>
+                <th>{`Loss(%)`}</th>
                 <th>{`Loss Weight`}</th>
                 <th>{`Actions`}</th>
               </tr>

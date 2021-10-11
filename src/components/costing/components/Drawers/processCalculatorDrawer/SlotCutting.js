@@ -186,14 +186,14 @@ function SlotCutting(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="12">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutter Diameter(mm)`}
                         name={'cutterDiameter'}
@@ -218,7 +218,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Length of Area Cut(mm)`}
                         name={'cutLengthOfArea'}
@@ -243,7 +243,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Width of area to cut(mm)`}
                         name={'areaWidth'}
@@ -268,7 +268,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of slots/T-nut entry`}
                         name={'slotNo'}
@@ -296,7 +296,7 @@ function SlotCutting(props) {
                   </Row>
 
                   <Row>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
@@ -312,7 +312,7 @@ function SlotCutting(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Material To be removed`}
                         name={'removedMaterial'}
@@ -337,7 +337,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Depth of cut(mm)`}
                         name={'doc'}
@@ -362,7 +362,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label="No. of Passes"
                         name={'numberOfPasses'}
@@ -386,7 +386,7 @@ function SlotCutting(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
@@ -411,7 +411,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
@@ -427,7 +427,7 @@ function SlotCutting(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`No. of Teeth on Cutter`}
                         name={'toothNo'}
@@ -443,7 +443,7 @@ function SlotCutting(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/ Tooth`}
                         name={'toothFeed'}
@@ -467,7 +467,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
@@ -483,7 +483,7 @@ function SlotCutting(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
@@ -507,7 +507,7 @@ function SlotCutting(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
@@ -523,7 +523,7 @@ function SlotCutting(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
@@ -548,7 +548,7 @@ function SlotCutting(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                       <TextFieldHookForm
                         label={`Additional Time(min) `}
                         name={'clampingValue'}

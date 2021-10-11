@@ -6,7 +6,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import Dropzone from 'react-dropzone-uploader'
+import Dropzone from 'react-dropzone-uploader';
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
 import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../config/masterData'
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
