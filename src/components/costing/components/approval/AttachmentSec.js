@@ -29,20 +29,24 @@ function AttachmentSec(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [initialFiles, setInitialFiles] = useState([]);
 
+    const { attachmentsData } = useSelector((state) => state.simulation)
+
 
     useEffect(() => {
         let obj = [...files, ...supplierFiles, ...invoiceFiles, ...otherFiles, ...attachmentFiles]
-        dispatch(setAttachmentFileData(obj, () => { }))
+        // dispatch(setAttachmentFileData(obj, () => { }))
     }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
 
+    //  const setAttachmentForSimulation = 
 
     useEffect(() => {
-        Attachements && Attachements.map(item => {
+        attachmentsData && attachmentsData.map(item => {
             if (item.AttachementCategory === IMPACT_SHEET) {
                 files.push(item)
                 setFiles(files)
             } else if (item.AttachementCategory === SUPPLIER_CONFRIM) {
                 supplierFiles.push(item)
+
                 setSupplierFiles(supplierFiles)
             } else if (item.AttachementCategory === INVOICE_BACKUP) {
                 invoiceFiles.push(item)
@@ -57,7 +61,9 @@ function AttachmentSec(props) {
 
         })
         setIsOpen(!IsOpen)
-    }, [])
+    }, [attachmentsData])
+
+
 
     // attacment section 
     // specify upload params and url for your files

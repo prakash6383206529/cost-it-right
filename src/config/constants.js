@@ -1701,3 +1701,4 @@ export const RM_MASTER_ID = 1
 
 //approve reject drawer
 export const provisional = "Provisional"
+export const APPROVER = 'Approver'

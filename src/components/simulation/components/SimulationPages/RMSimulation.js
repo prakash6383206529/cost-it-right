@@ -25,7 +25,6 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    console.log("RM SIMULATIOn");
     const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
@@ -63,7 +62,6 @@ function RMSimulation(props) {
         let basicScrapCount = 0
 
         list && list.map((li) => {
-            console.log('li: ', li);
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -364,7 +362,6 @@ function RMSimulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
     const cellChange = (props) => {
-        console.log(props, "PROPS");
     }
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,

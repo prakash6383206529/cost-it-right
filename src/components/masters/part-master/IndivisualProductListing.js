@@ -124,7 +124,6 @@ class IndivisualProductListing extends Component {
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log(cellValue, 'cellValuecellValuecellValue')
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>

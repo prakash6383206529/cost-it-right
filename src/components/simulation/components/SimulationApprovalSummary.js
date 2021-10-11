@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -115,6 +115,7 @@ function SimulationApprovalSummary(props) {
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
             })
+            dispatch(setAttachmentFileData(Attachements, () => { }))
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -137,6 +138,7 @@ function SimulationApprovalSummary(props) {
             }
         }))
     }, [])
+
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -230,7 +232,6 @@ function SimulationApprovalSummary(props) {
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
             const obj3 = formViewData(Data.Variance)
-            console.log('obj3: ', obj3);
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))
@@ -523,6 +524,9 @@ function SimulationApprovalSummary(props) {
         setShowListing(true)
     }
 
+
+
+
     return (
         <>
             {showListing === false &&
@@ -794,7 +798,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <Row>
-                         <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} /> 
+                            <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
                         </Row>
                         {/* Costing Summary page here */}
 

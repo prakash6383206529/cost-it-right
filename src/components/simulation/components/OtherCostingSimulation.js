@@ -183,7 +183,6 @@ function OtherCostingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        console.log('selectedRows: ', selectedRows);
         let temp = []
         let selectedTemp = []
         selectedRows && selectedRows.map(item => {
