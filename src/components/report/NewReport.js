@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { SearchableSelectHookForm } from '../layout/HookFormInputs'
-import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
-import RMImportListing from '../../masters/material-master/RMImportListing';
+import RMDomesticListing from '../masters/material-master/RMDomesticListing'
+import RMImportListing from '../masters/material-master/RMImportListing'
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import SimulationUploadDrawer from './SimulationUploadDrawer';
+import SimulationUploadDrawer from '../simulation/components/SimulationUploadDrawer'
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
-import RMSimulation from './SimulationPages/RMSimulation';
+import RMSimulation from '../simulation/components/SimulationPages/RMSimulation'
 import { getCostingTechnologySelectList } from '../costing/actions/Costing'
-import CostingSimulation from './CostingSimulation';
+import CostingSimulation from '../simulation/components/CostingSimulation'
 import WarningMessage from '../common/WarningMessage';
-import MachineRateListing from '../../masters/machine-master/MachineRateListing';
-import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing';
-import BOPImportListing from '../../masters/bop-master/BOPImportListing';
-import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
-import OperationListing from '../../masters/operation/OperationListing';
-import { setFilterForRM } from '../../masters/actions/Material';
+import MachineRateListing from '../masters/machine-master/MachineRateListing'
+import BOPDomesticListing from '../masters/bop-master/BOPDomesticListing'
+import BOPImportListing from '../masters/bop-master/BOPImportListing'
+import ExchangeRateListing from '../masters/exchange-rate-master/ExchangeRateListing'
+import OperationListing from '../masters/operation/OperationListing'
+import { setFilterForRM } from '../masters/actions/Material'
 import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
-import ERSimulation from './SimulationPages/ERSimulation';
-import OtherCostingSimulation from './OtherCostingSimulation';
+import ERSimulation from '../simulation/components/SimulationPages/ERSimulation'
+import OtherCostingSimulation from '../simulation/components/OtherCostingSimulation'
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
