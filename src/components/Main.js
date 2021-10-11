@@ -377,6 +377,9 @@ class Main extends Component {
                     <Route path="/new-report" component={NewReport} />
 
 
+                    <Route path="/new-report" component={NewReport} />
+
+
                     <Route path="/costing-detail-report" component={ReportListing} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
