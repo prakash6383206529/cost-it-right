@@ -186,7 +186,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent')) {
+        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent' || fileName === 'ProductComponent')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}
@@ -195,15 +195,6 @@ class Downloadxls extends React.Component {
         }
 
 
-        // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC (ProductComponent)
-
-        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'ProductComponent')) {
-            return (
-                <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
-                    {this.renderSwitch(fileName)}
-                </ExcelFile>
-            );
-        }
 
         // DISPLAY RADIO BUTTON ZBC AND VBC, WITH FILE DOWNLOAD BUTTON
         if (isZBCVBCTemplate) {
