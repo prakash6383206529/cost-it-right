@@ -592,7 +592,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">

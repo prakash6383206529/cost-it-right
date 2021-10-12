@@ -4729,7 +4729,7 @@ body{
   }
 }
 }
-@media(max-width:1366px){
+@media(max-width:1365px){
   .overhead-profit-tab-costing{
     .form-control[disabled]{
       width: auto;
@@ -6197,7 +6197,7 @@ body{
 }
 .grant-user-grid table  th:nth-child(1), .grant-user-grid table th:nth-child(2) span {
   font-size: 14px;
-  @media (max-width:1366px) {
+  @media (max-width:1365px) {
     font-size: calc(14px * 80/100);
   }
 }
@@ -6215,6 +6215,12 @@ body{
 .imagClass.power-listing {
   margin-top: 50px;
 }
-.m-height-auto {
+.mh-auto {
   min-height: auto !important;
+  height: calc(100vh - 219px);
+  .add-min-height {
+    @media (max-width:365px) {  
+      min-height: calc(100vh - 214px);
+    }
+  }
 }
