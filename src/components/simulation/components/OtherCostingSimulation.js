@@ -64,7 +64,6 @@ function OtherCostingSimulation(props) {
     const [simulationTypeState, setSimulationTypeState] = useState("")
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
 
-
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,

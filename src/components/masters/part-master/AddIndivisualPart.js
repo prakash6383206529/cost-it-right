@@ -64,8 +64,9 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           let productArray = []
-          Data && Data.ProductList.map((item) => {
-            productArray.push({ Text: item.ProductGroupCode, Value: item.ProductId })
+
+          Data && Data.GroupCodeList.map((item) => {
+            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
             return productArray
           })
           this.setState({ DataToCheck: Data })
@@ -235,7 +236,7 @@ class AddIndivisualPart extends Component {
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
-    let productArray = ProductGroup && ProductGroup.map((item) => ({ ProductId: item.Value, ProductGroupCode: item.Text }))
+    let productArray = ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text }))
     if (isEditFlag) {
 
 
@@ -263,7 +264,7 @@ class AddIndivisualPart extends Component {
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
-        ProductList: productArray
+        GroupCodeList: productArray
       }
 
       if (isEditFlag) {
@@ -303,7 +304,7 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         // Plants: [],
         Attachements: files,
-        ProductList: productArray
+        GroupCodeList: productArray
       }
 
       this.props.reset()
@@ -415,7 +416,7 @@ class AddIndivisualPart extends Component {
                             />
                           </Col>
 
-                          {initialConfiguration &&
+                          {false &&
                             initialConfiguration.IsGroupCodeDisplay && (
                               <Col md="3">
                                 <Field
@@ -434,8 +435,9 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <Field
-                              label="Product Group"
+                              label="Group Code"
                               name="ProductGroup"
+                              type="text"
                               placeholder={"Select"}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
@@ -591,7 +593,7 @@ class AddIndivisualPart extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -617,10 +619,10 @@ class AddIndivisualPart extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }

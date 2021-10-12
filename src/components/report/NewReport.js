@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm } from '../layout/HookFormInputs'
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
@@ -12,9 +12,9 @@ import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
-import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import { getCostingTechnologySelectList } from '../costing/actions/Costing'
 import CostingSimulation from './CostingSimulation';
-import WarningMessage from '../../common/WarningMessage';
+import WarningMessage from '../common/WarningMessage';
 import MachineRateListing from '../../masters/machine-master/MachineRateListing';
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing';
 import BOPImportListing from '../../masters/bop-master/BOPImportListing';
