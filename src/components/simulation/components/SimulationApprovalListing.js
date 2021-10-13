@@ -22,6 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
+import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 
 const gridOptions = {};
 
@@ -40,6 +41,7 @@ function SimulationApprovalListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const [isApprovalDrawer, setIsApprovalDrawer] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -55,6 +57,8 @@ function SimulationApprovalListing(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+    const { simulationDetail, } = props
+
     useEffect(() => {
         getTableData()
         dispatch(getAllPartSelectList(() => { }))
@@ -298,6 +302,7 @@ function SimulationApprovalListing(props) {
         //     setSelectedRowData(tempArr)
         // }
     }
+    const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
 
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
@@ -331,7 +336,7 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-
+        setIsApprovalDrawer(true)
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -409,10 +414,19 @@ function SimulationApprovalListing(props) {
         />
     }
 
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        return thisIsFirstColumn;
+    }
+
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -456,7 +470,6 @@ function SimulationApprovalListing(props) {
         conditionFormatter: conditionFormatter
     };
 
-
     return (
         <Fragment>
             {
@@ -467,10 +480,16 @@ function SimulationApprovalListing(props) {
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             <Row className="pt-4 blue-before">
 
-
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        <button
+                                            class="user-btn approval-btn mr5"
+                                            onClick={sendForApproval}
+                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                        >
+                                            <div className="send-for-approval mr5"></div>
+                                            {/* {'Send For Approval'} */}
+                                        </button>
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -483,9 +502,6 @@ function SimulationApprovalListing(props) {
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
                             </div>
                             <div
                                 className="ag-theme-material"
@@ -507,6 +523,9 @@ function SimulationApprovalListing(props) {
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
@@ -538,6 +557,23 @@ function SimulationApprovalListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
+                                {isApprovalDrawer &&
+                                    <ApproveRejectDrawer
+                                        isOpen={isApprovalDrawer}
+                                        anchor={'right'}
+                                        approvalData={[]}
+                                        type={'Sender'}
+                                        // simulationDetail={simulationDetail}
+                                        selectedRowData={selectedRowData}
+                                        // costingArr={costingArr}
+                                        // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
+                                        closeDrawer={closeDrawer}
+                                        isSimulation={true}
+                                    // vendorId={vendorIdState}
+                                    // SimulationTechnologyId={SimulationTechnologyIdState}
+                                    // SimulationType={simulationTypeState}
+                                    />
+                                }
                             </div>
                         </div>
                     </div>

@@ -322,6 +322,7 @@ export const MESSAGES = {
 
 
   //SIMULATION
-  DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?'
+  DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
+  REPUSH_DONE_SUCCESSFULLY: 'Repush has been done successfully'
 
 }

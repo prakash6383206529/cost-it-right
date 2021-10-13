@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Field, reduxForm } from 'redux-form'
-import { Row, Col } from 'reactstrap'
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Controller, useForm } from 'react-hook-form';
 import { searchableSelect } from '../../layout/FormInputs'
 import { CONSTANT } from '../../../helper/AllConastant'
 import NoContentFound from '../../common/NoContentFound';
@@ -18,133 +17,108 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getCombinedProcessList } from '../../simulation/actions/Simulation'
+import { Container, Row, Col, } from 'reactstrap';
+
+const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-const gridOptions = {};
+export function ProcessListingSimulation(props) {
+    const { location } = props;
 
-class ProcessListingSimulation extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isOpenProcessDrawer: false,
-            isEditFlag: false,
-            Id: '',
-            tableData: [],
+    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+        mode: 'onBlur',
+        reValidateMode: 'onChange',
+    })
 
-            plant: [],
-            machine: [],
-            gridApi: null,
-            gridColumnApi: null,
-            rowData: null,
-            dummyData: [
-                {
-                    Technology: "Sheet Metal",
-                    Plant: "plant1",
-                    NetCC: 10,
-                    RemainingFieldsTotal: "20",
-                    Total: "30",
-                    EffectiveDate: new Date(),
-                    DisplayStatus: "Pending"
-                },
-                {
-                    Technology: "Sheet Metal",
-                    Plant: "plant2",
-                    NetCC: 10,
-                    RemainingFieldsTotal: "20",
-                    Total: "30",
-                    EffectiveDate: new Date(),
-                    DisplayStatus: "Pending"
-                },
-                {
-                    Technology: "Sheet Metal",
-                    Plant: "plant3",
-                    NetCC: 10,
-                    RemainingFieldsTotal: "20",
-                    Total: "30",
-                    EffectiveDate: new Date(),
-                    DisplayStatus: "Pending"
-                },
-                {
-                    Technology: "Sheet Metal",
-                    Plant: "plant4",
-                    NetCC: 10,
-                    RemainingFieldsTotal: "20",
-                    Total: "30",
-                    EffectiveDate: new Date(),
-                    DisplayStatus: "Pending"
-                },
-                {
-                    Technology: "Sheet Metal",
-                    Plant: "plant5",
-                    NetCC: 10,
-                    RemainingFieldsTotal: "20",
-                    Total: "30",
-                    EffectiveDate: new Date(),
-                    DisplayStatus: "Pending"
-                },
-                {
-                    Technology: "Sheet Metal",
-                    Plant: "plant6",
-                    NetCC: 10,
-                    RemainingFieldsTotal: "20",
-                    Total: "30",
-                    EffectiveDate: new Date(),
-                    DisplayStatus: "Pending"
-                },
+    const [isOpenProcessDrawer, setIsOpenProcessDrawer] = useState(false)
+    const [isEditFlag, setIsEditFlag] = useState(false)
+    const [Id, setId] = useState('')
+    const [tableData, setTableData] = useState([])
+    const [plant, setPlant] = useState([])
+    const [machine, setMachine] = useState([])
+    const [gridApi, setGridApi] = useState(null)
+    const [gridColumnApi, setGridColumnApi] = useState(null)
+    const [rowData, setRowData] = useState(null)
+    const [shown, setShown] = useState(false)
+    const [dummyData, setDummyData] = useState([{
+        Technology: "Sheet Metal",
+        Plant: "plant1",
+        NetCC: 10,
+        RemainingFieldsTotal: "20",
+        Total: "30",
+        EffectiveDate: new Date(),
+    },
+    {
+        Technology: "Sheet Metal",
+        Plant: "plant2",
+        NetCC: 10,
+        RemainingFieldsTotal: "20",
+        Total: "30",
+        EffectiveDate: new Date(),
+    },
+    {
+        Technology: "Sheet Metal",
+        Plant: "plant3",
+        NetCC: 10,
+        RemainingFieldsTotal: "20",
+        Total: "30",
+        EffectiveDate: new Date(),
+    },
+    {
+        Technology: "Sheet Metal",
+        Plant: "plant4",
+        NetCC: 10,
+        RemainingFieldsTotal: "20",
+        Total: "30",
+        EffectiveDate: new Date(),
+    },
+    {
+        Technology: "Sheet Metal",
+        Plant: "plant5",
+        NetCC: 10,
+        RemainingFieldsTotal: "20",
+        Total: "30",
+        EffectiveDate: new Date(),
+    },
+    {
+        Technology: "Sheet Metal",
+        Plant: "plant6",
+        NetCC: 10,
+        RemainingFieldsTotal: "20",
+        Total: "30",
+        EffectiveDate: new Date(),
+    },
 
-            ]
-        }
-    }
+    ])
 
-    /**
-    * @method componentDidMount
-    * @description Called after rendering the component
-    */
-    componentDidMount() {
-        const { plant, machine } = this.state
+    const dispatch = useDispatch()
+    const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
+
+    useEffect(() => {
+        // const { plant, machine } = this.state
         const plantId = plant ? plant.value : ''
-        this.props.getCombinedProcessList(true, 0, () => { })
-        // dispatch(getCombinedProcessList(true, 0, (res) => {
-        //     if (res.data.Result) {
-        //         // dataSet(res)
-        //     }
-        // }))
-        // this.props.getInitialMachineSelectList(() => { })
-        // this.getDataList()
-    }
+        dispatch(getCombinedProcessList(0, () => { }))
 
-    // getDataList = (plant_id = '', machine_id = '') => {
-    //     const filterData = {
-    //         plant_id: plant_id,
-    //         machine_id: machine_id,
-    //     }
-    //     this.props.getCombinedProcessList(true, 0, (res) => {
-    //         if (res && res.status === 200) {
-    //             let Data = res.data.DataList;
-    //             this.setState({ tableData: Data })
-    //         } else if (res && res.response && res.response.status === 412) {
-    //             this.setState({ tableData: [] })
-    //         } else {
-    //             this.setState({ tableData: [] })
-    //         }
-    //     })
-    // }
+    }, [])
+
+    const masterList = useSelector(state => state.simulation.masterSelectList)
+    const rmDomesticListing = useSelector(state => state.material.rmDataList)
+    const rmImportListing = useSelector(state => state.material.rmImportDataList)
+    const technologySelectList = useSelector(state => state.costing.technologySelectList)
+    const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
 
     /**
     * @method handlePlant
     * @description  PLANT FILTER
     */
-    handlePlant = (newValue, actionMeta) => {
+    const handlePlant = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ plant: newValue }, () => {
-                const { plant } = this.state;
-                // this.props.getMachineSelectListByPlant(plant.value, () => { })
-            });
+            setPlant(newValue)
         } else {
-            this.setState({ plant: [], });
+            setPlant([])
             // this.props.getInitialMachineSelectList(() => { })
         }
     }
@@ -153,14 +127,11 @@ class ProcessListingSimulation extends Component {
     * @method handleMachineType
     * @description called
     */
-    handleMachineType = (newValue, actionMeta) => {
+    const handleMachineType = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ machine: newValue }, () => {
-                const { machine } = this.state;
-                // this.props.getPlantSelectListByMachine(machine.value, () => { })
-            });
+            setMachine(newValue)
         } else {
-            this.setState({ machine: [], })
+            setMachine([])
             // this.props.getInitialPlantSelectList(() => { })
         }
     };
@@ -169,18 +140,20 @@ class ProcessListingSimulation extends Component {
     * @method editItemDetails
     * @description EDIT ITEM
     */
-    editItemDetails = (Id) => {
-        this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id, })
+    const editItemDetails = (Id) => {
+        setIsOpenProcessDrawer(true)
+        setIsEditFlag(true)
+        setId(Id)
     }
 
     /**
     * @method deleteItem
     * @description CONFIRM DELETE ITEM
     */
-    deleteItem = (Id) => {
+    const deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDelete(Id);
+                confirmDelete(Id);
             },
             onCancel: () => { },
             component: () => <ConfirmComponent />,
@@ -192,7 +165,7 @@ class ProcessListingSimulation extends Component {
     * @method confirmDelete
     * @description DELETE PROCESS
     */
-    confirmDelete = (ID) => {
+    const confirmDelete = (ID) => {
         // this.props.deleteProcess(ID, (res) => {
         //     if (res.data.Result === true) {
         //         toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
@@ -205,24 +178,23 @@ class ProcessListingSimulation extends Component {
     * @method renderPaginationShowsTotal
     * @description Pagination
     */
-    renderPaginationShowsTotal(start, to, total) {
+    const renderPaginationShowsTotal = (start, to, total) => {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
-
 
     /**
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (props) => {
+    const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility } = props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -231,11 +203,11 @@ class ProcessListingSimulation extends Component {
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+    const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         return cell ? 'VBC' : 'ZBC';
     }
 
-    getDataList = (plant_id = '', machine_id = '') => {
+    const getDataList = (plant_id = '', machine_id = '') => {
         const filterData = {
             plant_id: plant_id,
             machine_id: machine_id,
@@ -253,156 +225,19 @@ class ProcessListingSimulation extends Component {
     }
 
     /**
-     * @method handlePlant
-     * @description  PLANT FILTER
-     */
-    handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue }, () => {
-                const { plant } = this.state
-                // this.props.getMachineSelectListByPlant(plant.value, () => { })
-            })
-        } else {
-            this.setState({ plant: [] })
-            // this.props.getInitialMachineSelectList(() => { })
-        }
-    }
-
-    /**
-     * @method handleMachineType
-     * @description called
-     */
-    handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ machine: newValue }, () => {
-                const { machine } = this.state
-                // this.props.getPlantSelectListByMachine(machine.value, () => { })
-            })
-        } else {
-            this.setState({ machine: [] })
-            // this.props.getInitialPlantSelectList(() => { })
-        }
-    }
-
-    /**
-     * @method editItemDetails
-     * @description EDIT ITEM
-     */
-    editItemDetails = (Id) => {
-        this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id })
-    }
-
-    /**
-     * @method deleteItem
-     * @description CONFIRM DELETE ITEM
-     */
-    deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        }
-        return toastr.confirm(
-            `${MESSAGES.PROCESS_DELETE_ALERT}`,
-            toastrConfirmOptions,
-        )
-    }
-
-    /**
-     * @method confirmDelete
-     * @description DELETE PROCESS
-     */
-    confirmDelete = (ID) => {
-        // this.props.deleteProcess(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
-        //         this.getDataList()
-        //     }
-        // })
-    }
-
-
-    /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-    buttonFormatter = (props) => {
-
-        const cellValue = props?.value;
-        const rowData = props?.data;
-
-        const { EditAccessibility, DeleteAccessibility } = this.props;
-        return (
-            <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
-            </>
-        )
-    };
-
-
-    /**
-     * @method costingHeadFormatter
-     * @description Renders Costing head
-     */
-    costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC'
-    }
-
-    /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-    effectiveDateFormatter = (props) => {
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
-    /**
-     * @method indexFormatter
-     * @description Renders serial number
-     */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs
-        let currentPage =
-            table && table.state && table.state.currPage ? table.state.currPage : ''
-        let sizePerPage =
-            table && table.state && table.state.sizePerPage
-                ? table.state.sizePerPage
-                : ''
-        let serialNumber = ''
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1
-        } else {
-            serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1)
-        }
-        return serialNumber
-    }
-
-    renderSerialNumber = () => {
-        return (
-            <>
-                Sr. <br />
-                No.{' '}
-            </>
-        )
-    }
-
-    renderCostingHead = () => {
-        return (
-            <>
-                Costing <br />
-                Head{' '}
-            </>
-        )
-    }
 
     /**
-     * @method renderListing
-     * @description Used to show type of listing
-     */
-    renderListing = (label) => {
+    * @method renderListing
+    * @description Used to show type of listing
+    */
+    const renderListing = (label) => {
         const { filterSelectList } = this.props
         const temp = []
 
@@ -430,52 +265,67 @@ class ProcessListingSimulation extends Component {
     }
 
     /**
-     * @method filterList
-     * @description GET FILTER DATALIST
-     */
-    filterList = () => {
-        const { plant, machine } = this.state
+    * @method filterList
+    * @description GET FILTER DATALIST
+    */
+    const filterList = () => {
+        // const { plant, machine } = this.state
         const plantId = plant ? plant.value : ''
         const machineId = machine ? machine.value : ''
 
-        this.getDataList(plantId, machineId)
+        getDataList(plantId, machineId)
     }
 
     /**
      * @method resetFilter
      * @description Reset user filter
      */
-    resetFilter = () => {
-        this.setState(
-            {
-                plant: [],
-                machine: [],
-            },
-            () => {
-                // this.props.getInitialPlantSelectList(() => { })
-                // this.props.getInitialMachineSelectList(() => { })
-                this.getDataList()
-            },
-        )
+    const resetFilter = () => {
+        setPlant([])
+        setMachine([])
+        // this.setState(
+        //     {
+        //         plant: [],
+        //         machine: [],
+        //     },
+        //     () => {
+        //         // this.props.getInitialPlantSelectList(() => { })
+        //         // this.props.getInitialMachineSelectList(() => { })
+        //         this.getDataList()
+        //     },
+        // )
     }
 
-    processToggler = () => {
-        this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
+    const processToggler = () => {
+        setIsOpenProcessDrawer(true)
+        setIsEditFlag(false)
+        setId('')
     }
 
-    closeProcessDrawer = (e = '') => {
-        this.setState({ isOpenProcessDrawer: false }, () => {
-            this.getDataList()
-        })
+    const closeProcessDrawer = (e = '') => {
+        setIsOpenProcessDrawer(false)
+
+        // this.setState({ isOpenProcessDrawer: false }, () => {
+        //     this.getDataList()
+        // })
     }
 
     /**
      * @method onSubmit
      * @description Used to Submit the form
      */
-    onSubmit = (values) => { }
+    const onSubmit = (values) => { }
 
-    returnExcelColumn = (data = [], TempData) => {
+    const onBtExport = () => {
+        let tempArr = []
+        const data = gridApi && gridApi.getModel().rowsToDisplay
+        data && data.map((item => {
+            tempArr.push(item.data)
+        }))
+        return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData.map((item) => {
             if (item.IsVendor === true) {
@@ -489,301 +339,263 @@ class ProcessListingSimulation extends Component {
             }
             return item
         })
-
         return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
     }
 
-    onGridReady = (params) => {
-        this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
+        var allColumnIds = [];
+        params.columnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
+
+        // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
-    onPageSizeChanged = (newPageSize) => {
+
+    const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(value));
     };
 
-    onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-        return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
-    };
-
-    onFilterTextBoxChanged(e) {
-        this.state.gridApi.setQuickFilter(e.target.value);
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
+    const resetState = () => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
 
-    statusFormatter = (props) => {
+    const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // CHANGE IN STATUS IN AFTER KAMAL SIR API
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
 
-    /**
-     * @method render
-     * @description Renders the component
-     */
-    render() {
-        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-        const { isOpenProcessDrawer, isEditFlag } = this.state;
+    const options = {
+        clearSearch: true,
+        noDataText: (props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+        paginationShowsTotal: renderPaginationShowsTotal,
+        prePage: <span className="prev-page-pg"></span>, // Previous page button text
+        nextPage: <span className="next-page-pg"></span>, // Next page button text
+        firstPage: <span className="first-page-pg"></span>, // First page button text
+        lastPage: <span className="last-page-pg"></span>,
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
+    }
 
-        }
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
 
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: true,
+    };
 
-        };
+    const frameworkComponents = {
+        totalValueRenderer: buttonFormatter,
+        costingHeadRenderer: costingHeadFormatter,
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+        // hyphenFormatter: hyphenFormatter,
+        effectiveDateFormatter: effectiveDateFormatter,
+        statusFormatter: statusFormatter
+    };
 
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            costingHeadRenderer: this.costingHeadFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound,
-            // hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter,
-            statusFormatter: this.statusFormatter
-        };
-
-        return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="10" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        {/* <Field
-                      name="plant"
-                      type="text"
-                      label={''}
-                      component={searchableSelect}
-                      placeholder={'Plant'}
-                      isClearable={false}
-                      options={this.renderListing('plant')}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.handlePlant}
-                      valueDescription={this.state.plant}
-                    /> */}
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="MachineType"
-                                            type="text"
-                                            label=''
-                                            component={searchableSelect}
-                                            placeholder={'Machine'}
-                                            isClearable={false}
-                                            options={this.renderListing('Machine')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.machine == null || this.state.machine.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.handleMachineType}
-                                            valueDescription={this.state.machine}
-                                            disabled={false}
-                                        />
-                                    </div>
-
-
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="apply mr5"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
+    return (
+        <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""}`}>
+            {/* {this.props.loading && <Loader />} */}
+            < form onSubmit={handleSubmit(onSubmit)} noValidate >
+                <Row className="pt-4">
+                    {shown && (
+                        <Col md="10" className="filter-block">
+                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                <div className="flex-fill">
+                                    {/* <Field
+                  name="plant"
+                  type="text"
+                  label={''}
+                  component={searchableSelect}
+                  placeholder={'Plant'}
+                  isClearable={false}
+                  options={this.renderListing('plant')}
+                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                  //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                  //required={true}
+                  handleChangeDescription={this.handlePlant}
+                  valueDescription={this.state.plant}
+                /> */}
                                 </div>
-                            </Col>
-                        )}
-                        <Col md="6" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        ''
-                                        // <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                    )}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        title="Add"
-                                        onClick={this.processToggler}>
-                                        <div className={'plus mr-0'}></div></button>}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-                                            <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-                                        </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                                    }
+                                {/* <div className="flex-fill">
+                                    <Field
+                                        name="MachineType"
+                                        type="text"
+                                        label=''
+                                        component={searchableSelect}
+                                        placeholder={'Machine'}
+                                        isClearable={false}
+                                        options={this.renderListing('Machine')}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.machine == null || this.state.machine.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={this.handleMachineType}
+                                        valueDescription={this.state.machine}
+                                        disabled={false}
+                                    />
+                                </div> */}
+                                aaaaaaaaaaaa
 
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
+                                <div className="flex-fill">
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={this.resetFilter}
+                                        className="reset mr10"
+                                    >
+                                        {'Reset'}
                                     </button>
 
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={filterList}
+                                        className="apply mr5"
+                                    >
+                                        {'Apply'}
+                                    </button>
                                 </div>
                             </div>
                         </Col>
-                    </Row>
+                    )}
+                    <Col md="6" className="search-user-block mb-3">
+                        <div className="d-flex justify-content-end bd-highlight w100">
+                            <div>
+                                {shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setShown(!shown)}>
+                                        <div className="cancel-icon-white"></div></button>
+                                ) : (
+                                    ''
+                                    // <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                )}
+                                {props.AddAccessibility && <button
+                                    type="button"
+                                    className={'user-btn mr5'}
+                                    title="Add"
+                                    onClick={processToggler}>
+                                    <div className={'plus mr-0'}></div></button>}
+                                {
+                                    props.DownloadAccessibility &&
+                                    <>
+                                        <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                            {onBtExport()}
+                                        </ExcelFile>
+                                    </>
+                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                }
 
-                </form>
-                <Row>
-                    <Col>
-                        {/* <BootstrapTable
-              data={this.props.processList}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${ProcessMaster}.csv`}
-              //ignoreSinglePage
-              ref={'table'}
-              pagination
-            >
-              <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
-                        {/* <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
 
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
-                            <div
-                                className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
-                            >
-                                <AgGridReact
-                                    defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
-                                    floatingFilter={true}
-                                    // columnDefs={c}
-                                    // rowData={this.props.combinedProcessList}
-                                    rowData={this.state.dummyData}
-                                    pagination={true}
-                                    paginationPageSize={10}
-                                    onGridReady={this.onGridReady}
-                                    gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                    }}
-                                    frameworkComponents={frameworkComponents}
-                                >
-                                    <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                    <AgGridColumn field="Plant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" editable='false' field="NetCC" headerName="Net CC" minWidth={190}></AgGridColumn>
-                                    {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
-                                        <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
-                                        <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                    </AgGridColumn> */}
-                                    <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="Total" headerName="Total" minWidth={190}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                                    {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
-                                    {/* 
-                                    <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                                    <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn> */}
-                                </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
-
                     </Col>
                 </Row>
-                {/* {isOpenProcessDrawer && (
-                    // <AddProcessDrawer
-                    //     isOpen={isOpenProcessDrawer}
-                    //     closeDrawer={this.closeProcessDrawer}
-                    //     isEditFlag={isEditFlag}
-                    //     isMachineShow={true}
-                    //     ID={this.state.Id}
-                    //     anchor={'right'}
-                    // />
-                )} */}
-            </div>
-        )
-    }
-}
 
-/**
- * @method mapStateToProps
- * @description return state to component as props
- * @param {*} state
- */
-function mapStateToProps({ process }) {
-    const { filterSelectList, processList } = process
-    return { filterSelectList, processList }
-}
+            </form>
+            <Row>
+                <Col>
+                    {/* <BootstrapTable
+          data={this.props.processList}
+          striped={false}
+          hover={false}
+          bordered={false}
+          options={options}
+          search
+          exportCSV={DownloadAccessibility}
+          csvFileName={`${ProcessMaster}.csv`}
+          //ignoreSinglePage
+          ref={'table'}
+          pagination
+        >
+          <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
+          <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
+                    {/* <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+        </BootstrapTable> */}
 
-/**
- * @method connect
- * @description connect with redux
- * @param {function} mapStateToProps
- * @param {function} mapDispatchToProps
- */
-export default connect(mapStateToProps, {
-    getCombinedProcessList
-})(
-    reduxForm({
-        form: 'ProcessListingSimulation',
-        enableReinitialize: true,
-    })(ProcessListingSimulation),
-)
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                        </div>
+                        <div
+                            className="ag-theme-material"
+                            style={{ height: '100%', width: '100%' }}
+                        >
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                domLayout='autoHeight'
+                                floatingFilter={true}
+                                // columnDefs={c}
+                                // rowData={this.props.combinedProcessList}
+                                rowData={dummyData}
+                                pagination={true}
+                                paginationPageSize={10}
+                                onGridReady={onGridReady}
+                                gridOptions={gridOptions}
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: CONSTANT.EMPTY_DATA,
+                                }}
+                                frameworkComponents={frameworkComponents}
+                            >
+                                <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="Plant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" editable='false' field="NetCC" headerName="s CC" minWidth={190}></AgGridColumn>
+                                {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
+                                    <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
+                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                </AgGridColumn> */}
+                                <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" field="Total" headerName="Total" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
+                                {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
+                                {/* 
+                                <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
+                                <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn> */}
+                            </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </Col>
+            </Row>
+            {/* {isOpenProcessDrawer && (
+                // <AddProcessDrawer
+                //     isOpen={isOpenProcessDrawer}
+                //     closeDrawer={this.closeProcessDrawer}
+                //     isEditFlag={isEditFlag}
+                //     isMachineShow={true}
+                //     ID={this.state.Id}
+                //     anchor={'right'}
+                // />
+            )} */}
+        </div>
+    );
+}

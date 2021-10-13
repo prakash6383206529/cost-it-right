@@ -27,6 +27,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import { pushAPI } from '../../simulation/actions/Simulation'
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../config/message';
 
 
 const gridOptions = {};
@@ -518,7 +520,12 @@ function SimulationApprovalSummary(props) {
         })
         pushObj.LoggedInUserId = userLoggedIn
         pushObj.AmmendentDataRequests = temp
-        dispatch(pushAPI(pushObj, () => { }))
+        dispatch(pushAPI(pushObj, (res) => {
+            if (res.data.Result) {
+                toastr.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
+                // this.cancel()
+              }
+         }))
         setShowListing(true)
     }
 
@@ -899,8 +906,8 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
 
-                    {
-                        showPushButton && isSuccessfullyInsert === false &&
+                    {/* {
+                        showPushButton && isSuccessfullyInsert === false && */}
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
@@ -911,7 +918,7 @@ function SimulationApprovalSummary(props) {
                                 </Fragment>
                             </div>
                         </Row>
-                    }
+                    {/* } */}
                 </>
                 // :
                 // <SimulationApprovalListing />
