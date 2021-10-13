@@ -409,7 +409,7 @@ class IndivisualProductListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                 {/* DOWNLOAD */}
                                             </button>}>
