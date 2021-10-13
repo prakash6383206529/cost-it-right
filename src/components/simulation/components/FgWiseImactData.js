@@ -7,6 +7,7 @@ import { getFgWiseImpactData } from '../actions/Simulation'
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [acc2, setAcc2] = useState(false)
+    const [showTableData, setshowTableData] = useState(false)
     const { SimulationId } = props
     const [SimulationIdState, setSimulationIdState] = useState("")
     const dispatch = useDispatch()
@@ -109,7 +110,7 @@ export function Fgwiseimactdata(props) {
 
         if (SimulationId) {
 
-            dispatch(getFgWiseImpactData(SimulationId, () => { }))
+            dispatch(getFgWiseImpactData(SimulationId, () => { setshowTableData(true) }))
         }
 
 
@@ -158,40 +159,40 @@ export function Fgwiseimactdata(props) {
                                     <th><span>Quantity</span></th>
                                     <th><span>Impact/Pc</span></th>
                                     <th><span>Volume</span></th>
-                                    <th><span>Impact/Month</span></th>
+                                    <th><span>Impact/Quater</span></th>
                                 </tr>
                             </thead>
 
 
-                            {tasks && tasks.map((item, index) => {
+                            {showTableData && impactData && impactData.map((item, index) => {
 
                                 return (<>
                                     <tbody>
                                         <tr className="accordian-with-arrow">
-                                            <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.model}</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>This is A model</span></td>
-                                            <td><span>0</span></td>
-                                            <td><span>0</span></td>
-                                            <td><span>0</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>2000</span></td>
-                                            <td><span>48000(INR) <a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                            <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                            <td><span>{item.ECNNumber ? item.ECNNumber : "-"}</span></td>
+                                            <td><span>{item.PartName ? item.PartName : "-"}</span></td>
+                                            <td><span>{item.OldCost}</span></td>
+                                            <td><span>{item.NewCost}</span></td>
+                                            <td><span>{item.Quantity}</span></td>
+                                            <td><span>{item.ImpactPerYear ? item.ImpactPerYear : "-"}</span></td>
+                                            <td><span>-</span></td>
+                                            <td><span>{item.ImpactPerQuater} <a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
                                         </tr>
 
 
-                                        {acc1.currentIndex === index && acc1.isClicked && item.child.map((item) => {
+                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item) => {
 
                                             return (
                                                 <tr className="accordian-content">
-                                                    <td><span>{item.partNo}</span></td>
-                                                    <td><span>{item.ecnNo}</span></td>
-                                                    <td><span>{item.partName}</span></td>
-                                                    <td><span>{item.oldCost}</span></td>
-                                                    <td><span>{item.newCost}</span></td>
-                                                    <td><span>{item.quantity}</span></td>
-                                                    <td><span>{item.impactPc}</span></td>
-                                                    <td><span>{item.volume}</span></td>
+                                                    <td><span>{item.PartNumber}</span></td>
+                                                    <td><span>{item.ECNNumber ? item.ECNNumber : "-"}</span></td>
+                                                    <td><span>{item.PartName ? item.PartName : "-"}</span></td>
+                                                    <td><span>{item.OldCost}</span></td>
+                                                    <td><span>{item.NewCost}</span></td>
+                                                    <td><span>{item.Quantity}</span></td>
+                                                    <td><span>{item.ImpactPerYear}</span></td>
+                                                    <td><span>-</span></td>
                                                 </tr>)
                                         })}
 
