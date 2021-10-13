@@ -138,6 +138,7 @@ function ApproveRejectDrawer(props) {
 
     if (SimulationType !== null && SimulationType === provisional) {
       setTokenDropdown(false)
+
     }
 
     // DO IT AFTER GETTING DATA
