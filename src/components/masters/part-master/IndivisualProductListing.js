@@ -262,19 +262,18 @@ class IndivisualProductListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
-        })
+        this.getTableListData()
+        this.setState({ isBulkUpload: false })
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
+    // closeBulkUploadDrawer = () => {
+    //     this.setState({ isBulkUpload: false }, () => {
+    //     })
+    // }
 
 
 
@@ -405,6 +404,20 @@ class IndivisualProductListing extends Component {
                                         onClick={this.formToggle}>
                                         <div className={'plus mr-0'}></div></button>
                                 )}
+
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+
+
                                 {
                                     DownloadAccessibility &&
                                     <>
@@ -481,9 +494,9 @@ class IndivisualProductListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'PartComponent'}
+                    fileName={'ProductComponent'}
                     isZBCVBCTemplate={false}
-                    messageLabel={'Part'}
+                    messageLabel={'Product'}
                     anchor={'right'}
                 />}
             </div >

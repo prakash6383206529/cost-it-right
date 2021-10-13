@@ -291,7 +291,7 @@ class Main extends Component {
                 )}
 
               <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={`${isLogin ? `middleContainer ${Simulation ? 'h-auto' : ''}` : ''}`}>
+                <div className={`${isLogin ? `middleContainer ${Simulation ? 'mh-auto' : ''}` : ''}`}>
                   <Switch>
 
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
