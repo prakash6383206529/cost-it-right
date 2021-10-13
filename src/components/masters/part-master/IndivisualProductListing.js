@@ -14,7 +14,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import { ComponentPart } from '../../../config/constants';
+import { ComponentPart, PRODUCT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { INDIVIDUALPART_DOWNLOAD_EXCEl, INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -109,7 +109,7 @@ class IndivisualProductListing extends Component {
             ProductId: ID,
             LoggedInUserId: loggedInUserId()
         }
-        this.props.deleteProduct(obj, (res) => {
+        this.props.deleteProduct(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.getTableListData();
@@ -231,17 +231,13 @@ class IndivisualProductListing extends Component {
     }
 
     /**
-    * @method trueFalseFormatter
+    * @method impactCalculationFormatter
     * @description Renders buttons
     */
-    trueFalseFormatter = (props) => {
+    impactCalculationFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let val = ''
-        if (cellValue === true) {
-            val = 'Yes'
-        } else if (cellValue === false) {
-            val = 'No'
-        }
+        val = (cellValue === false || cellValue === null) ? 'No' : 'Yes'
         return val
     }
 
@@ -326,7 +322,7 @@ class IndivisualProductListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={TempData} name={PRODUCT}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -348,7 +344,6 @@ class IndivisualProductListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        console.log(loggedInUserId(), 'loggedInUserId()loggedInUserId()loggedInUserId()loggedInUserId()loggedInUserId()')
         const onExportToCSV = (row) => {
             // ...
             let products = []
@@ -383,7 +378,7 @@ class IndivisualProductListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            trueFalseFormatter: this.trueFalseFormatter
+            impactCalculationFormatter: this.impactCalculationFormatter
         };
 
         return (
@@ -409,7 +404,7 @@ class IndivisualProductListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                 {/* DOWNLOAD */}
                                             </button>}>
@@ -463,7 +458,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'trueFalseFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
