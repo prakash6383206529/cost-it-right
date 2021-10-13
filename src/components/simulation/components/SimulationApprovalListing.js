@@ -6,7 +6,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
-import NoContentFound from '../../common/NoContentFound'
+import NoContentFound from '../../common/NoContentFound' 
 import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
@@ -22,6 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
+import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 
 const gridOptions = {};
 
@@ -298,6 +299,8 @@ function SimulationApprovalListing(props) {
         //     setSelectedRowData(tempArr)
         // }
     }
+    const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+
 
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
@@ -331,7 +334,7 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-
+        setApproveDrawer(true)
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -408,11 +411,18 @@ function SimulationApprovalListing(props) {
             }}
         />
     }
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
 
+        return thisIsFirstColumn;
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -470,7 +480,14 @@ function SimulationApprovalListing(props) {
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        <button
+                                            class="user-btn approval-btn mr5"
+                                            onClick={sendForApproval}
+                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                        >
+                                            <div className="send-for-approval"></div>
+                                            {/* {'Send For Approval'} */}
+                                        </button>
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -504,6 +521,9 @@ function SimulationApprovalListing(props) {
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
@@ -535,6 +555,21 @@ function SimulationApprovalListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
+                                {approveDrawer &&
+                                    <ApproveRejectDrawer
+                                        isOpen={approveDrawer}
+                                        anchor={'right'}
+                                        approvalData={[]}
+                                        type={'Sender'}
+                                        // simulationDetail={}
+                                        selectedRowData={selectedRowData}
+                                        // costingArr={costingArr}
+                                        // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : this.state.master}
+                                        closeDrawer={closeDrawer}
+                                        isSimulation={true}
+                                        isSimulationApprovalListing={true}
+                                    />
+                                }
                             </div>
                         </div>
                     </div>
