@@ -520,12 +520,8 @@ function SimulationApprovalSummary(props) {
         })
         pushObj.LoggedInUserId = userLoggedIn
         pushObj.AmmendentDataRequests = temp
-        dispatch(pushAPI(pushObj, (res) => {
-            if (res.data.Result) {
-                toastr.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
-                // this.cancel()
-              }
-         }))
+        dispatch(pushAPI(pushObj, () => { }))
+        toastr.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
         setShowListing(true)
     }
 
@@ -906,8 +902,8 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
 
-                    {/* {
-                        showPushButton && isSuccessfullyInsert === false && */}
+                    {
+                        showPushButton && isSuccessfullyInsert === false &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
@@ -918,7 +914,7 @@ function SimulationApprovalSummary(props) {
                                 </Fragment>
                             </div>
                         </Row>
-                    {/* } */}
+                    }
                 </>
                 // :
                 // <SimulationApprovalListing />
