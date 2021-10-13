@@ -6216,11 +6216,11 @@ body{
   margin-top: 50px;
 }
 .mh-auto {
-  min-height: auto !important;
-  height: calc(100vh - 219px);
+  height: auto !important;
+  min-height: calc(100vh - 219px) !important;
   .add-min-height {
     @media (max-width:365px) {  
-      min-height: calc(100vh - 214px);
+      min-height: calc(100vh - 214px) !important;
     }
   }
 }
