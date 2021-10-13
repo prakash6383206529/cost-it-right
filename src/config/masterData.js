@@ -1321,7 +1321,7 @@ export const ProductComponentTempData = [
         'DrawingNo': '1',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
-        "IsConsideredForMBOM": "YES or NO"
+        "IsConsideredForMBOM": "YES or NO"                      //correction done
     }
 ]
 
