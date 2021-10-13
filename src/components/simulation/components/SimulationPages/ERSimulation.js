@@ -209,7 +209,7 @@ function ERSimulation(props) {
         // setShowVerifyPage(true)
     }
 
-
+    console.log(master, 'mastermastermastermastermastermastermastermastermastermastermastermastermastermastermaster')
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -298,7 +298,7 @@ function ERSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isExchangeRate={true} token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <OtherVerifySimulation isExchangeRate={true} master={master} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {
@@ -310,6 +310,7 @@ function ERSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
+                        masterId={master}
                     />
                 }
             </div>

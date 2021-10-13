@@ -10,7 +10,7 @@ import RunSimulationDrawer from './RunSimulationDrawer';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
 import { getPlantSelectListByType } from '../../../actions/Common';
-import { EXCHNAGERATE, ZBC, PROCESS } from '../../../config/constants';
+import { EXCHNAGERATE, ZBC, COMBINED_PROCESS } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -20,7 +20,7 @@ import OtherCostingSimulation from './OtherCostingSimulation';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
-    const { cancelVerifyPage, isExchangeRate, isCombinedProcess } = props
+    const { cancelVerifyPage, isExchangeRate, isCombinedProcess, master } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -52,38 +52,46 @@ function OtherVerifySimulation(props) {
         dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
-    const verifyCostingList = () => {
-        if (isExchangeRate) {
-            dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
-                if (res.data.Result) {
-                    const data = res.data.Data
-                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
-                        toastr.warning('No approved costing exist for this exchange rate.')
-                        setHideRunButton(true)
-                        return false
+    const verifyCostingList = () => {  // master.value
+
+        switch (Number(master)) {
+            case Number(EXCHNAGERATE):
+                dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
+                            toastr.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setMasterId(data.SimulationtechnologyId)
+                        setHideRunButton(false)
                     }
-                    setTokenNo(data.TokenNumber)
-                    setSimualtionId(data.SimulationId)
-                    setMasterId(data.SimulationtechnologyId)
-                    setHideRunButton(false)
-                }
-            }))
-        } else if (isCombinedProcess) {
-            dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
-                if (res.data.Result) {
-                    const data = res.data.Data
-                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
-                        toastr.warning('No approved costing exist for this exchange rate.')
-                        setHideRunButton(true)
-                        return false
+                }))
+                break;
+            case Number(COMBINED_PROCESS):
+                dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            toastr.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setMasterId(data.SimulationtechnologyId)
+                        setHideRunButton(false)
                     }
-                    setTokenNo(data.TokenNumber)
-                    setSimualtionId(data.SimulationId)
-                    setMasterId(data.SimulationtechnologyId)
-                    setHideRunButton(false)
-                }
-            }))
+                }))
+                break;
+            default:
+                break;
         }
+
+
     }
 
 
@@ -230,7 +238,7 @@ function OtherVerifySimulation(props) {
                 obj.RunSimualtionExchangeRateCostingInfos = tempArr
                 setObj(obj)
                 setSimulationDrawer(true)
-            case Number(PROCESS):
+            case Number(COMBINED_PROCESS):
                 selectedRowData && selectedRowData.map(item => {
                     let tempObj = {}
                     tempObj.CostingId = item.CostingId
@@ -310,7 +318,7 @@ function OtherVerifySimulation(props) {
         customNoRowsOverlay: NoContentFound,
     };
 
-
+    console.log(master, 'ssasqsqwawefefgergfrthf')
     return (
         <>
             {

@@ -113,7 +113,7 @@ export const API = {
   getProductById: `${BASE_URL}/masters-product/get-by-id`,
   createProduct: `${BASE_URL}/masters-product/create`,
   updateProduct: `${BASE_URL}/masters-product/update`,
-  deleteProduct: `${BASE_URL}/masters-product/delete`,
+  deleteProduct: `${BASE_URL}/masters-product/delete/productid/loggedinuserid`,
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
@@ -1640,7 +1640,7 @@ export const STD = 'STD'
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = '1'
 export const RMIMPORT = '2'
-export const PROCESS = '3'
+export const COMBINED_PROCESS = '3'
 export const BOPDOMESTIC = '4'
 export const BOPIMPORT = '5'
 export const OPERATIONS = '6'

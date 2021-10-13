@@ -238,10 +238,10 @@ function VerifySimulation(props) {
 
 
     const runSimulation = () => {
-        // if (selectedRowData.length === 0) {
-        //     toastr.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            toastr.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -457,7 +457,7 @@ function VerifySimulation(props) {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     tokenNo={tokenNo}
-                    simulationTechnologyId={simulationTechnologyId}
+                    masterId={simulationTechnologyId}
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}

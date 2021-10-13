@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { EXCHNAGERATE, PROCESS, RMDOMESTIC } from '../../../config/constants';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC } from '../../../config/constants';
 
 
 
@@ -60,7 +60,7 @@ function CostingDetailSimulationDrawer(props) {
 
     let isCombinedProcess
     switch (Number(master)) {
-        case Number(PROCESS):
+        case Number(COMBINED_PROCESS):
             isCombinedProcess = true
         default:
     }
@@ -122,7 +122,7 @@ function CostingDetailSimulationDrawer(props) {
                                                 </Col>
                                             </>
                                     }
-                                    {isCombinedProcess &&
+                                    {Number(master) === Number(COMBINED_PROCESS) &&
                                         <>
                                             <Col md="3">
                                                 <label>CC Old</label>

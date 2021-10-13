@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { CombinedProcessSimulation, getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -24,7 +24,7 @@ import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, 
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
-import ProcessListingSimulation from './ProcessListingSimulation';
+import { ProcessListingSimulation } from './ProcessListingSimulation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -180,7 +180,7 @@ function Simulation(props) {
             }
             return item
         })
-        if (master.value === '3') {
+        if (Number(master.value) === Number(COMBINED_PROCESS)) {
             temp = TempData
         }
         // if (rmDomesticListing && rmDomesticListing.length > 0 || rmImportListing && rmImportListing.length > 0) {
@@ -209,7 +209,7 @@ function Simulation(props) {
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case OPERATIONS:
                 return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
-            case PROCESS:
+            case COMBINED_PROCESS:
                 return (<ProcessListingSimulation isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
@@ -223,7 +223,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return returnExcelColumn(RMImportSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
 
-            case PROCESS:
+            case COMBINED_PROCESS:
                 return returnExcelColumn(CombinedProcessSimulation, dummyData)
             // return returnExcelColumn(CombinedProcessSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmImportListing) : [])
             default:
@@ -357,7 +357,7 @@ function Simulation(props) {
                 }
                 break;
 
-            // case PROCESS:
+            // case COMBINED_PROCESS:
 
             //     rmDomesticListing && rmDomesticListing.forEach((element, index) => {
             //         console.log('element: ', element);
@@ -399,7 +399,7 @@ function Simulation(props) {
         setShowEditTable(true)
     }
 
-
+    console.log(master, 'kkkkkkkmaster')
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
@@ -407,9 +407,9 @@ function Simulation(props) {
             case RMIMPORT:
                 return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmImportListing)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
-                return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
-            case PROCESS:
-                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.label} rowCount={rowCount} />
+                return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.value} />
+            case COMBINED_PROCESS:
+                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }
@@ -419,6 +419,7 @@ function Simulation(props) {
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
+
         const masterId = location?.state?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
         if (getOtherCostingSimulation(String(masterId))) {
@@ -426,7 +427,6 @@ function Simulation(props) {
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
-
 
 
     return (

@@ -546,6 +546,7 @@ function RMSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
+                        masterId={master}
                     />
                 }
             </div>

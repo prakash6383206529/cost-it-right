@@ -631,30 +631,24 @@ export function setAttachmentFileData(attachmentsData, callback) {
  * @method getCombinedProcessList
  * @description GET PROCESS DATALIST
  */
-export function getCombinedProcessList(isAPICall, data, callback) {
+export function getCombinedProcessList(data, callback) {
     return (dispatch) => {
-        if (isAPICall) {
-            dispatch({ type: API_REQUEST });
-            axios.get(`${API.getCombinedProcessList}?currencyId=${data.currencyId}`, headers)
-                .then((response) => {
-                    if (response.data.Result === true) {
-                        dispatch({
-                            type: GET_COMBINED_PROCESS_LIST,
-                            payload: response.data.DataList,
-                        });
-                        callback(response);
-                    }
-                }).catch((error) => {
-                    dispatch({ type: API_FAILURE });
-                    callback(error);
-                    apiErrors(error);
-                });
-        } else {
-            dispatch({
-                type: GET_COMBINED_PROCESS_LIST,
-                payload: [],
+
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getCombinedProcessList}?currencyId=${data.currencyId}`, headers)
+            .then((response) => {
+                if (response.data.Result === true) {
+                    dispatch({
+                        type: GET_COMBINED_PROCESS_LIST,
+                        payload: response.data.DataList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
             });
-        }
     };
 }
 

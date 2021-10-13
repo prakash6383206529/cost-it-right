@@ -22,16 +22,13 @@ const gridOptions = {
 
 };
 function CPSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
-    const [showSimulation, setShowSimulation] = useState(false)
+    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
@@ -100,10 +97,7 @@ function CPSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-
-    const { filteredRMData } = useSelector(state => state.material)
 
     const cancelVerifyPage = () => {
 
@@ -127,7 +121,7 @@ function CPSimulation(props) {
         }
     }, [])
 
-    const oldERFormatter = (props) => {
+    const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -143,7 +137,7 @@ function CPSimulation(props) {
         )
     }
 
-    const newERFormatter = (props) => {
+    const newCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -274,8 +268,8 @@ function CPSimulation(props) {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newERFormatter: newERFormatter,
-        oldERFormatter: oldERFormatter,
+        newCPFormatter: newCPFormatter,
+        oldCPFormatter: oldCPFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter
@@ -422,19 +416,19 @@ function CPSimulation(props) {
                                                 <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="Plant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldERFormatter' colId="NetCC"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newERFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="NetCC"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newCPFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
-                                                    <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.NetCC) + Number(data.RemainingFieldsTotal)' field="Total" editable='false' headerName="Old" cellRenderer='oldERFormatter' colId="Total"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.NetCC) + Number(data.RemainingFieldsTotal)' field="Total" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Total"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingFieldsTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
 
                                                 {/* <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn> */}
-                                                <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
+                                                <AgGridColumn field="CombinedProcessId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>
 
@@ -477,7 +471,7 @@ function CPSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isCombinedProcess={true} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <OtherVerifySimulation isCombinedProcess={true} master={selectedMasterForSimulation} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
                 }
 
                 {
@@ -489,6 +483,7 @@ function CPSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
+                        masterId={selectedMasterForSimulation}
                     />
                 }
             </div>

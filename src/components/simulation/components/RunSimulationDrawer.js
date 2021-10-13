@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, PROCESS } from '../../../config/constants';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
@@ -146,22 +146,32 @@ function RunSimulationDrawer(props) {
                     }
                 }))
                 break;
-            case Number(PROCESS):
+            case Number(COMBINED_PROCESS):
                 dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         toastr.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
-                runSimulationCosting()
+                runSimulationCosting()                  //  REMOVE THIS AFTER api INTEGRATION
                 break;
-            default:
+            case Number(RMDOMESTIC):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         toastr.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
+                break;
+            case Number(RMIMPORT):
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            default:
                 break;
         }
         // runSimulationCosting()                       ///remove this
