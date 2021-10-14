@@ -663,7 +663,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata />
+                        <Fgwiseimactdata SimulationId={simulationDetail.SimulationId} />
 
                         {/* FG wise Impact section end */}
 
