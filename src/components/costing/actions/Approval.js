@@ -477,8 +477,8 @@ export function approvalPushedOnSap(data, callback) {
 }
 
 /**
- * @method setRMCCErrors
- * @description SET OVERHEAD PROFIT TAB DATA  
+ * @method setSAPData
+ * @description SET SAP DATA
  */
 export function setSAPData(data) {
   return (dispatch) => {
