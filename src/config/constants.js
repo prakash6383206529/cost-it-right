@@ -108,6 +108,7 @@ export const API = {
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
+  productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
