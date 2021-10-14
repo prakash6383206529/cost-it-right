@@ -238,7 +238,7 @@ class AddIndivisualProduct extends Component {
                 ECNNumber: values.ECNNumber,
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
-                GroupCode: values.GroupCode,
+                ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
                 EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],

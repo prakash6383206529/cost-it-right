@@ -107,6 +107,7 @@ export const API = {
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
+  productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
@@ -869,6 +870,7 @@ export const API = {
   runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-combined-process-costing`,
   getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
+  getFgWiseImpactData: `${BASE_URL}/sap-integration/get-fg-wise-impact-data`,
 
 
   //SIMULATION APPROVAL 
@@ -884,7 +886,7 @@ export const API = {
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,
 
   //REPORT
-  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
+  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
 }
 
@@ -1429,6 +1431,7 @@ export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
 export const GET_COMBINED_PROCESS_LIST = 'GET_COMBINED_PROCESS_LIST'
+export const GET_FG_WISE_IMPACT_DATA = ' GET_FG_WISE_IMPACT_DATA'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1490,6 +1493,7 @@ export const PART = 'Part'
 export const MACHINE = 'Machine'
 export const VENDOR = 'Vendor'
 export const CLIENT = 'Client'
+export const CUSTOMER = 'Customer'
 export const PLANT = 'Plant'
 
 export const PRODUCT = 'Product'
@@ -1706,3 +1710,4 @@ export const RM_MASTER_ID = 1
 
 //approve reject drawer
 export const provisional = "Provisional"
+export const APPROVER = 'Approver'

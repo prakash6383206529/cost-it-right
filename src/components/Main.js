@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster
+  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, CUSTOMER
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -56,6 +56,7 @@ import SimulationApprovalSummary from './simulation/components/SimulationApprova
 import productMaster from './masters/product-master'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
+import NewReport from './report/NewReport'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -290,7 +291,7 @@ class Main extends Component {
                 )}
 
               <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={`${isLogin ? `middleContainer ${Simulation ? 'h-auto': ''}` : '' }`}>
+                <div className={`${isLogin ? `middleContainer ${Simulation ? 'h-auto' : ''}` : ''}`}>
                   <Switch>
 
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
@@ -356,7 +357,7 @@ class Main extends Component {
 
                     <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 
-                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CLIENT)} />
+                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CUSTOMER)} />
 
                     <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE,)} />
 
@@ -372,6 +373,12 @@ class Main extends Component {
                     <Route path="/simulation" component={Simulation} />
 
                     {/* <Route path="/simulation-upload" component={SimulationUpload} /> */}
+
+                    <Route path="/new-report" component={NewReport} />
+
+
+                    <Route path="/new-report" component={NewReport} />
+
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 

@@ -18,7 +18,6 @@ import PushSection from '../common/PushSection';
 
 function MasterSendForApproval(props) {
     const { type, tokenNo, IsFinalLevel, IsPushDrawer, reasonId, simulationDetail, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
-    console.log('type: ', type);
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',

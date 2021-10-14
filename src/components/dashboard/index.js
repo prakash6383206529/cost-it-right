@@ -89,7 +89,7 @@ function Dashboard(props) {
                 </div>
               </Row>
               <Row className="m-0">
-                <div className="graph-box w-100">
+                {/* <div className="graph-box w-100">
                   <Row>
                     <Col md="8"><h3 className="mb-0">RM Awaiting Approval</h3></Col>
                     <Col md="4" className="text-right">
@@ -106,7 +106,7 @@ function Dashboard(props) {
                   <Row>
                     <Col md="12">{acc3 && <RMApproval isApproval={true} />}</Col>
                   </Row>
-                </div>
+                </div> */}
               </Row>
             </form>
           </div>

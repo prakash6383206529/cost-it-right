@@ -1,9 +1,40 @@
-import React, { useState } from 'react'
 import { Row, Col } from 'reactstrap'
+import React, { useState, useEffect, Fragment } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getFgWiseImpactData } from '../actions/Simulation'
+import { getConfigurationKey } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../helper'
+
+
 
 export function Fgwiseimactdata(props) {
-    const [acc1, setAcc1] = useState(false)
+    const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [acc2, setAcc2] = useState(false)
+    const [showTableData, setshowTableData] = useState(false)
+    const { SimulationId } = props
+    const [SimulationIdState, setSimulationIdState] = useState("")
+    const dispatch = useDispatch()
+
+    const impactData = useSelector((state) => state.simulation.impactData)
+
+
+
+    useEffect(() => {
+
+        if (SimulationId) {
+
+            dispatch(getFgWiseImpactData(SimulationId, () => { setshowTableData(true) }))
+        }
+
+
+    }, [SimulationId])
+
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+
+
+
+
 
     return (
         <>
@@ -22,95 +53,64 @@ export function Fgwiseimactdata(props) {
                                     <th><span>New Cost/pc</span></th>
                                     <th><span>Quantity</span></th>
                                     <th><span>Impact/Pc</span></th>
-                                    <th><span>Volume</span></th>
-                                    <th><span>Impact/Month</span></th>
+
+
+                                    <th><span>Volume/Year</span></th>
+                                    <th><span>Impact/Quater</span></th>
+                                    <th><span>Impact/Year</span></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr className="accordian-with-arrow">
-                                    <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
-                                    <td><span>1</span></td>
-                                    <td><span>This is A model</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>24(INR)</span></td>
-                                    <td><span>2000</span></td>
-                                    <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                </tr>
-                                {acc1 &&
-                                    <>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 1</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 2</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 3</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                    </>
-                                }
-                            </tbody>
 
-                            <tbody>
-                                <tr className="accordian-with-arrow">
-                                    <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
-                                    <td><span>1</span></td>
-                                    <td><span>This is A model</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>24(INR)</span></td>
-                                    <td><span>2000</span></td>
-                                    <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                </tr>
-                                {acc2 &&
-                                    <>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 1</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
+
+                            {showTableData && impactData && impactData.map((item, index) => {
+
+                                return (<>
+                                    <tbody>
+                                        <tr className="accordian-with-arrow">
+                                            <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                            <td><span>{item.ECNNumber}</span></td>
+                                            <td><span>{item.PartName}</span></td>
+                                            <td><span>{item.OldCost}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td><span>{item.Quantity}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+
+                                            <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.ImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
+
                                         </tr>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 2</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                    </>
-                                }
-                            </tbody>
+
+
+                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item) => {
+
+                                            return (
+                                                <tr className="accordian-content">
+                                                    <td><span>{item.PartNumber}</span></td>
+                                                    <td><span>{item.ECNNumber}</span></td>
+                                                    <td><span>{item.PartName}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td><span>{item.Quantity}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+
+                                                    <td><span></span></td>
+                                                    <td><span></span></td>
+                                                    <td><span></span></td>
+
+
+
+                                                </tr>)
+                                        })}
+
+
+
+                                    </tbody>
+                                </>)
+                            })
+                            }
+
+
                         </table>
                     </div>
                 </Col>

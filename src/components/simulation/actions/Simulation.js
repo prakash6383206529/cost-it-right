@@ -16,8 +16,9 @@ import {
     GET_SELECTED_COSTING_STATUS,
     GET_AMMENDENT_STATUS_COSTING,
     SET_ATTACHMENT_FILE_DATA,
+    GET_SELECTLIST_SIMULATION_TOKENS,
+    GET_FG_WISE_IMPACT_DATA,
     GET_COMBINED_PROCESS_LIST,
-    GET_SELECTLIST_SIMULATION_TOKENS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -676,6 +677,25 @@ export function getverifyCombinedProcessSimulationList(token, callback) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
                     payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function getFgWiseImpactData(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FG_WISE_IMPACT_DATA,
+                    payload: response.data.DataList,
                 })
                 callback(response)
             }

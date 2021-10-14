@@ -9,8 +9,8 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
-import { COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
+import { COMBINED_PROCESS,EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -29,13 +29,14 @@ import { Fgwiseimactdata } from './FgWiseImactData'
 import { pushAPI } from '../../simulation/actions/Simulation'
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
+import AttachmentSec from '../../costing/components/approval/AttachmentSec';
 
 
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master } = props;
+    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
@@ -116,6 +117,7 @@ function SimulationApprovalSummary(props) {
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
             })
+            dispatch(setAttachmentFileData(Attachements, () => { }))
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -138,6 +140,7 @@ function SimulationApprovalSummary(props) {
             }
         }))
     }, [])
+
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -231,7 +234,6 @@ function SimulationApprovalSummary(props) {
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
             const obj3 = formViewData(Data.Variance)
-            console.log('obj3: ', obj3);
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))
@@ -525,6 +527,9 @@ function SimulationApprovalSummary(props) {
         setShowListing(true)
     }
 
+
+
+
     return (
         <>
             {showListing === false &&
@@ -661,7 +666,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata />
+                        <Fgwiseimactdata SimulationId={simulationDetail.SimulationId} />
 
                         {/* FG wise Impact section end */}
 
@@ -801,6 +806,9 @@ function SimulationApprovalSummary(props) {
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
+                        </Row>
+                        <Row>
+                            <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
                         </Row>
                         {/* Costing Summary page here */}
 

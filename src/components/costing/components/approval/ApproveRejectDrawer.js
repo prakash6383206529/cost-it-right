@@ -8,8 +8,8 @@ import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFie
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, uploadSimulationAttachmentByCategory } from '../../../simulation/actions/Simulation'
+import { APPROVED, APPROVER, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, uploadSimulationAttachmentByCategory, setAttachmentFileData } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
@@ -51,7 +51,6 @@ function ApproveRejectDrawer(props) {
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
-  console.log('attachmentsData: ', attachmentsData);
   const reasonsList = useSelector((state) => state.approval.reasonsList)
 
 
@@ -137,6 +136,7 @@ function ApproveRejectDrawer(props) {
       if (SimulationType !== null && SimulationType === 'provisional') {
         setTokenDropdown(false)
       }
+      dispatch(setAttachmentFileData([], () => { }))
     }
 
 
@@ -317,8 +317,6 @@ function ApproveRejectDrawer(props) {
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
-        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
-        console.log('senderObj: ', senderObj);
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
@@ -649,7 +647,7 @@ function ApproveRejectDrawer(props) {
                 }
 
 
-                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' &&
+                {getConfigurationKey().IsProvisionalSimulation && SimulationType === APPROVER && type === 'Sender' &&
 
                   < div className="input-group form-group col-md-12">
 
@@ -691,7 +689,7 @@ function ApproveRejectDrawer(props) {
                 </div>
 
                 {
-                  isSimulation &&
+                  isSimulation && type === 'Sender' &&
                   <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
                 }
 

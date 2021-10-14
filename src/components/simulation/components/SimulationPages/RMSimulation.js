@@ -19,13 +19,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
 import Simulation from '../Simulation';
+import { VBC, ZBC } from '../../../../config/constants';
 const gridOptions = {
 
 };
 
 
 function RMSimulation(props) {
-    console.log("RM SIMULATIOn");
     const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
@@ -63,7 +63,6 @@ function RMSimulation(props) {
         let basicScrapCount = 0
 
         list && list.map((li) => {
-            console.log('li: ', li);
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -85,7 +84,7 @@ function RMSimulation(props) {
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].CostingHead
+        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
@@ -98,7 +97,7 @@ function RMSimulation(props) {
         list && list.map(item => {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
-                tempObj.CostingHead = item.CostingHead
+                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterial
                 tempObj.MaterialType = item.MaterialType
                 tempObj.RawMaterialGrade = item.RMGrade
@@ -351,7 +350,7 @@ function RMSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-
+        // window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
     };
 
@@ -364,7 +363,6 @@ function RMSimulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
     const cellChange = (props) => {
-        console.log(props, "PROPS");
     }
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,

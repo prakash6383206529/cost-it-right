@@ -177,7 +177,6 @@ export function Impactedmasterdata(props) {
     };
 
     const renderMaster = () => {
-        console.log(masterId);
         switch (String(masterId)) {
             case EXCHNAGERATE:
                 return <ERSimulation list={data} isImpactedMaster={true} />

@@ -41,7 +41,7 @@ function SummaryDrawer(props) {
 
     useEffect(() => {
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, res => {
-            console.log(res, "REPONSE");
+
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
