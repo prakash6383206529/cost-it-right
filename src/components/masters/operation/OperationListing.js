@@ -388,18 +388,6 @@ class OperationListing extends Component {
 
     }
 
-    plantFilter = (params) => {
-        console.log("COMING IN FILTER");
-        console.log('params: ', params);
-
-        // if (params.value.length>2) {return params.value;}
-        // if (params.value.length===2){
-        //   const countries = JSON.parse(localStorage.getItem('scanCountries'));
-        //   var found = countries.filter(function (countries) { return countries.alpha2_Country_Code == params.value });
-        //   return found[0].Country_Name;
-        // }
-    }
-
     /**
     * @method filterList
     * @description Filter user listing on the basis of role and department
@@ -743,7 +731,7 @@ class OperationListing extends Component {
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: CONSTANT.EMPTY_DATA,
-                                    imagClass:'imagClass'
+                                    imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
@@ -752,7 +740,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} filter={true} getQuickFilterText={this.plantFilter}></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plants" floatingFilter={true} cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
@@ -779,7 +767,7 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </div>
+            </div >
         );
     }
 }
