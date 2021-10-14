@@ -265,7 +265,7 @@ export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechn
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParameter = `vendorId=${vendorId} `
+        const queryParameter = `vendorId=${vendorId}`
         const queryParameter1 = `simulationtechnologyId=${simulationTechnologyId}`
         const request = axios.get(`${API.getSelectListOfSimulationLinkingTokens}?${queryParameter}&${queryParameter1}`, headers);
         request.then((response) => {

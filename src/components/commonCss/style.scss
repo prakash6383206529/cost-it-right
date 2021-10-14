@@ -4209,7 +4209,8 @@ body{
   border-color: #DBF4E2;
   color: #4DC771;
   line-height: initial;
-  min-width: 100px;
+  min-width: 70px;
+  max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -4218,7 +4219,8 @@ body{
   border-color: #FEDCE2;;
   color: #FC5774;
   line-height: initial;
-  min-width: 100px;
+  min-width: 70px;
+  max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -6161,4 +6163,7 @@ body{
 }
 .imagClass.power-listing {
   margin-top: 50px;
+}
+.m-height-auto {
+  min-height: auto !important;
 }
