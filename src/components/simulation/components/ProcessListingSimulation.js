@@ -560,7 +560,7 @@ export function ProcessListingSimulation(props) {
                             >
                                 <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="Plant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-                                <AgGridColumn suppressSizeToFit="true" editable='false' field="NetCC" headerName="s CC" minWidth={190}></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" editable='false' field="NetCC" headerName="Net CC" minWidth={190}></AgGridColumn>
                                 {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
                                     <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
                                     <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>

@@ -10,8 +10,9 @@ import LoaderCustom from '../../common/LoaderCustom';
 import NoContentFound from '../../common/NoContentFound';
 import { useDispatch, useSelector } from 'react-redux';
 import ERSimulation from './SimulationPages/ERSimulation';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { COMBINED_PROCESS, EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import RMSimulation from './SimulationPages/RMSimulation';
+import CPSimulation from './SimulationPages/CPSimulation';
 
 const gridOptions = {};
 
@@ -184,6 +185,9 @@ export function Impactedmasterdata(props) {
                 return <RMSimulation list={data} isImpactedMaster={true} isbulkUpload={false} />
             case RMIMPORT:
                 return <RMSimulation list={data} isImpactedMaster={true} isbulkUpload={false} />
+            case COMBINED_PROCESS:
+                return <CPSimulation list={data} isImpactedMaster={true} isbulkUpload={false} />
+                // return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
 
             default:
                 break;

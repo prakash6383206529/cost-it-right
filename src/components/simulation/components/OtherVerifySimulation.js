@@ -53,7 +53,9 @@ function OtherVerifySimulation(props) {
     }, [])
 
     const verifyCostingList = () => {  // master.value
-
+        console.log(master, 'mastermastermastermasterd master')
+        console.log(EXCHNAGERATE, 'mastermastermastermasterd EXCHNAGERATE')
+        console.log(COMBINED_PROCESS, 'mastermastermastermasterd COMBINED_PROCESS')
         switch (Number(master)) {
             case Number(EXCHNAGERATE):
                 dispatch(getVerifyExchangeSimulationList(props.token, (res) => {

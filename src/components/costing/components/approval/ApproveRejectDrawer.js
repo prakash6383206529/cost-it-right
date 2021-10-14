@@ -126,7 +126,7 @@ function ApproveRejectDrawer(props) {
         )
 
       }))
-      dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+      // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
 
 
 

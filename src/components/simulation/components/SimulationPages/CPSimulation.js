@@ -471,7 +471,7 @@ function CPSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isCombinedProcess={true} master={selectedMasterForSimulation} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <OtherVerifySimulation isCombinedProcess={true} master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
                 }
 
                 {

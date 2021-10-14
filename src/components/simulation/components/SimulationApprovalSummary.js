@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -743,7 +743,14 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
                                                                     </>
                                                                 }
-
+                                                                {
+                                                                    (String(SimulationTechnologyId) === String(COMBINED_PROCESS)) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="CC Old" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="CC New" ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
