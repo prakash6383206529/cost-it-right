@@ -110,11 +110,11 @@ function RMDomesticListing(props) {
             dispatch(getPlantSelectListByType(ZBC, () => { }))
         }
         getDataList()
-    }, [])
+    }
 
-        useEffect(() => {
-            callFilterApi()
-        }, [shown])
+    useEffect(() => {
+        callFilterApi()
+    }, [shown])
 
     // const handleFilterButton = ()=>{
     //     setshown(!shown)
