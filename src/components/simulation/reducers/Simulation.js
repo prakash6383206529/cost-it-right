@@ -12,9 +12,15 @@ import {
     GET_AMMENDENT_STATUS_COSTING,
     SET_ATTACHMENT_FILE_DATA,
     GET_SELECTLIST_SIMULATION_TOKENS,
+    GET_FG_WISE_IMPACT_DATA,
 } from '../../../config/constants';
 
 const initialState = {
+
+
+
+
+
 
 };
 
@@ -93,6 +99,15 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 TokensList: action.payload
             }
+        case GET_FG_WISE_IMPACT_DATA:
+            return {
+                ...state,
+                loading: false,
+                impactData: action.payload
+            }
+
+
+
         default:
             return state;
     }
