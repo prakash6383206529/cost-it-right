@@ -951,7 +951,7 @@ function RMDomesticListing(props) {
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
                             >
-                                <AgGridColumn field="CostingHead" headerName="Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                <AgGridColumn field="CostingHead" headerName="Head"></AgGridColumn>
 
                                 <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
 

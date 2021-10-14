@@ -36,7 +36,7 @@ function RMApproval(props) {
 
     useEffect(() => {
         getTableData()
-        
+
     }, [])
 
 
@@ -347,7 +347,7 @@ function RMApproval(props) {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     suppressRowClickSelection={true}
@@ -357,7 +357,7 @@ function RMApproval(props) {
                                 >
                                     <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                    <AgGridColumn width="145" field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn width="145" field="CostingHead" headerName='Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>
