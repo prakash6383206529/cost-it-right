@@ -2,6 +2,9 @@ import { Row, Col } from 'reactstrap'
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFgWiseImpactData } from '../actions/Simulation'
+import { getConfigurationKey } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../helper'
+
 
 
 export function Fgwiseimactdata(props) {
@@ -26,30 +29,12 @@ export function Fgwiseimactdata(props) {
 
     }, [SimulationId])
 
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
 
 
 
-    const data = tasks && tasks.map((item) => {
-
-
-        <tr className="accordian-content">
-            <td><span>Part 1</span></td>
-            <td><span>1</span></td>
-            <td><span>Part number</span></td>
-            <td><span>24(INR)</span></td>
-            <td><span>26(INR)</span></td>
-            <td><span>2(INR)</span></td>
-            <td><span>1000</span></td>
-            <td><span>2000 (INR)</span></td>
-        </tr>
-
-
-    }
-
-
-    )
 
     return (
         <>
@@ -68,8 +53,11 @@ export function Fgwiseimactdata(props) {
                                     <th><span>New Cost/pc</span></th>
                                     <th><span>Quantity</span></th>
                                     <th><span>Impact/Pc</span></th>
-                                    <th><span>Volume</span></th>
+
+
+                                    <th><span>Volume/Year</span></th>
                                     <th><span>Impact/Quater</span></th>
+                                    <th><span>Impact/Year</span></th>
                                 </tr>
                             </thead>
 
@@ -80,14 +68,17 @@ export function Fgwiseimactdata(props) {
                                     <tbody>
                                         <tr className="accordian-with-arrow">
                                             <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
-                                            <td><span>{item.ECNNumber ? item.ECNNumber : "-"}</span></td>
-                                            <td><span>{item.PartName ? item.PartName : "-"}</span></td>
+                                            <td><span>{item.ECNNumber}</span></td>
+                                            <td><span>{item.PartName}</span></td>
                                             <td><span>{item.OldCost}</span></td>
-                                            <td><span>{item.NewCost}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.NewCost, 4)}</span></td>
                                             <td><span>{item.Quantity}</span></td>
-                                            <td><span>{item.VariancePerPiece ? item.VariancePerPiece : "-"}</span></td>
-                                            <td><span>-</span></td>
-                                            <td><span>{item.ImpactPerQuater} <a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                            <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+
+                                            <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.ImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
+
                                         </tr>
 
 
@@ -96,14 +87,18 @@ export function Fgwiseimactdata(props) {
                                             return (
                                                 <tr className="accordian-content">
                                                     <td><span>{item.PartNumber}</span></td>
-                                                    <td><span>{item.ECNNumber ? item.ECNNumber : "-"}</span></td>
-                                                    <td><span>{item.PartName ? item.PartName : "-"}</span></td>
-                                                    <td><span>{item.OldCost}</span></td>
-                                                    <td><span>{item.NewCost}</span></td>
+                                                    <td><span>{item.ECNNumber}</span></td>
+                                                    <td><span>{item.PartName}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{item.Quantity}</span></td>
-                                                    <td><span>{item.VariancePerPiece}</span></td>
-                                                    <td><span>-</span></td>
-                                                    <td><span>-</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+
+                                                    <td><span></span></td>
+                                                    <td><span></span></td>
+                                                    <td><span></span></td>
+
+
 
                                                 </tr>)
                                         })}
