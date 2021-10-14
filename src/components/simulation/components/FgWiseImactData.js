@@ -175,7 +175,7 @@ export function Fgwiseimactdata(props) {
                                             <td><span>{item.OldCost}</span></td>
                                             <td><span>{item.NewCost}</span></td>
                                             <td><span>{item.Quantity}</span></td>
-                                            <td><span>{item.ImpactPerYear ? item.ImpactPerYear : "-"}</span></td>
+                                            <td><span>{item.VariancePerPiece ? item.VariancePerPiece : "-"}</span></td>
                                             <td><span>-</span></td>
                                             <td><span>{item.ImpactPerQuater} <a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
                                         </tr>
@@ -191,8 +191,10 @@ export function Fgwiseimactdata(props) {
                                                     <td><span>{item.OldCost}</span></td>
                                                     <td><span>{item.NewCost}</span></td>
                                                     <td><span>{item.Quantity}</span></td>
-                                                    <td><span>{item.ImpactPerYear}</span></td>
+                                                    <td><span>{item.VariancePerPiece}</span></td>
                                                     <td><span>-</span></td>
+                                                    <td><span>-</span></td>
+
                                                 </tr>)
                                         })}
 

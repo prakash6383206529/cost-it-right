@@ -16,6 +16,21 @@ import {
 } from '../../../config/constants';
 
 const initialState = {
+    masterSelectList: {},
+    simulationVerifyList: {},
+    costingSimulationList: {},
+    simualtionApprovalList: {},
+    selectedMasterForSimulation: {},
+    applicabilityHeadListSimulation: {},
+    selectedTechnologyForSimulation: {},
+    approvalSimulatedCostingSummary: {},
+    ammendentStatus: {},
+    attachmentsData: [],
+    TokensList: {},
+    impactData: {},
+
+
+
 
 };
 
