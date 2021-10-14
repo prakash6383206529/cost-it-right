@@ -47,7 +47,7 @@ export function Fgwiseimactdata(props) {
                             <thead>
                                 <tr>
                                     <th><span>Part Number</span></th>
-                                    <th><span>Rev Number/ECN Number</span></th>
+                                    <th className="text-center"><span>Rev Number/ECN Number</span></th>
                                     <th><span>Part Name</span></th>
                                     <th><span>Old Cost/Pc</span></th>
                                     <th><span>New Cost/pc</span></th>
@@ -77,7 +77,7 @@ export function Fgwiseimactdata(props) {
 
                                             <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.ImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
+                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}<a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
 
                                         </tr>
 
@@ -87,7 +87,7 @@ export function Fgwiseimactdata(props) {
                                             return (
                                                 <tr className="accordian-content">
                                                     <td><span>{item.PartNumber}</span></td>
-                                                    <td><span>{item.ECNNumber}</span></td>
+                                                    <td className="text-center"><span>{item.ECNNumber}</span></td>
                                                     <td><span>{item.PartName}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
