@@ -133,9 +133,9 @@ function ApproveRejectDrawer(props) {
         setIsOpen(!IsOpen)
       })
 
-      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
-        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
-      }
+      // if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
+      //   dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+      // }
     }
 
     if (SimulationType !== null && SimulationType === provisional) {

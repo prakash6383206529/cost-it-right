@@ -739,7 +739,7 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
-                        {/* <Col md="3">
+                        <Col md="3">
                           <Field
                             label="Group Code"
                             name="ProductGroup"
@@ -758,7 +758,7 @@ class AddAssemblyPart extends Component {
                             className="multiselect-with-border"
                           // disabled={this.state.IsVendor || isEditFlag ? true : false}
                           />
-                        </Col> */}
+                        </Col>
                         {/* <Col md="3">
                           <Field
                             label="Plant"

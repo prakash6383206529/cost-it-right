@@ -434,7 +434,7 @@ class AddIndivisualPart extends Component {
                               </Col>
                             )}
 
-                          {/* <Col md="3">
+                          <Col md="3">
                             <Field
                               label="Group Code"
                               name="ProductGroup"
@@ -453,7 +453,7 @@ class AddIndivisualPart extends Component {
                               className="multiselect-with-border"
                             // disabled={this.state.IsVendor || isEditFlag ? true : false}
                             />
-                          </Col> */}
+                          </Col>
 
                         </Row>
 

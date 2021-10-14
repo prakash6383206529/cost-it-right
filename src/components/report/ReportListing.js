@@ -288,7 +288,6 @@ function ReportListing(props) {
         </ExcelSheet>);
     }
     const renderColumnSAP = (fileName) => {
-        console.log('fileName: ', fileName);
         let tempData = []
 
         if (selectedRowData.length == 0) {
