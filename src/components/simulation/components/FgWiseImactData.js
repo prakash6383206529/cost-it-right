@@ -71,7 +71,7 @@ export function Fgwiseimactdata(props) {
                                             <td><span>{item.ECNNumber}</span></td>
                                             <td><span>{item.PartName}</span></td>
                                             <td><span>{item.OldCost}</span></td>
-                                            <td><span>{checkForDecimalAndNull(item.NewCost, 4)}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                             <td><span>{item.Quantity}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
 
