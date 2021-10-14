@@ -147,9 +147,9 @@ function Simulation(props) {
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmDomesticListing) : [])
+                return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmImportListing) : [])
+                return returnExcelColumn(RMImportSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
             default:
                 return 'foo';
         }
