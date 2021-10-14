@@ -60,10 +60,6 @@ function OtherCostingSimulation(props) {
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
     const [tableData, setTableData] = useState([])
-    const [vendorIdState, setVendorIdState] = useState("")
-    const [simulationTypeState, setSimulationTypeState] = useState("")
-    const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
-
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -94,13 +90,6 @@ function OtherCostingSimulation(props) {
     const dataSet = (res) => {
         const tokenNo = res.data.Data.SimulationTokenNumber
         const Data = res.data.Data
-        var vendorId = Data.VendorId
-        var SimulationTechnologyId = Data.SimulationTechnologyId
-        var SimulationType = Data.SimulationType
-        setVendorIdState(vendorId)
-        setSimulationTechnologyIdState(SimulationTechnologyId)
-        setSimulationTypeState(SimulationType)
-
         Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
@@ -639,10 +628,6 @@ function OtherCostingSimulation(props) {
                                 master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
-                                vendorId={vendorIdState}
-                                SimulationTechnologyId={SimulationTechnologyIdState}
-                                SimulationType={simulationTypeState}
-
                             // isSaveDone={isSaveDone}
                             />}
 
