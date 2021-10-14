@@ -199,9 +199,8 @@ function Simulation(props) {
         }
     }
 
-    const editTable = (Data) => {
+    const editTable = () => {
         console.log("EDIT TABLE");
-        setTableData(Data)
         // alert('Hello')
         let flag = true;
         let vendorFlag = true;

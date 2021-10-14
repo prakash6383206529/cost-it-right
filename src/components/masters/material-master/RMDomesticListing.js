@@ -109,11 +109,12 @@ function RMDomesticListing(props) {
             dispatch(getTechnologySelectList(() => { }))
             dispatch(getPlantSelectListByType(ZBC, () => { }))
         }
-    }
+        getDataList()
+    }, [])
 
-    useEffect(() => {
-        callFilterApi()
-    }, [shown])
+        useEffect(() => {
+            callFilterApi()
+        }, [shown])
 
     // const handleFilterButton = ()=>{
     //     setshown(!shown)
@@ -355,7 +356,6 @@ function RMDomesticListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
-
 
 
     /**
