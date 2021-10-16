@@ -3,16 +3,18 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFgWiseImpactData } from '../actions/Simulation'
 import { getConfigurationKey } from '../../../helper'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../helper'
+import { checkForDecimalAndNull } from '../../../helper'
+import { EMPTY_GUID } from '../../../config/constants'
+import SimulationApprovalSummary from './SimulationApprovalSummary'
+import { Callbacks } from 'jquery'
+import { sortedLastIndex } from 'lodash-es'
 
 
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
-    const [acc2, setAcc2] = useState(false)
     const [showTableData, setshowTableData] = useState(false)
     const { SimulationId } = props
-    const [SimulationIdState, setSimulationIdState] = useState("")
     const dispatch = useDispatch()
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -31,6 +33,12 @@ export function Fgwiseimactdata(props) {
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
+
+    const DisplayCompareCostingFgWiseImpact = (index) => {
+
+        props.DisplayCompareCosting(index, 0)
+
+    }
 
 
 
@@ -58,6 +66,7 @@ export function Fgwiseimactdata(props) {
                                     <th><span>Volume/Year</span></th>
                                     <th><span>Impact/Quater</span></th>
                                     <th><span>Impact/Year</span></th>
+                                    <th><span></span></th>
                                 </tr>
                             </thead>
 
@@ -77,12 +86,13 @@ export function Fgwiseimactdata(props) {
 
                                             <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.ImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}<a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
+                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
 
                                         </tr>
 
 
-                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item) => {
+                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item, index) => {
 
                                             return (
                                                 <tr className="accordian-content">
@@ -97,11 +107,14 @@ export function Fgwiseimactdata(props) {
                                                     <td><span></span></td>
                                                     <td><span></span></td>
                                                     <td><span></span></td>
+                                                    <td><span> <button className="Balance mb-0" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(index) }} /></span></td>
 
 
 
                                                 </tr>)
                                         })}
+
+
 
 
 
