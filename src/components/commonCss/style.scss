@@ -6164,3 +6164,12 @@ body{
 .m-height-auto {
   min-height: auto !important;
 }
+.mh-auto {
+  height: auto !important;
+  min-height: calc(100vh - 219px) !important;
+  .add-min-height {
+    @media (max-width:1365px) {  
+      min-height: calc(100vh - 214px) !important;
+    }
+  }
+}
