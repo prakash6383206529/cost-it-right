@@ -220,6 +220,8 @@ function SimulationApprovalSummary(props) {
     }
 
     const DisplayCompareCosting = (el, data) => {
+
+        console.log(el, data, "total")
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
         let obj = {
@@ -359,6 +361,7 @@ function SimulationApprovalSummary(props) {
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <>
                 <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
