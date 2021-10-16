@@ -3,17 +3,17 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFgWiseImpactData } from '../actions/Simulation'
 import { getConfigurationKey } from '../../../helper'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../helper'
+import { checkForDecimalAndNull } from '../../../helper'
 import { EMPTY_GUID } from '../../../config/constants'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
+import { Callbacks } from 'jquery'
+import { sortedLastIndex } from 'lodash-es'
 
 
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
-    const [acc2, setAcc2] = useState(false)
     const [showTableData, setshowTableData] = useState(false)
-    const [displayCompareCosting, setdisplayCompareCosting] = useState(false)
     const { SimulationId } = props
     const dispatch = useDispatch()
 
@@ -34,25 +34,12 @@ export function Fgwiseimactdata(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
-    // const DisplayCompareCosting = (el, data) => {
-    //     setId(data.CostingNumber)
-    //     // setCompareCostingObj(el)
-    //     let obj = {
-    //         simulationApprovalProcessSummaryId: el,
-    //         simulationId: EMPTY_GUID,
-    //         costingId: EMPTY_GUID
-    //     }
-    //     dispatch(getComparisionSimulationData(obj, res => {
-    //         const Data = res.data.Data
-    //         const obj1 = formViewData(Data.OldCosting)
-    //         const obj2 = formViewData(Data.NewCosting)
-    //         const obj3 = formViewData(Data.Variance)
-    //         const objj3 = [obj1[0], obj2[0], obj3[0]]
-    //         setCompareCostingObj(objj3)
-    //         dispatch(setCostingViewData(objj3))
-    //         setCompareCosting(true)
-    //     }))
-    // }
+    const DisplayCompareCostingFgWiseImpact = (index) => {
+
+        props.DisplayCompareCosting(index, 0)
+
+    }
+
 
 
 
@@ -105,7 +92,7 @@ export function Fgwiseimactdata(props) {
                                         </tr>
 
 
-                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item) => {
+                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item, index) => {
 
                                             return (
                                                 <tr className="accordian-content">
@@ -120,26 +107,13 @@ export function Fgwiseimactdata(props) {
                                                     <td><span></span></td>
                                                     <td><span></span></td>
                                                     <td><span></span></td>
-                                                    <td><span> <button className="Balance mb-0" type={'button'} onClick={() => { }} /></span></td>
+                                                    <td><span> <button className="Balance mb-0" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(index) }} /></span></td>
 
 
 
                                                 </tr>)
                                         })}
 
-
-
-
-                                        {displayCompareCosting && <SimulationApprovalSummary
-
-                                            simulationId={SimulationId}
-
-
-
-
-
-
-                                        />}
 
 
 
