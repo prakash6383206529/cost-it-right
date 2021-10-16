@@ -58,7 +58,8 @@ const handleHTTPStatus = (response) => {
     case 403:
       return toastr.error('You are not allowed to access this resource. Please contact your IT Team.',)
     case 404:
-      return toastr.error('Not found')
+      const errorMsg = response?.data?.Message ? response.data.Message : 'Not found'
+      return toastr.error(errorMsg)
     case 405:
       return toastr.error('You are not allowed to access this resource. Please contact your IT Team',)
     case 406:
