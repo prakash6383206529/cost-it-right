@@ -4372,9 +4372,10 @@ body{
     min-width: unset;
     width: 100%;
   }
+  .red-value, .green-value {
+    max-width: 100% !important;
+  }
 }
-
-
 
 .sm-headrgroup-table{
   .react-bs-table-pagination{
@@ -4688,7 +4689,7 @@ body{
   }
 }
 }
-@media(max-width:1366px){
+@media(max-width:$belowLaptop){
   .overhead-profit-tab-costing{
     .form-control[disabled]{
       width: auto;
@@ -6143,12 +6144,12 @@ body{
 }
 .grant-user-grid table  th:nth-child(1), .grant-user-grid table th:nth-child(2) span {
   font-size: 14px;
-  @media (max-width:1366px) {
+  @media (max-width:$belowLaptop) {
     font-size: calc(14px * 80/100);
   }
 }
 //simulation filter cancel button css 28-09-2021
-@media (max-width:1366px) {
+@media (max-width:$belowLaptop) {
   .simulation-filter {
     .filter-block {
       margin-bottom: 15px;
