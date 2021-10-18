@@ -1,7 +1,6 @@
 import {
     API_REQUEST,
     GET_SELECTLIST_MASTERS,
-    GET_SIMULATION_HISTORY,
     GET_VERIFY_SIMULATION_LIST,
     GET_COSTING_SIMULATION_LIST,
     GET_SIMULATION_APPROVAL_LIST,
@@ -11,8 +10,10 @@ import {
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_AMMENDENT_STATUS_COSTING,
     SET_ATTACHMENT_FILE_DATA,
+    GET_COMBINED_PROCESS_LIST,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_FG_WISE_IMPACT_DATA,
+    SET_SELECTED_VENDOR_SIMULATION,
 } from '../../../config/constants';
 
 const initialState = {
@@ -92,7 +93,12 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 attachmentsData: [...data]
             }
-
+        case GET_COMBINED_PROCESS_LIST:
+            return {
+                ...state,
+                loading: false,
+                combinedProcessList: action.payload
+            }
         case GET_SELECTLIST_SIMULATION_TOKENS:
             return {
                 ...state,
@@ -105,8 +111,12 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 impactData: action.payload
             }
-
-
+        case SET_SELECTED_VENDOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedVendorForSimulation: action.payload
+            }
 
         default:
             return state;

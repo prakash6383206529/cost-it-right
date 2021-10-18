@@ -253,6 +253,86 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
     }
+    const deleteFileOthers = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            dispatch(fileDeleteCosting(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = otherFiles && otherFiles.filter(item => item.FileId !== FileId)
+                setOtherFiles(tempArr)
+                setIsOpen(!IsOpen)
+            }))
+        }
+        if (FileId == null) {
+            let tempArr = otherFiles && otherFiles.filter(item => item.FileName !== OriginalFileName)
+            setOtherFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+    }
+
+    const deleteFileSupplierConfirmation = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            dispatch(fileDeleteCosting(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = supplierFiles && supplierFiles.filter(item => item.FileId !== FileId)
+                setSupplierFiles(tempArr)
+                setIsOpen(!IsOpen)
+            }))
+        }
+        if (FileId == null) {
+            let tempArr = supplierFiles && supplierFiles.filter(item => item.FileName !== OriginalFileName)
+            setSupplierFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+    }
+
+    const deleteFileInvoiceBackups = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            dispatch(fileDeleteCosting(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = invoiceFiles && invoiceFiles.filter(item => item.FileId !== FileId)
+                setInvoiceFiles(tempArr)
+                setIsOpen(!IsOpen)
+            }))
+        }
+        if (FileId == null) {
+            let tempArr = invoiceFiles && invoiceFiles.filter(item => item.FileName !== OriginalFileName)
+            setInvoiceFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+    }
+
+    const deleteFileAttachments = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            dispatch(fileDeleteCosting(deleteData, (res) => {
+                toastr.success('File has been deleted successfully.')
+                let tempArr = attachmentFiles && attachmentFiles.filter(item => item.FileId !== FileId)
+                setAttachmentFiles(tempArr)
+                setIsOpen(!IsOpen)
+            }))
+        }
+        if (FileId == null) {
+            let tempArr = attachmentFiles && attachmentFiles.filter(item => item.FileName !== OriginalFileName)
+            setAttachmentFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+    }
+
 
     const Preview = ({ meta }) => {
         const { name, percent, status } = meta
@@ -425,7 +505,7 @@ function AttachmentSec(props) {
                                                 <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileSupplierConfirmation(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                             </div>
@@ -512,7 +592,7 @@ function AttachmentSec(props) {
                                                 <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileInvoiceBackups(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                             </div>
@@ -598,7 +678,7 @@ function AttachmentSec(props) {
                                                 <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileOthers(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                             </div>
@@ -684,7 +764,7 @@ function AttachmentSec(props) {
                                                 <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileAttachments(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                             </div>

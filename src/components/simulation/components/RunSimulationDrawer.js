@@ -5,15 +5,17 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
-import { EXCHNAGERATE } from '../../../config/constants';
+// import { EXCHNAGERATE } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
+    console.log(masterId,"MASTER")
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -136,23 +138,44 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-
-        if (masterId === Number(EXCHNAGERATE)) {
-            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
-        } else {
-            //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
+        switch (Number(masterId)) {
+            case Number(EXCHNAGERATE):
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(COMBINED_PROCESS):
+                dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                 console.log(res.data.Result,'resdsd')
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(RMDOMESTIC):
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(RMIMPORT):
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            default:
+                break;
         }
+        // runSimulationCosting()                       ///remove this
     }
 
     const onSubmit = () => {
@@ -206,8 +229,9 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="ml-0 pt-3">
                                         <Col md="12" className="mb-3">
+                                         
                                             {
-                                                masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
+                                                masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                     if (el.Value === '0') return false;
                                                     return (
                                                         <Col md="12" className="mb-3 p-0">
@@ -289,37 +313,37 @@ function RunSimulationDrawer(props) {
 
                                             } */}
 
-                                             <Row>
-                                            <Col md="12" className="inputbox date-section">
-                                                <DatePickerHookForm
-                                                    name={`EffectiveDate`}
-                                                    label={'Effective Date'}
-                                                    selected={selectedDate}
-                                                    handleChange={(date) => {
-                                                        handleEffectiveDateChange(date);
-                                                    }}
-                                                    //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                                    rules={{ required: true }}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    showMonthDropdown
-                                                    showYearDropdown
-                                                    dateFormat="aa/MM/yyyy"
-                                                    //maxDate={new Date()}
-                                                    dropdownMode="select"
-                                                    placeholderText="Select date"
-                                                    customClassName="withBorder"
-                                                    className="withBorder"
-                                                    autoComplete={"off"}
-                                                    disabledKeyboardNavigation
-                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                    disabled={false}
-                                                    mandatory={true}
-                                                    errors={errors.EffectiveDate}
-                                                />
-                                            </Col>
-                                           </Row>
+                                            <Row>
+                                                <Col md="12" className="inputbox date-section">
+                                                    <DatePickerHookForm
+                                                        name={`EffectiveDate`}
+                                                        label={'Effective Date'}
+                                                        selected={selectedDate}
+                                                        handleChange={(date) => {
+                                                            handleEffectiveDateChange(date);
+                                                        }}
+                                                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                                        rules={{ required: true }}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dateFormat="aa/MM/yyyy"
+                                                        //maxDate={new Date()}
+                                                        dropdownMode="select"
+                                                        placeholderText="Select date"
+                                                        customClassName="withBorder"
+                                                        className="withBorder"
+                                                        autoComplete={"off"}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        disabled={false}
+                                                        mandatory={true}
+                                                        errors={errors.EffectiveDate}
+                                                    />
+                                                </Col>
+                                            </Row>
 
                                         </Col>
 

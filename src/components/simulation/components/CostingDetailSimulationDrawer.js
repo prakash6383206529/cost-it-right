@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { EXCHNAGERATE, RAW_MATERIAL, RMDOMESTIC } from '../../../config/constants';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC } from '../../../config/constants';
 
 
 
@@ -57,6 +57,14 @@ function CostingDetailSimulationDrawer(props) {
 
         return <Redirect to='/simulation-history' />
     }
+
+    let isCombinedProcess
+    switch (Number(master)) {
+        case Number(COMBINED_PROCESS):
+            isCombinedProcess = true
+        default:
+    }
+
 
     return (
         <div>
@@ -114,6 +122,19 @@ function CostingDetailSimulationDrawer(props) {
                                                 </Col>
                                             </>
                                     }
+                                    {Number(master) === Number(COMBINED_PROCESS) &&
+                                        <>
+                                            <Col md="3">
+                                                <label>CC Old</label>
+                                                <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                            </Col>
+                                            <Col md="3">
+                                                <label>CC New</label>
+                                                <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                            </Col>
+                                        </>
+                                    }
+
                                     {
                                         Number(master) === Number(RMDOMESTIC) &&
                                         <>

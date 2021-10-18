@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
@@ -8,8 +7,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUser
 import { toastr } from 'react-redux-toastr';
 import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
-import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -133,7 +131,7 @@ function ERSimulation(props) {
 
     }
     const isFirstColumn = (params) => {
-        if(isImpactedMaster) return false
+        if (isImpactedMaster) return false
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
 
@@ -211,7 +209,7 @@ function ERSimulation(props) {
         // setShowVerifyPage(true)
     }
 
-
+    console.log(master, 'mastermastermastermastermastermastermastermastermastermastermastermastermastermastermaster')
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -300,7 +298,7 @@ function ERSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isExchangeRate={true} token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <OtherVerifySimulation isExchangeRate={true} master={master} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {
@@ -312,6 +310,7 @@ function ERSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
+                        masterId={master}
                     />
                 }
             </div>
