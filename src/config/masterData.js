@@ -1767,7 +1767,9 @@ export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Impor
 export const RMDomesticSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
+    {label:"RMCode",value:"RawMaterialCode"},
     { label: "RMGrade", value: "RMGrade" },
+    { label: "RMSpec", value: "RMSpec" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
@@ -1793,6 +1795,7 @@ export const RMDomesticSimulation = [
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
+    {label:"RMCode",value:"RawMaterialCode"},
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
@@ -2300,6 +2303,7 @@ export const CostingSimulationDownload = [
     { label: "Raw Material", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "RawMaterial Specs", value: "RMSpec" },
+    { label: "RawMaterial Code", value: "RMCode" },
     { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
