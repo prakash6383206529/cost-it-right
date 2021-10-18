@@ -30,11 +30,12 @@ import { pushAPI } from '../../simulation/actions/Simulation'
 import AttachmentSec from '../../costing/components/approval/AttachmentSec';
 
 
+
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation } = props;
+    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation, simulationCostingIdOfFgwiSeImpact } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
@@ -220,6 +221,8 @@ function SimulationApprovalSummary(props) {
     }
 
     const DisplayCompareCosting = (el, data) => {
+
+
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
         let obj = {
@@ -238,6 +241,12 @@ function SimulationApprovalSummary(props) {
             setCompareCosting(true)
         }))
     }
+
+
+
+
+
+
 
     /**
     * @method onSubmit
@@ -359,6 +368,7 @@ function SimulationApprovalSummary(props) {
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <>
                 <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
@@ -663,7 +673,10 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata SimulationId={simulationDetail.SimulationId} />
+                        <Fgwiseimactdata
+                            DisplayCompareCosting={DisplayCompareCosting}
+
+                            SimulationId={simulationDetail.SimulationId} />
 
                         {/* FG wise Impact section end */}
 
