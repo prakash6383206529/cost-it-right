@@ -34,9 +34,9 @@ export function Fgwiseimactdata(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
-    const DisplayCompareCostingFgWiseImpact = (index) => {
+    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
 
-        props.DisplayCompareCosting(index, 0)
+        props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
 
     }
 
@@ -107,7 +107,7 @@ export function Fgwiseimactdata(props) {
                                                     <td><span></span></td>
                                                     <td><span></span></td>
                                                     <td><span></span></td>
-                                                    <td><span> <button className="Balance mb-0" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(index) }} /></span></td>
+                                                    <td><span> <button className="Balance mb-0" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></span></td>
 
 
 
