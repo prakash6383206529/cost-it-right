@@ -17,7 +17,6 @@
     "flowpoints": "^1.0.18",
     "fontawesome-4.7": "^4.7.0",
     "joi": "^17.4.0",
-    "jquery": "^3.4.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "node-sass": "^4.14.1",

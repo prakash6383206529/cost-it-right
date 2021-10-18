@@ -11,7 +11,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
-import $ from 'jquery';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -168,7 +167,6 @@ class AddInterestRate extends Component {
         isEditFlag: true,
         InterestRateId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getInterestRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
