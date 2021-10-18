@@ -13,6 +13,7 @@ import {
     GET_COMBINED_PROCESS_LIST,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_FG_WISE_IMPACT_DATA,
+    SET_SELECTED_VENDOR_SIMULATION,
 } from '../../../config/constants';
 
 const initialState = {
@@ -110,8 +111,12 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 impactData: action.payload
             }
-
-
+        case SET_SELECTED_VENDOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedVendorForSimulation: action.payload
+            }
 
         default:
             return state;

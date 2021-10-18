@@ -38,6 +38,7 @@ function OtherVerifySimulation(props) {
     const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const [verifyList,setVerifyList] = useState([])
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -50,117 +51,121 @@ function OtherVerifySimulation(props) {
         verifyCostingList()
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
-    }, [])
+    }, [props.token])
 
-    const verifyCostingList = () => {  // master.value
-        console.log(master, 'mastermastermastermasterd master')
-        console.log(EXCHNAGERATE, 'mastermastermastermasterd EXCHNAGERATE')
-        console.log(COMBINED_PROCESS, 'mastermastermastermasterd COMBINED_PROCESS')
-        switch (Number(master)) {
-            case Number(EXCHNAGERATE):
-                dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
-                    if (res.data.Result) {
-                        const data = res.data.Data
-                        if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
-                            toastr.warning('No approved costing exist for this exchange rate.')
-                            setHideRunButton(true)
-                            return false
+
+
+    const verifyCostingList = () => {  // master.value       
+        if(props.token){
+            switch (Number(master)) {
+                case Number(EXCHNAGERATE):
+                    dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                        if (res.data.Result) {
+                            const data = res.data.Data
+                            if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
+                                toastr.warning('No approved costing exist for this exchange rate.')
+                                setHideRunButton(true)
+                                return false
+                            }
+                            setTokenNo(data.TokenNumber)
+                            setSimualtionId(data.SimulationId)
+                            setMasterId(data.SimulationtechnologyId)
+                            setVerifyList(data.SimulationExchangeRateImpactedCostings)
+                            setHideRunButton(false)
                         }
-                        setTokenNo(data.TokenNumber)
-                        setSimualtionId(data.SimulationId)
-                        setMasterId(data.SimulationtechnologyId)
-                        setHideRunButton(false)
-                    }
-                }))
-                break;
-            case Number(COMBINED_PROCESS):
-                dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
-                    if (res.data.Result) {
-                        const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                            toastr.warning('No approved costing exist for this exchange rate.')
-                            setHideRunButton(true)
-                            return false
+                    }))
+                    break;
+                case Number(COMBINED_PROCESS):
+                  
+                    dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                        if (res.data.Result) {
+                            const data = res.data.Data
+                            if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                                toastr.warning('No approved costing exist for this exchange rate.')
+                                setHideRunButton(true)
+                                return false
+                            }
+                            setTokenNo(data.TokenNumber)
+                            setSimualtionId(data.SimulationId)
+                            setMasterId(data.SimulationtechnologyId)
+                            setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                            setHideRunButton(false)
                         }
-                        setTokenNo(data.TokenNumber)
-                        setSimualtionId(data.SimulationId)
-                        setMasterId(data.SimulationtechnologyId)
-                        setHideRunButton(false)
-                    }
-                }))
-                break;
-            default:
-                break;
+                    }))
+                    break;
+                default:
+                    break;
+            }
         }
 
 
     }
 
 
-    const verifyListExchangeRate = useSelector(state => state.simulation.simulationVerifyList)
-
-    const verifyList = [{
-        CostingId: 0,
-        CostingNumber: 1221,
-        PartNo: "part1",
-        PartName: 10,
-        ECNNumber: 20,
-        RevisionNumber: 30,
-        POPrice: 12,
-        OldProcessRate: 11,
-        NewProcessRate: 10
-    }, {
-        CostingId: 1,
-        CostingNumber: 1222,
-        PartNo: "part1",
-        PartName: 10,
-        ECNNumber: 20,
-        RevisionNumber: 30,
-        POPrice: 12,
-        OldProcessRate: 11,
-        NewProcessRate: 10
-    }, {
-        CostingId: 2,
-        CostingNumber: 1223,
-        PartNo: "part1",
-        PartName: 10,
-        ECNNumber: 20,
-        RevisionNumber: 30,
-        POPrice: 12,
-        OldProcessRate: 11,
-        NewProcessRate: 10
-    }, {
-        CostingId: 3,
-        CostingNumber: 1224,
-        PartNo: "part1",
-        PartName: 10,
-        ECNNumber: 20,
-        RevisionNumber: 30,
-        POPrice: 12,
-        OldProcessRate: 11,
-        NewProcessRate: 10
-    }, {
-        CostingId: 4,
-        CostingNumber: 1225,
-        PartNo: "part1",
-        PartName: 10,
-        ECNNumber: 20,
-        RevisionNumber: 30,
-        POPrice: 12,
-        OldProcessRate: 11,
-        NewProcessRate: 10
-    }, {
-        CostingId: 5,
-        CostingNumber: 1226,
-        PartNo: "part1",
-        PartName: 10,
-        ECNNumber: 20,
-        RevisionNumber: 30,
-        POPrice: 12,
-        OldProcessRate: 11,
-        NewProcessRate: 10
-    }
-    ]
+    // const verifyListExchangeRate = useSelector(state => state.simulation.simulationVerifyList)
+    // const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+    // const verifyList = [{
+    //     CostingId: 0,
+    //     CostingNumber: 1221,
+    //     PartNo: "part1",
+    //     PartName: 10,
+    //     ECNNumber: 20,
+    //     RevisionNumber: 30,
+    //     POPrice: 12,
+    //     OldProcessRate: 11,
+    //     NewProcessRate: 10
+    // }, {
+    //     CostingId: 1,
+    //     CostingNumber: 1222,
+    //     PartNo: "part1",
+    //     PartName: 10,
+    //     ECNNumber: 20,
+    //     RevisionNumber: 30,
+    //     POPrice: 12,
+    //     OldProcessRate: 11,
+    //     NewProcessRate: 10
+    // }, {
+    //     CostingId: 2,
+    //     CostingNumber: 1223,
+    //     PartNo: "part1",
+    //     PartName: 10,
+    //     ECNNumber: 20,
+    //     RevisionNumber: 30,
+    //     POPrice: 12,
+    //     OldProcessRate: 11,
+    //     NewProcessRate: 10
+    // }, {
+    //     CostingId: 3,
+    //     CostingNumber: 1224,
+    //     PartNo: "part1",
+    //     PartName: 10,
+    //     ECNNumber: 20,
+    //     RevisionNumber: 30,
+    //     POPrice: 12,
+    //     OldProcessRate: 11,
+    //     NewProcessRate: 10
+    // }, {
+    //     CostingId: 4,
+    //     CostingNumber: 1225,
+    //     PartNo: "part1",
+    //     PartName: 10,
+    //     ECNNumber: 20,
+    //     RevisionNumber: 30,
+    //     POPrice: 12,
+    //     OldProcessRate: 11,
+    //     NewProcessRate: 10
+    // }, {
+    //     CostingId: 5,
+    //     CostingNumber: 1226,
+    //     PartNo: "part1",
+    //     PartName: 10,
+    //     ECNNumber: 20,
+    //     RevisionNumber: 30,
+    //     POPrice: 12,
+    //     OldProcessRate: 11,
+    //     NewProcessRate: 10
+    // }
+    // ]
 
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
 
@@ -228,32 +233,35 @@ function OtherVerifySimulation(props) {
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
 
-        switch (Number(selectedMasterForSimulation.value)) {
-            case Number(EXCHNAGERATE):
-                selectedRowData && selectedRowData.map(item => {
-                    let tempObj = {}
-                    tempObj.CostingId = item.CostingId
-                    tempArr.push(tempObj)
-                    return null;
-                })
+        if(props.token){
 
-                obj.RunSimualtionExchangeRateCostingInfos = tempArr
-                setObj(obj)
-                setSimulationDrawer(true)
-            case Number(COMBINED_PROCESS):
-                selectedRowData && selectedRowData.map(item => {
-                    let tempObj = {}
-                    tempObj.CostingId = item.CostingId
-                    tempArr.push(tempObj)
-                    return null;
-                })
-
-                obj.RunSimualtionCombinedProcessCostingInfos = tempArr
-                setObj(obj)
-                setSimulationDrawer(true)
-
-            default:
-                break;
+            switch (Number(selectedMasterForSimulation.value)) {
+                case Number(EXCHNAGERATE):
+                    selectedRowData && selectedRowData.map(item => {
+                        let tempObj = {}
+                        tempObj.CostingId = item.CostingId
+                        tempArr.push(tempObj)
+                        return null;
+                    })
+    
+                    obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                    setObj(obj)
+                    setSimulationDrawer(true)
+                case Number(COMBINED_PROCESS):
+                    selectedRowData && selectedRowData.map(item => {
+                        let tempObj = {}
+                        tempObj.CostingId = item.CostingId
+                        tempArr.push(tempObj)
+                        return null;
+                    })
+    
+                    obj.RunSimualtionCostingInfo = tempArr
+                    setObj(obj)
+                    setSimulationDrawer(true)
+    
+                default:
+                    break;
+            }
         }
 
 
@@ -320,7 +328,6 @@ function OtherVerifySimulation(props) {
         customNoRowsOverlay: NoContentFound,
     };
 
-    console.log(master, 'ssasqsqwawefefgergfrthf')
     return (
         <>
             {
@@ -362,7 +369,7 @@ function OtherVerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={isCombinedProcess ? verifyList : verifyListExchangeRate}
+                                                rowData={verifyList}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -386,17 +393,18 @@ function OtherVerifySimulation(props) {
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                 {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
                                                 {/* {isCombinedProcess !== true && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>} */}
-                                                <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
                                                 {isExchangeRate &&
                                                     <>
+                                                    <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
                                                     </>
                                                 }
                                                 {isCombinedProcess &&
                                                     <>
-                                                        <AgGridColumn width={145} field="OldProcessRate" headerName="Old CC"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewProcessRate" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
+                                                      <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldNetCC" headerName="Old CC"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
                                                     </>
                                                 }
                                             </AgGridReact>

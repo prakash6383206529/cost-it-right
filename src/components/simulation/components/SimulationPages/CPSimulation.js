@@ -33,62 +33,7 @@ function CPSimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
 
-    const [dummyData, setDummyData] = useState([{
-        Technology: "Sheet Metal",
-        Plant: "plant1",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-        DisplayStatus: "Pending"
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant2",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-        DisplayStatus: "Pending"
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant3",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-        DisplayStatus: "Pending"
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant4",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "55",
-        EffectiveDate: new Date(),
-        DisplayStatus: "Pending"
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant5",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-        DisplayStatus: "Pending"
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant6",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-        DisplayStatus: "Pending"
-    },
-
-    ])
+    
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -97,7 +42,7 @@ function CPSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation,selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const cancelVerifyPage = () => {
 
@@ -111,9 +56,7 @@ function CPSimulation(props) {
     }
 
     useEffect(() => {
-        if (list.length !== 0) {
-            setDummyData(list)
-        }
+       
 
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
@@ -129,8 +72,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.NetCC) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.NetCC)} </span>
+                        Number(row.OldNetCC) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
                 }
 
             </>
@@ -145,8 +88,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewCC :
-                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.NetCC)} </span>
+                        row.NewNetCC :
+                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
                 }
 
             </>
@@ -239,9 +182,9 @@ function CPSimulation(props) {
     const NewcostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewCC || Number(row.NetCC) === Number(row.NewCC) || row.NewCC === '') return ''
-        const NewCC = Number(row.NewCC) + checkForNull(row.RemainingFieldsTotal)
-        const NetCost = Number(row.NetCC) + checkForNull(row.RemainingFieldsTotal)
+        if (!row.NewCC || Number(row.ConversionCost) === Number(row.NewCC) || row.NewCC === '') return ''
+        const NewCC = Number(row.NewCC) + checkForNull(row.RemainingTotal)
+        const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
         const classGreen = (NewCC > NetCost) ? 'red-value form-control' : (NewCC < NetCost) ? 'green-value form-control' : 'form-class'
         return row.NewCC != null ? <span className={classGreen}>{checkForDecimalAndNull(NewCC, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
@@ -250,18 +193,18 @@ function CPSimulation(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // if (!row.NetCC || Number(row.NetCC) === Number(row.NetCC) || row.NetCC === '') return ''
-        const NetCC = Number(row.NetCC) + checkForNull(row.RemainingFieldsTotal)
-        const NetCost = Number(row.NetCC) + checkForNull(row.RemainingFieldsTotal)
-        const classGreen = (NetCC > NetCost) ? 'red-value form-control' : (NetCC < NetCost) ? 'green-value form-control' : 'form-class'
-        return row.NetCC != null ? checkForDecimalAndNull(NetCC, getConfigurationKey().NoOfDecimalForPrice) : ''
+        // if (!row.ConversionCost || Number(row.ConversionCost) === Number(row.ConversionCost) || row.ConversionCost === '') return ''
+        const ConversionCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
+        const NetCost = Number(row.NewCC) + checkForNull(row.RemainingTotal)
+        const classGreen = (ConversionCost > NetCost) ? 'red-value form-control' : (ConversionCost < NetCost) ? 'green-value form-control' : 'form-class'
+        return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
 
 
         // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // // if (!row.NewCC || Number(row.NetCC) === Number(row.NewCC) || row.NewCC === '') return ''
-        // const NetCost = Number(row.NetCC) + checkForNull(row.RemainingFieldsTotal)
-        // return row.NetCC != null ? checkForDecimalAndNull(NetCost, getConfigurationKey().NoOfDecimalForPrice) : ''
+        // // if (!row.NewCC || Number(row.ConversionCost) === Number(row.NewCC) || row.NewCC === '') return ''
+        // const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingFieldsTotal)
+        // return row.ConversionCost != null ? checkForDecimalAndNull(NetCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const frameworkComponents = {
@@ -284,13 +227,22 @@ function CPSimulation(props) {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
 
         let ccCount = 0
-        let tempData = dummyData
+        let tempData = list
         let arr = []
         tempData && tempData.map((li, index) => {
-            if (Number(li.NetCC) === Number(li.NewCC) || li?.NewCC === undefined) {
+
+
+
+
+
+
+            if (Number(li.ConversionCost) === Number(li.NewCC) || li?.NewCC === undefined) {
                 ccCount = ccCount + 1
             } else {
-                li.NewTotal = Number(li.NewCC ? li.NewCC : li.NetCC) + checkForNull(li.RemainingFieldsTotal)
+    
+    
+    
+                li.NewTotal = Number(li.NewCC ? li.NewCC : li.ConversionCost) + checkForNull(li.RemainingTotal)
 
                 arr.push(li)
             }
@@ -303,20 +255,25 @@ function CPSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        let tempArr = []
-        // selectedRowData && selectedRowData.map(item => {
-        //     let tempObj = {}
-        //     tempObj.ExchangeRateId = item.ExchangeRateId
-        //     tempObj.EffectiveDate = item.EffectiveDate
-        //     tempObj.Currency = item.Currency
-        //     tempObj.NewExchangeRate = item.CurrencyExchangeRate
-        //     tempObj.Delta = 0
-        //     tempArr.push(tempObj)
-        //     return null;
-        // })
-        obj.SimulationCombinedProcess = arr
+        obj.CostingHead = list[0].CostingHead
+        obj.TechnologyId = list[0].TechnologyId
+        obj.TechnologyName = list[0].TechnologyName
 
-        setTableData(obj)
+        let tempArr = []
+        arr && arr.map(item => {
+            let tempObj = {}
+            tempObj.CostingId = item.CostingId
+            tempObj.OldNetCC = item.ConversionCost
+            tempObj.NewNetCC = item.NewCC
+            tempObj.RemainingTotal = item.RemainingTotal
+            tempObj.OldTotalCost = item.TotalCost
+            tempObj.NewTotalCost = item.NewTotal
+            tempArr.push(tempObj)
+        
+        })
+        obj.SimulationCombinedProcess = tempArr
+
+        // setTableData(obj)
 
         dispatch(runVerifyCombinedProcessSimulation(obj, res => {
             if (res.data.Result) {
@@ -397,7 +354,7 @@ function CPSimulation(props) {
                                                 defaultColDef={defaultColDef}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={dummyData}
+                                                rowData={list}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -413,22 +370,23 @@ function CPSimulation(props) {
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
                                             >
-                                                <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="Plant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                          
+                                                <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="NetCC"></AgGridColumn>
+                                                    <AgGridColumn width={120} field="ConversionCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="ConversionCost"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newCPFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
-                                                    <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.NetCC) + Number(data.RemainingFieldsTotal)' field="Total" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Total"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingFieldsTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Total"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
 
                                                 {/* <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn> */}
-                                                <AgGridColumn field="CombinedProcessId" hide={true}></AgGridColumn>
+                                                <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>
 

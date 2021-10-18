@@ -15,6 +15,7 @@ import { getConfigurationKey } from '../../../helper';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
+    console.log(masterId,"MASTER")
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -148,12 +149,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(COMBINED_PROCESS):
                 dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                 console.log(res.data.Result,'resdsd')
                     if (res.data.Result) {
                         toastr.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
-                runSimulationCosting()                  //  REMOVE THIS AFTER api INTEGRATION
                 break;
             case Number(RMDOMESTIC):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
@@ -228,8 +229,9 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="ml-0 pt-3">
                                         <Col md="12" className="mb-3">
+                                         
                                             {
-                                                masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
+                                                masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                     if (el.Value === '0') return false;
                                                     return (
                                                         <Col md="12" className="mb-3 p-0">

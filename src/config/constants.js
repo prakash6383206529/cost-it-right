@@ -864,10 +864,10 @@ export const API = {
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
-  getCombinedProcessList: `${BASE_URL}/masters-combined-process/get-all-combined-process`,
+  getCombinedProcessList: `${BASE_URL}/simulation/get-all-combined-process`,
   draftCombinedProcessSimulation: `${BASE_URL}/simulation/draft-simulation-combined-process`,
   getverifyCombinedProcessSimulationList: `${BASE_URL}/simulation/get-all-combined-process-impacted-simulation-costings`,
-  runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-combined-process-costing`,
+  runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-selected-combined-process-costing`,
   getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   getFgWiseImpactData: `${BASE_URL}/sap-integration/get-fg-wise-impact-data`,
@@ -1432,6 +1432,7 @@ export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
 export const GET_COMBINED_PROCESS_LIST = 'GET_COMBINED_PROCESS_LIST'
 export const GET_FG_WISE_IMPACT_DATA = ' GET_FG_WISE_IMPACT_DATA'
+export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'

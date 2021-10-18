@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Controller, useForm } from 'react-hook-form';
-import { searchableSelect } from '../../layout/FormInputs'
+import { useForm } from 'react-hook-form';
 import { CONSTANT } from '../../../helper/AllConastant'
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -17,7 +16,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getCombinedProcessList } from '../../simulation/actions/Simulation'
-import { Container, Row, Col, } from 'reactstrap';
+import { Row, Col, } from 'reactstrap';
 
 const gridOptions = {};
 
@@ -26,9 +25,8 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 export function ProcessListingSimulation(props) {
-    const { location } = props;
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const {  handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -36,79 +34,26 @@ export function ProcessListingSimulation(props) {
     const [isOpenProcessDrawer, setIsOpenProcessDrawer] = useState(false)
     const [isEditFlag, setIsEditFlag] = useState(false)
     const [Id, setId] = useState('')
-    const [tableData, setTableData] = useState([])
     const [plant, setPlant] = useState([])
     const [machine, setMachine] = useState([])
     const [gridApi, setGridApi] = useState(null)
     const [gridColumnApi, setGridColumnApi] = useState(null)
-    const [rowData, setRowData] = useState(null)
     const [shown, setShown] = useState(false)
-    const [dummyData, setDummyData] = useState([{
-        Technology: "Sheet Metal",
-        Plant: "plant1",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant2",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant3",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant4",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant5",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-    },
-    {
-        Technology: "Sheet Metal",
-        Plant: "plant6",
-        NetCC: 10,
-        RemainingFieldsTotal: "20",
-        Total: "30",
-        EffectiveDate: new Date(),
-    },
-
-    ])
 
     const dispatch = useDispatch()
-    const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
+    const processCostingList = useSelector(state => state.simulation.combinedProcessList)
 
     useEffect(() => {
-        // const { plant, machine } = this.state
-        const plantId = plant ? plant.value : ''
-        dispatch(getCombinedProcessList(0, () => { }))
+
+        let obj = {
+            technologyId: props?.technology,
+            vendorId: props?.vendorId
+        }
+        dispatch(getCombinedProcessList(obj, () => { }))
 
     }, [])
 
-    const masterList = useSelector(state => state.simulation.masterSelectList)
-    const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    const rmImportListing = useSelector(state => state.material.rmImportDataList)
-    const technologySelectList = useSelector(state => state.costing.technologySelectList)
-    const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
+
 
     /**
     * @method handlePlant
@@ -449,7 +394,7 @@ export function ProcessListingSimulation(props) {
                                         disabled={false}
                                     />
                                 </div> */}
-                                aaaaaaaaaaaa
+
 
                                 <div className="flex-fill">
                                     <button
@@ -511,26 +456,7 @@ export function ProcessListingSimulation(props) {
             </form>
             <Row>
                 <Col>
-                    {/* <BootstrapTable
-          data={this.props.processList}
-          striped={false}
-          hover={false}
-          bordered={false}
-          options={options}
-          search
-          exportCSV={DownloadAccessibility}
-          csvFileName={`${ProcessMaster}.csv`}
-          //ignoreSinglePage
-          ref={'table'}
-          pagination
-        >
-          <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
-          <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
-                    {/* <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-        </BootstrapTable> */}
+
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
@@ -544,9 +470,7 @@ export function ProcessListingSimulation(props) {
                                 defaultColDef={defaultColDef}
                                 domLayout='autoHeight'
                                 floatingFilter={true}
-                                // columnDefs={c}
-                                // rowData={this.props.combinedProcessList}
-                                rowData={dummyData}
+                                rowData={processCostingList}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
@@ -558,21 +482,14 @@ export function ProcessListingSimulation(props) {
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                <AgGridColumn field="Plant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-                                <AgGridColumn suppressSizeToFit="true" editable='false' field="NetCC" headerName="Net CC" minWidth={190}></AgGridColumn>
-                                {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
-                                    <AgGridColumn width={120} field="NetCC" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
-                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                </AgGridColumn> */}
-                                <AgGridColumn field="RemainingFieldsTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
-                                <AgGridColumn suppressSizeToFit="true" field="Total" headerName="Total" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
+                                <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                                {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
-                                {/* 
-                                <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                                <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn> */}
+                                <AgGridColumn field="CostingId" headerName="CostingId" hide></AgGridColumn>
+
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -586,16 +503,7 @@ export function ProcessListingSimulation(props) {
 
                 </Col>
             </Row>
-            {/* {isOpenProcessDrawer && (
-                // <AddProcessDrawer
-                //     isOpen={isOpenProcessDrawer}
-                //     closeDrawer={this.closeProcessDrawer}
-                //     isEditFlag={isEditFlag}
-                //     isMachineShow={true}
-                //     ID={this.state.Id}
-                //     anchor={'right'}
-                // />
-            )} */}
+
         </div>
     );
 }

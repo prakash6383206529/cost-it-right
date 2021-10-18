@@ -19,6 +19,7 @@ import {
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_FG_WISE_IMPACT_DATA,
     GET_COMBINED_PROCESS_LIST,
+    SET_SELECTED_VENDOR_SIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -636,7 +637,7 @@ export function getCombinedProcessList(data, callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getCombinedProcessList}?currencyId=${data.currencyId}`, headers)
+        axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -669,7 +670,7 @@ export function runVerifyCombinedProcessSimulation(data, callback) {
 }
 
 export function getverifyCombinedProcessSimulationList(token, callback) {
-
+console.log(token,"TOKEN")
     return (dispatch) => {
         const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, headers);
         request.then((response) => {
@@ -735,5 +736,13 @@ export function getCombinedProcessCostingSimulationList(token, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
+    }
+}
+export function setVendorForSimulation(selectedVendorForSimulation) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_VENDOR_SIMULATION,
+            payload: selectedVendorForSimulation,
+        });
     }
 }

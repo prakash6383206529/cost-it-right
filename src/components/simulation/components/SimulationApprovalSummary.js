@@ -357,6 +357,21 @@ function SimulationApprovalSummary(props) {
         }
     }
 
+    
+    const oldCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -501,7 +516,9 @@ function SimulationApprovalSummary(props) {
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
-        newPOCurrencyFormatter: newPOCurrencyFormatter
+        newPOCurrencyFormatter: newPOCurrencyFormatter,
+        newCCFormatter:newCCFormatter,
+        oldCCFormatter:oldCCFormatter
     };
 
     const errorBoxClass = () => {
@@ -752,8 +769,8 @@ function SimulationApprovalSummary(props) {
                                                                     (String(SimulationTechnologyId) === String(COMBINED_PROCESS)) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="CC Old" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="CC New" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="CC Old" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="CC New" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {

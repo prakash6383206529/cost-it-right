@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
@@ -38,7 +38,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedVendorForSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -116,11 +116,14 @@ function Simulation(props) {
         dispatch(getVendorWithVendorCodeSelectList(() => { }))
         setShowEditTable(false)
         if (props.isRMPage) {
+            console.log(selectedVendorForSimulation,'selectedVendorForSimulationselectedVendorForSimulationselectedVendorForSimulation')
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+            setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.value })
 
             setMaster({ label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+            setVendor({ label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.value })
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
@@ -131,6 +134,7 @@ function Simulation(props) {
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
+    const processCostingList = useSelector(state => state.simulation.combinedProcessList)
 
     // useEffect(() => {
     //     editTable()
@@ -166,6 +170,7 @@ function Simulation(props) {
         if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
             setShowMasterList(true)
         }
+        dispatch(setVendorForSimulation(value))
         setVendor(value)
     }
 
@@ -210,7 +215,7 @@ function Simulation(props) {
             case OPERATIONS:
                 return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case COMBINED_PROCESS:
-                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -398,7 +403,6 @@ function Simulation(props) {
         setShowEditTable(true)
     }
 
-    console.log(master, 'kkkkkkkmaster')
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
@@ -408,7 +412,7 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.value} />
             case COMBINED_PROCESS:
-                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <CPSimulation cancelEditPage={cancelEditPage} list={processCostingList} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }
@@ -516,7 +520,7 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
                                     {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head,vendor from the filters and click on checkbox before editing'} />}
-                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
+                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={((rmDomesticListing && rmDomesticListing.length === 0) || (rmImportListing && rmImportListing.length === 0) || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
                                         !isUploadSimulation(master.value) &&
