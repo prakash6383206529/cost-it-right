@@ -16,7 +16,6 @@ import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from "jquery";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import moment from "moment";
 import NoContentFound from "../../common/NoContentFound";
@@ -98,7 +97,7 @@ class AddFreight extends Component {
         isLoader: true,
         FreightID: data.Id,
       });
-      $("html, body").animate({ scrollTop: 0 }, "slow");
+
       this.props.getFreightData(data.Id, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
