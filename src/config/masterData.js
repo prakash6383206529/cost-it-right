@@ -2299,6 +2299,7 @@ export const CostingSimulationDownload = [
     { label: "Technology", value: "Technology" },
     { label: "Raw Material", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "RawMaterial Specs", value: "RMSpec" },
     { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
