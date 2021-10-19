@@ -6174,3 +6174,14 @@ body{
     }
   }
 }
+@media (max-width:$miniDesktop) {
+  .simulation-main {
+    .filter-block {
+      .flex-fills:last-child {
+        min-width: 230px;
+        max-width: 255px;
+        width: auto;
+      } 
+    }
+  }
+}
