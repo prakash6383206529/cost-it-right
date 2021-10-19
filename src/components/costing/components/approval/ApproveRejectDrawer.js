@@ -86,143 +86,12 @@ function ApproveRejectDrawer(props) {
         )
       }))
     } else {
-      let approverDropdownValue = []
       dispatch(getSimulationApprovalByDepartment(res => {
         const Data = res.data.SelectList
         const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
 
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-        let values = []
-        selectedRowData.map(item => {
-          if (!(values.includes(item.SimulationTechnologyId))) {
-            values.push(item.SimulationTechnologyId)
-          }
-        })
-        if (values.length > 1) {
-          values.map(item => {
-            let obj = {
-              LoggedInUserId: userData.LoggedInUserId,
-              DepartmentId: departObj[0].Value,
-              //NEED TO MAKE THIS 2   
-              // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-              TechnologyId: item,
-              ReasonId: 0
-            }
-
-            dispatch(
-              getAllSimulationApprovalList(obj, (res) => {
-                const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-                setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-                // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-                let tempDropdownList = []
-                res.data.DataList && res.data.DataList.map((item) => {
-                  if (item.Value === '0') return false;
-                  tempDropdownList.push({
-                    label: item.Text,
-                    value: item.Value,
-                    levelId: item.LevelId,
-                    levelName: item.LevelName
-                  })
-                  return null
-                })
-
-
-
-
-
-                // tempDropdownList.map(item => {
-                //   approverDropdownValue.push(item)
-
-                // })
-                approverDropdownValue.push(tempDropdownList)
-                // approverDropdownValue && approverDropdownValue[0].map(itemmmm => {
-
-                //   valueOfAllArrays.push(itemmmm?.value)
-                // })
-                let allObjVal = []
-
-                for (let v = 0; v < approverDropdownValue.length; v++) {
-                  let valueOfAllArrays = []
-                  approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
-                    valueOfAllArrays.push(itemmmm?.value)
-
-                  })
-                  allObjVal.push(valueOfAllArrays)
-                }
-
-                let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-                // let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-                let filteredArray = filteredArray1
-                for (let v = 2; v < allObjVal.length; v++) {
-                  // allObjVal && allObjVal[v].map(itemmmm => {
-                  filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
-                  // })
-
-                }
-
-                let ar = [], arr = [], obj = [], temp = [], pushDD = []
-                // approverDropdownValue.map(item => {
-                //   ar.push(item.value)
-                // })
-                // arr = ar.filter((item, index) => ar.indexOf(item) !== index)
-                // arr.map(i => {
-                //   approverDropdownValue.map(item => {
-
-                //     if (i === item.value) {
-                //       obj.push(item)
-                //     }
-                //   })
-                // })
-                // obj && obj.map(item => {
-                //   temp.push(item.value)
-                // })
-
-                // const tempVal = toFindDuplicates(temp)
-                tempDropdownList.map(i => {
-                  filteredArray.map(item => {
-                    if (i.value === item) {
-                      pushDD.push(i)
-                    }
-                  })
-                })
-
-                setApprovalDropDown(pushDD)
-              },
-              ),
-            )
-          })
-        } else {
-
-          let obj = {
-            LoggedInUserId: userData.LoggedInUserId,
-            DepartmentId: departObj[0].Value,
-            //NEED TO MAKE THIS 2   
-            TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-            ReasonId: 0
-          }
-
-          dispatch(
-            getAllSimulationApprovalList(obj, (res) => {
-              const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-              setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-              let tempDropdownList = []
-              res.data.DataList && res.data.DataList.map((item) => {
-                if (item.Value === '0') return false;
-                tempDropdownList.push({
-                  label: item.Text,
-                  value: item.Value,
-                  levelId: item.LevelId,
-                  levelName: item.LevelName
-                })
-                return null
-              })
-              setApprovalDropDown(tempDropdownList)
-            },
-            ),
-          )
-        }
-
+        getApproversList(departObj[0].Value)
 
       }))
 
@@ -245,7 +114,140 @@ function ApproveRejectDrawer(props) {
   }, [])
 
 
+  const getApproversList = (departObj) => {
+    let values = []
+    let approverDropdownValue = []
+    selectedRowData.map(item => {
+      if (!(values.includes(item.SimulationTechnologyId))) {
+        values.push(item.SimulationTechnologyId)
+      }
+    })
+    if (values.length > 1) {
+      values.map(item => {
+        let obj = {
+          LoggedInUserId: userData.LoggedInUserId,
+          DepartmentId: departObj,
+          //NEED TO MAKE THIS 2   
+          // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+          TechnologyId: item,
+          ReasonId: 0
+        }
 
+        dispatch(
+          getAllSimulationApprovalList(obj, (res) => {
+            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+            // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+            let tempDropdownList = []
+            res.data.DataList && res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              tempDropdownList.push({
+                label: item.Text,
+                value: item.Value,
+                levelId: item.LevelId,
+                levelName: item.LevelName
+              })
+              return null
+            })
+
+
+
+
+
+            // tempDropdownList.map(item => {
+            //   approverDropdownValue.push(item)
+
+            // })
+            approverDropdownValue.push(tempDropdownList)
+            // approverDropdownValue && approverDropdownValue[0].map(itemmmm => {
+
+            //   valueOfAllArrays.push(itemmmm?.value)
+            // })
+            let allObjVal = []
+
+            for (let v = 0; v < approverDropdownValue.length; v++) {
+              let valueOfAllArrays = []
+              approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
+                valueOfAllArrays.push(itemmmm?.value)
+
+              })
+              allObjVal.push(valueOfAllArrays)
+            }
+
+            let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
+            // let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
+            let filteredArray = filteredArray1
+            for (let v = 2; v < allObjVal.length; v++) {
+              // allObjVal && allObjVal[v].map(itemmmm => {
+              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
+              // })
+
+            }
+
+            let ar = [], arr = [], obj = [], temp = [], pushDD = []
+            // approverDropdownValue.map(item => {
+            //   ar.push(item.value)
+            // })
+            // arr = ar.filter((item, index) => ar.indexOf(item) !== index)
+            // arr.map(i => {
+            //   approverDropdownValue.map(item => {
+
+            //     if (i === item.value) {
+            //       obj.push(item)
+            //     }
+            //   })
+            // })
+            // obj && obj.map(item => {
+            //   temp.push(item.value)
+            // })
+
+            // const tempVal = toFindDuplicates(temp)
+            tempDropdownList.map(i => {
+              filteredArray.map(item => {
+                if (i.value === item) {
+                  pushDD.push(i)
+                }
+              })
+            })
+
+            setApprovalDropDown(pushDD)
+          },
+          ),
+        )
+      })
+    } else {
+
+      let obj = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj,
+        //NEED TO MAKE THIS 2   
+        TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+        ReasonId: 0
+      }
+
+      dispatch(
+        getAllSimulationApprovalList(obj, (res) => {
+          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          let tempDropdownList = []
+          res.data.DataList && res.data.DataList.map((item) => {
+            if (item.Value === '0') return false;
+            tempDropdownList.push({
+              label: item.Text,
+              value: item.Value,
+              levelId: item.LevelId,
+              levelName: item.LevelName
+            })
+            return null
+          })
+          setApprovalDropDown(tempDropdownList)
+        },
+        ),
+      )
+    }
+
+  }
 
   const handleTokenDropDownChange = (value) => {
 
@@ -536,6 +538,8 @@ function ApproveRejectDrawer(props) {
 
   const handleDepartmentChange = (value) => {
     setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+    setValue('dept', { label: value.label, value: value.value })
+
     let tempDropdownList = []
     let obj
     let simObj
@@ -546,12 +550,12 @@ function ApproveRejectDrawer(props) {
         TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
       }
     } else {
-      simObj = {
-        LoggedInUserId: loggedInUserId(), // user id
-        DepartmentId: value.value,
-        TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-        ReasonId: 0
-      }
+      // simObj = {
+      //   LoggedInUserId: loggedInUserId(), // user id
+      //   DepartmentId: value.value,
+      //   TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+      //   ReasonId: 0
+      // }
     }
 
 
@@ -573,24 +577,24 @@ function ApproveRejectDrawer(props) {
         }),
       )
     } else {
-
-      dispatch(
-        getAllSimulationApprovalList(simObj, (res) => {
-          res.data.DataList &&
-            res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              tempDropdownList.push({
-                label: item.Text,
-                value: item.Value,
-                levelId: item.LevelId,
-                levelName: item.LevelName
-              })
-              return null
-            })
-          setApprovalDropDown(tempDropdownList)
-        },
-        ),
-      )
+      getApproversList(value.value)
+      // dispatch(
+      //   getAllSimulationApprovalList(simObj, (res) => {
+      //     res.data.DataList &&
+      //       res.data.DataList.map((item) => {
+      //         if (item.Value === '0') return false;
+      //         tempDropdownList.push({
+      //           label: item.Text,
+      //           value: item.Value,
+      //           levelId: item.LevelId,
+      //           levelName: item.LevelName
+      //         })
+      //         return null
+      //       })
+      //     setApprovalDropDown(tempDropdownList)
+      //   },
+      //   ),
+      // )
     }
   }
 
