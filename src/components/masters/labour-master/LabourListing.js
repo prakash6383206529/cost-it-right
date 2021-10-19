@@ -572,6 +572,7 @@ class LabourListing extends Component {
       BulkUploadAccessibility,
       DownloadAccessibility,
     } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
     if (toggleForm) {
       return <AddLabour hideForm={this.hideForm} data={data} />
@@ -579,7 +580,8 @@ class LabourListing extends Component {
     const options = {
       clearSearch: true,
       noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      exportCSVBtn: this.createCustomExportCSVButton,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -788,7 +790,6 @@ class LabourListing extends Component {
             </Row>
           </form>
 
-
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -845,6 +846,7 @@ domLayout='autoHeight'
               anchor={'right'}
             />
           )}
+
         </div>
       </>
     )

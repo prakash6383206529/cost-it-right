@@ -69,7 +69,8 @@ class AddMachineRate extends Component {
       machineFullValue: {},
       DataToChange: [],
       DropdownChange: true,
-      effectiveDate: ''
+      effectiveDate: '',
+      uploadAttachements: true
 
     }
   }
@@ -708,6 +709,8 @@ class AddMachineRate extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -779,8 +782,7 @@ class AddMachineRate extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-    console.log('DropdownChange: ', DropdownChange);
+      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate, uploadAttachements } = this.state;
 
 
     if (isViewFlag) {
@@ -839,7 +841,7 @@ class AddMachineRate extends Component {
           EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         }
         if (isEditFlag) {
-          if (DropdownChange) {
+          if (DropdownChange && uploadAttachements) {
             this.cancel();
             return false
           }
@@ -1409,10 +1411,10 @@ class AddMachineRate extends Component {
                                   Drag and Drop or{" "}
                                   <span className="text-primary">
                                     Browse
-                          </span>
+                                  </span>
                                   <br />
-                          file to upload
-                        </span>
+                                  file to upload
+                                </span>
                               </div>))}
                               styles={{
                                 dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },

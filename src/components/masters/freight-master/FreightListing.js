@@ -12,12 +12,11 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
-import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -374,12 +373,14 @@ class FreightListing extends Component {
   }
 
 
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
+    const ExcelFile = ReactExport.ExcelFile;
 
 
 
@@ -559,7 +560,6 @@ class FreightListing extends Component {
         </form>
         <Row>
           <Col>
-
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

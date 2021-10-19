@@ -399,6 +399,7 @@ class BOPImportListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const onExportToCSV = (row) => {
             // ...
@@ -412,7 +413,8 @@ class BOPImportListing extends Component {
             clearSearch: true,
             noDataText: (this.props.bopImportList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -590,10 +592,9 @@ class BOPImportListing extends Component {
                         </Col>
                     </Row>
 
-                </form>
+                </form >
                 <Row>
                     <Col>
-
 
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
@@ -651,15 +652,17 @@ class BOPImportListing extends Component {
 
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'BOPImport'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'BOP Import'}
-                    anchor={'right'}
-                />}
+                {
+                    isBulkUpload && <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={this.closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'BOPImport'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'BOP Import'}
+                        anchor={'right'}
+                    />
+                }
             </div >
         );
     }

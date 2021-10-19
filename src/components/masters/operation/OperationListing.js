@@ -504,6 +504,17 @@ class OperationListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
+    onFilterTextBoxChanged(e) {
+        this.state.gridApi.setQuickFilter(e.target.value);
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
+
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
 
     /**
     * @method render
@@ -512,6 +523,7 @@ class OperationListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         if (toggleForm) {
             return (

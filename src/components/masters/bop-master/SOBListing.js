@@ -361,7 +361,8 @@ class SOBListing extends Component {
       clearSearch: true,
       noDataText: (this.props.bopSobList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -473,8 +474,8 @@ class SOBListing extends Component {
               hover={false}
               bordered={false}
               options={options}
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${Sob}.csv`}
+              // exportCSV={DownloadAccessibility}
+              // csvFileName={`${Sob}.csv`}
               search
               ref={'table'}
               pagination>
@@ -545,6 +546,7 @@ domLayout='autoHeight'
           ID={this.state.ID}
           anchor={'right'}
         />}
+
       </div >
     );
   }

@@ -22,6 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
+import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 
 const gridOptions = {};
 
@@ -40,6 +41,7 @@ function SimulationApprovalListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const [isPendingForApproval, setIsPendingForApproval] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -283,9 +285,24 @@ function SimulationApprovalListing(props) {
         setValue('status', '')
         getTableData()
     }
+    const allEqual = arr => arr.every(val => val === arr[0]);
 
     const onRowSelect = (row, isSelected, e) => {
+
+        let arr = []
         var selectedRows = gridApi.getSelectedRows();
+
+        selectedRows.map(item => {
+            arr.push(item?.DisplayStatus)
+        })
+
+        if (!allEqual(arr)) {
+            toastr.warning('Please select costing of similar Status.')
+            gridApi.deselectAll()
+        }
+
+        setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
+
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
@@ -297,6 +314,14 @@ function SimulationApprovalListing(props) {
         //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
         //     setSelectedRowData(tempArr)
         // }
+    }
+    const isRowSelectable = (rowNode) => {
+        if (rowNode.data.DisplayStatus === "Approved" || rowNode.data.DisplayStatus === "Rejected" || rowNode.data.DisplayStatus === "Awaiting Approval") {
+            return false;
+        } else {
+            return true
+        }
+        // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
 
     const onSelectAll = (isSelected, rows) => {
@@ -331,7 +356,7 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-
+      
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -349,29 +374,31 @@ function SimulationApprovalListing(props) {
             }
         })
 
-        selectedRowData.forEach((element, index, arr) => {
-            if (index > 0) {
-                if (element.TechnologyId !== arr[index - 1].TechnologyId) {
-                    technologyCount = technologyCount + 1
-                } else {
-                    return false
-                }
-            } else {
-                return false
-            }
-        })
+        // selectedRowData.forEach((element, index, arr) => {
+        //     if (index > 0) {
+        //         if (element.TechnologyId !== arr[index - 1].TechnologyId) {
+        //             technologyCount = technologyCount + 1
+        //         } else {
+        //             return false
+        //         }
+        //     } else {
+        //         return false
+        //     }
+        // })
 
-        if (technologyCount > 0) {
-            return toastr.warning("Technology should be same for sending multiple costing for approval")
-        }
+        // if (technologyCount > 0) {
+        //     return toastr.warning("Technology should be same for sending multiple costing for approval")
+        // }
 
         if (count > 0) {
-            return toastr.warning("Reason should be same for sending multiple costing for approval")
+             toastr.warning("Reason should be same for sending multiple costing for approval")
+             return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
+            setApproveDrawer(true)
         }
 
-        setApproveDrawer(true)
+        
     }
 
     const closeDrawer = (e = '') => {
@@ -408,11 +435,18 @@ function SimulationApprovalListing(props) {
             }}
         />
     }
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
 
+        return thisIsFirstColumn;
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -470,7 +504,14 @@ function SimulationApprovalListing(props) {
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        <button
+                                            class="user-btn approval-btn mr5"
+                                            onClick={sendForApproval}
+                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                        >
+                                            <div className="send-for-approval"></div>
+                                            {/* {'Send For Approval'} */}
+                                        </button>
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -504,10 +545,15 @@ function SimulationApprovalListing(props) {
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
+                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn> 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
@@ -535,6 +581,22 @@ function SimulationApprovalListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
+                                {approveDrawer &&
+                                    <ApproveRejectDrawer
+                                        isOpen={approveDrawer}
+                                        anchor={'right'}
+                                        approvalData={[]}
+                                        type={isPendingForApproval ? 'Approve' : 'Sender'}
+                                        // simulationDetail={}
+                                        selectedRowData={selectedRowData}
+                                        // costingArr={costingArr}
+                                        // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : this.state.master}
+                                        closeDrawer={closeDrawer}
+                                        isSimulation={true}
+                                        isSimulationApprovalListing={true}
+
+                                    />
+                                }
                             </div>
                         </div>
                     </div>

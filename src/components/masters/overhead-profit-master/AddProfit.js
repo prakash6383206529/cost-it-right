@@ -56,7 +56,9 @@ class AddProfit extends Component {
       isHideBOP: false,
       effectiveDate: '',
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      uploadAttachements: true
+
     }
   }
 
@@ -433,6 +435,8 @@ class AddProfit extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -521,7 +525,7 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
@@ -544,7 +548,7 @@ class AddProfit extends Component {
       if (
         DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
         && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
-        && DataToChange.Remark == values.Remark) {
+        && DataToChange.Remark == values.Remark && uploadAttachements) {
 
         this.cancel()
         return false
@@ -591,7 +595,7 @@ class AddProfit extends Component {
             })
           },
           onCancel: () => { },
-          component:()=><ConfirmComponent/>
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -956,10 +960,10 @@ class AddProfit extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }

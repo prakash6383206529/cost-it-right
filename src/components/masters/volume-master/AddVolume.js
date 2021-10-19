@@ -610,6 +610,30 @@ class AddVolume extends Component {
     }
   };
 
+
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+  };
+
+  // onPageSizeChanged = (newPageSize) => {
+  //   var value = document.getElementById('page-size').value;
+  //   this.state.gridApi.paginationSetPageSize(Number(value));
+  // };
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
+
+
   /**
   * @method render
   * @description Renders the component

@@ -327,6 +327,9 @@ class IndivisualPartListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
+    resetState() {
+        gridOptions.columnApi.resetColumnState();
+    }
 
     /**
     * @method render
@@ -335,6 +338,7 @@ class IndivisualPartListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const onExportToCSV = (row) => {
             // ...
@@ -349,7 +353,8 @@ class IndivisualPartListing extends Component {
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
-            exportCSVBtn: this.createCustomExportCSVButton,
+            // exportCSVBtn: this.createCustomExportCSVButton,
+            // onExportToCSV: this.handleExportCSVButtonClick,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text

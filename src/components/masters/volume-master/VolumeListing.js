@@ -555,11 +555,14 @@ class VolumeListing extends Component {
       BulkUploadAccessibility,
       DownloadAccessibility
     } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
+
     const options = {
       clearSearch: true,
       noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       exportCSVBtn: this.createCustomExportCSVButton,
+      onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -809,7 +812,6 @@ class VolumeListing extends Component {
               </Col>
             </Row>
           </form>
-
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">

@@ -21,7 +21,7 @@ import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { costingHeadObjs, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { ZBC, RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -612,12 +612,14 @@ function RMDomesticListing(props) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
                 item.CostingHead = 'Zero Based'
+            } else {
+                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={temp} name={'RM Domestic'}>
+            <ExcelSheet data={TempData} name={RmDomestic}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

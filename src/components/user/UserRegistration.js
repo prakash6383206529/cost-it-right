@@ -1513,7 +1513,7 @@ class UserRegistration extends Component {
                           onChange={this.onPressUserPermission}
                         >
                           Grant User Wise Permission
-                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                          <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                           <span
                             className=" before-box"
                             checked={this.state.IsShowAdditionalPermission}
@@ -1893,7 +1893,7 @@ class UserRegistration extends Component {
                         value="CANCEL"
                         className="mr15 cancel-btn">
                         <div className={"cancel-icon"}></div>
-                      CANCEL
+                        CANCEL
                       </button>
 
                       <button

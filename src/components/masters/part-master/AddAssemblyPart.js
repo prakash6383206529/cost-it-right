@@ -50,7 +50,8 @@ class AddAssemblyPart extends Component {
       NewAddedLevelOneChilds: [],
       avoidAPICall: false,
       DataToCheck: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      BOMChanged: true
     }
   }
 
@@ -271,6 +272,8 @@ class AddAssemblyPart extends Component {
     const { fieldsObj } = this.props;
     const { BOMViewerData, isEditFlag } = this.state;
 
+    this.setState({ BOMChanged: false })
+
     if (this.checkIsFormFilled() === false) {
       toastr.warning("Please fill the mandatory fields.")
       return false;
@@ -454,7 +457,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -492,12 +495,12 @@ class AddAssemblyPart extends Component {
     if (isEditFlag) {
 
 
-      // if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
-      //   DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
-      //   DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode) {
-      //   this.cancel()
-      //   return false;
-      // }
+      if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
+        DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
+        DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode && BOMChanged) {
+        this.cancel()
+        return false;
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })

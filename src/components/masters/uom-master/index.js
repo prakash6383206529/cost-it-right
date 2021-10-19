@@ -282,6 +282,14 @@ class UOMMaster extends Component {
   }
 
 
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+  }
+
 
   /**
   * @method render
@@ -349,7 +357,6 @@ class UOMMaster extends Component {
 
           <Row>
             <Col>
-
 
               <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">

@@ -22,6 +22,7 @@ import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants
 import LoaderCustom from '../common/LoaderCustom';
 import { table } from 'react-dom-factories';
 
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -306,7 +307,6 @@ function ReportListing(props) {
         let temp = []
 
 
-
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
@@ -345,13 +345,18 @@ function ReportListing(props) {
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
 
+                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {renderColumn(ReportMaster)}
+                                </ExcelFile>
+
+                                <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
+
                             </div>
                         </div>
 
                     </Col>
                 </Row>
             </form>
-
 
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
