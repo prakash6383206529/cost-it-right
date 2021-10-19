@@ -24,7 +24,7 @@ import { provisional } from '../../../../config/constants'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType ,isSimulationApprovalListing} = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -133,9 +133,9 @@ function ApproveRejectDrawer(props) {
         setIsOpen(!IsOpen)
       })
 
-      // if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender') {
-      //   dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
-      // }
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
+        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+      }
     }
 
     if (SimulationType !== null && SimulationType === provisional) {
@@ -157,7 +157,7 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
-    if (type === 'Sender' && !isSaveDone) {
+    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
       let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
@@ -316,8 +316,8 @@ function ApproveRejectDrawer(props) {
       /****************************THIS IS FOR SIMUALTION (SAVE,SEND FOR APPROVAL,APPROVE AND REJECT CONDITION)******************************** */
       // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
       let objs = {}
-      objs.ApprovalId = simulationDetail.SimulationApprovalProcessId
-      objs.ApprovalToken = simulationDetail.Token
+      objs.ApprovalId = simulationDetail?.SimulationApprovalProcessId
+      objs.ApprovalToken = simulationDetail?.Token
       objs.LoggedInUserId = userLoggedIn
       objs.SenderLevelId = userData.LoggedInSimulationLevelId
       objs.SenderLevel = userData.LoggedInSimulationLevel
@@ -356,22 +356,31 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderRemark = remark
         senderObj.EffectiveDate = moment(simulationDetail.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
-        senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
+        let temp = []
+        if (isSimulationApprovalListing === true) {
+          selectedRowData && selectedRowData.map(item => {
+            temp.push({
+              SimulationId: item.SimulationId, SimulationTokenNumber: item.ApprovalNumber,
+              SimulationAppliedOn: item.SimulationTechnologyId
+            })
+          })
+          senderObj.SimulationList = temp
+        } else {
+          senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
+        }
+        senderObj.Attachements = updatedFiles
+        senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
         senderObj.MaterialGroup = SAPData.MaterialGroup?.label
         senderObj.DecimalOption = SAPData.DecimalOption?.value
-        senderObj.Attachements = updatedFiles
-        senderObj.LinkedTokenNumber = linkingTokenDropDown.value
-        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
-        console.log('senderObj: ', senderObj);
-
+      
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-        dispatch(simulationApprovalRequestBySender(senderObj, res => {
-          if (res.data.Result) {
-            toastr.success('Simulation token has been sent for approval.')
-            props.closeDrawer('', 'submit')
-          }
-        }))
+        // dispatch(simulationApprovalRequestBySender(senderObj, res => {
+        //   if (res.data.Result) {
+        //     toastr.success('Simulation token has been sent for approval.')
+        //     props.closeDrawer('', 'submit')
+        //   }
+        // }))
       }
       else if (type === 'Approve') {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
@@ -594,7 +603,7 @@ function ApproveRejectDrawer(props) {
       setIsOpen(!IsOpen)
     }
   }
-
+  console.log(selectedRowData, 'selectedRowDataselectedRowDataselectedRowDataselectedRowData')
   return (
     <>
       <Drawer
@@ -685,7 +694,7 @@ function ApproveRejectDrawer(props) {
                         placeholder={'-Select-'}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        // rules={{ required: true }}
                         register={register}
                         //defaultValue={isEditFlag ? plantName : ''}
                         options={approvalDropDown}
@@ -786,7 +795,7 @@ function ApproveRejectDrawer(props) {
                 }
 
 
-                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' &&
+                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' && !isSimulationApprovalListing &&
 
                   < div className="input-group form-group col-md-12">
 
