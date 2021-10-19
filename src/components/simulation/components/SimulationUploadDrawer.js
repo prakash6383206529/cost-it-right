@@ -10,6 +10,7 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
+import NewReport from '../../report/NewReport';
 import TooltipCustom from '../../common/Tooltip';
 import { COMBINED_PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 
