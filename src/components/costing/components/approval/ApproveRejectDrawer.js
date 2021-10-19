@@ -403,7 +403,7 @@ function ApproveRejectDrawer(props) {
             ApproverDepartmentName: dept && dept.label ? dept.label : '',
             IsFinalApprovalProcess: false,
             SimulationApprovalProcessSummaryId: item?.SimulationApprovalProcessSummaryId,
-            isMultipleSimulation: isSimulationApprovalListing ? true : false
+            IsMultiSimulation: isSimulationApprovalListing ? true : false
           })
         })
       } else {
@@ -423,7 +423,7 @@ function ApproveRejectDrawer(props) {
           ApproverDepartmentName: dept && dept.label ? dept.label : '',
           IsFinalApprovalProcess: false,
           SimulationApprovalProcessSummaryId: simulationDetail?.SimulationApprovalProcessSummaryId,
-          isMultipleSimulation: isSimulationApprovalListing ? true : false
+          IsMultiSimulation: isSimulationApprovalListing ? true : false
         }]
 
         //objs.LinkedTokenNumber = linkingTokenDropDown
@@ -464,7 +464,6 @@ if (isSimulationApprovalListing === true) {
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false
-       
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
