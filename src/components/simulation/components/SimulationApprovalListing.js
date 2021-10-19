@@ -526,8 +526,7 @@ function SimulationApprovalListing(props) {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div
-                                className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
+                                className="ag-theme-material simulation-history"
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
@@ -550,7 +549,7 @@ function SimulationApprovalListing(props) {
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
                                 >
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
