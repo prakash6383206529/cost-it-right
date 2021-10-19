@@ -266,7 +266,7 @@ function RunSimulationDrawer(props) {
 
 
                                             {getConfigurationKey().IsProvisionalSimulation && (
-                                                <div className="input-group form-group col-md-12 px-0 m-height-auto">
+                                                <div className="input-group mb-3 col-md-12 px-0 ">
 
                                                     <label
                                                         className="custom-checkbox mb-0"
