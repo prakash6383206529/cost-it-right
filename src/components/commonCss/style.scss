@@ -6182,3 +6182,10 @@ body{
     }
   }
 }
+
+ .token-no-grid {
+   .ag-cell-wrapper {
+     justify-content: flex-end;
+     margin-right: 40%;
+    }
+  }
