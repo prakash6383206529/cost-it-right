@@ -11,7 +11,6 @@ import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
-import $ from 'jquery'
 import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
@@ -477,7 +476,6 @@ class VolumeListing extends Component {
     this.setState(
       { showVolumeForm: false, data: { isEditFlag: false, ID: '' } },
       () => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow')
         this.getTableListData()
       },
     )

@@ -918,6 +918,7 @@ class AddFreight extends Component {
                               <NoContentFound title={CONSTANT.EMPTY_DATA} />
                             )}
                           </Col>
+                          
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">

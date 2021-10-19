@@ -4693,7 +4693,7 @@ body{
   }
 }
 }
-@media(max-width:1365px){
+@media(max-width:$belowLaptop){
   .overhead-profit-tab-costing{
     .form-control[disabled]{
       width: auto;
@@ -6146,7 +6146,7 @@ body{
 }
 .grant-user-grid table  th:nth-child(1), .grant-user-grid table th:nth-child(2) span {
   font-size: 14px;
-  @media (max-width:1365px) {
+  @media (max-width:$belowLaptop) {
     font-size: calc(14px * 80/100);
   }
 }
@@ -6168,7 +6168,7 @@ body{
   height: auto !important;
   min-height: calc(100vh - 219px) !important;
   .add-min-height {
-    @media (max-width:365px) {  
+    @media (max-width:$belowLaptop) {  
       min-height: calc(100vh - 214px) !important;
     }
   }
