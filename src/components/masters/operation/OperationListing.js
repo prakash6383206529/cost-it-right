@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import $ from "jquery";
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -434,7 +433,6 @@ class OperationListing extends Component {
     }
 
     bulkToggle = () => {
-        $("html,body").animate({ scrollTop: 0 }, "slow");
         this.setState({ isBulkUpload: true })
     }
 
