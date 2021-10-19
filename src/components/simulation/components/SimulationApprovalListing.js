@@ -6,7 +6,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
-import NoContentFound from '../../common/NoContentFound'
+import NoContentFound from '../../common/NoContentFound' 
 import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
@@ -341,6 +341,7 @@ function SimulationApprovalListing(props) {
         let count = 0
         let technologyCount = 0
         setIsApprovalDrawer(true)
+        setApproveDrawer(true)
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -417,19 +418,18 @@ function SimulationApprovalListing(props) {
             }}
         />
     }
-
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
 
         return thisIsFirstColumn;
     }
-
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
-       
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -485,7 +485,14 @@ function SimulationApprovalListing(props) {
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-                                       
+                                        <button
+                                            class="user-btn approval-btn mr5"
+                                            onClick={sendForApproval}
+                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                        >
+                                            <div className="send-for-approval"></div>
+                                            {/* {'Send For Approval'} */}
+                                        </button>
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -519,7 +526,9 @@ function SimulationApprovalListing(props) {
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
-                                   
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
@@ -563,6 +572,7 @@ function SimulationApprovalListing(props) {
                                         // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
+                                        isSimulationApprovalListing={true}
                                     // vendorId={vendorIdState}
                                     // SimulationTechnologyId={SimulationTechnologyIdState}
                                     // SimulationType={simulationTypeState}

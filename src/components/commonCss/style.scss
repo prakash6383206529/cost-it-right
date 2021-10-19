@@ -6163,9 +6163,6 @@ body{
   margin-top: 50px;
 }
 .mh-auto {
-  min-height: auto !important;
-}
-.mh-auto {
   height: auto !important;
   min-height: calc(100vh - 219px) !important;
   .add-min-height {
