@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { COMBINED_PROCESS,EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -27,14 +27,17 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import { pushAPI } from '../../simulation/actions/Simulation'
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec';
+
 
 
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation } = props;
+    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation, simulationCostingIdOfFgwiSeImpact } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
@@ -220,6 +223,8 @@ function SimulationApprovalSummary(props) {
     }
 
     const DisplayCompareCosting = (el, data) => {
+
+
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
         let obj = {
@@ -238,6 +243,12 @@ function SimulationApprovalSummary(props) {
             setCompareCosting(true)
         }))
     }
+
+
+
+
+
+
 
     /**
     * @method onSubmit
@@ -355,10 +366,26 @@ function SimulationApprovalSummary(props) {
         }
     }
 
+    
+    const oldCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <>
                 <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
@@ -499,7 +526,9 @@ function SimulationApprovalSummary(props) {
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
-        newPOCurrencyFormatter: newPOCurrencyFormatter
+        newPOCurrencyFormatter: newPOCurrencyFormatter,
+        newCCFormatter:newCCFormatter,
+        oldCCFormatter:oldCCFormatter
     };
 
     const errorBoxClass = () => {
@@ -521,6 +550,7 @@ function SimulationApprovalSummary(props) {
         pushObj.LoggedInUserId = userLoggedIn
         pushObj.AmmendentDataRequests = temp
         dispatch(pushAPI(pushObj, () => { }))
+        toastr.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
         setShowListing(true)
     }
 
@@ -663,7 +693,10 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata SimulationId={simulationDetail.SimulationId} />
+                        <Fgwiseimactdata
+                            DisplayCompareCosting={DisplayCompareCosting}
+
+                            SimulationId={simulationDetail.SimulationId} />
 
                         {/* FG wise Impact section end */}
 
@@ -745,7 +778,14 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
                                                                     </>
                                                                 }
-
+                                                                {
+                                                                    (String(SimulationTechnologyId) === String(COMBINED_PROCESS)) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="CC Old" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="CC New" ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
@@ -798,7 +838,12 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <Row>
+                        <Col md="10 mb-3">
+                                <div className="left-border">{'Attachment:'}</div>
+                            </Col>
+                            <Col md="12" className="pr-0">
                             <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
+                            </Col>
                         </Row>
                         {/* Costing Summary page here */}
 

@@ -2342,6 +2342,59 @@ export const CostingSimulationDownload = [
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
+export const EXCHANGESIMULATIONDOWNLOAD = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Currency", value: "Currency" },
+    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" }, 
+    { label: "Old Exchange Rate", value: "OldExchangeRate" },
+    { label: "NewExchangeRate", value: "NewExchangeRate" },
+    { label: "PO Price", value: "OldPOPrice" },
+    { label: "Variance", value: "Variance" }
+]
+export const COMBINEDPROCESSSIMULATION = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "Technology", value: "Technology" },
+    { label: "Raw Material", value: "RMName" },
+    { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },  
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: 'Old Net CC', value: 'OldNetCC' },
+    { label: "New Net CC", value: "NewNetCC" },   
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "NOldDiscountCostewRMPrice" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "Variance", value: "Variance" }
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
@@ -2681,4 +2734,29 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
+]
+
+export const CombinedProcessSimulation = [
+    { label: "Technology", value: "Technology" },
+    { label: "Plant", value: "Plant" },
+    { label: "NetCC", value: "NetCC" },
+    { label: "NewCC", value: "NewCC" },
+    { label: "RemainingFieldsTotal", value: "RemainingFieldsTotal" },
+    { label: "Total", value: "Total" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "DisplayStatus", value: "DisplayStatus" }
+]
+
+export const CombinedProcessSimulationFinal = [
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "PartNo", value: "PartNo" },
+    { label: "PartName", value: "PartName" },
+    { label: "ECNNumber", value: "ECNNumber" },
+    { label: "RevisionNumber", value: "RevisionNumber" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "OldCC", value: "OldCC" },
+    { label: "NewCC", value: "NewCC" },
+    { label: "Variance", value: "Variance" },
+    { label: "Actions", value: "Actions" },
+    { label: "CostingId", value: "CostingId" },
 ]
