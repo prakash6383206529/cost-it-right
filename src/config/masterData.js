@@ -1776,7 +1776,8 @@ export const RMDomesticSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
+    { label: "RMSpecs", value: "RMSpec" },
+    { label: "RMCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
@@ -1796,13 +1797,15 @@ export const RMDomesticSimulation = [
     { label: "PlantId", value: "PlantId" },
 
 
+
 ]
 
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
+    { label: "RMSpecs", value: "RMSpec" },
+    { label: "RMCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     //{ label: "Plant", value: "Plant" },
@@ -1818,6 +1821,7 @@ export const RMImportSimulation = [
     { label: "RawMaterialId", value: "RawMaterialId" },
     { label: "VendorId", value: "VendorId" },
     { label: "PlantId", value: "PlantId" },
+    { label: "RMCode", value: "RawMaterialCode", },
 
 ]
 
@@ -2312,6 +2316,9 @@ export const CostingSimulationDownload = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
+    { label: "RM Specs", value: "RMSpec" },
+    { label: "RM Code", value: "RMCode" },
+
     { label: "Finish Weight", value: "RawMaterialFinishWeight" },
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
@@ -2482,6 +2489,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
+
+
 
 ]
 

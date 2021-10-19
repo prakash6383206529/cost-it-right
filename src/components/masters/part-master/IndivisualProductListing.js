@@ -472,6 +472,7 @@ class IndivisualProductListing extends Component {
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
+                            <AgGridColumn field="ProductGroupCode" headerName="Group Code"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
