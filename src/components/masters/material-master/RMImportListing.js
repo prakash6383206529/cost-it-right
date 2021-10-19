@@ -82,7 +82,7 @@ function RMImportListing(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const dispatch = useDispatch();
 
-  const rmDataList = useSelector((state) => state.material.rmDataList);
+  const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
   const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
   const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
@@ -138,9 +138,9 @@ function RMImportListing(props) {
 
   const getFilterRMData = () => {
     if (isSimulation) {
-      return getFilteredRMData(rmDataList)
+      return getFilteredRMData(rmImportDataList)
     } else {
-      return rmDataList
+      return rmImportDataList
     }
   }
 
@@ -968,7 +968,6 @@ function RMImportListing(props) {
                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
