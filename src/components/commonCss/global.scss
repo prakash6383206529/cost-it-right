@@ -748,6 +748,9 @@ a:hover {
         padding-right: 15px !important;
       }      
       .ag-theme-material{
+        .ag-root-wrapper-body {
+          border-left: 1px solid #e5eaf9;
+        }
         .ag-header{
           // .ag-header-row{border-left: 1px solid #e5eaf9;}
           border-top: 1px solid #e5eaf9;
