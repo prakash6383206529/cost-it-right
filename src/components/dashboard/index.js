@@ -18,35 +18,37 @@ function Dashboard(props) {
   const [acc1, setAcc1] = useState(true)
   const [acc2, setAcc2] = useState(false)
   const [acc3, setAcc3] = useState(false)
-  const [acc4, setAcc4] = useState(false)
-  const [acc5, setAcc5] = useState(false)
-  const [acc6, setAcc6] = useState(false)
+  const [costingApprovalListingView, setCostingApprovalListingView] = useState(false)
+  const [simulationApprovalListingView, setSimulationApprovalListingView] = useState(false)
+  const [RMApprovalView, setRMApprovalView] = useState(false)
   const [hideDash, setShowHideDash] = useState(false)
-  const isOpen = useSelector((state) => state.auth.CostingsApprovalDashboard)
-  const isOpenAmmendment = useSelector((state) => state.auth.AmendmentsApprovalDashboard)
+
   const isOpenRMApprovalDashboard = useSelector((state) => state.auth.RMApprovalDashboard)
 
 
 
-  useEffect(() => {
-    if (isOpen === true) {
-      setAcc4(true);
-    }
-  }, [isOpen]);
 
 
   useEffect(() => {
-    if (isOpenAmmendment === true) {
-      setAcc5(true);
+
+    if (isOpenRMApprovalDashboard) {
+
+      if (isOpenRMApprovalDashboard.RMApprovalDashboard === true) {
+        setRMApprovalView(true);
+      }
+
+      if (isOpenRMApprovalDashboard.AmendmentsApprovalDashboard === true) {
+        setSimulationApprovalListingView(true);
+      }
+      if (isOpenRMApprovalDashboard.CostingsApprovalDashboard === true) {
+        setCostingApprovalListingView(true);
+      }
     }
-  }, [isOpenAmmendment]);
 
 
-  useEffect(() => {
-    if (isOpenAmmendment === true) {
-      setAcc6(true);
-    }
   }, [isOpenRMApprovalDashboard]);
+
+
 
   // useEffect(() => {
   //   props.getMenuByUser(loggedInUserId(), () => {
@@ -80,7 +82,7 @@ function Dashboard(props) {
             </Row>
             <form onSubmit={handleSubmit}>
 
-              {acc4 &&
+              {costingApprovalListingView &&
                 <Row className="m-0">
                   <div className="graph-box w-100">
                     <Row>
@@ -103,7 +105,7 @@ function Dashboard(props) {
               }
 
 
-              {acc5 &&
+              {simulationApprovalListingView &&
                 <Row className="m-0">
                   <div className="graph-box w-100">
                     <Row>
@@ -126,7 +128,7 @@ function Dashboard(props) {
                 </Row>
               }
 
-              {acc6 &&
+              {RMApprovalView &&
                 <Row className="m-0">
                   <div className="graph-box w-100">
                     <Row>
