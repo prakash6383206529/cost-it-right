@@ -464,7 +464,7 @@ export function ProcessListingSimulation(props) {
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{ height: '100%', width: '100%' }}
+                            // style={{ height: '100%', width: '100%' }}
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}

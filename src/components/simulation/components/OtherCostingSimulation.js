@@ -526,7 +526,7 @@ function OtherCostingSimulation(props) {
             allColumnIds.push(column.colId);
         });
 
-        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+        window.screen.width <= 1920 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
 
     };
 
