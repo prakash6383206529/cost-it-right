@@ -125,7 +125,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           <div className="container-fluid approval-summary-page">
-            <Errorbox customClass="d-none" errorText="There is some error in your page" />
+            {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">
