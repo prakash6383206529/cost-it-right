@@ -291,7 +291,7 @@ function ApproveRejectDrawer(props) {
       objs.ApproverDepartmentId = dept && dept.value ? dept.value : ''
       objs.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       objs.IsFinalApprovalProcess = false
-      objs.SimulationApprovalProcessSummaryId = simulationDetail.SimulationApprovalProcessSummaryId
+      objs.SimulationApprovalProcessSummaryId = simulationDetail?.SimulationApprovalProcessSummaryId
       //objs.LinkedTokenNumber = linkingTokenDropDown
 
       if (type === 'Sender') {
@@ -312,7 +312,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = moment(simulationDetail.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = moment(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
 let temp = []
 if (isSimulationApprovalListing === true) {
