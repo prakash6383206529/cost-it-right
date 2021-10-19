@@ -15,7 +15,7 @@ import { getConfigurationKey } from '../../../helper';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
-    console.log(masterId,"MASTER")
+   
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -149,7 +149,7 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(COMBINED_PROCESS):
                 dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                 console.log(res.data.Result,'resdsd')
+                
                     if (res.data.Result) {
                         toastr.success('Simulation process has been run successfully.')
                         runSimulationCosting()

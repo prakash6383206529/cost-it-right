@@ -209,7 +209,7 @@ function ERSimulation(props) {
         // setShowVerifyPage(true)
     }
 
-    console.log(master, 'mastermastermastermastermastermastermastermastermastermastermastermastermastermastermaster')
+   
     return (
         <div>
             <div className={`ag-grid-react`}>

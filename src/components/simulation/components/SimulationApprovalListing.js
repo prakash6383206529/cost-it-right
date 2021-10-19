@@ -412,6 +412,7 @@ function SimulationApprovalListing(props) {
 
     const closeDrawer = (e = '') => {
         setApproveDrawer(false)
+        setIsApprovalDrawer(false)
         getTableData()
         //setRejectDrawer(false)
     }
@@ -499,6 +500,9 @@ function SimulationApprovalListing(props) {
         conditionFormatter: conditionFormatter
     };
 
+
+    
+
     return (
         <Fragment>
             {
@@ -562,7 +566,7 @@ function SimulationApprovalListing(props) {
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
-                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn> 
+                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Master"></AgGridColumn> 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
