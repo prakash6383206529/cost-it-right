@@ -2932,13 +2932,13 @@ body {
         height: calc(32px * 80 / 100);
       }
       .paging-container{
-        margin-top: -41px;
+        margin-top: -43px;
         &::before{
           top: calc(14px * 80 / 100);
         }
         .paging-dropdown{
           width: auto;
-          height: calc(32px * 80 / 100);
+          // height: calc(32px * 80 / 100);
         }
       }
     }
