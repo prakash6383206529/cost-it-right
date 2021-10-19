@@ -537,7 +537,7 @@ function SimulationApprovalListing(props) {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div
-                                className="ag-theme-material"
+                                className="ag-theme-material simulation-history"
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}

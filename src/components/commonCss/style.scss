@@ -6183,9 +6183,11 @@ body{
   }
 }
 
- .token-no-grid {
-   .ag-cell-wrapper {
-     justify-content: flex-end;
-     margin-right: 40%;
+
+  .token-no-grid {
+    .ag-cell-value {
+      position: absolute;
+      left: 38px;
     }
   }
+
