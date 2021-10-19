@@ -20,6 +20,7 @@ import InsightsBop from '../masters/bop-master/InsightsBop'
 import OperationInsights from '../masters/operation/OperationInsights';
 
 
+
 function NewReport(props) {
 
 
