@@ -300,8 +300,7 @@ function ApproveRejectDrawer(props) {
             isMultipleSimulation: isSimulationApprovalListing ? true : false
           })
         })
-        console.log(approverObject, 'temptemptemptemptemptemptemptemptemptemp')
-        console.log(selectedRowData, 'selectedRowDataselectedRowDataselectedRowDataselectedRowData')
+      
       } else {
         approverObject = [{
           ApprovalId: simulationDetail?.SimulationApprovalProcessId,
@@ -360,8 +359,7 @@ if (isSimulationApprovalListing === true) {
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.isMultipleSimulation = isSimulationApprovalListing ? true : false
-        console.log('linkingTokenDropDown: ', linkingTokenDropDown);
-        console.log('senderObj:senderObj ', senderObj);
+       
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -736,8 +734,8 @@ if (isSimulationApprovalListing === true) {
                 </div>
 
                 {
-                  isSimulation && type === 'Sender' &&
-                  <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
+                  isSimulation && type === 'Sender' && !isSimulationApprovalListing &&
+                  <AttachmentSec token={simulationDetail?.TokenNo} type={type} Attachements={simulationDetail?.Attachements} />
                 }
 
               </Row>

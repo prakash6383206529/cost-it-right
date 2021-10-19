@@ -1048,7 +1048,6 @@ export function getVendorWithVendorCodeSelectList() {
  * @description Used to get RM Domestic Datalist
  */
 export function getRMDomesticDataList(data, callback) {
-    console.log('data: ', data);
     return (dispatch) => {
 
         dispatch({ type: GET_RM_DOMESTIC_LIST });

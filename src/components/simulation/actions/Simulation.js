@@ -670,7 +670,6 @@ export function runVerifyCombinedProcessSimulation(data, callback) {
 }
 
 export function getverifyCombinedProcessSimulationList(token, callback) {
-console.log(token,"TOKEN")
     return (dispatch) => {
         const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, headers);
         request.then((response) => {
