@@ -13,7 +13,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import ClientListing from './ClientListing';
-import $ from 'jquery';
 
 
 class AddClient extends Component {
@@ -145,7 +144,6 @@ class AddClient extends Component {
                 isShowForm: true,
                 ClientId: data.ID,
             })
-            $('html, body').animate({ scrollTop: 0 }, 'slow');
             this.props.getClientData(data.ID, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;

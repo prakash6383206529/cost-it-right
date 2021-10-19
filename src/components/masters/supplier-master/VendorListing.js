@@ -412,7 +412,6 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow');
         this.setState({ isOpenVendor: true })
     }
 

@@ -876,7 +876,7 @@ export const API = {
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
 
   //REPORT
-  getReportListing: `${BASE_URL} /dashboard/get-costings-for-dashboard`,
+  getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
 
 }
 

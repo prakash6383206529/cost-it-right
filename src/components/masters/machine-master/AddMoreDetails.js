@@ -23,7 +23,6 @@ import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, WDM, SLM, ZBC, HOUR } from '../../../config/constants';
@@ -191,7 +190,7 @@ class AddMoreDetails extends Component {
         isLoader: true,
         MachineID: editDetails.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
+
       this.props.getMachineDetailsData(editDetails.Id, res => {
         if (res && res.data && res.data.Result) {
 

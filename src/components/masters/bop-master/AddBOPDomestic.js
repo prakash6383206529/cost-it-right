@@ -16,7 +16,6 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
@@ -146,7 +145,6 @@ class AddBOPDomestic extends Component {
         isLoader: true,
         BOPID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getBOPDomesticById(data.Id, res => {
         if (res && res.data && res.data.Result) {
           let vendorObj

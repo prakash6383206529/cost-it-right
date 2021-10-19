@@ -29,7 +29,6 @@ import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, INR, ZBC, RM_MASTER_ID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
-import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -400,7 +399,6 @@ class AddRMImport extends Component {
         isShowForm: true,
         RawMaterialID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;

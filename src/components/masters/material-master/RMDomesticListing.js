@@ -970,7 +970,6 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                                <AgGridColumn field="IsRMAssociated"></AgGridColumn>
 
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">

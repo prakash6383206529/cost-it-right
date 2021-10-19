@@ -16,7 +16,6 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -121,7 +120,6 @@ class AddOverhead extends Component {
         isLoader: true,
         OverheadID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getOverheadData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
