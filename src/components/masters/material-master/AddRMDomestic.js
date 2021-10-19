@@ -26,7 +26,6 @@ import AddUOM from '../uom-master/AddUOM'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
-import $, { data } from 'jquery'
 import 'react-datepicker/dist/react-datepicker.css'
 import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
 import moment from 'moment';
@@ -373,7 +372,6 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow')
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data

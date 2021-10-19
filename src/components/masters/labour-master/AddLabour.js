@@ -12,7 +12,6 @@ import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
-import $ from 'jquery'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
@@ -76,7 +75,6 @@ class AddLabour extends Component {
         isEditFlag: true,
         LabourId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow')
       this.props.getLabourData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data

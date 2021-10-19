@@ -6,7 +6,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
-import NoContentFound from '../../common/NoContentFound' 
+import NoContentFound from '../../common/NoContentFound'
 import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false);
+    const [isPendingForApproval, setIsPendingForApproval] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -291,9 +292,24 @@ function SimulationApprovalListing(props) {
         setValue('status', '')
         getTableData()
     }
+    const allEqual = arr => arr.every(val => val === arr[0]);
 
     const onRowSelect = (row, isSelected, e) => {
+
+        let arr = []
         var selectedRows = gridApi.getSelectedRows();
+
+        selectedRows.map(item => {
+            arr.push(item?.DisplayStatus)
+        })
+
+        if (!allEqual(arr)) {
+            toastr.warning('Please select costing of similar Status.')
+            gridApi.deselectAll()
+        }
+
+        setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
+
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
@@ -306,7 +322,14 @@ function SimulationApprovalListing(props) {
         //     setSelectedRowData(tempArr)
         // }
     }
-    const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+    const isRowSelectable = (rowNode) => {
+        if (rowNode.data.DisplayStatus === "Approved" || rowNode.data.DisplayStatus === "Rejected" || rowNode.data.DisplayStatus === "Awaiting Approval") {
+            return false;
+        } else {
+            return true
+        }
+        // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
+    }
 
     const onSelectAll = (isSelected, rows) => {
         if (isSelected) {
@@ -342,6 +365,7 @@ function SimulationApprovalListing(props) {
         let technologyCount = 0
         setIsApprovalDrawer(true)
         setApproveDrawer(true)
+      
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -359,29 +383,31 @@ function SimulationApprovalListing(props) {
             }
         })
 
-        selectedRowData.forEach((element, index, arr) => {
-            if (index > 0) {
-                if (element.TechnologyId !== arr[index - 1].TechnologyId) {
-                    technologyCount = technologyCount + 1
-                } else {
-                    return false
-                }
-            } else {
-                return false
-            }
-        })
+        // selectedRowData.forEach((element, index, arr) => {
+        //     if (index > 0) {
+        //         if (element.TechnologyId !== arr[index - 1].TechnologyId) {
+        //             technologyCount = technologyCount + 1
+        //         } else {
+        //             return false
+        //         }
+        //     } else {
+        //         return false
+        //     }
+        // })
 
-        if (technologyCount > 0) {
-            return toastr.warning("Technology should be same for sending multiple costing for approval")
-        }
+        // if (technologyCount > 0) {
+        //     return toastr.warning("Technology should be same for sending multiple costing for approval")
+        // }
 
         if (count > 0) {
-            return toastr.warning("Reason should be same for sending multiple costing for approval")
+             toastr.warning("Reason should be same for sending multiple costing for approval")
+             return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
+            setApproveDrawer(true)
         }
 
-        setApproveDrawer(true)
+        
     }
 
     const closeDrawer = (e = '') => {
@@ -535,6 +561,8 @@ function SimulationApprovalListing(props) {
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
+                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn> 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
@@ -565,8 +593,8 @@ function SimulationApprovalListing(props) {
                                         isOpen={isApprovalDrawer}
                                         anchor={'right'}
                                         approvalData={[]}
-                                        type={'Sender'}
-                                        // simulationDetail={simulationDetail}
+                                        type={isPendingForApproval ? 'Approve' : 'Sender'}
+                                        // simulationDetail={}
                                         selectedRowData={selectedRowData}
                                         // costingArr={costingArr}
                                         // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}

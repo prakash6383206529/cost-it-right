@@ -16,7 +16,6 @@ import { GENERATOR_DIESEL, } from '../../../config/constants';
 import { CONSTANT } from '../../../helper/AllConastant'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
@@ -274,7 +273,6 @@ class AddPower extends Component {
         isLoader: true,
         PowerDetailID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getVendorPowerDetailData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -310,7 +308,7 @@ class AddPower extends Component {
         isLoader: true,
         PowerDetailID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
+
       this.props.getPowerDetailData(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
