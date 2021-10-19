@@ -630,6 +630,7 @@ function RMDomesticListing(props) {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
+
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -950,7 +951,7 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                 <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                 <AgGridColumn field="RMGrade"></AgGridColumn>
-                                <AgGridColumn field="RMSpec"></AgGridColumn>
+                                <AgGridColumn field="RMSpec" headerName="RM Specs"></AgGridColumn>
                                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                 <AgGridColumn field="Category"></AgGridColumn>
                                 <AgGridColumn field="MaterialType"></AgGridColumn>

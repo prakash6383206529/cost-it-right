@@ -67,7 +67,6 @@ function Simulation(props) {
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    console.log('rmDomesticListing: ', rmDomesticListing);
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)

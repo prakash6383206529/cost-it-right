@@ -1,4 +1,5 @@
 import React, { Component, useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import { connect } from "react-redux";
 import { getMenuByUser, getLeftMenu } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
@@ -12,12 +13,40 @@ import dashboardImg from '../../assests/images/dashboard-img.png'
 
 
 function Dashboard(props) {
-  const { handleSubmit, menusData } = props
+  const { handleSubmit, menusData, } = props
 
   const [acc1, setAcc1] = useState(true)
   const [acc2, setAcc2] = useState(false)
   const [acc3, setAcc3] = useState(false)
+  const [acc4, setAcc4] = useState(false)
+  const [acc5, setAcc5] = useState(false)
+  const [acc6, setAcc6] = useState(false)
   const [hideDash, setShowHideDash] = useState(false)
+  const isOpen = useSelector((state) => state.auth.CostingsApprovalDashboard)
+  const isOpenAmmendment = useSelector((state) => state.auth.AmendmentsApprovalDashboard)
+  const isOpenRMApprovalDashboard = useSelector((state) => state.auth.RMApprovalDashboard)
+
+
+
+  useEffect(() => {
+    if (isOpen === true) {
+      setAcc4(true);
+    }
+  }, [isOpen]);
+
+
+  useEffect(() => {
+    if (isOpenAmmendment === true) {
+      setAcc5(true);
+    }
+  }, [isOpenAmmendment]);
+
+
+  useEffect(() => {
+    if (isOpenAmmendment === true) {
+      setAcc6(true);
+    }
+  }, [isOpenRMApprovalDashboard]);
 
   // useEffect(() => {
   //   props.getMenuByUser(loggedInUserId(), () => {
@@ -35,6 +64,7 @@ function Dashboard(props) {
   const closeDashboard = () => {
     setShowHideDash(true)
   }
+  //console.log(this.props.CostingsApprovalDashboard, "as")
 
 
   return (
@@ -49,68 +79,77 @@ function Dashboard(props) {
               </Col>
             </Row>
             <form onSubmit={handleSubmit}>
-              <Row className="m-0">
-                <div className="graph-box w-100">
-                  <Row>
-                    <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
-                    <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
-                        {acc1 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
-                  </Row>
-                </div>
-              </Row>
 
-              <Row className="m-0">
-                <div className="graph-box w-100">
-                  <Row>
-                    <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
-                    <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
-                        {acc2 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </Row>
+              {acc4 &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                          {acc1 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
 
-                  <Row>
-                    <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} />}</Col>
-                  </Row>
-                </div>
-              </Row>
-              <Row className="m-0">
-                <div className="graph-box w-100">
-                  <Row>
-                    <Col md="8"><h3 className="mb-0">RM Awaiting Approval</h3></Col>
-                    <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
-                        {acc3 ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </Row>
 
-                  <Row>
-                    <Col md="12">{acc3 && <RMApproval isApproval={true} />}</Col>
-                  </Row>
-                </div>
-              </Row>
+              {acc5 &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                          {acc2 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} />}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
+
+              {acc6 &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">RM Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
+                          {acc3 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col md="12">{acc3 && <RMApproval isApproval={true} />}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
             </form>
-          </div>
+          </div >
           <Row className="m-0">
             <div className="graph-box w-100">
               <div className="dashboard-top position-relative">
@@ -132,8 +171,8 @@ function Dashboard(props) {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { menusData, leftMenuData } = auth;
-  return { menusData, leftMenuData };
+  const { menusData, leftMenuData, } = auth;
+  return { menusData, leftMenuData, };
 }
 
 export default connect(mapStateToProps, {

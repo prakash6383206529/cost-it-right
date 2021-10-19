@@ -567,6 +567,10 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+
+                                                    <AgGridColumn width={130} field="RMSpec" headerName='RM Specification' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
+
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
