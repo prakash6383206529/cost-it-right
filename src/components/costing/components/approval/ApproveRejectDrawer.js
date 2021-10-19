@@ -358,7 +358,7 @@ if (isSimulationApprovalListing === true) {
 }
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
-        senderObj.isMultipleSimulation = isSimulationApprovalListing ? true : false
+        senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false
        
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL

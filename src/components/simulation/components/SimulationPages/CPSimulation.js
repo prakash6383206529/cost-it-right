@@ -385,10 +385,16 @@ function CPSimulation(props) {
                                                     <AgGridColumn width={120} cellRenderer='newCPFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
                                                 </AgGridColumn>
                                                  {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn> } 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
+                                                {
+                                                    !isImpactedMaster &&
+                                                    <>
+                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
                                                     <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Total"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                 </AgGridColumn>
+                                                    </>
+                                                }
+                                               
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
 

@@ -402,7 +402,8 @@ function OtherVerifySimulation(props) {
                                                 }
                                                 {isCombinedProcess &&
                                                     <>
-                                                      <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old"></AgGridColumn>
+                                                          <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old"></AgGridColumn>
+                                                         <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldNetCC" headerName="Old CC"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
                                                     </>
