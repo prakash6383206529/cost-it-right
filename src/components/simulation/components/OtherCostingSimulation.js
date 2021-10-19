@@ -174,7 +174,7 @@ function OtherCostingSimulation(props) {
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
             CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
-            NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency
+            NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency,NewNetCC:data.NewNetCC,OldNetCC:data.OldNetCC
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data

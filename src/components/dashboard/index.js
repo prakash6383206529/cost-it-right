@@ -127,7 +127,7 @@ function Dashboard(props) {
                 </Row>
               }
 
-              {RMApprovalView &&
+              {/* {RMApprovalView &&
                 <Row className="m-0">
                   <div className="graph-box w-100">
                     <Row>
@@ -148,7 +148,7 @@ function Dashboard(props) {
                     </Row>
                   </div>
                 </Row>
-              }
+              } */}
             </form>
           </div>
           <Row className="m-0">
