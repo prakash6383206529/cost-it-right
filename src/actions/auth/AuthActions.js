@@ -1765,32 +1765,8 @@ export function getUsersMasterLevelAPI(UserId, callback) {
 
 
 
-export function CostingsApprovalDashboard(data) {
-    return (dispatch) => {
 
-        dispatch({
-            type: COSTINGS_APPROVAL_DASHBOARD,
-            payload: data,
-        });
-
-
-    };
-}
-
-
-export function AmendmentsApprovalDashboard(data) {
-    return (dispatch) => {
-
-        dispatch({
-            type: AMENDMENTS_APPROVAL_DASHBOARD,
-            payload: data,
-        });
-
-
-    };
-}
-
-export function RMApprovalDashboard(data) {
+export function ApprovalDashboard(data) {
     return (dispatch) => {
 
         dispatch({
