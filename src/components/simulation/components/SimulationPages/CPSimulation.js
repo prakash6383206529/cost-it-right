@@ -23,19 +23,18 @@ const gridOptions = {
 
 };
 function CPSimulation(props) {
-    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
 
-    
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+
+    const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -43,22 +42,18 @@ function CPSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation,selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
 
     const cancelVerifyPage = () => {
-
         setShowVerifyPage(false)
     }
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     useEffect(() => {
-       
-
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
@@ -103,7 +98,6 @@ function CPSimulation(props) {
     }
 
     const costFormatter = (props) => {
-
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
@@ -134,7 +128,6 @@ function CPSimulation(props) {
 
 
     const cancel = () => {
-        // props.cancelEditPage()
         setShowMainSimulation(true)
     }
 
@@ -142,20 +135,11 @@ function CPSimulation(props) {
         setShowRunSimulationDrawer(false)
 
     }
-    // const isFirstColumn = (params) => {
-    //     if (isImpactedMaster) return false
-    //     var displayedColumns = params.columnApi.getAllDisplayedColumns();
-    //     var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-    //     return thisIsFirstColumn;
-    // }
 
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
-        // headerCheckboxSelection: isFirstColumn,
-        // checkboxSelection: isFirstColumn
+        sortable: true
     };
 
     const onGridReady = (params) => {
@@ -168,7 +152,6 @@ function CPSimulation(props) {
             allColumnIds.push(column.colId);
         });
 
-        // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -181,7 +164,6 @@ function CPSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewCC || Number(row.ConversionCost) === Number(row.NewCC) || row.NewCC === '') return ''
         const NewCC = Number(row.NewCC) + checkForNull(row.RemainingTotal)
@@ -191,21 +173,9 @@ function CPSimulation(props) {
     }
 
     const OldcostFormatter = (props) => {
-
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // if (!row.ConversionCost || Number(row.ConversionCost) === Number(row.ConversionCost) || row.ConversionCost === '') return ''
         const ConversionCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
-        const NetCost = Number(row.NewCC) + checkForNull(row.RemainingTotal)
-        const classGreen = (ConversionCost > NetCost) ? 'red-value form-control' : (ConversionCost < NetCost) ? 'green-value form-control' : 'form-class'
         return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
-
-
-        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // // if (!row.NewCC || Number(row.ConversionCost) === Number(row.NewCC) || row.NewCC === '') return ''
-        // const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingFieldsTotal)
-        // return row.ConversionCost != null ? checkForDecimalAndNull(NetCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const frameworkComponents = {
@@ -232,17 +202,10 @@ function CPSimulation(props) {
         let arr = []
         tempData && tempData.map((li, index) => {
 
-
-
-
-
-
             if (Number(li.ConversionCost) === Number(li.NewCC) || li?.NewCC === undefined) {
                 ccCount = ccCount + 1
             } else {
-    
-    
-    
+
                 li.NewTotal = Number(li.NewCC ? li.NewCC : li.ConversionCost) + checkForNull(li.RemainingTotal)
 
                 arr.push(li)
@@ -270,11 +233,9 @@ function CPSimulation(props) {
             tempObj.OldTotalCost = item.TotalCost
             tempObj.NewTotalCost = item.NewTotal
             tempArr.push(tempObj)
-        
+            return null
         })
         obj.SimulationCombinedProcess = tempArr
-
-        // setTableData(obj)
 
         dispatch(runVerifyCombinedProcessSimulation(obj, res => {
             if (res.data.Result) {
@@ -282,17 +243,12 @@ function CPSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)           //  for comdition remove
     }, 500);
 
     return (
         <div>
-
             <div className={`ag-grid-react`}>
-
                 {
-
-
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
                         {
@@ -372,11 +328,11 @@ function CPSimulation(props) {
                                                 onSelectionChanged={onRowSelect}
                                             >
                                                 <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn> }
+                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 {
-                                                    !isImpactedMaster && 
+                                                    !isImpactedMaster &&
                                                     <>
-                                                    <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                        <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
 
                                                     </>
                                                 }
@@ -384,17 +340,17 @@ function CPSimulation(props) {
                                                     <AgGridColumn width={120} field="ConversionCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="ConversionCost"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newCPFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
                                                 </AgGridColumn>
-                                                 {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn> } 
+                                                {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
-                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
-                                                    <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Total"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
-                                                </AgGridColumn>
+                                                        <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
+                                                            <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
+                                                            <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
+                                                        </AgGridColumn>
                                                     </>
                                                 }
-                                               
+
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
 

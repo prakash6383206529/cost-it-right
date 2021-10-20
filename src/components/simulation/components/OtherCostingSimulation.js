@@ -14,7 +14,7 @@ import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS } from '../../../config/cons
 import { toastr } from 'react-redux-toastr';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { COMBINEDPROCESSSIMULATION, CombinedProcessSimulationFinal, CostingSimulationDownload, EXCHANGESIMULATIONDOWNLOAD } from '../../../config/masterData'
+import { COMBINEDPROCESSSIMULATION, EXCHANGESIMULATIONDOWNLOAD } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -29,15 +29,12 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master } = props
 
-    const { register, control, formState: { errors }, getValues, setValue } = useForm({
+    const { control, getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
-    const [shown, setshown] = useState(false);
-
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -48,16 +45,13 @@ function OtherCostingSimulation(props) {
     const [id, setId] = useState('')
     const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
     const [oldArr, setOldArr] = useState([])
-    const [material, setMaterial] = useState([])
     const [pricesDetail, setPricesDetail] = useState({})
-    const [isView, setIsView] = useState(false)
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
- 
+
     const [tableData, setTableData] = useState([])
     const [vendorIdState, setVendorIdState] = useState("")
     const [simulationTypeState, setSimulationTypeState] = useState("")
@@ -123,7 +117,7 @@ function OtherCostingSimulation(props) {
             } else if (Number(master) === Number(COMBINED_PROCESS)) {
                 item.Variance = checkForDecimalAndNull(item.OldNetCC - item.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)
             }
-
+            return null
         })
         let uniqeArray = []
         const map = new Map();
@@ -137,7 +131,7 @@ function OtherCostingSimulation(props) {
         setTokenNo(tokenNo)
         setCostingArr(Data.SimulatedCostingList)
         setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-       
+
     }
 
 
@@ -174,7 +168,7 @@ function OtherCostingSimulation(props) {
         setPricesDetail({
             CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice,
             CostingHead: data.CostingHead, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency,
-            NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency,NewNetCC:data.NewNetCC,OldNetCC:data.OldNetCC
+            NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency, NewNetCC: data.NewNetCC, OldNetCC: data.OldNetCC
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -199,13 +193,13 @@ function OtherCostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let temp = []
-        let selectedTemp = []
 
         selectedRows && selectedRows.map(item => {
             if (item.IsLockedBySimulation) {
                 temp.push(item.CostingNumber)
                 return false
             }
+            return null
         })
 
         if (temp.length > 1) {
@@ -263,7 +257,8 @@ function OtherCostingSimulation(props) {
         return cell && cell !== null ? cell : '-'
     }
 
-    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
+    const vendorFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
     }
 
@@ -448,22 +443,8 @@ function OtherCostingSimulation(props) {
         })
     }
 
-
-    const filterList = () => {
-        const plant = getValues('plantCode').value
-        getCostingList(plant, material.value)
-    }
-    const resetFilter = () => {
-        setValue('plantCode', '')
-        setValue('rawMaterial', '')
-        setMaterial('')
-        getCostingList('', '')
-    }
-
-
-
     useEffect(() => {
- setLoader(false)
+        setLoader(false)
     }, [hideDataColumn])
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -486,10 +467,10 @@ function OtherCostingSimulation(props) {
         switch (Number(master)) {
             case Number(EXCHNAGERATE):
                 return returnExcelColumn(EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
-             
+
             case Number(COMBINED_PROCESS):
                 return returnExcelColumn(COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
-               
+
             default:
                 break;
         }
@@ -507,7 +488,6 @@ function OtherCostingSimulation(props) {
 
         return thisIsFirstColumn;
     }
-
 
     const defaultColDef = {
         resizable: true,
@@ -544,7 +524,6 @@ function OtherCostingSimulation(props) {
         gridOptions.api.setFilterModel(null);
     }
 
-
     const frameworkComponents = {
 
         descriptionFormatter: descriptionFormatter,
@@ -569,15 +548,15 @@ function OtherCostingSimulation(props) {
         hideColumn: hideColumn,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
-        oldCCFormatter:oldCCFormatter,
-        newCCFormatter:newCCFormatter
-
+        oldCCFormatter: oldCCFormatter,
+        newCCFormatter: newCCFormatter,
+        vendorFormatter: vendorFormatter
     };
-    // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
+
     return (
         <>
             {
-                loader ? <LoaderCustom /> :          //loader
+                loader ? <LoaderCustom /> :
 
                     !showApprovalHistory &&
 
@@ -636,9 +615,7 @@ function OtherCostingSimulation(props) {
                                                     frameworkComponents={frameworkComponents}
                                                     suppressRowClickSelection={true}
                                                     rowSelection={'multiple'}
-                                                    // frameworkComponents={frameworkComponents}
                                                     onSelectionChanged={onRowSelect}
-                                                // isRowSelectable={isRowSelectable}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
@@ -664,27 +641,27 @@ function OtherCostingSimulation(props) {
                                                     }
                                                     {String(master) === String(COMBINED_PROCESS) &&
                                                         <>
-                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldNetCC" headerName='Old CC' cellRenderer='oldCCFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetCC" headerName='New CC' cellRenderer='newCCFormatter'></AgGridColumn>
-                                                      
+
                                                             <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
                                                         </>
                                                     }
                                                     <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
@@ -750,8 +727,6 @@ function OtherCostingSimulation(props) {
                                 vendorId={vendorIdState}
                                 SimulationTechnologyId={SimulationTechnologyIdState}
                                 SimulationType={simulationTypeState}
-
-                            // isSaveDone={isSaveDone}
                             />}
 
                         {isVerifyImpactDrawer &&
@@ -780,7 +755,6 @@ function OtherCostingSimulation(props) {
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
-                    // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />}
         </>

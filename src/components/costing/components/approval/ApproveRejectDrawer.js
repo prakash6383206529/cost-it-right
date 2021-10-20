@@ -4,32 +4,27 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
-import PushButtonDrawer from './PushButtonDrawer'
-import { APPROVED, APPROVER, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, uploadSimulationAttachmentByCategory, setAttachmentFileData } from '../../../simulation/actions/Simulation'
+import { APPROVER } from '../../../../config/constants'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
-import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AttachmentSec from './AttachmentSec'
-import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
 
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList,isSimulationApprovalListing } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
-  const partNo = useSelector((state) => state.costing.partNo)
   const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -39,22 +34,17 @@ function ApproveRejectDrawer(props) {
 
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
-  const [reason, setReason] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
   const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
   const [showError, setShowError] = useState(false)
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [initialFiles, setInitialFiles] = useState([]);
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
-  const toFindDuplicates = arry => {
-    return arry.filter((item, index) => arry.indexOf(item) !== index)
-  }
+
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
     // dispatch(getAllApprovalDepartment((res) => { }))
@@ -101,6 +91,7 @@ function ApproveRejectDrawer(props) {
         files.push(item)
         setFiles(files)
         setIsOpen(!IsOpen)
+        return null
       })
 
       if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
@@ -117,29 +108,31 @@ function ApproveRejectDrawer(props) {
 
 
   const getApproversList = (departObj) => {
-    let values = []
+    let uniqueTechnologyIdArray = []
     let approverDropdownValue = []
+
+    // GET UNIQUE TECHNOLOGYID 
     selectedRowData.map(item => {
-      if (!(values.includes(item.SimulationTechnologyId))) {
-        values.push(item.SimulationTechnologyId)
+      if (!(uniqueTechnologyIdArray.includes(item.SimulationTechnologyId))) {
+        uniqueTechnologyIdArray.push(item.SimulationTechnologyId)
       }
+      return null
     })
-    if (values.length > 1) {
-      values.map(item => {
+
+    // IF SELECTED TECHNOLOGY ID IS MORE THAN ONE
+    if (uniqueTechnologyIdArray.length > 1) {
+
+      // MULTIPLE TIME API CALL
+      uniqueTechnologyIdArray.map(item => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
-          //NEED TO MAKE THIS 2   
-          // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           TechnologyId: item,
           ReasonId: 0
         }
 
         dispatch(
           getAllSimulationApprovalList(obj, (res) => {
-            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-            // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-            // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
@@ -152,70 +145,46 @@ function ApproveRejectDrawer(props) {
               return null
             })
 
-
-
-
-
-            // tempDropdownList.map(item => {
-            //   approverDropdownValue.push(item)
-
-            // })
+            // PUT EVERY RESPONCE IN ARRAY IN ARRAY FORMAT 
             approverDropdownValue.push(tempDropdownList)
-            // approverDropdownValue && approverDropdownValue[0].map(itemmmm => {
+            let technologyIdArrayOfObj = []
 
-            //   valueOfAllArrays.push(itemmmm?.value)
-            // })
-            let allObjVal = []
-
+            // ACCESS EACH ARRAY ONE BY ONE AND TAKE OUT EACH USER'S UNIQUE ID IN AN ARRAY
             for (let v = 0; v < approverDropdownValue.length; v++) {
-              let valueOfAllArrays = []
-              approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
-                valueOfAllArrays.push(itemmmm?.value)
-
+              let technologyIdObj = []
+              approverDropdownValue && approverDropdownValue[v].map(item => {
+                technologyIdObj.push(item?.value)
+                return null
               })
-              allObjVal.push(valueOfAllArrays)
+              technologyIdArrayOfObj.push(technologyIdObj)
             }
 
-            let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-            // let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-            let filteredArray = filteredArray1
-            for (let v = 2; v < allObjVal.length; v++) {
-              // allObjVal && allObjVal[v].map(itemmmm => {
-              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
-              // })
+            // FILTER FIRST 2 ARRAY TO GET SIMILAR VALUES WHICH ARE MAXIMUM MANDATORY TO MATCH IN EACH ARRAY 
+            let filteredArrayOfIndex0_1 = technologyIdArrayOfObj.length && technologyIdArrayOfObj[0]?.filter(value => technologyIdArrayOfObj.length && technologyIdArrayOfObj[1]?.includes(value));
 
+            // FILTER WITH -> OTHER ARRAY IN INDEX -AND- OTHER ARRAY IN ROW
+            let filteredArray = filteredArrayOfIndex0_1
+            for (let v = 2; v < technologyIdArrayOfObj.length; v++) {
+              filteredArray = filteredArray && filteredArray?.filter(value => technologyIdArrayOfObj && technologyIdArrayOfObj[v]?.includes(value));
             }
 
-            let ar = [], arr = [], obj = [], temp = [], pushDD = []
-            // approverDropdownValue.map(item => {
-            //   ar.push(item.value)
-            // })
-            // arr = ar.filter((item, index) => ar.indexOf(item) !== index)
-            // arr.map(i => {
-            //   approverDropdownValue.map(item => {
+            let approveDropdownVal = []
 
-            //     if (i === item.value) {
-            //       obj.push(item)
-            //     }
-            //   })
-            // })
-            // obj && obj.map(item => {
-            //   temp.push(item.value)
-            // })
-
-            // const tempVal = toFindDuplicates(temp)
+            // CONVERTING UNIQUE KEY OF USER'S TO THE WHOLE OBJECT
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
-                  pushDD.push(i)
+                  approveDropdownVal.push(i)
                 }
+                return null
               })
+              return null
             })
-
-            setApprovalDropDown(pushDD)
+            setApprovalDropDown(approveDropdownVal)
           },
           ),
         )
+        return null
       })
     } else {
 
@@ -248,7 +217,6 @@ function ApproveRejectDrawer(props) {
         ),
       )
     }
-
   }
 
   const handleTokenDropDownChange = (value) => {
@@ -268,22 +236,6 @@ function ApproveRejectDrawer(props) {
           toastr.success('Simulation has been saved successfully.')
         }
       }))
-      // switch (Number(master)) {
-      //   case Number(RMDOMESTIC):
-
-      //     break;
-      //   case Number(RMIMPORT):
-      //     dispatch(saveSimulationForRawMaterial(simObj, res => {
-      //       if (res.data.Result) {
-      //         toastr.success('Simulation has been saved successfully.')
-      //       }
-      //     }))
-      //   case 
-      //     break;
-
-      //   default:
-      //     break;
-      // }
     }
   }, [simulationDetail])
 
@@ -300,10 +252,6 @@ function ApproveRejectDrawer(props) {
   const closePushButton = () => {
     setOpenPushButton(false)
     props.closeDrawer('', 'Cancel')
-  }
-
-  const handleEffectiveDateChange = (date) => {
-    setSelectedDate(date)
   }
 
   const onSubmit = debounce(handleSubmit(() => {
@@ -350,6 +298,7 @@ function ApproveRejectDrawer(props) {
           IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
 
         })
+        return null
       })
       if (type === 'Approve') {
         reset()
@@ -404,6 +353,7 @@ function ApproveRejectDrawer(props) {
             SimulationApprovalProcessSummaryId: item?.SimulationApprovalProcessSummaryId,
             IsMultiSimulation: isSimulationApprovalListing ? true : false
           })
+          return null
         })
       } else {
         approverObject = [{
@@ -448,18 +398,19 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderRemark = remark
         senderObj.EffectiveDate = moment(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
-let temp = []
-if (isSimulationApprovalListing === true) {
-  selectedRowData && selectedRowData.map(item => {
-    temp.push({
-      SimulationId: item.SimulationId, SimulationTokenNumber: item.ApprovalNumber,
-      SimulationAppliedOn: item.SimulationTechnologyId
-    })
-  })
-  senderObj.SimulationList = temp
-} else {
-  senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
-}
+        let temp = []
+        if (isSimulationApprovalListing === true) {
+          selectedRowData && selectedRowData.map(item => {
+            temp.push({
+              SimulationId: item.SimulationId, SimulationTokenNumber: item.ApprovalNumber,
+              SimulationAppliedOn: item.SimulationTechnologyId
+            })
+            return null
+          })
+          senderObj.SimulationList = temp
+        } else {
+          senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
+        }
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false
@@ -487,6 +438,7 @@ if (isSimulationApprovalListing === true) {
                 costingList && costingList.map(item => {
                   const vendor = item.VendorName.split('(')[1]
                   temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: userDetails().DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                  return null
                 })
                 pushObj.LoggedInUserId = userLoggedIn
                 pushObj.AmmendentDataRequests = temp
@@ -544,9 +496,6 @@ if (isSimulationApprovalListing === true) {
       })
       return tempDropdownList
     }
-
-
-
   }
 
   const handleDepartmentChange = (value) => {
@@ -555,7 +504,6 @@ if (isSimulationApprovalListing === true) {
 
     let tempDropdownList = []
     let obj
-    let simObj
     if (!isSimulation) {
       obj = {
         LoggedInUserId: loggedInUserId(), // user id
@@ -563,12 +511,6 @@ if (isSimulationApprovalListing === true) {
         TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
       }
     } else {
-      // simObj = {
-      //   LoggedInUserId: loggedInUserId(), // user id
-      //   DepartmentId: value.value,
-      //   TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-      //   ReasonId: 0
-      // }
     }
 
 
@@ -591,23 +533,6 @@ if (isSimulationApprovalListing === true) {
       )
     } else {
       getApproversList(value.value)
-      // dispatch(
-      //   getAllSimulationApprovalList(simObj, (res) => {
-      //     res.data.DataList &&
-      //       res.data.DataList.map((item) => {
-      //         if (item.Value === '0') return false;
-      //         tempDropdownList.push({
-      //           label: item.Text,
-      //           value: item.Value,
-      //           levelId: item.LevelId,
-      //           levelName: item.LevelName
-      //         })
-      //         return null
-      //       })
-      //     setApprovalDropDown(tempDropdownList)
-      //   },
-      //   ),
-      // )
     }
   }
 
@@ -735,37 +660,6 @@ if (isSimulationApprovalListing === true) {
                             errors={errors.reason}
                           />
                         </div>
-                        {/* <div className="input-group form-group col-md-12">
-                          <div className="inputbox date-section">
-                            <DatePickerHookForm
-                              name={`EffectiveDate`}
-                              label={'Effective Date'}
-                              selected={selectedDate}
-                              handleChange={(date) => {
-                                handleEffectiveDateChange(date);
-                              }}
-                              //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                              rules={{ required: true }}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              showMonthDropdown
-                              showYearDropdown
-                              dateFormat="aa/MM/yyyy"
-                              //maxDate={new Date()}
-                              dropdownMode="select"
-                              placeholderText="Select date"
-                              customClassName="withBorder"
-                              className="withBorder"
-                              autoComplete={"off"}
-                              disabledKeyboardNavigation
-                              onChangeRaw={(e) => e.preventDefault()}
-                              disabled={false}
-                              mandatory={true}
-                              errors={errors.EffectiveDate}
-                            />
-                          </div>
-                        </div> */}
                         {!isSimulationApprovalListing &&
                           <div className="input-group form-group col-md-12">
                             <label>Effective Date<span className="asterisk-required">*</span></label>
@@ -797,7 +691,7 @@ if (isSimulationApprovalListing === true) {
                 }
 
 
-                {getConfigurationKey().IsProvisionalSimulation && SimulationType === APPROVER && type === 'Sender' &&!isSimulationApprovalListing &&
+                {getConfigurationKey().IsProvisionalSimulation && SimulationType === APPROVER && type === 'Sender' && !isSimulationApprovalListing &&
 
                   < div className="input-group form-group col-md-12">
 
