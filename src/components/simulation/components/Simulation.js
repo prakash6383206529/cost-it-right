@@ -116,7 +116,7 @@ function Simulation(props) {
         dispatch(getVendorWithVendorCodeSelectList(() => { }))
         setShowEditTable(false)
         if (props.isRMPage) {
-            console.log(selectedVendorForSimulation,'selectedVendorForSimulationselectedVendorForSimulationselectedVendorForSimulation')
+            console.log(selectedVendorForSimulation, 'selectedVendorForSimulationselectedVendorForSimulationselectedVendorForSimulation')
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.value })
@@ -159,17 +159,23 @@ function Simulation(props) {
     const handleTechnologyChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
-        setValue('Vendor', '')
-        dispatch(setTechnologyForSimulation(value))
-        if (value !== '' && Object.keys(master).length > 0 && !(master.value === '3')) {
-            setShowMasterList(true)
-        }
+        setShowMasterList(false)
+        setTimeout(() => {
+            setValue('Vendor', '')
+            dispatch(setTechnologyForSimulation(value))
+            if (value !== '' && Object.keys(master).length > 0 && !(master.value === '3')) {
+                setShowMasterList(true)
+            }
+        }, 100);
     }
 
     const handleVendorChange = (value) => {
-        if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
-            setShowMasterList(true)
-        }
+        setShowMasterList(false)
+        setTimeout(() => {
+            if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
+                setShowMasterList(true)
+            }
+        }, 100);
         dispatch(setVendorForSimulation(value))
         setVendor(value)
     }
@@ -526,7 +532,7 @@ function Simulation(props) {
                                         !isUploadSimulation(master.value) &&
                                         <>
                                             <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button"
-                                                disabled={editWarning}      //      for condition
+                                                disabled={editWarning}
                                                 className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                                 {/* {true ? '' : renderColumn(master.label)} */}
                                                 {/* {!editWarning ?  */}
