@@ -589,14 +589,15 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
                                                     <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
                                                     <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
-                                                    <AgGridColumn width={120} field="RMSpec" hide ></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMSpec" headerName='RM Specs' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
-                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn> 
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>

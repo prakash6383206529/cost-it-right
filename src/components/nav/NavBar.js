@@ -7,7 +7,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
-  getTopAndLeftMenuData,
+  getTopAndLeftMenuData, CostingsApprovalDashboard, AmendmentsApprovalDashboard, RMApprovalDashboard,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -34,6 +34,7 @@ import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 
+
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -44,6 +45,7 @@ class SideBar extends Component {
       isRedirect: false,
       isLoader: false,
       isLeftMenuRendered: false,
+      CostingsAwaitingApprovalDashboard: false,
     };
   }
 
@@ -153,12 +155,15 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
+        this.props.RMApprovalDashboard(true);
         return this.renderMaster(module);
       case "Additional Masters":
         return this.renderAdditionalMaster(module);
       case "Costing":
+        this.props.CostingsApprovalDashboard(true);
         return this.renderCosting(module);
       case "Simulation":
+        this.props.AmendmentsApprovalDashboard(true);
         return this.renderSimulation(module);
       case "Reports And Analytics":
         return this.renderReportAnalytics(module);
@@ -765,6 +770,10 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
+
+
+
+
         </div>
       </nav>
     )
@@ -796,4 +805,7 @@ export default connect(mapStateToProps, {
   getModuleIdByPathName,
   getMenu,
   getTopAndLeftMenuData,
+  CostingsApprovalDashboard,
+  AmendmentsApprovalDashboard,
+  RMApprovalDashboard,
 })(SideBar)

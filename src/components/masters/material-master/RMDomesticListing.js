@@ -19,7 +19,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
-import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { costingHeadObjs, RMDOMESTIC_DOWNLOAD_EXCEl, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -633,7 +633,8 @@ function RMDomesticListing(props) {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
-        return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
+
+        return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -959,7 +960,7 @@ function RMDomesticListing(props) {
 
                                 <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
 
-                                <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                                <AgGridColumn field="RMSpec" headerName="RM Specs"></AgGridColumn>
 
                                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
 
