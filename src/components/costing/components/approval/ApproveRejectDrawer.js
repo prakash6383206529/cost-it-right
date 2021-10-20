@@ -442,7 +442,7 @@ function ApproveRejectDrawer(props) {
             ApproverDepartmentName: dept && dept.label ? dept.label : '',
             IsFinalApprovalProcess: false,
             SimulationApprovalProcessSummaryId: item?.SimulationApprovalProcessSummaryId,
-            isMultipleSimulation: isSimulationApprovalListing ? true : false
+            IsMultiSimulation: isSimulationApprovalListing ? true : false
           })
         })
       } else {
@@ -462,7 +462,7 @@ function ApproveRejectDrawer(props) {
           ApproverDepartmentName: dept && dept.label ? dept.label : '',
           IsFinalApprovalProcess: false,
           SimulationApprovalProcessSummaryId: simulationDetail?.SimulationApprovalProcessSummaryId,
-          isMultipleSimulation: isSimulationApprovalListing ? true : false
+          IsMultiSimulation: isSimulationApprovalListing ? true : false
         }]
 
         //objs.LinkedTokenNumber = linkingTokenDropDown
