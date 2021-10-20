@@ -219,7 +219,7 @@ function CPSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.CostingHead = list[0].CostingHeaditem === 'Vendor Based' ? VBC : ZBC
+        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
         obj.TechnologyId = list[0].TechnologyId
         obj.TechnologyName = list[0].TechnologyName
 
