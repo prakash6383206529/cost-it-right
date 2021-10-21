@@ -322,7 +322,7 @@ function RunSimulationDrawer(props) {
                                                                             defaultValue={""}
                                                                             className=""
                                                                             customClassName={"withBorder"}
-                                                                            errors={errors.ECNNumber}
+                                                                            errors={errors.OtherCost}
                                                                             disabled={false}
                                                                         />
 
@@ -343,11 +343,23 @@ function RunSimulationDrawer(props) {
                                                                         control={control}
                                                                         register={register}
                                                                         mandatory={false}
+                                                                        rules={{
+                                                                            //required: true,
+                                                                            pattern: {
+                                                                                value: /^\d*\.?\d*$/,
+                                                                                message: 'Invalid Number.'
+                                                                            },
+
+                                                                            max: {
+                                                                                value: 100,
+                                                                                message: "Should not be greater than 100"
+                                                                            },
+                                                                        }}
                                                                         handleChange={() => { }}
                                                                         defaultValue={""}
                                                                         className=""
                                                                         customClassName={"withBorder"}
-                                                                        errors={errors.ECNNumber}
+                                                                        errors={errors.Discount}
                                                                         disabled={false}
                                                                     /> : " "
                                                                 }
