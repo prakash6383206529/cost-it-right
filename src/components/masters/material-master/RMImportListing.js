@@ -310,7 +310,7 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-    const { initialConfiguration } = this.props
+    const { initialConfiguration } = props
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
@@ -663,8 +663,11 @@ function RMImportListing(props) {
     var selectedRows = gridApi.getSelectedRows();
     // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
     setSelectedRowData(selectedRows)
-    props.apply(selectedRows)
+    if (isSimulation) {
+      props.isRowSelected(gridApi.getSelectedRows().length)
+      props.apply(selectedRows)
 
+    }
   }
 
   const defaultColDef = {

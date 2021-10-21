@@ -667,9 +667,12 @@ function RMDomesticListing(props) {
     const onRowSelect = () => {
 
         var selectedRows = gridApi.getSelectedRows();
+        if (isSimulation) {
+            props.isRowSelected(gridApi.getSelectedRows().length)
+            apply(selectedRows)
+        }
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         setSelectedRowData(selectedRows)
-        apply(selectedRows)
 
     }
 
