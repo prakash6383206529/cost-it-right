@@ -78,7 +78,6 @@ function RMDomesticListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(true);
     const [statusId, setstatusId] = useState(0);
-    const [count, setCount] = useState(0)
     const dispatch = useDispatch();
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
@@ -206,7 +205,6 @@ function RMDomesticListing(props) {
                     settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-
                     if (isSimulation) {
                         props.apply(Data)
                     }
@@ -668,12 +666,17 @@ function RMDomesticListing(props) {
 
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
-            props.isRowSelected(gridApi.getSelectedRows().length)
+            let len = gridApi.getSelectedRows().length
+            props.isRowSelected(len)
             apply(selectedRows)
         }
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         setSelectedRowData(selectedRows)
 
+    }
+
+    const onFloatingFilterChanged = (p) => {
+        gridApi.deselectAll()
     }
 
     const defaultColDef = {
@@ -951,6 +954,7 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
