@@ -172,7 +172,6 @@ class ClientListing extends Component {
         )
     };
 
-
     /**
     * @method hyphenFormatter
     */

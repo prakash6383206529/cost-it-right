@@ -168,6 +168,7 @@ class FuelListing extends Component {
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
     }
+
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -341,6 +342,8 @@ class FuelListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -350,8 +353,9 @@ class FuelListing extends Component {
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
-
         };
+
+
         const defaultColDef = {
             resizable: true,
             filter: true,
@@ -365,7 +369,6 @@ class FuelListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
         };
-
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -494,7 +497,6 @@ class FuelListing extends Component {
                 </form>
                 <Row>
                     <Col>
-
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

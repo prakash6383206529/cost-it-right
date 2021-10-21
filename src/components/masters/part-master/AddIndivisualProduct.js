@@ -32,7 +32,10 @@ class AddIndivisualProduct extends Component {
 
             files: [],
             DataToCheck: [],
-            DropdownChanged: true
+            DropdownChanged: true,
+            uploadAttachements: true,
+            isSurfaceTreatment: false,
+
         }
     }
 
@@ -69,6 +72,7 @@ class AddIndivisualProduct extends Component {
                             // isLoader: false,
                             effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                             files: Data.Attachements,
+                            isSurfaceTreatment: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
                 }
@@ -125,6 +129,8 @@ class AddIndivisualProduct extends Component {
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
         const { files, } = this.state;
+
+        this.setState({ uploadAttachements: false })
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -200,6 +206,7 @@ class AddIndivisualProduct extends Component {
         this.setState({
             RawMaterial: [],
             selectedPlants: [],
+            isSurfaceTreatment: false,
         })
         this.props.getProductData('', res => { })
         this.props.hideForm()
@@ -210,7 +217,7 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, uploadAttachements, isSurfaceTreatment } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -219,7 +226,8 @@ class AddIndivisualProduct extends Component {
 
             if (DropdownChanged && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
                 DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber
+                && uploadAttachements) {
                 this.cancel()
                 return false;
             }
@@ -240,7 +248,8 @@ class AddIndivisualProduct extends Component {
                 EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
-                IsForcefulUpdated: true
+                IsForcefulUpdated: true,
+                IsConsideredForMBOM: isSurfaceTreatment,
             }
 
             if (isEditFlag) {
@@ -277,7 +286,8 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 // Plants: [],
-                Attachements: files
+                Attachements: files,
+                IsConsideredForMBOM: isSurfaceTreatment,
             }
 
             this.props.reset()
@@ -295,6 +305,14 @@ class AddIndivisualProduct extends Component {
             e.preventDefault();
         }
     };
+
+    /**
+    * @method onPressSurfaceTreatment
+    * @description Used for Surface Treatment
+    */
+    onPressSurfaceTreatment = () => {
+        this.setState({ isSurfaceTreatment: !this.state.isSurfaceTreatment, DropdownChanged: false });
+    }
 
     /**
     * @method render
@@ -495,7 +513,28 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
 
                                                 </Row>
+                                                <Row>
+                                                    <Col md="4" className="mb-5 pb-1">
+                                                        <label
+                                                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                                                                }`}
+                                                            onChange={this.onPressSurfaceTreatment}
+                                                        >
+                                                            Preferred for Impact Calculation
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={this.state.isSurfaceTreatment}
+                                                            // disabled={isEditFlag ? true : false}
+                                                            />
+                                                            <span
+                                                                className=" before-box"
+                                                                checked={this.state.isSurfaceTreatment}
+                                                                onChange={this.onPressSurfaceTreatment}
+                                                            />
+                                                        </label>
+                                                    </Col>
 
+                                                </Row>
                                                 <Row>
                                                     {/* <Col md="3">
                             <Field

@@ -477,6 +477,7 @@ class ProcessListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const options = {
       clearSearch: true,
@@ -616,8 +617,8 @@ class ProcessListing extends Component {
               bordered={false}
               options={options}
               search
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${ProcessMaster}.csv`}
+              // exportCSV={DownloadAccessibility}
+              // csvFileName={`${ProcessMaster}.csv`}
               //ignoreSinglePage
               ref={'table'}
               pagination

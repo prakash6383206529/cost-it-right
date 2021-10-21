@@ -317,11 +317,13 @@ class ReasonListing extends Component {
    */
   render() {
     const { isEditFlag, isOpenDrawer, AddAccessibility, DownloadAccessibility } = this.state
+    const ExcelFile = ReactExport.ExcelFile;
 
     const options = {
       clearSearch: true,
       noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      exportCSVBtn: this.createCustomExportCSVButton,
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -401,8 +403,8 @@ class ReasonListing extends Component {
             bordered={false}
             options={options}
             search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${Reasonmaster}.csv`}
+            // exportCSV={DownloadAccessibility}
+            // csvFileName={`${Reasonmaster}.csv`}
             //ignoreSinglePage
             ref={'table'}
             trClassName={'userlisting-row'}
@@ -416,7 +418,7 @@ class ReasonListing extends Component {
               dataSort={true}
             >
               Reason
-          </TableHeaderColumn>
+            </TableHeaderColumn>
             <TableHeaderColumn
               width={100}
               dataField="IsActive"
@@ -425,7 +427,7 @@ class ReasonListing extends Component {
               dataFormat={this.statusButtonFormatter}
             >
               Status
-          </TableHeaderColumn>
+            </TableHeaderColumn>
             <TableHeaderColumn
               width={80}
               className="action"

@@ -34,7 +34,9 @@ class AddIndivisualPart extends Component {
 
       files: [],
       DataToCheck: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      uploadAttachements: true
+
     }
   }
 
@@ -148,6 +150,8 @@ class AddIndivisualPart extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -232,7 +236,7 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -242,7 +246,8 @@ class AddIndivisualPart extends Component {
 
       if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
         DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber && oldProductGroup === ProductGroup) {
+        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber && oldProductGroup === ProductGroup
+        && uploadAttachements) {
         this.cancel()
         return false;
       }

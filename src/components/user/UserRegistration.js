@@ -22,7 +22,6 @@ import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
-import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import ConfirmComponent from "../../helper/ConfirmComponent";
@@ -329,7 +328,6 @@ class UserRegistration extends Component {
         UserId: data.UserId,
       })
       if (data.passwordFlag === false) {
-        $('html, body').animate({ scrollTop: 0 }, 'slow');
       }
 
       this.props.getUserDataAPI(data.UserId, (res) => {
@@ -369,7 +367,6 @@ class UserRegistration extends Component {
           this.getUsersSimulationTechnologyLevelData(data.UserId)
           this.getUsersMasterLevelData(data.UserId)
           if (data.passwordFlag) {
-            $('input[type="password"]').get(0).focus()
           }
         }
       })
@@ -1516,7 +1513,7 @@ class UserRegistration extends Component {
                           onChange={this.onPressUserPermission}
                         >
                           Grant User Wise Permission
-                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                          <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                           <span
                             className=" before-box"
                             checked={this.state.IsShowAdditionalPermission}
@@ -1896,7 +1893,7 @@ class UserRegistration extends Component {
                         value="CANCEL"
                         className="mr15 cancel-btn">
                         <div className={"cancel-icon"}></div>
-                      CANCEL
+                        CANCEL
                       </button>
 
                       <button

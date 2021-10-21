@@ -15,7 +15,6 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -57,7 +56,9 @@ class AddProfit extends Component {
       isHideBOP: false,
       effectiveDate: '',
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      uploadAttachements: true
+
     }
   }
 
@@ -120,7 +121,6 @@ class AddProfit extends Component {
         isLoader: true,
         ProfitID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getProfitData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -311,7 +311,6 @@ class AddProfit extends Component {
   handlePercent = (e) => {
     if (e.target.value > 100) {
       toastr.warning('Profit Percent can not be greater than 100.')
-      $('input[name="ProfitPercentage"]').focus()
     }
   }
 
@@ -436,6 +435,8 @@ class AddProfit extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -524,7 +525,7 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
@@ -547,7 +548,7 @@ class AddProfit extends Component {
       if (
         DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
         && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
-        && DataToChange.Remark == values.Remark) {
+        && DataToChange.Remark == values.Remark && uploadAttachements) {
 
         this.cancel()
         return false
@@ -594,7 +595,7 @@ class AddProfit extends Component {
             })
           },
           onCancel: () => { },
-          component:()=><ConfirmComponent/>
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -959,10 +960,10 @@ class AddProfit extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }

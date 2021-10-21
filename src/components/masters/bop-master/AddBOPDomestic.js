@@ -16,7 +16,6 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
@@ -65,7 +64,8 @@ class AddBOPDomestic extends Component {
 
       NetLandedCost: '',
       DataToCheck: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      uploadAttachements: true
     }
   }
 
@@ -145,7 +145,6 @@ class AddBOPDomestic extends Component {
         isLoader: true,
         BOPID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getBOPDomesticById(data.Id, res => {
         if (res && res.data && res.data.Result) {
           let vendorObj
@@ -424,6 +423,8 @@ class AddBOPDomestic extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+    
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -516,7 +517,7 @@ class AddBOPDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
 
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, DropdownChanged } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, DropdownChanged, uploadAttachements } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -532,13 +533,13 @@ class AddBOPDomestic extends Component {
 
 
       if (DataToCheck.IsVendor) {
-        if (DataToCheck.Source == values.Source && DataToCheck.BasicRate == values.BasicRate && DropdownChanged) {
+        if (DataToCheck.BasicRate == values.BasicRate && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
       else if (DataToCheck.IsVendor == false) {
-        if (DataToCheck.BasicRate == values.BasicRate) {
+        if (DataToCheck.BasicRate == values.BasicRate && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -573,7 +574,7 @@ class AddBOPDomestic extends Component {
             })
           },
           onCancel: () => { },
-          component:() => <ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -676,7 +677,7 @@ class AddBOPDomestic extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1002,7 +1003,7 @@ class AddBOPDomestic extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -1028,10 +1029,10 @@ class AddBOPDomestic extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }

@@ -162,7 +162,6 @@ class ZBCPlantListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         const { ActivateAccessibility } = this.props;
         if (ActivateAccessibility) {
             return (

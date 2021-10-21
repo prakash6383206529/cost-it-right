@@ -141,18 +141,32 @@ class RMListing extends Component {
     * @method indexFormatter
     * @description Renders serial number
     */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
+    // indexFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
+
+    // indexFormatter = (props) => {
+    //     console.log(props, 'propssssssssssssss')
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
 
     /**
     * @method renderPaginationShowsTotal
@@ -253,6 +267,7 @@ class RMListing extends Component {
             noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -325,8 +340,8 @@ class RMListing extends Component {
                             hover={false}
                             options={options}
                             search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${RmMaterial}.csv`}
+                            // exportCSV={DownloadAccessibility}
+                            // csvFileName={`${RmMaterial}.csv`}
                             //ignoreSinglePage
                             ref={'table'}
                             className={'RM-table'}
