@@ -33,7 +33,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
     const { location } = props;
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { register, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
