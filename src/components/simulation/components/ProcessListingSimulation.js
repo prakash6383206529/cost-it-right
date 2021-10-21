@@ -222,8 +222,11 @@ export function ProcessListingSimulation(props) {
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                {/* <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                <AgGridColumn field="CostingNumber" editable='false' headerName="CostingNumber" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>
