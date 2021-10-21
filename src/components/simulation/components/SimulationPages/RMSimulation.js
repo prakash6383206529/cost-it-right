@@ -19,6 +19,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
 import Simulation from '../Simulation';
+import { debounce } from 'lodash'
+
 const gridOptions = {
 
 };
@@ -58,7 +60,7 @@ function RMSimulation(props) {
         }
     }, [])
 
-    const verifySimulation = () => {
+    const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
 
@@ -131,7 +133,8 @@ function RMSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
-    }
+    }, 500)
+
 
     const cancelVerifyPage = () => {
 
