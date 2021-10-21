@@ -10,11 +10,8 @@ import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
 import { EXCHNAGERATE } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
-import DatePicker from "react-datepicker";
+import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
-import { Field, reduxForm, formValueSelector } from "redux-form";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 
@@ -30,9 +27,6 @@ function RunSimulationDrawer(props) {
 
 
 
-
-
-
     const dispatch = useDispatch()
 
     const [multipleHeads, setMultipleHeads] = useState([])
@@ -42,9 +36,9 @@ function RunSimulationDrawer(props) {
     const [provisionalCheck, setProvisionalCheck] = useState(false)
     const [inputOtherCost, setInputOtherCost] = useState(false)
     const [inputAdditionalDiscount, setinputAdditionalDiscount] = useState(false)
-    const [hideDiscountAndOtherCost, sethideDiscountAndOtherCost] = useState(false)
-    const [hideAdditionalDiscount, setHideAdditionalDiscount] = useState(false)
-    const [hideAdditionalOtherCost, setHideAdditionalOtherCost] = useState(false)
+    const [disableDiscountAndOtherCost, setDisableDiscountAndOtherCost] = useState(false)
+    const [disableAdditionalDiscount, setDisableAdditionalDiscount] = useState(false)
+    const [disableAdditionalOtherCost, setDisableAdditionalOtherCost] = useState(false)
     const [toggleSwitchLabel, setToggleSwitchLabel] = useState(false)
 
 
@@ -96,8 +90,8 @@ function RunSimulationDrawer(props) {
 
         if (elementObj.Text === "Discount And Other Cost") {
 
-            setHideAdditionalDiscount(!hideAdditionalDiscount)
-            setHideAdditionalOtherCost(!hideAdditionalOtherCost)
+            setDisableAdditionalDiscount(!disableAdditionalDiscount)
+            setDisableAdditionalOtherCost(!disableAdditionalOtherCost)
 
         }
 
@@ -112,7 +106,7 @@ function RunSimulationDrawer(props) {
         if (elementObj.Text === "Additional Discount") {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
 
-            sethideDiscountAndOtherCost(!hideDiscountAndOtherCost)
+            setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
         }
 
     }
@@ -278,7 +272,7 @@ function RunSimulationDrawer(props) {
                                                                     <input
                                                                         type="checkbox"
                                                                         value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && hideDiscountAndOtherCost) || (el.Text === "Additional Discount" && hideAdditionalDiscount) || (el.Text === "Additional Other Cost" && hideAdditionalOtherCost) ? true : false}
+                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
                                                                         checked={IsAvailable(el.Value)}
                                                                     />
 
