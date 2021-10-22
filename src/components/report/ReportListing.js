@@ -345,12 +345,7 @@ function ReportListing(props) {
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
 
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {renderColumn(ReportMaster)}
-                                </ExcelFile>
-
-                                <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
-
+                               
                             </div>
                         </div>
 
