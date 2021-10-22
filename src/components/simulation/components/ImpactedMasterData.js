@@ -16,11 +16,12 @@ import RMSimulation from './SimulationPages/RMSimulation';
 const gridOptions = {};
 
 export function Impactedmasterdata(props) {
-    const { isbulkUpload, data, masterId } = props;
+    const { isbulkUpload, data, masterId, viewCostingAndPartNo } = props;
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
 
     const [showImpactedData, setshowImpactedData] = useState(false)
+    const [costingAndPartNo, setCostingAndPartNo] = useState(false)
 
 
     const [id, setId] = useState('')
@@ -179,11 +180,11 @@ export function Impactedmasterdata(props) {
         console.log(masterId);
         switch (String(masterId)) {
             case EXCHNAGERATE:
-                return <ERSimulation list={data} isImpactedMaster={true} />
+                return <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />
             case RMDOMESTIC:
-                return <RMSimulation list={data} isImpactedMaster={true} isbulkUpload={false} />
+                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
             case RMIMPORT:
-                return <RMSimulation list={data} isImpactedMaster={true} isbulkUpload={false} />
+                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
 
             default:
                 break;
