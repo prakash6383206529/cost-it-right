@@ -81,6 +81,7 @@ class BOMUpload extends Component {
           let fileData = [];
 
           resp.rows.map((val, index) => {
+            if (val === []) return false
             if (index > 0) {
 
               // BELOW CODE FOR HANDLE EMPTY CELL VALUE
@@ -116,8 +117,8 @@ class BOMUpload extends Component {
   }
 
   responseHandler = (res) => {
-    const { messageLabel, } = this.props;
-    if (res && res.data.Result === true) {
+    const { messageLabel } = this.props;
+    if (res && res.Result === true) {
       toastr.success(`BOM uploaded successfully.`)
     }
     this.toggleDrawer('')
@@ -220,7 +221,7 @@ class BOMUpload extends Component {
                     type="submit"
                     className="submit-button save-btn" >
                     <div className={"save-icon"}></div>
-                     {isEditFlag ? 'Update' : 'Save'}
+                    {isEditFlag ? 'Update' : 'Save'}
                   </button>
                 </div>
               </Row>
