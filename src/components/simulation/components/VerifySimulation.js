@@ -457,7 +457,7 @@ function VerifySimulation(props) {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     tokenNo={tokenNo}
-                    simulationTechnologyId={simulationTechnologyId}
+                    masterId={simulationTechnologyId}
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}

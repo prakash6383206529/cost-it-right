@@ -138,6 +138,7 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
+        console.log('masterId: ', masterId);
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
                 dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
@@ -149,6 +150,7 @@ function RunSimulationDrawer(props) {
                 break;
            
             case Number(RMDOMESTIC):
+                console.log("Coing here ?");
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         toastr.success('Simulation process has been run successfully.')
