@@ -12,7 +12,6 @@ import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
