@@ -1,19 +1,14 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from "react-router-dom";
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
-import NoContentFound from '../../common/NoContentFound';
-import moment from 'moment'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getRMApprovalList } from '../actions/Material';
-import SummaryDrawer from '../SummaryDrawer';
-import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
-import MasterSendForApproval from '../MasterSendForApproval';
+import { DRAFT } from '../../../config/constants';
+
 
 
 
@@ -23,14 +18,9 @@ function BOPApproval(props) {
 
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
-    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { approvalList } = useSelector((state) => state.material)
-    const [approvalDrawer, setApprovalDrawer] = useState(false)
-    const [approvalObj, setApprovalObj] = useState([])
     const [loader, setLoader] = useState(true)
     const dispatch = useDispatch()
 
@@ -38,32 +28,6 @@ function BOPApproval(props) {
         getTableData()
 
     }, [])
-
-
-    var filterParams = {
-        comparator: function (filterLocalDateAtMidnight, cellValue) {
-            var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-            if (dateAsString == null) return -1;
-            var dateParts = dateAsString.split('/');
-            var cellDate = new Date(
-                Number(dateParts[2]),
-                Number(dateParts[1]) - 1,
-                Number(dateParts[0])
-            );
-            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-                return 0;
-            }
-            if (cellDate < filterLocalDateAtMidnight) {
-                return -1;
-            }
-            if (cellDate > filterLocalDateAtMidnight) {
-                return 1;
-            }
-        },
-        browserDatePicker: true,
-        minValidYear: 2000,
-    };
-
 
 
     /**
@@ -78,39 +42,7 @@ function BOPApproval(props) {
         }))
     }
 
-    const createdOnFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? cell : '';
-    }
 
-    const priceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (
-            <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
-            </>
-        )
-    }
-
-    const oldpriceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (
-            <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
-            </>
-        )
-    }
-
-    const requestedOnFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? cell : '-';
-    }
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -118,66 +50,11 @@ function BOPApproval(props) {
         return <div className={cell}>{row.DisplayStatus}</div>
     }
 
-    const renderPlant = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-    }
 
-    const renderVendor = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
-    }
-
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    const costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue === true || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
-    }
-
-
-
-    /**
-    * @method effectiveDateFormatter
-    * @description Renders buttons
-    */
-    const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/yyyy') : '';
-    }
-
-    /**
-  * @method shearingCostFormatter
-  * @description Renders buttons
-  */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
-    }
-
-    /**
-    * @method freightCostFormatter
-    * @description Renders buttons
-    */
-    const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
-    }
-
-
-    const costFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey() && getConfigurationKey().NoOfDecimalForPrice) : '';
-    }
 
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
-        setShowApprovalSummary(true)
+
         // props.closeDashboard()
 
     }
@@ -188,7 +65,6 @@ function BOPApproval(props) {
   */
     const linkableFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
@@ -201,22 +77,6 @@ function BOPApproval(props) {
                 }
             </Fragment>
         )
-    }
-
-
-    /**
-   * @method closeDrawer
-   * @description HIDE RM DRAWER
-   */
-    const closeDrawer = (e = '') => {
-        setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData()
-    }
-    const closeApprovalDrawer = (e = '') => {
-        setApprovalDrawer(false)
-        setLoader(true)
-        getTableData()
     }
 
 
@@ -240,7 +100,7 @@ function BOPApproval(props) {
     }
 
     const sendForApproval = () => {
-        setApprovalDrawer(true)
+
     }
 
 
@@ -257,12 +117,6 @@ function BOPApproval(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
-        // var allColumnIds = [];
-        // params.columnApi.getAllColumns().forEach(function (column) {
-        //     allColumnIds.push(column.colId);
-        // });
-        // params.columnApi.autoSizeColumns(allColumnIds);
-
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -275,25 +129,9 @@ function BOPApproval(props) {
     }
 
     const frameworkComponents = {
-        renderPlant: renderPlant,
-        renderVendor: renderVendor,
-        renderVendor: renderVendor,
-        priceFormatter: priceFormatter,
-        oldpriceFormatter: oldpriceFormatter,
-        createdOnFormatter: createdOnFormatter,
-        requestedOnFormatter: requestedOnFormatter,
+
         statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom,
-        customNoRowsOverlay: NoContentFound,
-        costingHeadRenderer: costingHeadFormatter,
-        costFormatter: costFormatter,
-        freightCostFormatter: freightCostFormatter,
-        shearingCostFormatter: shearingCostFormatter,
-        effectiveDateFormatter: effectiveDateFormatter,
         linkableFormatter: linkableFormatter,
-        effectiveDateRenderer: effectiveDateFormatter
-
-
 
     };
 
@@ -370,13 +208,6 @@ function BOPApproval(props) {
                                     <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn width="140" field="ScrapRate" headerName="Effective Date"></AgGridColumn>
 
-                                    {/* <AgGridColumn width="155" field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                                    <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
-                                    <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
-                                    <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
-                                    <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
-                                    <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn> */}
 
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
@@ -393,28 +224,7 @@ function BOPApproval(props) {
                     </div>
                 </Col>
             </Row>
-            {
-                showApprovalSumary &&
-                <SummaryDrawer
-                    isOpen={showApprovalSumary}
-                    closeDrawer={closeDrawer}
-                    approvalData={approvalData}
-                    anchor={'bottom'}
-                />
-            }
-            {
-                approvalDrawer &&
-                <MasterSendForApproval
-                    isOpen={approvalDrawer}
-                    closeDrawer={closeApprovalDrawer}
-                    isEditFlag={false}
-                    masterId={RM_MASTER_ID}
-                    type={'Sender'}
-                    anchor={"right"}
-                    isBulkUpload={true}
-                    approvalData={selectedRowData}
-                />
-            }
+
         </div>
 
     );
