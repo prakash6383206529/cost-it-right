@@ -48,7 +48,7 @@ function Simulation(props) {
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
     const [onLoad, setOnLoad] = useState(false)
-    const [filterStatus, setFilterStatus] = useState('Please check the (Master) that you want to edit.')
+    const [filterStatus, setFilterStatus] = useState('')
     const [isRowSelected, setIsRowSelected] = useState(0)
 
     const dispatch = useDispatch()
@@ -66,7 +66,7 @@ function Simulation(props) {
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
-        setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
+        // setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
         setOnLoad(true)
     }, [])
 
@@ -204,8 +204,10 @@ function Simulation(props) {
             setIsBulkUpload(true)
         }
     }
-
+    let selectedRowCount = 0
+    console.log(selectedRowCount, 'selectedRowCountLOG')
     const rowSelected = (value) => {
+        selectedRowCount = value
         setIsRowSelected(value)
     }
 
@@ -216,8 +218,9 @@ function Simulation(props) {
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        // setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
-
+        if (selectedRowCount === 0) {
+            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
+        }
         switch (master.value) {
             case RMDOMESTIC:
                 if (Data.length === 0) {
@@ -230,27 +233,32 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            return false
+                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
-                            setFilterStatus('Please filter out the Vendor')
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            return false
+                            // return false
                         }
                         if (element.PlantId !== Data[index - 1].PlantId) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            return false
+                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
-                    // setShowEditTable(true)
+                    (selectedRowCount !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 }
                 //  else {
                 //     setEditWarning(true)
@@ -289,9 +297,11 @@ function Simulation(props) {
             default:
                 break;
         }
-        if (isRowSelected === 0) {
+
+        if (selectedRowCount === 0) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
+
     }
 
     const openEditPage = () => {

@@ -660,6 +660,7 @@ function RMDomesticListing(props) {
         } else {
             return false
         }
+
     }
 
     const onRowSelect = () => {
