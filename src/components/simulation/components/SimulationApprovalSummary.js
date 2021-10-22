@@ -8,7 +8,7 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getTechnologySelectList,getLastSimulationData } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
 import { COMBINED_PROCESS,EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
@@ -44,6 +44,7 @@ function SimulationApprovalSummary(props) {
     const [token, setToken] = useState('')
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [showImpactedData, setshowImpactedData] = useState(false)
+    var date = 0;
 
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
@@ -61,10 +62,13 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
+    const [impactedMasterDataListForLastSimulationData, setImpactedMasterDataListForLastSimulationData] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
+    const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [gridApi, setGridApi] = useState(null);
@@ -82,6 +86,8 @@ function SimulationApprovalSummary(props) {
     const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
+    const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
+
 
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
@@ -112,6 +118,9 @@ function SimulationApprovalSummary(props) {
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
+            setEffectiveDate(res.data.Data.EffectiveDate)
+
+
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
@@ -141,6 +150,25 @@ function SimulationApprovalSummary(props) {
             }
         }))
     }, [])
+
+
+    useEffect(() => {
+
+        if (costingList.length > 0 && effectiveDate) {
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, () => { }))
+        }
+
+    }, [effectiveDate, costingList])
+
+    useEffect(() => {
+
+        if (lastSimulationData) {
+            setImpactedMasterDataListForLastSimulationData(lastSimulationData)
+            setShowLastRevisionData(true)
+        }
+
+    }, [lastSimulationData])
+
 
 
     const closeViewDrawer = (e = '') => {
@@ -681,7 +709,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} />}
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
 
                             </div>
 
@@ -846,15 +874,28 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
+                        {/* page starts */}
 
-                        {/* <Row className="mb-4">
+
+
+
+
+                        <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6">
                                 <div className={'right-details'}>
                                     <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                                 </div>
                             </Col>
+
                             {acc3 &&
+
+                                <div className="accordian-content w-100 px-3 impacted-min-height">
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastSimulationData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={true} />}
+
+                                </div>
+                            }
+                            {/* {acc3 &&
                                 <div className="accordian-content w-100">
                                     <div className={`ag-grid-react`}>
                                         <Col md="12" className="mb-3">
@@ -920,8 +961,8 @@ function SimulationApprovalSummary(props) {
                                         </Col>
                                     </div>
                                 </div>
-                            }
-                        </Row> */}
+                            } */}
+                        </Row>
 
                     </div>
 
