@@ -14,6 +14,7 @@ import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
+import { debounce } from 'lodash';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
@@ -152,7 +153,7 @@ function RunSimulationDrawer(props) {
 
     const IsAvailable = (id) => { }
 
-    const SimulationRun = () => {
+    const SimulationRun = debounce(handleSubmit(() => {
 
         let obj = {}
 
@@ -200,7 +201,7 @@ function RunSimulationDrawer(props) {
                 }
             }))
         }
-    }
+    }), 500)
 
     const onSubmit = () => {
         // 
@@ -240,7 +241,9 @@ function RunSimulationDrawer(props) {
                     >
                         <Container>
                             <div className={"drawer-wrapper"}>
-                                <form noValidate className="form" onSubmit={handleSubmit(SimulationRun)}>
+                                <form noValidate className="form"
+                                // onSubmit={handleSubmit(SimulationRun)}
+                                >
                                     <Row className="drawer-heading">
                                         <Col>
                                             <div className={"header-wrapper left"}>
@@ -464,7 +467,7 @@ function RunSimulationDrawer(props) {
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
                                             <div className="text-right px-2">
-                                                <button type="submit" className="user-btn mr5 save-btn">
+                                                <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"RUN SIMULATION"}

@@ -20,6 +20,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { node } from 'prop-types';
 import OtherCostingSimulation from './OtherCostingSimulation';
+import { debounce } from 'lodash';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
@@ -133,7 +134,7 @@ function OtherVerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    const runSimulation = () => {
+    const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one costing.')
             return false
@@ -162,7 +163,7 @@ function OtherVerifySimulation(props) {
         }
 
 
-    }
+    }, 500)
 
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {
@@ -277,7 +278,7 @@ function OtherVerifySimulation(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: CONSTANT.EMPTY_DATA,
-                                                    customClassName:'nodata-found-container'
+                                                    customClassName: 'nodata-found-container'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
