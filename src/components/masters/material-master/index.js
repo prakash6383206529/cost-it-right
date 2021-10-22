@@ -300,8 +300,8 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 6 && ViewRMAccessibility &&
-                                <TabPane tabId="6">
+                            {activeTab == 5&& ViewRMAccessibility &&
+                                <TabPane tabId="5">
                                     <RMListing
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
@@ -309,8 +309,8 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                     />
                                 </TabPane>}
-                            {activeTab == 5 && ViewRMAccessibility &&
-                                <TabPane tabId="5">
+                            {activeTab == 6 && ViewRMAccessibility &&
+                                <TabPane tabId="6">
                                     {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}
