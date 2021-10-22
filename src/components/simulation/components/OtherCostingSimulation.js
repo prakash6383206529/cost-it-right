@@ -76,7 +76,7 @@ function OtherCostingSimulation(props) {
 
 
     const getCostingList = () => {
-        switch (Number(selectedMasterForSimulation.value)) {
+        switch (Number(selectedMasterForSimulation?.value)) {
             case Number(EXCHNAGERATE):
                 dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
                     if (res.data.Result) {
