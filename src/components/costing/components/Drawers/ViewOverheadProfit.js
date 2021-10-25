@@ -313,7 +313,6 @@ function ViewOverheadProfit(props) {
                           <th>{`Applicability`}</th>
                           <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost (Applicability)`}</th>
-
                           <th>{`Net Rejection`}</th>
                         </tr>
                       </thead>
