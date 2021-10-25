@@ -93,11 +93,13 @@ function Simulation(props) {
     const handleTechnologyChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
-        dispatch(setTechnologyForSimulation(value))
-
-        if (value !== '' && Object.keys(master).length > 0) {
-            setShowMasterList(true)
-        }
+        setShowMasterList(false)
+        setTimeout(() => {
+            dispatch(setTechnologyForSimulation(value))
+            if (value !== '' && Object.keys(master).length > 0) {
+                setShowMasterList(true)
+            }
+        }, 100);
     }
 
     const returnExcelColumn = (data = [], TempData) => {
