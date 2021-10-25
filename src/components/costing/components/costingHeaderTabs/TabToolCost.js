@@ -13,11 +13,14 @@ import Tool from '../CostingHeadCosts/Tool';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
+import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
 function TabToolCost(props) {
 
@@ -31,6 +34,8 @@ function TabToolCost(props) {
 
   const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -80,6 +85,30 @@ function TabToolCost(props) {
     let arr = dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
     //dispatch(setToolTabData(arr, () => { }))
   }
+  const onGridReady = (params) => {
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
+    params.api.paginationGoToPage(0);
+
+  };
+ 
+  const gridOptions = {
+    clearSearch: true,
+    noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    // // paginationShowsTotal: renderPaginationShowsTotal(),
+    // prePage: <span className="prev-page-pg"></span>, // Previous page button text
+    // nextPage: <span className="next-page-pg"></span>, // Next page button text
+    // firstPage: <span className="first-page-pg"></span>, // First page button text
+    // lastPage: <span className="last-page-pg"></span>,
+  };
+  const defaultColDef = {
+
+    resizable: true,
+    filter: true,
+    sortable: true,
+    // headerCheckboxSelection: isFirstColumn,
+    // checkboxSelection: isFirstColumn
+  };
 
   /**
   * @method dispatchOverallApplicabilityCost
@@ -220,17 +249,34 @@ function TabToolCost(props) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  const options = {
-    clearSearch: true,
-    noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
+  // const options = {
+  //   clearSearch: true,
+  //   // noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+  //   paginationShowsTotal: renderPaginationShowsTotal(),
+  //   prePage: <span className="prev-page-pg"></span>, // Previous page button text
+  //   nextPage: <span className="next-page-pg"></span>, // Next page button text
+  //   firstPage: <span className="first-page-pg"></span>, // First page button text
+  //   lastPage: <span className="last-page-pg"></span>,
 
+  // };
+
+  const frameworkComponents = {
+    // renderPlant: renderPlant,
+    // renderVendor: renderVendor,
+    // renderVendor: renderVendor,
+    // priceFormatter: priceFormatter,
+    // oldpriceFormatter: oldpriceFormatter,
+    // createdOnFormatter: createdOnFormatter,
+    // requestedOnFormatter: requestedOnFormatter,
+    // statusFormatter: statusFormatter,
+    // customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+    // linkableFormatter: linkableFormatter
   };
-
+  const onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    gridApi.paginationSetPageSize(Number(value));
+  };
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -285,7 +331,7 @@ function TabToolCost(props) {
                 onSubmit={handleSubmit(onSubmit)}
               >
 
-                {!IsApplicableProcessWise &&
+                {!IsApplicableProcessWise && 
                   <Row>
                     <Col md="12">
                       <Table className="table cr-brdr-main" size="sm">
@@ -324,10 +370,10 @@ function TabToolCost(props) {
                     </Col>
                   </Row>}
 
-                {IsApplicableProcessWise &&
+                { IsApplicableProcessWise &&
                   <Row>
                     <Col>
-                      <BootstrapTable
+                      {/* <BootstrapTable
                         data={ToolsDataList}
                         striped={false}
                         hover={false}
@@ -350,7 +396,57 @@ function TabToolCost(props) {
                         <TableHeaderColumn width={100} dataField="ToolCost" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'ToolCost'}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="Life" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Life'}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="NetToolCost" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Net Tool Cost'}</TableHeaderColumn>
-                      </BootstrapTable>
+                      </BootstrapTable> */}
+                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
+                      <div className="ag-grid-react">
+                      <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                          {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
+                        </div>
+                        <div
+                          className="ag-theme-material">
+                          <AgGridReact
+                            defaultColDef={defaultColDef}
+                            floatingFilter = {true}
+                            domLayout='autoHeight'
+                            // columnDefs={c}
+                            rowData={ToolsDataList}
+                            pagination={true}
+                            paginationPageSize={10}
+                            onGridReady={onGridReady}
+                            gridOptions={gridOptions}
+                            loadingOverlayComponent={'customLoadingOverlay'}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                              title: CONSTANT.EMPTY_DATA,
+                              imagClass:'imagClass'
+                            }}
+                            frameworkComponents={frameworkComponents}
+                            suppressRowClickSelection={true}
+                            rowSelection={'multiple'}
+                          >
+                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                            <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn>
+                            <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
+                            <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
+                            <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
+                            <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
+                            <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
+                            <AgGridColumn field="ToolCost" headerName="ToolCost"></AgGridColumn>
+                            <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
+                            <AgGridColumn field="NetToolCost" headerName="Net Tool Cost"></AgGridColumn>
+                          </AgGridReact>
+                          <div className="paging-container d-inline-block float-right">
+                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                              <option value="10" selected={true}>10</option>
+                              <option value="50">50</option>
+                              <option value="100">100</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+                      {/* <--------------------AG Grid convert by 21-10-2021------> */}
                     </Col>
                   </Row>}
 
