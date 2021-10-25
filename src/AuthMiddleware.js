@@ -30,6 +30,7 @@ export default function (ComposedComponent, PAGENAME) {
                     LoggedInUserId: loggedInUserId()
                 }
                 this.props.checkPageAuthorization(reqData, res => {
+                    console.log('res: ', res);
                     if (res && res.status === 401 && res.statusText === 'Unauthorized') {
                         //NEW ADDED FOR (DISABLED THIS IF ANY ERROR)
                         reactLocalStorage.setObject("isUserLoggedIn", false);
