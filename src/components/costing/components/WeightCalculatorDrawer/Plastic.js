@@ -255,7 +255,7 @@ function Plastic(props) {
               <Row className={''}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Gross Weight(Kg)`}
+                    label={`Gross Weight (Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
                     control={control}
@@ -325,7 +325,7 @@ function Plastic(props) {
               <Row className={'mt25'}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Total Gross Weight(Kg)`}
+                    label={`Total Gross Weight (Kg)`}
                     name={'grossWeight'}
                     Controller={Controller}
                     control={control}

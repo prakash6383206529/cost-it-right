@@ -1587,7 +1587,7 @@ export const VIEW_COSTING_DATA = {
   otherDiscountValue: '',
   anyOtherCost: 'Any Other Cost',
   remark: 'Remark',
-  nPOPriceWithCurrency: 'Net PO Price(INR)',
+  nPOPriceWithCurrency: 'Net PO Price (INR)',
   currency: 'Currency',
   nPOPrice: 'Net PO Price',
   attachment: 'Attachment',

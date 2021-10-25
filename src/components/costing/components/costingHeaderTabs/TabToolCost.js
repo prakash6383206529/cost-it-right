@@ -292,10 +292,10 @@ function TabToolCost(props) {
 
               <Row className="m-0  costing-border border-bottom-0 align-items-center ">
                 <Col md="9" className="px-30 py-4 border-section">
-                  <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
+                  <span className="d-inline-block pr-2 text-dark-blue">Applicability: </span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
-                      <div className={"left-title"}>{"Overall"}</div>
+                      <div className={"left-title ml-2 mr-1"}>{"Overall"}</div>
                       <span className="cr-sw-level h-auto">
                         <span className="d-inline-block">
                           <Switch
@@ -315,7 +315,7 @@ function TabToolCost(props) {
                           />
                         </span>
                       </span>
-                      <div className={"right-title"}>{"Process Wise"}</div>
+                      <div className={"right-title "}>{"Process Wise"}</div>
                     </label>
                   </div>
                 </Col>
