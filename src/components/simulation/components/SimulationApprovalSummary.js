@@ -37,7 +37,7 @@ function SimulationApprovalSummary(props) {
     const [token, setToken] = useState('')
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [showImpactedData, setshowImpactedData] = useState(false)
-    var date = 0;
+
 
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
@@ -58,7 +58,7 @@ function SimulationApprovalSummary(props) {
     const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
     const [showPushDrawer, setShowPushDrawer] = useState(false)
-    const [impactedMasterDataListForLastSimulationData, setImpactedMasterDataListForLastSimulationData] = useState([])
+    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -164,7 +164,7 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
 
         if (lastSimulationData) {
-            setImpactedMasterDataListForLastSimulationData(lastSimulationData)
+            setImpactedMasterDataListForLastRevisionData(lastSimulationData)
             setShowLastRevisionData(true)
         }
 
@@ -951,7 +951,7 @@ function SimulationApprovalSummary(props) {
                             {acc3 &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastSimulationData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={true} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={true} />}
 
                                 </div>
                             }
