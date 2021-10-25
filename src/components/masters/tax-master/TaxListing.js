@@ -6,7 +6,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -17,7 +16,12 @@ import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
+import { AgGridColumn } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
+const gridOptions = {};
 class TaxListing extends Component {
   constructor(props) {
     super(props);
@@ -26,6 +30,8 @@ class TaxListing extends Component {
       isEditFlag: false,
       ID: '',
       tableData: [],
+      gridApi: null,
+      gridColumnApi: null,
 
       ViewAccessibility: false,
       AddAccessibility: false,
@@ -138,24 +144,23 @@ class TaxListing extends Component {
       }
     });
   }
-
   /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-  }
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+   effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+}
 
-  renderEffectiveDate = () => {
-    return <> Effective Date </>
-  }
 
   /**
 * @method buttonFormatter
 * @description Renders buttons
 */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
@@ -164,7 +169,16 @@ class TaxListing extends Component {
       </>
     )
   }
-
+  onGridReady = (params) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    params.api.paginationGoToPage(0);
+};
+onPageSizeChanged = (newPageSize) => {
+    var value = document.getElementById('page-size').value;
+    this.state.gridApi.paginationSetPageSize(Number(value));
+};
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
@@ -173,21 +187,33 @@ class TaxListing extends Component {
   * @method render
   * @description Renders the component
   */
+
   render() {
     const { isOpen, isEditFlag, AddAccessibility } = this.state;
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.taxDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
+    // const options = {
+    //   clearSearch: true,
+    //   noDataText: (this.props.taxDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    //   //exportCSVText: 'Download Excel',
+    //   //onExportToCSV: this.onExportToCSV,
+    //   //paginationShowsTotal: true,
+    //   paginationShowsTotal: this.renderPaginationShowsTotal,
+    //   prePage: <span className="prev-page-pg"></span>, // Previous page button text
+    //   nextPage: <span className="next-page-pg"></span>, // Next page button text
+    //   firstPage: <span className="first-page-pg"></span>, // First page button text
+    //   lastPage: <span className="last-page-pg"></span>,
 
-    };
+    // };
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: true,
+  };
+   const frameworkComponents = {
+  
+      effectiveDateRenderer: this.effectiveDateFormatter,
+      customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound
+  };
     return (
       < >
         {/* {this.props.loading && <Loader />} */}
@@ -221,7 +247,7 @@ class TaxListing extends Component {
 
           <Row>
             <Col>
-              <BootstrapTable
+              {/* <BootstrapTable
                 data={this.props.taxDataList}
                 striped={false}
                 hover={false}
@@ -240,7 +266,52 @@ class TaxListing extends Component {
                 <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataSort={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
                 <TableHeaderColumn dataAlign="right" searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
-              </BootstrapTable>
+              </BootstrapTable> */}
+              <div className="ag-grid-react">
+                      <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </div>
+                        <div
+                          className="ag-theme-material">
+                          <AgGridReact
+                            defaultColDef={defaultColDef}
+                            floatingFilter = {true}
+                            domLayout='autoHeight'
+                            // columnDefs={c}
+                            rowData={this.props.taxDataList}
+                            pagination={true}
+                            paginationPageSize={10}
+                            onGridReady={this.onGridReady}
+                            gridOptions={this.gridOptions}
+                            loadingOverlayComponent={'customLoadingOverlay'}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                              title: CONSTANT.EMPTY_DATA,
+                              imagClass:'imagClass'
+                            }}
+                            frameworkComponents={frameworkComponents}
+                            suppressRowClickSelection={true}
+                            rowSelection={'multiple'}
+                          >
+                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                            <AgGridColumn field="TaxName" headerName="Tax Name"></AgGridColumn>
+                            <AgGridColumn field="Country" headerName="Country"></AgGridColumn>
+                            <AgGridColumn field="Rate" headerName="Rate (%)"></AgGridColumn>
+                            <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
+                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
+                            <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
+                          </AgGridReact>
+                          <div className="paging-container d-inline-block float-right">
+                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                              <option value="10" selected={true}>10</option>
+                              <option value="50">50</option>
+                              <option value="100">100</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
             </Col>
           </Row>
           {isOpen && (
