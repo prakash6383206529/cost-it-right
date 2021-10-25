@@ -1203,7 +1203,7 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
-                                  label="Specification"
+                                  label="Specs"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("specification")}

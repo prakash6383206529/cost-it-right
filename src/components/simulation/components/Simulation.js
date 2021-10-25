@@ -67,7 +67,6 @@ function Simulation(props) {
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
-    console.log('rmDomesticListing: ', rmDomesticListing);
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
@@ -94,11 +93,13 @@ function Simulation(props) {
     const handleTechnologyChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
-        dispatch(setTechnologyForSimulation(value))
-
-        if (value !== '' && Object.keys(master).length > 0) {
-            setShowMasterList(true)
-        }
+        setShowMasterList(false)
+        setTimeout(() => {
+            dispatch(setTechnologyForSimulation(value))
+            if (value !== '' && Object.keys(master).length > 0) {
+                setShowMasterList(true)
+            }
+        }, 100);
     }
 
     const returnExcelColumn = (data = [], TempData) => {

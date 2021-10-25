@@ -496,6 +496,7 @@ export const API = {
   getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-payment-term-applicability`,
   getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
+  getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -1184,6 +1185,7 @@ export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DAT
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS'
 export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST'
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
+export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
 //COSTING
 export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
@@ -1300,6 +1302,9 @@ export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LE
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
 export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
+export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
+export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
+export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
