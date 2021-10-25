@@ -252,7 +252,7 @@ function Icc(props) {
                         {ICCapplicability.label !== 'Fixed' &&
                             <Col md="3">
                                 <TextFieldHookForm
-                                    label="Cost(Applicability)"
+                                    label="Cost (Applicability)"
                                     name={'InterestRateCost'}
                                     Controller={Controller}
                                     control={control}

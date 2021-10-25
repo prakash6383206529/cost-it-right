@@ -945,7 +945,7 @@ function OverheadProfit(props) {
             <Row>
               <Col md="12">
                 <div className="left-border">
-                  {'Overhead & Profit:'}
+                  {'Overheads & Profits:'}
                 </div>
               </Col>
             </Row>
@@ -954,7 +954,7 @@ function OverheadProfit(props) {
 
               <Col md="3">
                 <SearchableSelectHookForm
-                  label={'Model Type for Overhead/Profit'}
+                  label={'Model Type for Overheads/Profits'}
                   name={'ModelType'}
                   placeholder={'-Select-'}
                   Controller={Controller}
@@ -1012,7 +1012,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {'Cost(Applicability)'}
+                      {'Cost (Applicability)'}
                     </span>
                   </Col>
                   <Col md="3">
@@ -1364,7 +1364,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {'Cost(Applicability)'}
+                      {'Cost (Applicability)'}
                     </span>
                   </Col>
                   <Col md="3">
