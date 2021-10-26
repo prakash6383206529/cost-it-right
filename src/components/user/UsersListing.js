@@ -10,7 +10,6 @@ import { MESSAGES } from '../../config/message';
 import { CONSTANT } from '../../helper/AllConastant';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';

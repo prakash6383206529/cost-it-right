@@ -6,7 +6,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ConfirmComponent from '../../helper/ConfirmComponent';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
