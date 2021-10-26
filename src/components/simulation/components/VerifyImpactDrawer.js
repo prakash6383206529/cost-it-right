@@ -32,6 +32,8 @@ function VerifyImpactDrawer(props) {
   const [acc3, setAcc3] = useState(false)
   const [id, setId] = useState('')
   const [compareCostingObj, setCompareCostingObj] = useState([])
+  const [simulationTechnologyIdOfRevisionData, setSimulationTechnologyIdOfRevisionData] = useState("")
+  const [lastRevisionData, SetLastRevisionData] = useState([])
 
   const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
@@ -47,7 +49,16 @@ function VerifyImpactDrawer(props) {
   const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
   useEffect(() => {
 
-    dispatch(getLastSimulationData(vendorIdState, EffectiveDate, () => { }))
+    dispatch(getLastSimulationData(vendorIdState, EffectiveDate, res => {
+
+      const masterId = res.data.Data.SimulationTechnologyId;
+
+      if (res) {
+        setSimulationTechnologyIdOfRevisionData(masterId)
+        SetLastRevisionData(res.data.Data.ImpactedMasterDataList)
+      }
+
+    }))
     // dispatch(getFgWiseImpactData(simulationId, () => { setshowTableData(true) }))
 
   }, [])
@@ -295,7 +306,7 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
-
+              {/* 
               <Row >
                 <Col md="12" className="mt-3">
                   <span class="d-inline-block mr-2 mb-4 pl-3">
@@ -353,9 +364,9 @@ function VerifyImpactDrawer(props) {
                     <span>Test</span>
                   </span>
                 </Col>
-              </Row>
+              </Row> */}
 
-              <Row className="mb-3 pr-0 mx-0">
+              {/* <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
@@ -365,8 +376,8 @@ function VerifyImpactDrawer(props) {
                 {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
                   <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
                 </div>
-                }
-                {/* {shown &&
+                } */}
+              {/* {shown &&
                   <div className="accordian-content w-100">
                     <Col md="12" className="mb-3">
                       <BootstrapTable
@@ -403,7 +414,7 @@ function VerifyImpactDrawer(props) {
                     </Col>
                   </div>
                 } */}
-              </Row>
+              {/* </Row> */}
 
               <Row className="pr-0 mx-0">
                 <Col md="12"> <HeaderTitle title={'FG wise Impact:'} /></Col>
@@ -528,7 +539,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {acc3 && <Impactedmasterdata data={lastSimulationData} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={true} />}
+                  {acc3 && <Impactedmasterdata data={lastRevisionData} masterId={simulationTechnologyIdOfRevisionData} viewCostingAndPartNo={true} />}
 
                 </div>
                 {/* {acc3 &&
