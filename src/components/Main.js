@@ -123,6 +123,18 @@ class Main extends Component {
         if (res && res.status === 200) {
           let userDetail = formatLoginResult(res.data.Data);
           reactLocalStorage.setObject("userDetail", userDetail);
+          let departmentList = ''
+          const dept = userDetail && userDetail.Department.map((item) => {
+            if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
+              return ''
+            } else {
+              return item.DepartmentCode
+            }
+  
+          })
+          departmentList = dept.join(',')
+          reactLocalStorage.setObject("userDetail", userDetail);
+          reactLocalStorage.setObject("departmentList", departmentList);
           this.props.logUserIn();
           setTimeout(() => {
             this.setState({ isLoader: false })
