@@ -636,10 +636,10 @@ function CostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
 
-                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
-                                    </button> */}
+                                    </button>
 
 
 
@@ -673,6 +673,11 @@ function CostingSimulation(props) {
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
+                                SimulationTechnologyIdState={SimulationTechnologyIdState}
+                                simulationId={simulationId}
+                                tokenNo={tokenNo}
+                                vendorIdState={vendorIdState}
+                                EffectiveDate={simulationDetail.EffectiveDate}
                             />}
                     </div>
 
