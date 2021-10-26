@@ -14,7 +14,6 @@ import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AttachmentSec from './AttachmentSec'
-import 'react-dropzone-uploader/dist/styles.css';
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
 
