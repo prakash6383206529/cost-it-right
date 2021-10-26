@@ -552,6 +552,10 @@ function OtherCostingSimulation(props) {
         newCCFormatter: newCCFormatter,
         vendorFormatter: vendorFormatter
     };
+
+    const VerifyImpact = () => {
+        setIsVerifyImpactDrawer(true)
+    }
     return (
         <>
             {
@@ -701,10 +705,10 @@ function OtherCostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
 
-                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
-                                    </button> */}
+                                    </button>
 
 
 
@@ -736,6 +740,11 @@ function OtherCostingSimulation(props) {
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
+                                SimulationTechnologyIdState={SimulationTechnologyIdState}
+                                simulationId={simulationId}
+                                tokenNo={tokenNo}
+                                vendorIdState={vendorIdState}
+                                EffectiveDate={simulationDetail.EffectiveDate}
                             />}
                     </div>
 
