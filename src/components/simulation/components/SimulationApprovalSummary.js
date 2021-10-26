@@ -8,9 +8,9 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList,getLastSimulationData } from '../../../actions/Common';
+import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
-import { COMBINED_PROCESS,EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -155,20 +155,21 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
 
         if (costingList.length > 0 && effectiveDate) {
-            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, () => { }))
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                const masterId = res.data.Data.SimulationTechnologyId;
+                const Data = res.data.Data.ImpactedMasterDataList
+                if (res) {
+                    setImpactedMasterDataListForLastRevisionData(Data)
+                    setShowLastRevisionData(true)
+                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+
+
+                }
+
+            }))
         }
 
     }, [effectiveDate, costingList])
-
-    useEffect(() => {
-
-        if (lastSimulationData) {
-            setImpactedMasterDataListForLastRevisionData(lastSimulationData)
-            setShowLastRevisionData(true)
-        }
-
-    }, [lastSimulationData])
-
 
 
     const closeViewDrawer = (e = '') => {
@@ -394,7 +395,7 @@ function SimulationApprovalSummary(props) {
         }
     }
 
-    
+
     const oldCCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -555,8 +556,8 @@ function SimulationApprovalSummary(props) {
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
-        newCCFormatter:newCCFormatter,
-        oldCCFormatter:oldCCFormatter
+        newCCFormatter: newCCFormatter,
+        oldCCFormatter: oldCCFormatter
     };
 
     const errorBoxClass = () => {
@@ -866,11 +867,11 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <Row>
-                        <Col md="10 mb-3">
+                            <Col md="10 mb-3">
                                 <div className="left-border">{'Attachment:'}</div>
                             </Col>
                             <Col md="12" className="pr-0">
-                            <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
+                                <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
@@ -891,7 +892,7 @@ function SimulationApprovalSummary(props) {
                             {acc3 &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={true} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={true} />}
 
                                 </div>
                             }
