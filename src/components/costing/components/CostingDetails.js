@@ -1915,6 +1915,7 @@ function CostingDetails(props) {
                       partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
                       costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
                       toggle={props.toggle}
+                      IsCostingViewMode={IsCostingViewMode}
                     />
                   </ViewCostingContext.Provider>
                 )}
