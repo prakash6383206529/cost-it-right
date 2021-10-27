@@ -10,7 +10,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from '../../../helper';
-import { PENDING } from '../../../config/constants';
+import { APPROVED, PENDING } from '../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -74,23 +74,31 @@ class CostingSummaryBulkUpload extends Component {
    * @description Renders buttons
    */
     buttonFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (row.FileUploadStatus === PENDING) {
-            return (
+  
+		const row = props?.data;
+        //  console.log(row,'row: ', row.FileUploadStatus);
+         const status = row.FileUploadStatus
+       
+         if(status === PENDING){
+
+                   return (
                 <>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.CostingBulkUploadFileId, true)} type={'button'}>Approve</button>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.CostingBulkUploadFileId, false)} type={'button'}>Reject</button>
-                    {row.NoOfIncorrectRow > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>}
+                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, false)} type={'button'}>Reject</button>
+                    {/* {row.IncorrectCostingCount > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>} */}
                 </>
             )
-        }
-        else if (row.FileUploadStatus === "Error") {
-            return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
-        }
-        else if (row.NoOfIncorrectRow > 0) {
-            return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
-        }
+         }
+         else if(status === APPROVED){
+             return <span>-</span>
+         }
+    
+        // else if (row?.FileUploadStatus === "Error") {
+        //     return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row?.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
+        // }
+        // else if (row.IncorrectCostingCount > 0) {
+        //     return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
+        // }
 
     }
 
