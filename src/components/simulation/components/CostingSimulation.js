@@ -59,6 +59,9 @@ function CostingSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
+    const [vendorIdState, setVendorIdState] = useState("")
+    const [simulationTypeState, setSimulationTypeState] = useState("")
+    const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
@@ -85,6 +88,13 @@ function CostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
+                var vendorId = Data.VendorId
+                var SimulationTechnologyId = Data.SimulationTechnologyId
+                var SimulationType = Data.SimulationType
+                setVendorIdState(vendorId)
+                setSimulationTechnologyIdState(SimulationTechnologyId)
+                setSimulationTypeState(SimulationType)
+
                 Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)
@@ -579,13 +589,15 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
                                                     <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
                                                     <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMSpec" headerName='RM Specs' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
-                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn> 
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
@@ -666,6 +678,10 @@ function CostingSimulation(props) {
                         {isApprovalDrawer &&
                             <ApproveRejectDrawer
                                 isOpen={isApprovalDrawer}
+                                vendorId={vendorIdState}
+                                SimulationTechnologyId={SimulationTechnologyIdState}
+                                SimulationType={simulationTypeState}
+
                                 anchor={'right'}
                                 approvalData={[]}
                                 type={'Sender'}

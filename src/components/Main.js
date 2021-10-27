@@ -56,6 +56,7 @@ import SimulationApprovalSummary from './simulation/components/SimulationApprova
 import CostingSimulation from './simulation/components/CostingSimulation'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
+import NewReport from './report/NewReport'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -122,6 +123,18 @@ class Main extends Component {
         if (res && res.status === 200) {
           let userDetail = formatLoginResult(res.data.Data);
           reactLocalStorage.setObject("userDetail", userDetail);
+          let departmentList = ''
+          const dept = userDetail && userDetail.Department.map((item) => {
+            if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
+              return ''
+            } else {
+              return item.DepartmentCode
+            }
+  
+          })
+          departmentList = dept.join(',')
+          reactLocalStorage.setObject("userDetail", userDetail);
+          reactLocalStorage.setObject("departmentList", departmentList);
           this.props.logUserIn();
           setTimeout(() => {
             this.setState({ isLoader: false })
@@ -290,7 +303,7 @@ class Main extends Component {
                 )}
 
               <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={isLogin ? 'middleContainer' : ''}>
+                <div className={`${isLogin ? `middleContainer ${Simulation ? 'mh-auto' : ''}` : ''}`}>
                   <Switch>
 
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
@@ -372,6 +385,9 @@ class Main extends Component {
                     <Route path="/simulation" component={Simulation} />
 
                     <Route path="/simulation-upload" component={SimulationUpload} />
+
+                    <Route path="/costing-breakup-details" component={NewReport} />
+
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 

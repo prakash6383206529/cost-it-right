@@ -9,7 +9,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
@@ -408,7 +407,7 @@ class VBCPlantListing extends Component {
 
     createCustomExportCSVButton = (onClick) => {
         return (
-            <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
+            <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
         );
     }
     render() {
@@ -595,6 +594,7 @@ class VBCPlantListing extends Component {
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: CONSTANT.EMPTY_DATA,
+                                imagClass:'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}
                         >

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -30,6 +29,8 @@ function VerifySimulation(props) {
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
+    const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
+    const [vendorId, setVendorId] = useState('')
     const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
@@ -66,6 +67,9 @@ function VerifySimulation(props) {
                 setTokenNo(data.TokenNumber)
                 setSimualtionId(data.SimulationId)
                 setHideRunButton(false)
+                setSimulationTechnologyId(data.SimulationtechnologyId)
+                setVendorId(data.VendorId)
+
             }
         }))
     }
@@ -451,6 +455,9 @@ function VerifySimulation(props) {
             {
                 simulationDrawer &&
                 <RunSimulationDrawer
+                    tokenNo={tokenNo}
+                    masterId={simulationTechnologyId}
+                    vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
                     objs={objs}

@@ -13,8 +13,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL,ZBC } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -117,7 +116,6 @@ class AddProfit extends Component {
         isLoader: true,
         ProfitID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getProfitData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -327,7 +325,6 @@ class AddProfit extends Component {
   handlePercent = (e) => {
     if (e.target.value > 100) {
       toastr.warning('Profit Percent can not be greater than 100.')
-      $('input[name="ProfitPercentage"]').focus()
     }
   }
 

@@ -413,7 +413,6 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow');
         this.setState({ isOpenVendor: true })
     }
 
@@ -704,7 +703,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">

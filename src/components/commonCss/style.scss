@@ -789,7 +789,7 @@ button.add-btn {
   }
 }
 
-.table.cr-brdr-main thead th{color:#3D4465;}
+.table.cr-brdr-main thead th{color:#3D4465; vertical-align: middle;}
 .withBorder .form-control,.form-control {
   border: 1px solid #c2cbe8;
   &::placeholder{
@@ -1532,7 +1532,7 @@ button.user-btn.pull-right {
     font-weight: 500;
 }
 .react-bs-table table td {font-size: 14px;
-    color: #8a91ac;}
+    color: $grid-font;}
 .email-input {
   .inputbox {
     border-bottom:none;}
@@ -1722,8 +1722,8 @@ button.user-btn.pull-right {
  .cr-innertool-cost.row{background-color: #E7F2FC;color:#3D4465;border-bottom:1px solid #C2CBE8;    margin-bottom: 15px;}
  .cr-tbl-label{color:#A4ABC5;font-size:16px}
  .cr-bg-tbl{background-color: #E7F2FC;}
- .cr-brdr-main tbody td{color:#8A91AC;font-size:15px;font-weight: normal;}
- .cr-brdr-main tbody .cr-tbl-label{font-size: 15px;}
+ .cr-brdr-main tbody td{color:$grid-font;font-size:15px;font-weight: normal;}
+ .cr-brdr-main tbody .cr-tbl-label{font-size: 15px; font-weight: 500;color: #8A91AC;}
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
@@ -1807,7 +1807,7 @@ $roboto: "Roboto", sans-serif;
 			input {
         min-height: 40px;
         &:disabled{
-          color: hsl(0,0%,60%);
+          color: #616366;
           font-size: 13px;
         }
 			}
@@ -1912,7 +1912,6 @@ $roboto: "Roboto", sans-serif;
 .checkbox-text{line-height: initial;}
 .small-grey-text {
 	font-size: 13px;
-	color: #8A91AC;
 }
 .small-square-btn {
 	background-color: #f8a00033;
@@ -2206,7 +2205,7 @@ body {
 	}
 }
 .grey-text {
-	color: #8A91AC;
+	color: #5c5e64;
 }
 .btn-small-primary-circle {
 	width: 25px;
@@ -2781,7 +2780,7 @@ input[type="number"].form-control {
     margin: 0 0 15px;
   }
   table{
-    td{color: #8A91AC;}
+    td{color: $grid-font;}
   }
 }
 .bom-viewer-main{
@@ -4209,7 +4208,8 @@ body{
   border-color: #DBF4E2;
   color: #4DC771;
   line-height: initial;
-  min-width: 100px;
+  min-width: 70px;
+  max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -4218,7 +4218,8 @@ body{
   border-color: #FEDCE2;;
   color: #FC5774;
   line-height: initial;
-  min-width: 100px;
+  min-width: 70px;
+  // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -4677,6 +4678,7 @@ body{
       }
     }
 }
+
 @media(max-height:900px) {
   .impacted-min-height {
     .add-min-height {
@@ -4684,8 +4686,13 @@ body{
   // height: calc(100vh - 380px);
   }
 }
+.exchange-rate {
+  .ag-grid-wrapper {
+    min-height: calc(100vh - 150px) !important;
+  }
 }
-@media(max-width:1366px){
+}
+@media(max-width:$belowLaptop){
   .overhead-profit-tab-costing{
     .form-control[disabled]{
       width: auto;
@@ -6138,7 +6145,57 @@ body{
 }
 .grant-user-grid table  th:nth-child(1), .grant-user-grid table th:nth-child(2) span {
   font-size: 14px;
-  @media (max-width:1366px) {
+  @media (max-width:$belowLaptop) {
     font-size: calc(14px * 80/100);
+  }
+}
+//simulation filter cancel button css 28-09-2021
+@media (max-width:1366px) {
+  .simulation-filter {
+    .filter-block {
+      margin-bottom: 15px;
+    }
+  }
+}
+.imagClass {
+  margin-top: 30px;
+}
+.imagClass.power-listing {
+  margin-top: 50px;
+}
+.mh-auto {
+  height: auto !important;
+  min-height: calc(100vh - 219px) !important;
+  .add-min-height {
+    @media (max-width:$belowLaptop) {  
+      min-height: calc(100vh - 214px) !important;
+    }
+  }
+}
+.simulation-history {
+   .token-no-grid {
+     .ag-cell-value {
+       position: absolute;
+       left: 38px;
+     }
+   }
+}
+.unset-height {
+  min-height: auto !important;
+}
+.costing-summary {
+   display: flex;
+   justify-content: flex-end;
+}
+.d-none {
+  display: none !important;
+}
+.costing-details-page {
+  .costing-header-table {
+    table {
+      @media screen and (max-width:$miniDesktop) {
+        min-width: 1920px;
+      }
+    }
   }
 }

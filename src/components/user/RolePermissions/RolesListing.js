@@ -10,7 +10,6 @@ import NoContentFound from '../../common/NoContentFound';
 import { loggedInUserId } from '../../../helper/auth';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { ROLE } from '../../../config/constants';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -262,6 +261,7 @@ class RolesListing extends Component {
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
+                      imagClass:'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

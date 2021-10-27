@@ -10,6 +10,7 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
+import NewReport from '../../report/NewReport';
 import TooltipCustom from '../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -125,6 +126,7 @@ class SimulationUploadDrawer extends Component {
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
 
+
                 } else {
                     fileHeads = resp.rows[0];
                     let fileData = [];
@@ -135,7 +137,6 @@ class SimulationUploadDrawer extends Component {
                     resp.rows.map((val, index) => {
                         console.log(val[10], 'val: ', val[9]);
                         if (index > 0) {
-
                             if (val[10] !== '' && val[10] !== undefined && val[9] !== val[10]) {
                                 basicRateCount = 1
                             }

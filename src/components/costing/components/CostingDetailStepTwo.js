@@ -7,7 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
-import CostingHeadTabs from './CostingHeaderTabs/index'
+import CostingHeadTabs from './costingHeaderTabs/index'
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
@@ -346,7 +346,7 @@ function CostingDetailStepTwo(props) {
                   </Table>
 
                   {/* RENDER TOP HEADER VIEW WITH HEADS AND DYNAMIC VALUES */}
-                  <div class="table-responsive">
+                  <div class="table-responsive costing-header-table">
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>

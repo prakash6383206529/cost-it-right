@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
@@ -22,7 +21,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -133,7 +132,7 @@ function ERSimulation(props) {
 
     }
     const isFirstColumn = (params) => {
-        if(isImpactedMaster) return false
+        if (isImpactedMaster) return false
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
 
@@ -251,13 +250,14 @@ function ERSimulation(props) {
                                             // frameworkComponents={frameworkComponents}
                                             onSelectionChanged={onRowSelect}
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency"></AgGridColumn>
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)"></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % "></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)"></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)"></AgGridColumn>
-
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" headerName="Part No" minWidth={190}></AgGridColumn>}
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>

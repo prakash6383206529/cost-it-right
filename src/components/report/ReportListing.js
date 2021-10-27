@@ -5,7 +5,6 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
@@ -21,6 +20,7 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import { table } from 'react-dom-factories';
+import Base64 from 'crypto-js/enc-base64'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -43,6 +43,11 @@ function ReportListing(props) {
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
     const dispatch = useDispatch()
+
+
+    // var CryptoJS = require("crypto-js");
+    // var next = CryptoJS.AES.encrypt('secret key 123').toString();
+
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -288,7 +293,6 @@ function ReportListing(props) {
         </ExcelSheet>);
     }
     const renderColumnSAP = (fileName) => {
-        console.log('fileName: ', fileName);
         let tempData = []
 
         if (selectedRowData.length == 0) {
@@ -303,14 +307,57 @@ function ReportListing(props) {
     }
 
 
+    const renderColumnSAPEncoded = (fileName) => {
+        console.log('fileName: ', fileName);
+        let tempData = []
+
+        if (selectedRowData.length == 0) {
+
+
+            tempData = reportListingData
+
+        }
+        else {
+            tempData = selectedRowData
+
+        }
+        return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+
 
     const returnExcelColumnSAP = (data = [], TempData) => {
+
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+
+
+    const returnExcelColumnSAPEncoded = (data = [], TempData) => {
+
         // console.log('TempData: ', TempData);
         let temp = []
 
 
-        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+
+        TempData && TempData.map(item => {
+
+            temp.push({ SrNo: btoa(item.SrNo), SANumber: btoa(item.SANumber), LineNumber: btoa(item.LineNumber), CreatedDate: btoa(item.CreatedDate), NetPOPrice: btoa(item.NetPOPrice), Reason: btoa(item.Reason), Text: btoa(item.Text), PersonRequestingChange: btoa(item.PersonRequestingChange) })
+            return null;
+        });
+
+
+
+
+        return (<ExcelSheet data={temp} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => < ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -368,6 +415,10 @@ function ReportListing(props) {
                                 </ExcelFile>
                                 <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
                                     {renderColumnSAP(ReportSAPMaster)}
+                                </ExcelFile>
+
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
+                                    {renderColumnSAPEncoded(ReportSAPMaster)}
                                 </ExcelFile>
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
@@ -451,12 +502,12 @@ function ReportListing(props) {
                         <AgGridColumn field="NetFreightPackagingCost" headerName="Net Packaging & Freight"></AgGridColumn>
                         <AgGridColumn field="ToolMaintenaceCost" headerName="Tool Maintenance Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ToolPrice" headerName="Tool Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="AmorizationQuantity" headerName="Amortization Quantity(Tool Life)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="AmorizationQuantity" headerName="Amortization Quantity (Tool Life)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="TotalCost" headerName="Total Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetDiscountsCost" headerName="Hundi/Other Discount" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="AnyOtherCost" headerName="Any Other Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetPOPrice" headerName="Net PO Price(INR)"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" headerName="Net PO Price (INR)"></AgGridColumn>
                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>

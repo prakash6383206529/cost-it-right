@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
@@ -19,13 +18,15 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
 import Simulation from '../Simulation';
+import { VBC, ZBC } from '../../../../config/constants';
 const gridOptions = {
 
 };
 
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster } = props
+    console.log("RM SIMULATIOn");
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -82,7 +83,7 @@ function RMSimulation(props) {
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? "VBC" : "ZBC"
+        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
@@ -95,7 +96,7 @@ function RMSimulation(props) {
         list && list.map(item => {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
-                tempObj.CostingHead = item.CostingHead
+                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterial
                 tempObj.MaterialType = item.MaterialType
                 tempObj.RawMaterialGrade = item.RMGrade
@@ -469,10 +470,16 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
                                             <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
                                             <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
                                             <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
                                             <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
+
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" headerName="Part No" minWidth={190}></AgGridColumn>}
+
+
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>

@@ -8,7 +8,6 @@ import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth';
-import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 
@@ -50,7 +49,6 @@ class AddReason extends Component {
         isLoader: true,
         ReasonId: ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       setTimeout(() => {
         this.props.getReasonAPI(ID, res => {
           if (res && res.data && res.data.Data) {

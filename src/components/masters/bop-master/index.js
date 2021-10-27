@@ -6,6 +6,7 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
+import BOPApproval from './BOPApproval';
 import InsightsBop from './InsightsBop';
 import { BOP, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -186,6 +187,14 @@ class BOPMaster extends Component {
                   </NavLink>
                 </NavItem>
 
+
+
+                <NavItem>
+                  <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                    Approval Status
+                  </NavLink>
+                </NavItem>
+
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
@@ -232,6 +241,18 @@ class BOPMaster extends Component {
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                      DownloadAccessibility={this.state.DownloadAccessibility}
+                    />
+                  </TabPane>}
+
+
+
+                {this.state.activeTab == 5 &&
+                  <TabPane tabId="5">
+                    <BOPApproval
+                      AddAccessibility={this.state.AddAccessibility}
+                      EditAccessibility={this.state.EditAccessibility}
+                      DeleteAccessibility={this.state.DeleteAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>}

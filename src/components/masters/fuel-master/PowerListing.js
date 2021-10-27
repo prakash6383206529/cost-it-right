@@ -689,6 +689,7 @@ class PowerListing extends Component {
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
+                      imagClass:'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
@@ -714,6 +715,7 @@ class PowerListing extends Component {
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
+                      imagClass:'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

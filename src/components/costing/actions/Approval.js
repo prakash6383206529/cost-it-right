@@ -269,7 +269,7 @@ export function sendForApprovalBySender(data, callback) {
 export function getApprovalList(filterData, callback) {
 
   return (dispatch) => {
-    const queryParameter = `logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
+    const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
     const request = axios.get(`${API.getApprovalList}?${queryParameter}`, headers)
     request
       .then((response) => {
@@ -477,8 +477,8 @@ export function approvalPushedOnSap(data, callback) {
 }
 
 /**
- * @method setRMCCErrors
- * @description SET OVERHEAD PROFIT TAB DATA  
+ * @method setSAPData
+ * @description SET SAP DATA
  */
 export function setSAPData(data) {
   return (dispatch) => {

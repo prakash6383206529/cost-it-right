@@ -7,7 +7,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
-  getTopAndLeftMenuData,
+  getTopAndLeftMenuData, ApprovalDashboard,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -34,6 +34,7 @@ import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 
+
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -44,15 +45,43 @@ class SideBar extends Component {
       isRedirect: false,
       isLoader: false,
       isLeftMenuRendered: false,
+      CostingsAwaitingApprovalDashboard: false,
     };
   }
 
-  UNSAFE_componentWillMount() {
+  // UNSAFE_componentWillMount() {
+  //   // const { location } = this.props;
+  //   // this.setState({ isLoader: true });
+  //   // if (location && location !== undefined) {
+  //   //   this.props.getModuleIdByPathName(location.pathname, (res) => {
+  //   //     this.setLeftMenu(res.data.Data.ModuleId);
+  //   //     this.setState({ isLoader: false });
+  //   //   });
+
+  //   //   this.props.getTopAndLeftMenuData(() => { })
+  //   // }
+
+  //   // const loginUserId = loggedInUserId();
+  //   // this.props.getModuleSelectList(() => { });
+  //   // if (loginUserId != null) {
+  //   //   this.props.getMenuByUser(loginUserId, () => {
+  //   //     this.setState({ isLoader: false });
+  //   //   });
+  //   // }
+
+  // }
+
+
+  /**
+   * @method componentDidMount
+   * @description used to called after mounting component
+   */
+  componentDidMount() {
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
       this.props.getModuleIdByPathName(location.pathname, (res) => {
-        this.setLeftMenu(res.data.Data.ModuleId);
+        // this.setLeftMenu(res.data.Data.ModuleId);
         this.setState({ isLoader: false });
       });
 
@@ -66,15 +95,7 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
     }
-
   }
-
-
-  /**
-   * @method componentDidMount
-   * @description used to called after mounting component
-   */
-  componentDidMount() { }
 
   /**
    * @method toggleMenue
@@ -125,6 +146,8 @@ class SideBar extends Component {
     });
   };
 
+  commonObj = {}
+
   /**
    * @method renderMenus
    * @description Render menus according to user access.
@@ -134,12 +157,15 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
+        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: true });
         return this.renderMaster(module);
       case "Additional Masters":
         return this.renderAdditionalMaster(module);
       case "Costing":
+        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, CostingsApprovalDashboard: true });
         return this.renderCosting(module);
       case "Simulation":
+        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, AmendmentsApprovalDashboard: true });
         return this.renderSimulation(module);
       case "Reports And Analytics":
         return this.renderReportAnalytics(module);
@@ -167,11 +193,6 @@ class SideBar extends Component {
     });
   };
 
-  setLeftMenuAccToMenu = (pathname) => {
-    this.props.getModuleIdByPathName(pathname, res => {
-      this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
-    })
-  }
 
   setModuleId = (ModuleId) => {
     reactLocalStorage.set('ModuleId', ModuleId)
@@ -689,11 +710,11 @@ class SideBar extends Component {
                           <DropdownToggle caret>
                             {isLoggedIn ? (
                               <>
-                                <img
+                                  {/* <img
                                   className="img-xs rounded-circle"
                                   alt={""}
                                   src={UserImg}
-                                />
+                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */} 
                                 {userData.Name}
                               </>
                             ) : (
@@ -751,6 +772,10 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
+
+
+
+
         </div>
       </nav>
     )
@@ -782,4 +807,5 @@ export default connect(mapStateToProps, {
   getModuleIdByPathName,
   getMenu,
   getTopAndLeftMenuData,
+  ApprovalDashboard,
 })(SideBar)
