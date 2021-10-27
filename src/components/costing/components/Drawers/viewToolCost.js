@@ -52,7 +52,7 @@ function ViewToolCost(props) {
                     <tr>
                       <th>{`Tool Maintenance Cost`}</th>
                       <th>{`Tool Cost`}</th>
-                      <th>{`Amortization Quantity(Tool Life)`}</th>
+                      <th>{`Amortization Quantity (Tool Life)`}</th>
                       <th>{`Net Tool Cost`}</th>
                     </tr>
                   </thead>

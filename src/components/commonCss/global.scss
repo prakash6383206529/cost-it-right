@@ -722,6 +722,9 @@ a:hover {
         .ag-header-cell{
           border-right: 1px solid #e5eaf9;
         }
+        .ag-header-cell:first-child {
+          border-left: 1px solid #e5eaf9;
+        }
       }
       .ag-grid-wrapper{
         min-height: calc(100vh - 300px);
@@ -748,8 +751,9 @@ a:hover {
         padding-right: 15px !important;
       }      
       .ag-theme-material{
-        .ag-root-wrapper-body {
+        .ag-header-cell:first-child {
           border-left: 1px solid #e5eaf9;
+          // border-right: 1px solid #e5eaf9;
         }
         .ag-header{
           // .ag-header-row{border-left: 1px solid #e5eaf9;}
@@ -764,7 +768,7 @@ a:hover {
           border: none;
         }
         .ag-row{
-          // border-left: 1px solid #e5eaf9;
+      
           .ag-cell{
             user-select: text;
             color: $grid-font;
@@ -798,6 +802,9 @@ a:hover {
               .ag-cell-wrapper{
                 justify-content: center;
               }
+            }
+            &:first-child{
+              border-left: 1px solid #e5eaf9;
             }
           }
         }
@@ -2453,13 +2460,13 @@ input:disabled,
 .form-control[readonly] {
   background-color:#e6e6e6 !important;
   border-color: hsl(0, 0%, 90%) !important;
-  color:#a5a7b1;
+  color:#616366;
 }
 input:disabled,
 .form-control:disabled,
 .form-control[readonly]{
   &::placeholder{
-    color:#a5a7b1;
+    color:#616366;
   }
 }
 .select--is-disabled {
@@ -3011,4 +3018,28 @@ body {
   border: 1px solid #FC5774;
   border-radius: 4px;
   opacity: 1;
+}
+
+ *::-webkit-scrollbar {
+  width: 10px;
+  height:8px !important; 
+  border-radius: 0 !important;
+}
+*::-webkit-scrollbar-button {
+  background: #ccc;
+  border-radius: 0 !important;
+  width: 0px;
+}
+*::-webkit-scrollbar-track-piece {
+  background: #eee;
+
+}
+*::-webkit-scrollbar-thumb {
+
+  background: #cdcdcd;
+  border-radius: 0 !important;
+  border: none !important;
+  &:hover {
+    background: #888;
+  }
 }

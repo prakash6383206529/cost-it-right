@@ -354,7 +354,7 @@ function CostingDetailStepTwo(props) {
                   </Table>
 
                   {/* RENDER TOP HEADER VIEW WITH HEADS AND DYNAMIC VALUES */}
-                  <div class="table-responsive">
+                  <div class="table-responsive costing-header-table">
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
