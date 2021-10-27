@@ -116,7 +116,7 @@ function OpenWeightCalculator(props) {
         />
         )
 
-        case CORRUGATEDBOX:
+      case CORRUGATEDBOX:
         return (
           <CorrugatedBox
             rmRowData={props.rmRowData}
