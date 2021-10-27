@@ -585,9 +585,6 @@ function VerifyImpactDrawer(props) {
                     <div className={"cancel-icon"}></div>{'Cancel'}
                   </button>
 
-                  <button type="submit" className="submit-button  save-btn" >
-                    <div className={"save-icon"}></div>{'Submit'}
-                  </button>
                 </div>
               </Row>
             </form>
