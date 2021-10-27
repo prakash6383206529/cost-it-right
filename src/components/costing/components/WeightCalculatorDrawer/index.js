@@ -77,6 +77,7 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
       case FORGINING:
@@ -122,6 +123,7 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
       default:
