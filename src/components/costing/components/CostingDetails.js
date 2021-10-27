@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
@@ -26,6 +26,7 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
+import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
 
@@ -90,6 +91,7 @@ function CostingDetails(props) {
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
   // client based costing
+  const [partDropdown, setPartDropdown] = useState([])
 
   const fieldValues = IsolateReRender(control);
 
@@ -186,12 +188,17 @@ function CostingDetails(props) {
     }
   }, [technology])
 
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
+
   /**
    * @method renderListing
    * @description Used show listing of unit of measurement
    */
   const renderListing = (label) => {
     const temp = []
+
 
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
@@ -208,6 +215,8 @@ function CostingDetails(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
+      setPartDropdown(temp)
+
       return temp
     }
 
@@ -1380,6 +1389,27 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
+  const filterList = (inputValue) => {
+    if (inputValue) {
+      let tempArr = []
+      tempArr = partDropdown && partDropdown.filter(i => {
+        return i.label.toLowerCase().includes(inputValue.toLowerCase())
+      }
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    } else {
+      return partDropdown
+    }
+  };
+  const promiseOptions = inputValue =>
+    new Promise(resolve => {
+      resolve(filterList(inputValue));
+    });
+
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1436,7 +1466,8 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        <SearchableSelectHookForm
+                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                        <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
                           placeholder={"Select"}
@@ -1445,7 +1476,7 @@ function CostingDetails(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          options={renderListing("PartList")}
+                          asyncOptions={promiseOptions}
                           mandatory={true}
                           isLoading={false}
                           handleChange={handlePartChange}
@@ -1885,6 +1916,7 @@ function CostingDetails(props) {
                       partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
                       costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
                       toggle={props.toggle}
+                      IsCostingViewMode={IsCostingViewMode}
                     />
                   </ViewCostingContext.Provider>
                 )}
