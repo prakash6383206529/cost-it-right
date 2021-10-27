@@ -443,7 +443,7 @@ function Simulation(props) {
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
-    const filterColors = (inputValue) => {
+    const filterList = (inputValue) => {
         if (inputValue) {
             let tempArr = []
             tempArr = vendorDropdown && vendorDropdown.filter(i => {
@@ -461,7 +461,7 @@ function Simulation(props) {
     };
     const promiseOptions = inputValue =>
         new Promise(resolve => {
-            resolve(filterColors(inputValue));
+            resolve(filterList(inputValue));
         });
     return (
         <div className="container-fluid simulation-page">

@@ -137,7 +137,6 @@ function CostingSummary(props) {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
-      console.log(tempDropdownList, 'tempDropdownListtempDropdownList')
       setPartDropdown(tempDropdownList)
 
       return tempDropdownList
@@ -310,7 +309,7 @@ function CostingSummary(props) {
     SetIsBulkOpen(false)
   }
 
-  const filterColors = (inputValue) => {
+  const filterList = (inputValue) => {
     if (inputValue) {
       let tempArr = []
       tempArr = partDropdown && partDropdown.filter(i => {
@@ -328,7 +327,7 @@ function CostingSummary(props) {
   };
   const promiseOptions = inputValue =>
     new Promise(resolve => {
-      resolve(filterColors(inputValue));
+      resolve(filterList(inputValue));
     });
 
   return (

@@ -1377,7 +1377,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterColors = (inputValue) => {
+  const filterList = (inputValue) => {
     if (inputValue) {
       let tempArr = []
       tempArr = partDropdown && partDropdown.filter(i => {
@@ -1387,7 +1387,6 @@ function CostingDetails(props) {
       if (tempArr.length <= 100) {
         return tempArr
       } else {
-        console.log(tempArr.slice(0, 100), 'tempArrtempArr')
         return tempArr.slice(0, 100)
       }
     } else {
@@ -1396,7 +1395,7 @@ function CostingDetails(props) {
   };
   const promiseOptions = inputValue =>
     new Promise(resolve => {
-      resolve(filterColors(inputValue));
+      resolve(filterList(inputValue));
     });
 
   return (
