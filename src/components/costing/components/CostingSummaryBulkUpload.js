@@ -74,7 +74,7 @@ class CostingSummaryBulkUpload extends Component {
    * @description Renders buttons
    */
     buttonFormatter = (props) => {
-        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+       
 		const row = props?.data;
         const status = row.FileUploadStatus
         if (row.FileUploadStatus === PENDING) {
