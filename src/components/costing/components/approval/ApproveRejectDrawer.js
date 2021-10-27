@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/Hook
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import { APPROVER } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
@@ -39,6 +39,7 @@ function ApproveRejectDrawer(props) {
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
+  const [disableSubmitButton,setDisableSubmitbutton]= useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
@@ -233,6 +234,12 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
           toastr.success('Simulation has been saved successfully.')
+          dispatch(sapPushedInitialMoment(simulationDetail.SimulationId,res=>{
+            const status = res.response.status
+            if(status === 400){
+              setDisableSubmitbutton(true)
+            }
+          }))
         }
       }))
     }
@@ -752,6 +759,7 @@ function ApproveRejectDrawer(props) {
                     type="button"
                     className="submit-button  save-btn"
                     onClick={onSubmit}
+                    disabled={disableSubmitButton}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
