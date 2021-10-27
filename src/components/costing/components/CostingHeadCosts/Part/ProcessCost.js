@@ -602,11 +602,11 @@ function ProcessCost(props) {
                                 />
                               }
                             </span>
-                            {!CostingViewMode && <button
+                            <button
                               className="CalculatorIcon cr-cl-icon calc-icon-middle"
                               type={'button'}
                               onClick={() => toggleWeightCalculator(index)}
-                            />}
+                            />
                           </td>
 
                           <td style={{ width: 100 }}>
@@ -686,6 +686,7 @@ function ProcessCost(props) {
           technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          CostingViewMode={CostingViewMode}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

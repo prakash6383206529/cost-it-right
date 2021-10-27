@@ -73,6 +73,7 @@ function VariableMhrDrawer(props) {
           case FACING:
             return (
               <Facing
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -81,6 +82,7 @@ function VariableMhrDrawer(props) {
           case DRILLING:
             return (
               <Drilling
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -89,6 +91,7 @@ function VariableMhrDrawer(props) {
           case TURNING:
             return (
               <Turning
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -97,6 +100,7 @@ function VariableMhrDrawer(props) {
           case CHAMFERING:
             return (
               <Chamfering
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -105,6 +109,7 @@ function VariableMhrDrawer(props) {
           case FACEMILING:
             return (
               <FaceMilling
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -113,6 +118,7 @@ function VariableMhrDrawer(props) {
           case SIDEFACEMILING:
             return (
               <SideFaceMiling
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -121,6 +127,7 @@ function VariableMhrDrawer(props) {
           case SLOTCUTTING:
             return (
               <SlotCutting
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -129,6 +136,7 @@ function VariableMhrDrawer(props) {
           case CHAMFERINGMILLER:
             return (
               <ChamferingMiller
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -137,6 +145,7 @@ function VariableMhrDrawer(props) {
           case ENDMILL:
             return (
               <EndMill
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 technology={technology}
                 calculatorData={calculatorData}
@@ -145,6 +154,7 @@ function VariableMhrDrawer(props) {
           default:
             return (
               <SheetMetalBaicDrawer
+                CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 tonnage={tonnage}
                 rmFinishWeight={props.rmFinishWeight}
@@ -155,6 +165,7 @@ function VariableMhrDrawer(props) {
       } else {
         return (
           <SheetMetalBaicDrawer
+            CostingViewMode={props.CostingViewMode}
             calculateMachineTime={calculateMachineTime}
             tonnage={tonnage}
             rmFinishWeight={props.rmFinishWeight}
@@ -167,6 +178,7 @@ function VariableMhrDrawer(props) {
         case 'Facing':
           return (
             <Facing
+              CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               technology={technology}
               calculatorData={calculatorData}
@@ -175,6 +187,7 @@ function VariableMhrDrawer(props) {
         default:
           return (
             <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               rmFinishWeight={props.rmFinishWeight}
@@ -191,6 +204,7 @@ function VariableMhrDrawer(props) {
         default:
           return (
             <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               rmFinishWeight={props.rmFinishWeight}
@@ -202,6 +216,7 @@ function VariableMhrDrawer(props) {
     } else if (technology === Non_Ferrous_HPDC) {
       return (
         <SheetMetalBaicDrawer
+          CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
           rmFinishWeight={props.rmFinishWeight}
@@ -211,6 +226,7 @@ function VariableMhrDrawer(props) {
     } else {
       return (
         <SheetMetalBaicDrawer
+          CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
           rmFinishWeight={props.rmFinishWeight}

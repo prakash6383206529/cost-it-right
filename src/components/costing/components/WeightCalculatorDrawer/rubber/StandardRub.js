@@ -128,7 +128,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.shotWeight}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
                                         <Col md="2" className="m-height-44-label-inside">
@@ -153,7 +153,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.noOfCavity}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
                                         <Col md="2" className="m-height-44-label-inside">
@@ -178,7 +178,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.finishWeight}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
 
@@ -204,7 +204,7 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.grossWeight}
-                                                disabled={true}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
 
@@ -221,8 +221,8 @@ function StandardRub(props) {
                                 className="reset mr15 cancel-btn"
                             >
                                 <div className={'cancel-icon'}></div>
-                                      CANCEL
-                             </button>
+                                CANCEL
+                            </button>
                             <button
                                 type="submit"
                                 // disabled={isSubmitted ? true : false}
