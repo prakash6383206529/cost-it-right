@@ -18,14 +18,15 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
 import Simulation from '../Simulation';
+import { debounce } from 'lodash'
+
 const gridOptions = {
 
 };
 
 
 function RMSimulation(props) {
-    console.log("RM SIMULATIOn");
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, isSimulationImpactMaster } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -57,12 +58,12 @@ function RMSimulation(props) {
         }
     }, [])
 
-    const verifySimulation = () => {
+    const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
 
         list && list.map((li) => {
-            console.log('li: ', li);
+
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -130,7 +131,8 @@ function RMSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
-    }
+    }, 500)
+
 
     const cancelVerifyPage = () => {
 
@@ -363,7 +365,7 @@ function RMSimulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
     const cellChange = (props) => {
-        console.log(props, "PROPS");
+
     }
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
@@ -379,7 +381,6 @@ function RMSimulation(props) {
         oldBasicRateFormatter: oldBasicRateFormatter,
         oldScrapRateFormatter: oldScrapRateFormatter,
     };
-
 
 
 
@@ -471,10 +472,10 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
                                             <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
                                             <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
-                                            <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
-                                            <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
+                                            {!isSimulationImpactMaster && <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                            {!isSimulationImpactMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
+                                            {!isSimulationImpactMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
+                                            {!isSimulationImpactMaster && <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>}
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
 
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
@@ -491,10 +492,11 @@ function RMSimulation(props) {
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
+                                            {!isSimulationImpactMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
+                                            }
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 

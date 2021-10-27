@@ -16,6 +16,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import OtherVerifySimulation from '../OtherVerifySimulation';
+import { debounce } from 'lodash'
 
 const gridOptions = {
 
@@ -182,7 +183,7 @@ function ERSimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    const verifySimulation = () => {
+    const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
@@ -208,7 +209,8 @@ function ERSimulation(props) {
             }
         }))
         // setShowVerifyPage(true)
-    }
+    }, 500)
+
 
 
     return (

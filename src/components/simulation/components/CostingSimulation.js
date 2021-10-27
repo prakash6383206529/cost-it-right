@@ -181,7 +181,6 @@ function CostingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        console.log('selectedRows: ', selectedRows);
         let temp = []
         let selectedTemp = []
         selectedRows && selectedRows.map(item => {
@@ -636,10 +635,10 @@ function CostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
 
-                                    {/* <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
+                                    <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
-                                    </button> */}
+                                    </button>
 
 
 
@@ -673,6 +672,7 @@ function CostingSimulation(props) {
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
+                                SimulationTechnologyIdState={SimulationTechnologyIdState}
                             />}
                     </div>
 
