@@ -365,7 +365,7 @@ function SimulationApprovalListing(props) {
         let technologyCount = 0
         setIsApprovalDrawer(true)
         setApproveDrawer(true)
-      
+
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -400,14 +400,14 @@ function SimulationApprovalListing(props) {
         // }
 
         if (count > 0) {
-             toastr.warning("Reason should be same for sending multiple costing for approval")
-             return false
+            toastr.warning("Reason should be same for sending multiple costing for approval")
+            return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
         }
 
-        
+
     }
 
     const closeDrawer = (e = '') => {
@@ -501,7 +501,7 @@ function SimulationApprovalListing(props) {
     };
 
 
-    
+
 
     return (
         <Fragment>
@@ -537,7 +537,7 @@ function SimulationApprovalListing(props) {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div
-                                className="ag-theme-material"
+                                className="ag-theme-material simulation-history"
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
@@ -560,13 +560,13 @@ function SimulationApprovalListing(props) {
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
                                 >
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."  cellClass="token-no-grid"></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
-                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Master"></AgGridColumn> 
+                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Master"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>

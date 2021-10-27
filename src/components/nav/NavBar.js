@@ -7,7 +7,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
-  getTopAndLeftMenuData,
+  getTopAndLeftMenuData, ApprovalDashboard,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -144,6 +144,8 @@ class SideBar extends Component {
     });
   };
 
+  commonObj = {}
+
   /**
    * @method renderMenus
    * @description Render menus according to user access.
@@ -153,12 +155,15 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
+        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: true });
         return this.renderMaster(module);
       case "Additional Masters":
         return this.renderAdditionalMaster(module);
       case "Costing":
+        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, CostingsApprovalDashboard: true });
         return this.renderCosting(module);
       case "Simulation":
+        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, AmendmentsApprovalDashboard: true });
         return this.renderSimulation(module);
       case "Reports And Analytics":
         return this.renderReportAnalytics(module);
@@ -774,4 +779,5 @@ export default connect(mapStateToProps, {
   getModuleIdByPathName,
   getMenu,
   getTopAndLeftMenuData,
+  ApprovalDashboard,
 })(SideBar)

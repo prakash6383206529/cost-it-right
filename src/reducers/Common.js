@@ -52,6 +52,7 @@ import {
   GET_UOM_SELECTLIST_BY_UNITTYPE,
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
+  GET_LAST_SIMULATION_DATA,
 } from '../config/constants';
 
 const initialState = {
@@ -427,6 +428,13 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         loading: false,
         paymentTermsSelectList: action.payload
+      };
+
+    case GET_LAST_SIMULATION_DATA:
+      return {
+        ...state,
+        loading: false,
+        lastSimulationData: action.payload
       };
     default:
       return state;

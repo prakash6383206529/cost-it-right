@@ -8,9 +8,9 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
-import { COMBINED_PROCESS,EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -45,6 +45,7 @@ function SimulationApprovalSummary(props) {
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [showImpactedData, setshowImpactedData] = useState(false)
 
+
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
     const [showListing, setShowListing] = useState(false)
@@ -61,10 +62,13 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
+    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
+    const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [gridApi, setGridApi] = useState(null);
@@ -82,6 +86,8 @@ function SimulationApprovalSummary(props) {
     const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
+    const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
+
 
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
@@ -112,6 +118,9 @@ function SimulationApprovalSummary(props) {
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
+            setEffectiveDate(res.data.Data.EffectiveDate)
+
+
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
@@ -141,6 +150,26 @@ function SimulationApprovalSummary(props) {
             }
         }))
     }, [])
+
+
+    useEffect(() => {
+
+        if (costingList.length > 0 && effectiveDate) {
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                const masterId = res.data.Data.SimulationTechnologyId;
+                const Data = res.data.Data.ImpactedMasterDataList
+                if (res) {
+                    setImpactedMasterDataListForLastRevisionData(Data)
+                    setShowLastRevisionData(true)
+                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+
+
+                }
+
+            }))
+        }
+
+    }, [effectiveDate, costingList])
 
 
     const closeViewDrawer = (e = '') => {
@@ -366,7 +395,7 @@ function SimulationApprovalSummary(props) {
         }
     }
 
-    
+
     const oldCCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -527,8 +556,8 @@ function SimulationApprovalSummary(props) {
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
-        newCCFormatter:newCCFormatter,
-        oldCCFormatter:oldCCFormatter
+        newCCFormatter: newCCFormatter,
+        oldCCFormatter: oldCCFormatter
     };
 
     const errorBoxClass = () => {
@@ -681,7 +710,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} />}
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
 
                             </div>
 
@@ -838,23 +867,36 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <Row>
-                        <Col md="10 mb-3">
+                            <Col md="10 mb-3">
                                 <div className="left-border">{'Attachment:'}</div>
                             </Col>
                             <Col md="12" className="pr-0">
-                            <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
+                                <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}
+                        {/* page starts */}
 
-                        {/* <Row className="mb-4">
+
+
+
+
+                        <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6">
                                 <div className={'right-details'}>
                                     <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                                 </div>
                             </Col>
+
                             {acc3 &&
+
+                                <div className="accordian-content w-100 px-3 impacted-min-height">
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={true} />}
+
+                                </div>
+                            }
+                            {/* {acc3 &&
                                 <div className="accordian-content w-100">
                                     <div className={`ag-grid-react`}>
                                         <Col md="12" className="mb-3">
@@ -920,8 +962,8 @@ function SimulationApprovalSummary(props) {
                                         </Col>
                                     </div>
                                 </div>
-                            }
-                        </Row> */}
+                            } */}
+                        </Row>
 
                     </div>
 

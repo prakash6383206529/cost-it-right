@@ -15,14 +15,15 @@ export default function ReportListingReducers(state = initialState, action) {
             };
         case GET_REPORT_LIST:
             let temp = action.payload
-            let Arr = temp && temp.map(item => {
+            let Arr = []
+            temp && temp.map(item => {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
                 } else {
-                    return item
+                    Arr.push(item)
+                    return Arr
                 }
             })
-
             return {
                 ...state,
                 loading: false,

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,29 +20,23 @@ const gridOptions = {};
 
 function OtherVerifySimulation(props) {
     const { cancelVerifyPage, isExchangeRate, isCombinedProcess, master } = props
-    const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
-
-    const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
-    const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const [verifyList,setVerifyList] = useState([])
+    const [verifyList, setVerifyList] = useState([])
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
+    // const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    //     mode: 'onBlur',
+    //     reValidateMode: 'onChange',
+    // })
 
     const dispatch = useDispatch()
 
@@ -56,7 +49,7 @@ function OtherVerifySimulation(props) {
 
 
     const verifyCostingList = () => {  // master.value       
-        if(props.token){
+        if (props.token) {
             switch (Number(master)) {
                 case Number(EXCHNAGERATE):
                     dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
@@ -76,7 +69,7 @@ function OtherVerifySimulation(props) {
                     }))
                     break;
                 case Number(COMBINED_PROCESS):
-                  
+
                     dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
                         if (res.data.Result) {
                             const data = res.data.Data
@@ -167,10 +160,6 @@ function OtherVerifySimulation(props) {
     // }
     // ]
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
-
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -187,19 +176,16 @@ function OtherVerifySimulation(props) {
 
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
@@ -233,7 +219,7 @@ function OtherVerifySimulation(props) {
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
 
-        if(props.token){
+        if (props.token) {
 
             switch (Number(selectedMasterForSimulation.value)) {
                 case Number(EXCHNAGERATE):
@@ -243,10 +229,11 @@ function OtherVerifySimulation(props) {
                         tempArr.push(tempObj)
                         return null;
                     })
-    
+
                     obj.RunSimualtionExchangeRateCostingInfos = tempArr
                     setObj(obj)
                     setSimulationDrawer(true)
+                    break;
                 case Number(COMBINED_PROCESS):
                     selectedRowData && selectedRowData.map(item => {
                         let tempObj = {}
@@ -254,11 +241,11 @@ function OtherVerifySimulation(props) {
                         tempArr.push(tempObj)
                         return null;
                     })
-    
+
                     obj.RunSimualtionCostingInfo = tempArr
                     setObj(obj)
                     setSimulationDrawer(true)
-    
+                    break;
                 default:
                     break;
             }
@@ -395,14 +382,15 @@ function OtherVerifySimulation(props) {
                                                 {/* {isCombinedProcess !== true && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>} */}
                                                 {isExchangeRate &&
                                                     <>
-                                                    <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
                                                     </>
                                                 }
                                                 {isCombinedProcess &&
                                                     <>
-                                                      <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldNetCC" headerName="Old CC"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
                                                     </>

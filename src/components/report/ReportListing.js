@@ -345,6 +345,7 @@ function ReportListing(props) {
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
 
+                               
                             </div>
                         </div>
 
