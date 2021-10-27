@@ -10,7 +10,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from '../../../helper';
-import { PENDING } from '../../../config/constants';
+import { APPROVED, PENDING } from '../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
