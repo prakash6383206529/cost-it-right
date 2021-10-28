@@ -24,9 +24,7 @@ import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
-
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
-import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
@@ -92,7 +90,7 @@ function CostingDetails(props) {
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
-  // client based costing
+
 
   const fieldValues = IsolateReRender(control);
 
@@ -188,6 +186,10 @@ function CostingDetails(props) {
       nextToggle()
     }
   }, [technology])
+
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
 
   /**
    * @method renderListing
@@ -1397,7 +1399,6 @@ function CostingDetails(props) {
       return partDropdown
     }
   };
-
   const promiseOptions = inputValue =>
     new Promise(resolve => {
       resolve(filterColors(inputValue));
@@ -1494,7 +1495,7 @@ function CostingDetails(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          options={renderListing("PartList")}
+                          asyncOptions={promiseOptions}
                           mandatory={true}
                           isLoading={false}
                           handleChange={handlePartChange}
