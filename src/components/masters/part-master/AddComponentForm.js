@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
+import { required, number, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
-
-
+import AsyncSelect from 'react-select/async';
+import TooltipCustom from '../../common/Tooltip';
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
@@ -145,7 +145,26 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, } = this.props;
+    const { handleSubmit, isEditFlag, componentPartSelectList } = this.props;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("part").filter(i =>
+        i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+      });
     return (
       <>
         <form
@@ -154,9 +173,13 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
+          <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
           <Row>
+
             <Col md="6">
-              <Field
+              <label>{"Part No."}<span className="asterisk-required">*</span></label>
+              <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              {/* <Field
                 name="PartNumber"
                 type="text"
                 label={"Part No."}
@@ -172,7 +195,7 @@ class AddComponentForm extends Component {
                 required={true}
                 handleChangeDescription={this.handlePartChange}
                 valueDescription={this.state.part}
-              />
+              /> */}
             </Col>
             <Col md="6">
               <Field

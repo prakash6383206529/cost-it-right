@@ -589,10 +589,6 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
-                                            {/* <th className="align-top">
-                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
-                                            </th> */}
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -600,6 +596,10 @@ function SimulationApprovalSummary(props) {
                                                     <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</span>
                                                 </th>)
                                             }
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
+                                            </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
