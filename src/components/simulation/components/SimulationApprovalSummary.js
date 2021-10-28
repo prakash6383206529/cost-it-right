@@ -790,10 +790,15 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
-                            <Col md="6">
+                            <Col md="6"className="text-right">
                                 <div className={'right-details'}>
-                                    <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                                    <button onClick={() => setAcc3(!acc3)} className={`btn btn-small-primary-circle ml-1`}>{acc3 ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}</button>
                                 </div>
+                                
                             </Col>
 
                             {acc3 &&
