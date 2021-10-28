@@ -70,6 +70,7 @@ function OtherCostingSimulation(props) {
         hideDiscount: false,
         hideOveheadAndProfit: false
     })
+    const [amendmentDetails, setAmendmentDetails] = useState({})
 
     const dispatch = useDispatch()
 
@@ -112,6 +113,13 @@ function OtherCostingSimulation(props) {
         setCostingArr(Data.SimulatedCostingList)
         setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
         setLoader(false)
+        let tempObj = {}
+        tempObj.EffectiveDate = Data?.EffectiveDate
+        tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
+        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+        tempObj.Technology = Data?.SimulatedCostingList[0]?.Technology
+        tempObj.Vendor = Data?.SimulatedCostingList[0]?.VendorName
+        setAmendmentDetails(tempObj)
     }
 
 
@@ -639,6 +647,12 @@ function OtherCostingSimulation(props) {
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
+                                SimulationTechnologyIdState={SimulationTechnologyIdState}
+                                simulationId={simulationId}
+                                tokenNo={tokenNo}
+                                vendorIdState={vendorIdState}
+                                EffectiveDate={simulationDetail.EffectiveDate}
+                                amendmentDetails={amendmentDetails}
                             />}
                     </div>
 
