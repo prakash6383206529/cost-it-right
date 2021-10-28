@@ -414,7 +414,7 @@ function CostingSummary(props) {
                           errors={errors.Part}
                           message={"Enter"}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
-                        /> */}
+                        /> 
                       </Col>
 
                       <Col className="col-md-15">

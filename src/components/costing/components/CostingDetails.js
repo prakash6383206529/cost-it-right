@@ -197,11 +197,6 @@ function CostingDetails(props) {
    */
   const renderListing = (label) => {
     const temp = []
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d5b9274ce (state name changed | log removed)
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
         if (item.Value === '0') return false
