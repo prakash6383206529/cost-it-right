@@ -103,7 +103,7 @@ function RunSimulationDrawer(props) {
         }
 
 
-        if (elementObj.Text === "Additional Discount") {
+        if (elementObj.Text === "Additional Discount %") {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
 
             setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
@@ -164,7 +164,7 @@ function RunSimulationDrawer(props) {
         const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
         const PaymentTerms = selectedData.includes("Payment Terms")
         const Inventory = selectedData.includes("Inventory")
-        const AdditionalDiscount = selectedData.includes("Additional Discount")
+        const AdditionalDiscount = selectedData.includes("Additional Discount %")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
 
         let temp = []
@@ -272,7 +272,7 @@ function RunSimulationDrawer(props) {
                                                                     <input
                                                                         type="checkbox"
                                                                         value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
+                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount %" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
                                                                         checked={IsAvailable(el.Value)}
                                                                     />
 
@@ -335,7 +335,7 @@ function RunSimulationDrawer(props) {
                                                                 }
 
 
-                                                                {(el.Text === "Additional Discount") && inputAdditionalDiscount ?
+                                                                {(el.Text === "Additional Discount %") && inputAdditionalDiscount ?
                                                                     <TextFieldHookForm
                                                                         label=""
                                                                         name={"Discount"}
