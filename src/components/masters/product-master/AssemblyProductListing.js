@@ -304,7 +304,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        var Temp = TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -316,11 +316,15 @@ class AssemblyProductListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyPart}>
+            <ExcelSheet data={Temp} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -463,7 +467,11 @@ class AssemblyProductListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
+<<<<<<< HEAD
                         style={{ height: '100%', width: '100%' }}
+=======
+
+>>>>>>> a11380b7f (pagination task done on report + vendor + individualpart listing)
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -493,7 +501,11 @@ class AssemblyProductListing extends Component {
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
+<<<<<<< HEAD
                             <AgGridColumn field="PartId" width={120} headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+=======
+                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+>>>>>>> a11380b7f (pagination task done on report + vendor + individualpart listing)
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
