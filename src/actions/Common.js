@@ -52,6 +52,7 @@ import {
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
   GET_LAST_SIMULATION_DATA,
   config,
+  GET_IMPACTED_MASTER_DATA,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1569,5 +1570,4 @@ export function getImpactedMasterData(simulationId, callback) {
     });
   };
 }
-
 

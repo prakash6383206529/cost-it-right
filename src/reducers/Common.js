@@ -53,6 +53,7 @@ import {
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
   GET_LAST_SIMULATION_DATA,
+  GET_IMPACTED_MASTER_DATA,
 } from '../config/constants';
 
 const initialState = {
@@ -435,6 +436,13 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         loading: false,
         lastSimulationData: action.payload
+      };
+
+    case GET_IMPACTED_MASTER_DATA:
+      return {
+        ...state,
+        loading: false,
+        impactedMasterData: action.payload
       };
     default:
       return state;

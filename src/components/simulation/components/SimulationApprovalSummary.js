@@ -8,7 +8,7 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData } from '../../../actions/Common';
+import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData, getImpactedMasterData } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmmendentStatus } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
@@ -59,6 +59,7 @@ function SimulationApprovalSummary(props) {
     const [oldCostingList, setOldCostingList] = useState([])
     const [showPushDrawer, setShowPushDrawer] = useState(false)
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -81,7 +82,7 @@ function SimulationApprovalSummary(props) {
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
-
+    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
@@ -155,11 +156,12 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
 
-        if (costingList.length > 0 && effectiveDate) {
+        if (costingList.length > 0 && effectiveDate && simulationDetail.SimulationId !== undefined) {
             dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, () => { }))
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
-    }, [effectiveDate, costingList])
+    }, [effectiveDate, costingList, simulationDetail.SimulationId])
 
     useEffect(() => {
 
@@ -167,8 +169,12 @@ function SimulationApprovalSummary(props) {
             setImpactedMasterDataListForLastRevisionData(lastSimulationData)
             setShowLastRevisionData(true)
         }
-
-    }, [lastSimulationData])
+        if (impactedMasterData) {
+            setImpactedMasterDataListForImpactedMaster(impactedMasterData)
+            setshowImpactedData(true)
+        }
+        console.log(impactedMasterData, 'impactedMasterDataListForImpactedMaster')
+    }, [lastSimulationData, impactedMasterData])
 
 
 
@@ -682,11 +688,17 @@ function SimulationApprovalSummary(props) {
                                     </button>
                                 </div>
                             </Col>
+                            {/* {acc3 && */}
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
 
                             </div>
+                            {/* } */}
+                            {/* <div className="accordian-content w-100 px-3 impacted-min-height">
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+
+                            </div> */}
 
                         </Row>
 
