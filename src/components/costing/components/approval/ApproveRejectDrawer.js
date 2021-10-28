@@ -62,6 +62,7 @@ function ApproveRejectDrawer(props) {
     // dispatch(getAllApprovalDepartment((res) => { }))
     /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
     if (!isSimulation) {
+      /************THIS CONDITION SI FOR COSTING*******************/
       dispatch(getAllApprovalDepartment((res) => {
         const Data = res.data.SelectList
         const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
@@ -105,7 +106,7 @@ function ApproveRejectDrawer(props) {
         setIsOpen(!IsOpen)
       })
 
-      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing && getConfigurationKey().IsProvisionalSimulation) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }
@@ -121,7 +122,7 @@ function ApproveRejectDrawer(props) {
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    selectedRowData.map(item => {
+    selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
@@ -153,20 +154,7 @@ function ApproveRejectDrawer(props) {
               })
               return null
             })
-
-
-
-
-
-            // tempDropdownList.map(item => {
-            //   approverDropdownValue.push(item)
-
-            // })
-            approverDropdownValue.push(tempDropdownList)
-            // approverDropdownValue && approverDropdownValue[0].map(itemmmm => {
-
-            //   valueOfAllArrays.push(itemmmm?.value)
-            // })
+            approverDropdownValue.push(tempDropdownList)            
             let allObjVal = []
 
             for (let v = 0; v < approverDropdownValue.length; v++) {
@@ -179,33 +167,12 @@ function ApproveRejectDrawer(props) {
             }
 
             let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-            // let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
             let filteredArray = filteredArray1
             for (let v = 2; v < allObjVal.length; v++) {
-              // allObjVal && allObjVal[v].map(itemmmm => {
-              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
-              // })
-
+              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));         
             }
-
-            let ar = [], arr = [], obj = [], temp = [], pushDD = []
-            // approverDropdownValue.map(item => {
-            //   ar.push(item.value)
-            // })
-            // arr = ar.filter((item, index) => ar.indexOf(item) !== index)
-            // arr.map(i => {
-            //   approverDropdownValue.map(item => {
-
-            //     if (i === item.value) {
-            //       obj.push(item)
-            //     }
-            //   })
-            // })
-            // obj && obj.map(item => {
-            //   temp.push(item.value)
-            // })
-
-            // const tempVal = toFindDuplicates(temp)
+            let pushDD = []
+         
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
