@@ -745,3 +745,23 @@ export function setVendorForSimulation(selectedVendorForSimulation) {
         });
     }
 }
+
+export function sapPushedInitialMoment(simulationId,callback){
+    return (dispatch) => {
+        const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, headers);
+        request.then((response) => {
+            // if (response.data.Result) {
+            //     dispatch({
+            //         type: GET_COSTING_SIMULATION_LIST,
+            //         payload: response.data.Data.SimulatedCostingList
+            //     })
+            // }
+            callback(response)
+        }).catch((error) => {
+            console.log('error: ', error);
+            dispatch({ type: API_FAILURE });
+            callback(error)
+            apiErrors(error);
+        })
+    } 
+}

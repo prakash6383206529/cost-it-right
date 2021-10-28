@@ -872,6 +872,7 @@ export const API = {
   getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   getFgWiseImpactData: `${BASE_URL}/sap-integration/get-fg-wise-impact-data`,
+  sapPushedInitialMoment:`${BASE_URL}/sap-integration/sap-pushed-initial-moment`,
 
 
   //SIMULATION APPROVAL 

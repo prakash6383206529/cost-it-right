@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/Hook
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import { APPROVER } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
@@ -39,10 +39,16 @@ function ApproveRejectDrawer(props) {
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
+  const [disableSubmitButton, setDisableSubmitbutton] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
+
+  useEffect(() => {
+    dispatch(setAttachmentFileData([], () => { }))
+
+  }, [])
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
@@ -233,6 +239,12 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
           toastr.success('Simulation has been saved successfully.')
+          dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
+            const status = res.response.status
+            if (status === 400) {
+              setDisableSubmitbutton(true)
+            }
+          }))
         }
       }))
     }
@@ -378,6 +390,7 @@ function ApproveRejectDrawer(props) {
 
       }
       if (type === 'Sender') {
+        console.log(attachmentsData, 'attachmentsDataattachmentsData')
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
@@ -413,6 +426,7 @@ function ApproveRejectDrawer(props) {
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false
+        console.log(senderObj, 'attachmentsDataattachmentsData SENDER OBJ')
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -542,7 +556,7 @@ function ApproveRejectDrawer(props) {
       setShowError(true)
     }
   }
-
+  console.log(attachmentsData, 'A attachmentsData')
   return (
     <>
       <Drawer
@@ -752,6 +766,7 @@ function ApproveRejectDrawer(props) {
                     type="button"
                     className="submit-button  save-btn"
                     onClick={onSubmit}
+                    disabled={disableSubmitButton}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}

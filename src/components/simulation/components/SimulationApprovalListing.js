@@ -363,13 +363,13 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-        setIsApprovalDrawer(true)
         setApproveDrawer(true)
 
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
         }
+        setIsApprovalDrawer(true)
 
         selectedRowData.forEach((element, index, arr) => {
             if (index > 0) {

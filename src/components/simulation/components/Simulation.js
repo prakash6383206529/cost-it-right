@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
@@ -26,6 +26,7 @@ import OtherCostingSimulation from './OtherCostingSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import TooltipCustom from '../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -50,6 +51,7 @@ function Simulation(props) {
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
     const [vendor, setVendor] = useState({})
+    const [vendorDropdown, setVendorDropdown] = useState([])
     const [dummyData, setDummyData] = useState([{
         Technology: "Sheet Metal",
         Plant: "plant1",
@@ -116,7 +118,6 @@ function Simulation(props) {
         dispatch(getVendorWithVendorCodeSelectList(() => { }))
         setShowEditTable(false)
         if (props.isRMPage) {
-            console.log(selectedVendorForSimulation, 'selectedVendorForSimulationselectedVendorForSimulationselectedVendorForSimulation')
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.value })
@@ -139,6 +140,10 @@ function Simulation(props) {
     // useEffect(() => {
     //     editTable()
     // }, [rmDomesticListing, rmImportListing])
+
+    useEffect(() => {
+        renderListing('vendor')
+    }, [vendorSelectList])
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -269,6 +274,8 @@ function Simulation(props) {
                 temp.push({ label: item.Text, value: item.Value })
                 return null
             })
+            setVendorDropdown(temp)
+
             return temp
         }
     }
@@ -322,7 +329,7 @@ function Simulation(props) {
                             return false
                         }
                         // if (element.PlantId !== Data[index - 1].PlantId) {
-                        //     console.log("PLANT ");
+
                         //     setEditWarning(true);
                         //     plantFlag = false
                         //     return false
@@ -370,7 +377,7 @@ function Simulation(props) {
             // case COMBINED_PROCESS:
 
             //     rmDomesticListing && rmDomesticListing.forEach((element, index) => {
-            //         console.log('element: ', element);
+
 
             //         if (index !== 0) {
             //             if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
@@ -436,8 +443,26 @@ function Simulation(props) {
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
-
-
+    const filterList = (inputValue) => {
+        if (inputValue) {
+            let tempArr = []
+            tempArr = vendorDropdown && vendorDropdown.filter(i => {
+                return i.label.toLowerCase().includes(inputValue.toLowerCase())
+            }
+            );
+            if (tempArr.length <= 100) {
+                return tempArr
+            } else {
+                return tempArr.slice(0, 100)
+            }
+        } else {
+            return vendorDropdown
+        }
+    };
+    const promiseOptions = inputValue =>
+        new Promise(resolve => {
+            resolve(filterList(inputValue));
+        });
     return (
         <div className="container-fluid simulation-page">
             {
@@ -498,7 +523,8 @@ function Simulation(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
                                     <div className="flex-fills hide-label pl-0">
-                                        <SearchableSelectHookForm
+                                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                                        <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
                                             placeholder={'Vendor'}
@@ -507,7 +533,7 @@ function Simulation(props) {
                                             rules={{ required: false }}
                                             register={register}
                                             defaultValue={vendor.length !== 0 ? vendor : ''}
-                                            options={renderListing('vendor')}
+                                            asyncOptions={promiseOptions}
                                             mandatory={false}
                                             handleChange={handleVendorChange}
                                             errors={errors.Masters}

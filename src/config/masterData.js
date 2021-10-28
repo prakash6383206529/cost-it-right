@@ -2710,7 +2710,6 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "RMSpecification", value: "RMSpecification", },
     { label: "GrossWeight", value: "GrossWeight", },
     { label: "FinishWeight", value: "FinishWeight", },
-    { label: "ScrapWeight", value: "ScrapWeight", },
     { label: "NetRawMaterialsCost", value: "NetRawMaterialsCost", },
     { label: "NetBoughtOutPartCost", value: "NetBoughtOutPartCost", },
     { label: "NetProcessCost", value: "NetProcessCost", },

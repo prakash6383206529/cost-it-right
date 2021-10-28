@@ -34,7 +34,7 @@ function AttachmentSec(props) {
 
     useEffect(() => {
         let obj = [...files, ...supplierFiles, ...invoiceFiles, ...otherFiles, ...attachmentFiles]
-        // dispatch(setAttachmentFileData(obj, () => { }))
+        dispatch(setAttachmentFileData(obj, () => { }))
     }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
 
     //  const setAttachmentForSimulation = 
@@ -61,7 +61,7 @@ function AttachmentSec(props) {
 
         })
         setIsOpen(!IsOpen)
-    }, [attachmentsData])
+    }, [])
 
 
 
@@ -387,8 +387,8 @@ function AttachmentSec(props) {
                                                     Drag and Drop or{" "}
                                                     <span className="text-primary">Browse</span>
                                                     <br />
-                            file to upload
-                        </span>
+                                                    file to upload
+                                                </span>
                                             </div>
                                         )
                                     }
@@ -560,8 +560,8 @@ function AttachmentSec(props) {
                                                     Drag and Drop or{" "}
                                                     <span className="text-primary">Browse</span>
                                                     <br />
-                            file to upload
-                        </span>
+                                                    file to upload
+                                                </span>
                                             </div>
                                         )
                                     }
@@ -646,8 +646,8 @@ function AttachmentSec(props) {
                                                     Drag and Drop or{" "}
                                                     <span className="text-primary">Browse</span>
                                                     <br />
-                            file to upload
-                        </span>
+                                                    file to upload
+                                                </span>
                                             </div>
                                         )
                                     }
@@ -732,8 +732,8 @@ function AttachmentSec(props) {
                                                     Drag and Drop or{" "}
                                                     <span className="text-primary">Browse</span>
                                                     <br />
-                            file to upload
-                        </span>
+                                                    file to upload
+                                                </span>
                                             </div>
                                         )
                                     }
