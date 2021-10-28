@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFie
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
@@ -117,7 +117,8 @@ function ApproveRejectDrawer(props) {
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    selectedRowData.map(item => {
+    let pushDD = []
+    selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
@@ -149,20 +150,7 @@ function ApproveRejectDrawer(props) {
               })
               return null
             })
-
-
-
-
-
-            // tempDropdownList.map(item => {
-            //   approverDropdownValue.push(item)
-
-            // })
             approverDropdownValue.push(tempDropdownList)
-            // approverDropdownValue && approverDropdownValue[0].map(itemmmm => {
-
-            //   valueOfAllArrays.push(itemmmm?.value)
-            // })
             let allObjVal = []
 
             for (let v = 0; v < approverDropdownValue.length; v++) {
@@ -175,33 +163,12 @@ function ApproveRejectDrawer(props) {
             }
 
             let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-            // let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
             let filteredArray = filteredArray1
             for (let v = 2; v < allObjVal.length; v++) {
-              // allObjVal && allObjVal[v].map(itemmmm => {
               filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
-              // })
 
             }
 
-            let ar = [], arr = [], obj = [], temp = [], pushDD = []
-            // approverDropdownValue.map(item => {
-            //   ar.push(item.value)
-            // })
-            // arr = ar.filter((item, index) => ar.indexOf(item) !== index)
-            // arr.map(i => {
-            //   approverDropdownValue.map(item => {
-
-            //     if (i === item.value) {
-            //       obj.push(item)
-            //     }
-            //   })
-            // })
-            // obj && obj.map(item => {
-            //   temp.push(item.value)
-            // })
-
-            // const tempVal = toFindDuplicates(temp)
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
@@ -209,12 +176,19 @@ function ApproveRejectDrawer(props) {
                 }
               })
             })
-
-            setApprovalDropDown(pushDD)
           },
           ),
         )
       })
+
+
+      if (pushDD[0]?.value === EMPTY_GUID || pushDD.length === 0) {
+
+        toastr.warning('User does not exist on next level for selected simulation.')
+        return false
+      }
+
+      setApprovalDropDown(pushDD)
     } else {
 
       let obj = {
