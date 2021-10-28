@@ -73,6 +73,7 @@ function CostingSimulation(props) {
         hideDiscount: false,
         hideOveheadAndProfit: false
     })
+    const [amendmentDetails, setAmendmentDetails] = useState({})
 
     const dispatch = useDispatch()
 
@@ -115,7 +116,17 @@ function CostingSimulation(props) {
                 setCostingArr(Data.SimulatedCostingList)
                 setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
                 setLoader(false)
+                let tempObj = {}
+                tempObj.EffectiveDate = Data.EffectiveDate
+                tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+                tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+                tempObj.Technology = Data.SimulatedCostingList[0].Technology
+                tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+                setAmendmentDetails(tempObj)
             }
+
+            // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
+            // SimulatedCostingList[0].Technology  ,VendorName
         }))
     }
 
@@ -557,7 +568,7 @@ function CostingSimulation(props) {
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
                                                     <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
                                                     <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
@@ -673,6 +684,11 @@ function CostingSimulation(props) {
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
                                 SimulationTechnologyIdState={SimulationTechnologyIdState}
+                                simulationId={simulationId}
+                                tokenNo={tokenNo}
+                                vendorIdState={vendorIdState}
+                                EffectiveDate={simulationDetail.EffectiveDate}
+                                amendmentDetails={amendmentDetails}
                             />}
                     </div>
 

@@ -82,7 +82,7 @@ function SimulationApprovalSummary(props) {
 
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
-    const [acc3, setAcc3] = useState(false)
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
 
 
 
@@ -149,10 +149,7 @@ function SimulationApprovalSummary(props) {
             setImpactedMasterDataListForImpactedMaster(impactedMasterData)
             setshowImpactedData(true)
         }
-        console.log(impactedMasterData, 'impactedMasterDataListForImpactedMaster')
     }, [lastSimulationData, impactedMasterData])
-
-
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -246,7 +243,6 @@ function SimulationApprovalSummary(props) {
             const obj1 = formViewData(Data.OldCosting)
             const obj2 = formViewData(Data.NewCosting)
             const obj3 = formViewData(Data.Variance)
-            console.log('obj3: ', obj3);
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))
@@ -639,7 +635,7 @@ function SimulationApprovalSummary(props) {
                                     </button>
                                 </div>
                             </Col>
-                            {/* {acc3 && */}
+                            {/* {lastRevisionDataAccordian && */}
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
                                 {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
@@ -732,13 +728,13 @@ function SimulationApprovalSummary(props) {
                                                                     String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
-                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "PO Price Old"}></AgGridColumn>
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
                                                                     (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
                                                                     </>
                                                                 }
 
@@ -746,8 +742,8 @@ function SimulationApprovalSummary(props) {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="PO Price Old(in Currency)"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="PO Price New(in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
                                                                     </>
@@ -804,18 +800,18 @@ function SimulationApprovalSummary(props) {
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6">
                                 <div className={'right-details'}>
-                                    <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                                    <a onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`${lastRevisionDataAccordian ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                                 </div>
                             </Col>
 
-                            {acc3 &&
+                            {lastRevisionDataAccordian &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={true} />}
 
                                 </div>
                             }
-                            {/* {acc3 &&
+                            {/* {lastRevisionDataAccordian &&
                                 <div className="accordian-content w-100">
                                     <div className={`ag-grid-react`}>
                                         <Col md="12" className="mb-3">
