@@ -260,7 +260,7 @@ class CostingSummaryBulkUpload extends Component {
                             pagination={true}
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
-                            gridOptions={this.gridOptions}
+                            gridOptions={gridOptions}
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
