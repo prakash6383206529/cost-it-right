@@ -14,7 +14,6 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull } from '../../../helper';
 import { ComponentPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -26,7 +25,14 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-const gridOptions = {};
+
+const gridOptions = {
+
+    pagination: true,
+    //rowModelType: 'infinite',
+    cacheBlockSize: 10, // you can have your custom page size
+    paginationPageSize: 10
+};
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -39,17 +45,120 @@ class IndivisualPartListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
-
+            startIndexCurrentPage: 0,
+            endIndexCurrentPage: 9,
+            pageNo: 1,
+            floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
+            currentRowIndex: 0,
             isBulkUpload: false,
             ActivateAccessibility: true,
             loader: true
         }
     }
 
+
+
+
+    ApiActionCreator(skip, take, obj) {
+
+
+        this.props.getPartDataList(skip, take, obj, (res) => {
+            if (res.status === 204 && res.data === '') {
+                this.setState({ tableData: [], })
+            } else if (res && res.data && res.data.DataList) {
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                })
+            } else {
+
+            }
+            this.setState({ loader: false })
+        })
+
+    }
+
+
+    onBtNext(data) {
+
+        console.log(data, "data")
+        data.setState({ pageNo: data.state.pageNo + 1 })
+
+        const nextNo = data.state.currentRowIndex + 10;
+
+        //     //gridApi.paginationGoToNextPage();
+        data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData)
+        data.setState({ currentRowIndex: nextNo })
+
+    };
+
+    onBtPrevious(data) {
+
+        if (data.state.currentRowIndex >= 10) {
+
+            data.setState({ pageNo: data.state.pageNo - 1 })
+            const previousNo = data.state.currentRowIndex - 10;
+
+            data.ApiActionCreator(previousNo, 10, this.state.floatingFilterData)
+            data.setState({ currentRowIndex: previousNo })
+
+        }
+
+
+    };
+
+
+    onSearch(data) {
+
+        data.ApiActionCreator(0, 5000, this.state.floatingFilterData)
+
+    }
+
+    onSearchExit(data) {
+
+        this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
+        let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
+        data.setState({ pageNo: 1 })
+        data.ApiActionCreator(0, 10, emptyObj)
+
+    }
+
+
+
+    onFloatingFilterChanged = (value) => {
+
+
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+
+            return false
+        } else {
+
+            if (value.column.colId === 'Technology') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, Technology: value.filterInstance.appliedModel.filter } }) }
+            if (value.column.colId === 'PartNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, PartNumber: value.filterInstance.appliedModel.filter } }) }
+
+            if (value.column.colId === 'PartName') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, PartName: value.filterInstance.appliedModel.filter } }) }
+            if (value.column.colId === 'ECNNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, ECNNumber: value.filterInstance.appliedModel.filter } }) }
+
+            if (value.column.colId === 'RevisionNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, RevisionNumber: value.filterInstance.appliedModel.filter } }) }
+
+            if (value.column.colId === 'DrawingNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, DrawingNumber: value.filterInstance.appliedModel.filter } }) }
+            if (value.column.colId === 'EffectiveDate') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: value.filterInstance.appliedModel.filter } }) }
+
+
+        }
+
+    }
+
+
+
     componentDidMount() {
-        this.getTableListData();
+        this.ApiActionCreator(0, 10, this.state.floatingFilterData)
+
+
         //this.props.checkStatusCodeAPI(412, () => { })
     }
+
+
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
@@ -309,6 +418,7 @@ class IndivisualPartListing extends Component {
             } else {
                 return false
             }
+
             return item
         })
         return (
@@ -378,115 +488,131 @@ class IndivisualPartListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+            <>
+                <button onClick={() => this.onBtPrevious(this)}>To Previous</button>
+                <button onClick={() => this.onBtNext(this)}>To Next</button>
+                <button onClick={() => this.onSearch(this)}> Filter Search</button>
+                <button onClick={() => this.onSearchExit(this)}>Exit Filter Search</button>
+                <p>Page No :{this.state.pageNo}</p>
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    {/* {this.props.loading && <Loader />} */}
 
-                <Row className="pt-4 no-filter-row">
-                    <Col md="8" className="filter-block">
+                    <Row className="pt-4 no-filter-row">
+                        <Col md="8" className="filter-block">
 
-                    </Col>
-                    <Col md="6" className="search-user-block pr-0">
-                        <div className="d-flex justify-content-end bd-highlight w100">
-                            <div>
-                                {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        title="Add"
-                                        onClick={this.formToggle}>
-                                        <div className={'plus mr-0'}></div></button>
-                                )}
-                                {BulkUploadAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
-                                        onClick={this.bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
-                                        {/* Bulk Upload */}
+                        </Col>
+                        <Col md="6" className="search-user-block pr-0">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={'user-btn mr5'}
+                                            title="Add"
+                                            onClick={this.formToggle}>
+                                            <div className={'plus mr-0'}></div></button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={this.bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
+                                        </button>
+                                    )}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+
+                                            <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+
+                                        </>
+
+                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
                                     </button>
-                                )}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
+                    {this.state.loader && <LoaderCustom />}
 
-                                            {this.onBtExport()}
-                                        </ExcelFile>
 
-                                    </>
 
-                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                }
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
 
+
+                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </div>
+                        <div
+                            className="ag-theme-material"
+
+                        >
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                // columnDefs={c}
+                                rowData={this.props.newPartsListing}
+                                pagination={true}
+                                paginationPageSize={10}
+                                onGridReady={this.onGridReady}
+                                //onPaginationChanged={this.onPageChange}
+                                gridOptions={gridOptions}
+                                onFilterModified={this.onFloatingFilterChanged}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: CONSTANT.EMPTY_DATA,
+                                }}
+                                frameworkComponents={frameworkComponents}
+                            // suppressPaginationPanel={true}
+                            >
+                                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
+                                <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                                <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
                             </div>
                         </div>
-                    </Col>
-                </Row>
-                {this.state.loader && <LoaderCustom />}
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                    <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
-                    <div
-                        className="ag-theme-material"
-
-                    >
-                        <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            // columnDefs={c}
-                            rowData={this.props.newPartsListing}
-                            pagination={true}
-                            paginationPageSize={10}
-                            onGridReady={this.onGridReady}
-                            gridOptions={gridOptions}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
-                            }}
-                            frameworkComponents={frameworkComponents}
-                        >
-                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
-                            <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-                            <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                        </AgGridReact>
-                        <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
 
 
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'PartComponent'}
-                    isZBCVBCTemplate={false}
-                    messageLabel={'Part'}
-                    anchor={'right'}
-                />}
-            </div >
+                    {isBulkUpload && <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={this.closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'PartComponent'}
+                        isZBCVBCTemplate={false}
+                        messageLabel={'Part'}
+                        anchor={'right'}
+                    />}
+                </div >
+            </>
         );
     }
 }

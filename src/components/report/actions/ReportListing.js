@@ -3,7 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    GET_REPORT_LIST,config
+    GET_REPORT_LIST, config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -39,10 +39,13 @@ const headers = config
  * @method getRMImportDataList
  * @description Used to get RM Import Datalist
  */
- export function getReportListing(data, callback) {
+export function getReportListing(index, take, isPagination, data, callback) {
     return (dispatch) => {
         const queryParams = `costingNumber=${data.costingNumber}&toDate=${data.toDate}&fromDate=${data.fromDate}&statusId=${data.statusId}&technologyId=${data.technologyId}&plantCode=${data.plantCode}&vendorCode=${data.vendorCode}&userId=${data.userId}&isSortByOrderAsc=${data.isSortByOrderAsc}`
-        const request = axios.get(`${API.getReportListing}?${queryParams}`, headers);
+
+
+        const queryParamsSecond = `&isApplyPagination=${isPagination}&skip=${index}&take=${take}`
+        const request = axios.get(`${API.getReportListing}?${queryParams}${queryParamsSecond}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({

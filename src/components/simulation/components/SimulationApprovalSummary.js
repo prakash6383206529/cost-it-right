@@ -80,6 +80,7 @@ function SimulationApprovalSummary(props) {
     const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
+
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
@@ -116,7 +117,8 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,
+
             })
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
@@ -132,24 +134,29 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
 
-        if (costingList.length > 0 && effectiveDate && simulationDetail.SimulationId !== undefined) {
-            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, () => { }))
-            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+        if (costingList.length > 0 && effectiveDate) {
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                const Data = res.data.Data.ImpactedMasterDataList
+                const masterId = res.data.Data.SimulationTechnologyId;
+
+                if (res) {
+                    setImpactedMasterDataListForLastRevisionData(Data)
+                    setShowLastRevisionData(true)
+                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+
+                }
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+            }))
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
 
-    useEffect(() => {
-
-        if (lastSimulationData) {
-            setImpactedMasterDataListForLastRevisionData(lastSimulationData)
-            setShowLastRevisionData(true)
-        }
+     useEffect(() => {
         if (impactedMasterData) {
             setImpactedMasterDataListForImpactedMaster(impactedMasterData)
             setshowImpactedData(true)
         }
-    }, [lastSimulationData, impactedMasterData])
+    }, [impactedMasterData])
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -812,7 +819,7 @@ function SimulationApprovalSummary(props) {
                             {lastRevisionDataAccordian &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={true} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={true} />}
 
                                 </div>
                             }
