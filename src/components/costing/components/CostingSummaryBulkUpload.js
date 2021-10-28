@@ -77,7 +77,7 @@ class CostingSummaryBulkUpload extends Component {
        
 		const row = props?.data;
         const status = row.FileUploadStatus
-        if (row.FileUploadStatus === PENDING) {
+        if (status === PENDING) {
             return (
                 <>
                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
@@ -208,14 +208,14 @@ class CostingSummaryBulkUpload extends Component {
                                         className={'user-btn mr5'}
                                         onClick={this.refresh}>
                                         <div className={'refresh'}></div>Refresh
-                                </button>
+                                    </button>
 
                                     <button
                                         type="button"
                                         className={'user-btn'}
                                         onClick={this.bulkToggle}>
                                         <div className={'upload'}></div>Bulk Upload
-                                </button>
+                                    </button>
 
                                 </div>
                             </Col>
@@ -243,52 +243,52 @@ class CostingSummaryBulkUpload extends Component {
                         <TableHeaderColumn dataField="OriginalFileName" dataAlign="left" >{'File Name'}</TableHeaderColumn>
                         <TableHeaderColumn width={400} className="action" searchable={false} dataField="CostingBulkUploadFileId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable> */}
-                     {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
-                     <div className="ag-grid-react">
-                      <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                        <div className="ag-grid-header">
-                          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                    {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
+                    <div className="ag-grid-react">
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                            <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </div>
+                            <div
+                                className="ag-theme-material">
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    // columnDefs={c}
+                                    rowData={this.props.costingBulkUploadList}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    onGridReady={this.onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: CONSTANT.EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                    }}
+                                    frameworkComponents={frameworkComponents}
+                                    suppressRowClickSelection={true}
+                                    rowSelection={'multiple'}
+                                >
+                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                    <AgGridColumn field="FileUploadStatus" headerName="Status"></AgGridColumn>
+                                    <AgGridColumn field="CorrectCostingCount" headerName="No. of Correct Row"></AgGridColumn>
+                                    <AgGridColumn field="IncorrectCostingCount" headerName="No. of Incorrect Row"></AgGridColumn>
+                                    <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
+                                    <AgGridColumn field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div
-                          className="ag-theme-material">
-                          <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter = {true}
-                            domLayout='autoHeight'
-                            // columnDefs={c}
-                            rowData={this.props.costingBulkUploadList}
-                            pagination={true}
-                            paginationPageSize={10}
-                            onGridReady={this.onGridReady}
-                            gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                              title: CONSTANT.EMPTY_DATA,
-                              imagClass:'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            suppressRowClickSelection={true}
-                            rowSelection={'multiple'}
-                          >
-                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                            <AgGridColumn field="FileUploadStatus" headerName="Status"></AgGridColumn>
-                            <AgGridColumn field="CorrectCostingCount" headerName="No. of Correct Row"></AgGridColumn>
-                            <AgGridColumn field="IncorrectCostingCount" headerName="No. of Incorrect Row"></AgGridColumn>
-                            <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
-                            <AgGridColumn field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
-                          </AgGridReact>
-                          <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                              <option value="10" selected={true}>10</option>
-                              <option value="50">50</option>
-                              <option value="100">100</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      </div>
-                      {/* <--------------------AG Grid convert by 21-10-2021------> */}
+                    </div>
+                    {/* <--------------------AG Grid convert by 21-10-2021------> */}
                 </div>
                 {
                     showBulkUpload &&
