@@ -306,6 +306,13 @@ class AssemblyPartListing extends Component {
             } else {
                 return false
             }
+
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
+
+
             return item
         })
         return (
@@ -417,8 +424,8 @@ class AssemblyPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            floatingFilter = {true}
-domLayout='autoHeight'
+                            floatingFilter={true}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
                             pagination={true}

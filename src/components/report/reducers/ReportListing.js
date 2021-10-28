@@ -3,7 +3,7 @@ import {
 } from '../../../config/constants';
 
 const initialState = {
-
+    reportListing: []
 };
 
 export default function ReportListingReducers(state = initialState, action) {
@@ -15,18 +15,21 @@ export default function ReportListingReducers(state = initialState, action) {
             };
         case GET_REPORT_LIST:
             let temp = action.payload
-            let Arr = temp && temp.map(item => {
+            let Arr = []
+            temp && temp.map(item => {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
                 } else {
-                    return item
+                    Arr.push(item)
+                    return Arr
                 }
             })
+            let arr1 = [...state.reportListing, ...Arr]
 
             return {
                 ...state,
                 loading: false,
-                reportListing: Arr
+                reportListing: arr1
             }
 
         default:

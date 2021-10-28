@@ -50,7 +50,7 @@ class BOPImportListing extends Component {
             sideBar: { toolPanels: ['columns'] },
             showData: false,
             loader: true
-            
+
         }
     }
 
@@ -71,7 +71,7 @@ class BOPImportListing extends Component {
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
 
-        
+
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -371,6 +371,10 @@ class BOPImportListing extends Component {
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
             }
+
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
             return item
         })
         return (
@@ -387,7 +391,7 @@ class BOPImportListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
-       gridOptions.api.setFilterModel(null);
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -407,7 +411,7 @@ class BOPImportListing extends Component {
             products = this.props.bopImportList
             return products; // must return the data which you want to be exported
         }
-        
+
 
         const options = {
             clearSearch: true,
@@ -426,7 +430,7 @@ class BOPImportListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
-            
+
 
         };
 
@@ -443,7 +447,7 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation  ? 'simulation-filter' : ''}`}>
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="10" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -540,10 +544,10 @@ class BOPImportListing extends Component {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() =>{ this.setState({ shown: !this.state.shown });  this.getDataList();      }}>
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() =>{ this.setState({ shown: !this.state.shown }); this.getDataList();           } }>
+                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
                                             <div className="filter mr-0"></div>
                                         </button>
                                     )}
@@ -583,7 +587,7 @@ class BOPImportListing extends Component {
 
                                         </>
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => {this.resetState();  }}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => { this.resetState(); }}>
                                         <div className="refresh mr-0"></div>
                                     </button>
 
@@ -603,12 +607,12 @@ class BOPImportListing extends Component {
                             <div
                                 className="ag-theme-material"
                             >
-                                 {this.state.loader && <LoaderCustom />}
+                                {this.state.loader && <LoaderCustom />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                  
-                                    floatingFilter = {true}
-                                    
+
+                                    floatingFilter={true}
+
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopImportList}
@@ -620,10 +624,10 @@ class BOPImportListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
-                                >                    
+                                >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
