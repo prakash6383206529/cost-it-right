@@ -217,9 +217,12 @@ class AddIndivisualProduct extends Component {
         if (isEditFlag) {
 
 
-            if (DropdownChanged && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
-                DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+            if (DropdownChanged
+                // && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
+                // DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
+                // DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber
+                // && uploadAttachements
+            ) {
                 this.cancel()
                 return false;
             }
@@ -356,6 +359,7 @@ class AddIndivisualProduct extends Component {
                                                             required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     {/* {initialConfiguration &&
@@ -386,6 +390,7 @@ class AddIndivisualProduct extends Component {
                                                             required={false}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
 
@@ -402,6 +407,7 @@ class AddIndivisualProduct extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
                                                             </Col>
                                                         )}
@@ -420,6 +426,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -433,6 +440,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -446,6 +454,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
 
@@ -486,7 +495,7 @@ class AddIndivisualProduct extends Component {
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 //minDate={moment()}
                                                                 />
 
@@ -539,6 +548,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -586,6 +596,7 @@ class AddIndivisualProduct extends Component {
                                                                         extra.reject ? { color: "red" } : {},
                                                                 }}
                                                                 classNames="draper-drop"
+                                                                disabled={isEditFlag ? true : false}
                                                             />
                                                         )}
                                                     </Col>

@@ -147,7 +147,7 @@ class AddComponentForm extends Component {
   render() {
     const { handleSubmit, isEditFlag, componentPartSelectList } = this.props;
 
-    const filterColors = (inputValue) => {
+    const filterList = (inputValue) => {
       let tempArr = []
 
       tempArr = this.renderListing("part").filter(i =>
@@ -163,7 +163,7 @@ class AddComponentForm extends Component {
 
     const promiseOptions = inputValue =>
       new Promise(resolve => {
-        resolve(filterColors(inputValue));
+        resolve(filterList(inputValue));
       });
     return (
       <>
