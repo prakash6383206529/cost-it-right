@@ -82,6 +82,7 @@ function VariableMhrDrawer(props) {
         case 'Facing':
           return (
             <Facing
+              CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               technology={technology}
               calculatorData={calculatorData}
@@ -90,6 +91,7 @@ function VariableMhrDrawer(props) {
         default:
           return (
             <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               rmFinishWeight={props.rmFinishWeight}
@@ -99,24 +101,27 @@ function VariableMhrDrawer(props) {
       }
     } else if (technology === PLASTIC) {
       switch (process) {
-        case 'Injection Moulding':
-        // return (
-        //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
-        // )
+        // case 'Injection Moulding':
+        // // return (
+        // //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
+        // // )
+        // break;
         default:
           return (
             <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
               rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
           )
-          break;
+          
       }
     } else if (technology === Non_Ferrous_HPDC) {
       return (
         <SheetMetalBaicDrawer
+          CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
           rmFinishWeight={props.rmFinishWeight}
@@ -126,6 +131,7 @@ function VariableMhrDrawer(props) {
     } else {
       return (
         <SheetMetalBaicDrawer
+          CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
           rmFinishWeight={props.rmFinishWeight}

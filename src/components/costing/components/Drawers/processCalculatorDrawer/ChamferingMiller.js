@@ -212,7 +212,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutterDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -237,7 +237,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLengthOfArea}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -262,7 +262,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.areaWidth}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -287,7 +287,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.slotNo}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                   </Row>
@@ -331,7 +331,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -356,7 +356,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -405,7 +405,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -461,7 +461,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.toothFeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -542,7 +542,7 @@ function ChamferingMiller(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -575,7 +575,7 @@ function ChamferingMiller(props) {
             <div className="mt25 col-md-12 text-right">
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn"              >
                 <div className={'cancel-icon'}></div> CANCEL  </button>
-              <button type="submit" className="btn-primary save-btn"              >
+              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}          >
                 <div className={'save-icon'}></div>{'SAVE'}</button>
             </div>
           </form>
