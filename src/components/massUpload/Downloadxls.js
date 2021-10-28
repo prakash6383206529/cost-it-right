@@ -10,7 +10,7 @@ import {
     Overhead, OverheadTempData, Profit, ProfitTempData,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
-    PartComponent, PartComponentTempData,
+    PartComponent, PartComponentTempData, ProductComponent, ProductComponentTempData,
     BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData,
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
@@ -69,6 +69,9 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(Labour, LabourTempData);
             case 'PartComponent':
                 return this.returnExcelColumn(PartComponent, PartComponentTempData);
+            case 'ProductComponent':
+                return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
+
             default:
                 return 'foo';
         }
@@ -183,13 +186,15 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent')) {
+        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent' || fileName === 'ProductComponent')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}
                 </ExcelFile>
             );
         }
+
+
 
         // DISPLAY RADIO BUTTON ZBC AND VBC, WITH FILE DOWNLOAD BUTTON
         if (isZBCVBCTemplate) {

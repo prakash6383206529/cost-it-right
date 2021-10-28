@@ -501,7 +501,7 @@ function TabDiscountOther(props) {
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%.33" }}>{``}</th>
                           {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountCostData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(getValues('NetPOPriceINR'), initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -565,7 +565,7 @@ function TabDiscountOther(props) {
                     </Col>
                     <Col md="4">
                       <TextFieldHookForm
-                        label="Net PO Price(INR)"
+                        label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         control={control}
@@ -648,7 +648,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                         />
                       </Col>}
-                    <Col md="1" >
+                    <Col md="2">
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}

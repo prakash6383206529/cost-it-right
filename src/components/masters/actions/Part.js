@@ -15,8 +15,10 @@ import {
     SET_ACTUAL_BOM_DATA,
     config,
     GET_PRODUCT_DATA_LIST,
-    GET_PRODUCT_UNIT_DATA
+    GET_PRODUCT_UNIT_DATA,
+    PRODUCT_GROUPCODE_SELECTLIST
 } from '../../../config/constants';
+import { loggedInUserId } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 
 const headers = config;
@@ -209,6 +211,25 @@ export function partComponentBulkUpload(data, callback) {
         });
     };
 }
+
+
+// productComponentBulkUpload
+
+export function productComponentBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.productComponentBulkUpload, data, headers);
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+
+
 
 /**
  * @method activeInactivePartStatus
@@ -685,10 +706,10 @@ export function getProductData(ProductId, callback) {
  * @method deletePart
  * @description delete part
  */
-export function deleteProduct(obj, callback) {
+export function deleteProduct(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProduct}`, obj, headers)
+        axios.delete(`${API.deleteProduct}?ProductId=${Id}&LoggedInUserId=${loggedInUserId()}`, headers)
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -714,4 +735,22 @@ export function fileUploadProduct(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getProductGroupSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(API.productGroupSelectList, headers)
+        request.then((response) => {
+            if (response && response.status === 200) {
+                dispatch({
+                    type: PRODUCT_GROUPCODE_SELECTLIST,
+                    payload: response.data.SelectList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }

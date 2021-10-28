@@ -16,7 +16,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ComponentPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INDIVIDUALPART_DOWNLOAD_EXCEl, INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -109,11 +109,11 @@ class IndivisualProductListing extends Component {
             ProductId: ID,
             LoggedInUserId: loggedInUserId()
         }
-        this.props.deleteProduct(obj, (res) => {
-            if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.getTableListData();
-            }
+        this.props.deleteProduct(ID, (res) => {
+            // if (res.data.Result === true) {
+            //     toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+            //     this.getTableListData();
+            // }
         });
     }
 
@@ -176,7 +176,7 @@ class IndivisualProductListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch"  className="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
                             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -229,6 +229,22 @@ class IndivisualProductListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
+
+    /**
+    * @method impactCalculationFormatter
+    * @description Renders buttons
+    */
+    impactCalculationFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let val = ''
+        if (cellValue === true) {
+            val = 'Yes'
+        } else if (cellValue === false) {
+            val = 'No'
+        }
+        return val
+    }
+
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
     }
@@ -246,19 +262,18 @@ class IndivisualProductListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
-        })
+        this.getTableListData()
+        this.setState({ isBulkUpload: false })
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
+    // closeBulkUploadDrawer = () => {
+    //     this.setState({ isBulkUpload: false }, () => {
+    //     })
+    // }
 
 
 
@@ -287,16 +302,14 @@ class IndivisualProductListing extends Component {
     onBtExport = () => {
         let tempArr = []
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
+
+        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, this.props.productDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -323,6 +336,7 @@ class IndivisualProductListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -367,7 +381,8 @@ class IndivisualProductListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            impactCalculationFormatter: this.impactCalculationFormatter
         };
 
         return (
@@ -389,11 +404,25 @@ class IndivisualProductListing extends Component {
                                         onClick={this.formToggle}>
                                         <div className={'plus mr-0'}></div></button>
                                 )}
+
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+
+
                                 {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                 {/* DOWNLOAD */}
                                             </button>}>
@@ -425,6 +454,7 @@ class IndivisualProductListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
+                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.productDataList}
@@ -442,11 +472,13 @@ class IndivisualProductListing extends Component {
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
+                            <AgGridColumn field="ProductGroupCode" headerName="Group Code"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -463,9 +495,9 @@ class IndivisualProductListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'PartComponent'}
+                    fileName={'ProductComponent'}
                     isZBCVBCTemplate={false}
-                    messageLabel={'Part'}
+                    messageLabel={'Product'}
                     anchor={'right'}
                 />}
             </div >

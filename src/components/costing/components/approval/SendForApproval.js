@@ -668,12 +668,12 @@ const SendForApproval = (props) => {
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: false }}
+                            rules={{ required: true }}
                             register={register}
                             defaultValue={""}
                             options={renderDropdownListing("Dept")}
-                            disabled={true}
-                            mandatory={false}
+                            disabled={false}
+                            mandatory={true}
                             handleChange={handleDepartmentChange}
                             errors={errors.dept}
                           />
@@ -685,12 +685,12 @@ const SendForApproval = (props) => {
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: false }}
+                            rules={{ required: true }}
                             register={register}
                             defaultValue={""}
                             options={approvalDropDown}
-                            mandatory={false}
-                            disabled={true}
+                            mandatory={true}
+                            disabled={false}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
                           />

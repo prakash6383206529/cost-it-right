@@ -10,7 +10,6 @@ import { MESSAGES } from '../../config/message';
 import { CONSTANT } from '../../helper/AllConastant';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
@@ -416,6 +415,7 @@ class UsersListing extends Component {
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
+		 gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady = (params) => {
@@ -607,6 +607,7 @@ class UsersListing extends Component {
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
+								floatingFilter = {true}
 								domLayout='autoHeight'
 								// columnDefs={c}
 								rowData={this.props.userDataList}
@@ -618,6 +619,7 @@ class UsersListing extends Component {
 								noRowsOverlayComponent={'customNoRowsOverlay'}
 								noRowsOverlayComponentParams={{
 									title: CONSTANT.EMPTY_DATA,
+									imagClass:'imagClass'
 								}}
 								frameworkComponents={frameworkComponents}
 							>
@@ -631,8 +633,8 @@ class UsersListing extends Component {
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">
 								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

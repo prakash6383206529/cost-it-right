@@ -326,6 +326,7 @@ function AddRM(props) {
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -355,7 +356,7 @@ function AddRM(props) {
 
               < form onSubmit={handleSubmit(onSubmit)} noValidate >
 
-                <div className="filter-row">
+                {/* <div className="filter-row">
                   <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
                     <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
                       <div className="flex-fills mb-0">
@@ -395,7 +396,7 @@ function AddRM(props) {
 
                     </div>
                   </Col>
-                </div>
+                </div> */}
 
               </form >
 
@@ -414,6 +415,7 @@ function AddRM(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+                        floatingFilter={true}
                         domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={rmDrawerList}

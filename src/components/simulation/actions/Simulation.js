@@ -14,7 +14,8 @@ import {
     config,
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
-    GET_SELECTED_COSTING_STATUS
+    GET_SELECTED_COSTING_STATUS,
+    GET_SELECTLIST_SIMULATION_TOKENS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -201,7 +202,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
 
 export function getSimulationApprovalList(filterData, callback) {
     return (dispatch) => {
-        const queryParameter = `logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
+        const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
         request.then((response) => {
             if (response.data.Result) {
@@ -255,6 +256,37 @@ export function getSelectListOfSimulationApplicability(callback) {
         });
     };
 }
+
+
+
+
+export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParameter = `vendorId=${vendorId}`
+        const queryParameter1 = `simulationtechnologyId=${simulationTechnologyId}`
+        const request = axios.get(`${API.getSelectListOfSimulationLinkingTokens}?${queryParameter}&${queryParameter1}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTLIST_SIMULATION_TOKENS,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+
+
+}
+
+
+
 
 export function saveSimulationForRawMaterial(data, callback) {
     return (dispatch) => {
@@ -396,10 +428,11 @@ export function simulationApprovalRequestBySender(data, callback) {
     }
 }
 
-export function getComparisionSimulationData(id, callback) {
+export function getComparisionSimulationData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.simulationComparisionData}/${id}`, headers);
+        const queryParams = `simulationApprovalProcessSummaryId=${data.simulationApprovalProcessSummaryId}&simulationid=${data.simulationId}&costingId=${data.costingId}`
+        const request = axios.get(`${API.simulationComparisionData}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 // dispatch({
@@ -449,4 +482,84 @@ export function deleteDraftSimulation(data, callback) {
                 dispatch({ type: API_FAILURE });
             });
     };
+}
+
+export function runVerifyExchangeRateSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftExchangeRateSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getVerifyExchangeSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifyExchangeSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedExchangeCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedExchangeCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getExchangeCostingSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+
+export function uploadSimulationAttachment(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.uploadFileOnSimulation}`, data, headers)
+            .then((response) => {
+                callback(response)
+            }).catch(error => {
+                callback(error.response)
+                dispatch({ type: API_FAILURE })
+            })
+    }
 }

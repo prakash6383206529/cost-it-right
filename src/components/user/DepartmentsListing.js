@@ -12,7 +12,6 @@ import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
@@ -185,6 +184,7 @@ class DepartmentsListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
 
@@ -273,7 +273,8 @@ class DepartmentsListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
+                    floatingFilter = {true}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -284,13 +285,14 @@ class DepartmentsListing extends Component {
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
+                      imagClass:'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
                     {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
-                    <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

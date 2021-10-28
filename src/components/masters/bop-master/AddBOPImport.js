@@ -20,7 +20,6 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC, INR } from '../../../config/constants';
@@ -73,7 +72,8 @@ class AddBOPImport extends Component {
       netLandedConverionCost: '',
       DataToChange: [],
       DropdownChange: true,
-      showWarning: false
+      showWarning: false,
+      uploadAttachements: true
     }
   }
 
@@ -149,7 +149,7 @@ class AddBOPImport extends Component {
         isLoader: true,
         BOPID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
+
       this.props.getBOPImportById(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -483,6 +483,8 @@ class AddBOPImport extends Component {
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
+    this.setState({ uploadAttachements: false })
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -573,7 +575,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -590,13 +592,13 @@ class AddBOPImport extends Component {
 
       if (DataToChange.IsVendor) {
         if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
-          DataToChange.BasicRate == values.BasicRate) {
+          DataToChange.BasicRate == values.BasicRate && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
       if (DataToChange.IsVendor == false) {
-        if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate) {
+        if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -632,7 +634,7 @@ class AddBOPImport extends Component {
             })
           },
           onCancel: () => { },
-          component:()=><ConfirmComponent/>
+          component: () => <ConfirmComponent />
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -734,7 +736,7 @@ class AddBOPImport extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1095,7 +1097,7 @@ class AddBOPImport extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -1121,10 +1123,10 @@ class AddBOPImport extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }

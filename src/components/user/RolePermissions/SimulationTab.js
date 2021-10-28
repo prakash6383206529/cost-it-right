@@ -178,9 +178,18 @@ class SimulationTab extends Component {
         let isCheckedSelectAll = checkBox
         let actionRows
         let actionArray = Modules && Modules.map((item, index) => {
+            if (item.Sequence === 0) {
+                item.IsChecked = false
+            }
             actionRows = item
             item.Actions && item.Actions.map((item1, index) => {
-                item1.IsChecked = isCheckedSelectAll;
+                if (item.Sequence === 0) {
+                    item1.IsChecked = false
+                } else {
+                    item1.IsChecked = isCheckedSelectAll;
+                }
+                // console.log('item1: ', item1);
+
             })
             return actionRows;
         })

@@ -177,9 +177,16 @@ class CostingTab extends Component {
     let isCheckedSelectAll = checkBox
     let actionRows
     let actionArray = Modules && Modules.map((item, index) => {
+      if (item.Sequence === 0) {
+        item.IsChecked = false
+      }
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
-        item1.IsChecked = isCheckedSelectAll;
+        if (item.Sequence === 0) {
+          item1.IsChecked = false
+        } else {
+          item1.IsChecked = isCheckedSelectAll;
+        }
       })
       return actionRows;
     })
@@ -274,14 +281,14 @@ class CostingTab extends Component {
     const { actionSelectList } = this.state;
     return (
       <div>
-        <div className="row form-group grant-user-grid">
+        <div className="row form-group grant-user-grid user-costing-tab">
           <div className="col-md-12">
             <Table className="table table-bordered" size="sm">
               <thead>
                 <tr>
                   <th>{`Module`}</th>
                   <th className=" pr-2">
-                    <label className="custom-checkbox align-middle">
+                    <label className="custom-checkbox align-middle select-all-label">
                       <input
                         type="checkbox"
                         value={"All"}

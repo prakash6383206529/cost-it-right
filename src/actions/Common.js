@@ -50,7 +50,9 @@ import {
   GET_UOM_SELECTLIST_BY_UNITTYPE,
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
+  GET_LAST_SIMULATION_DATA,
   config,
+  GET_IMPACTED_MASTER_DATA,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -589,7 +591,7 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
         if (response.data.Result) {
           dispatch({
             type: GET_RM_SPECIFICATION_LIST_SUCCESS,
-            payload: response.data.SelectList,
+            payload: response.data.DataList,
           });
           callback(response);
         } else {
@@ -1523,3 +1525,49 @@ export function getAllCity(callback) {
     })
   }
 }
+
+
+export function getLastSimulationData(vendorId, effectiveDate, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
+
+    const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_LAST_SIMULATION_DATA,
+          payload: response.data.Data.ImpactedMasterDataList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE, });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function getImpactedMasterData(simulationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `simulationId=${simulationId}`
+    const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
+    request.then((response) => {
+      console.log(response.data.Data.ImpactedMasterDataList, 'lllkokl')
+      if (response.data.Result) {
+        dispatch({
+          type: GET_IMPACTED_MASTER_DATA,
+          payload: response.data.Data.ImpactedMasterDataList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE, });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+

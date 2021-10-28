@@ -11,7 +11,6 @@ import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
-import $ from 'jquery'
 import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
@@ -475,7 +474,6 @@ class VolumeListing extends Component {
     this.setState(
       { showVolumeForm: false, data: { isEditFlag: false, ID: '' } },
       () => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow')
         this.getTableListData()
       },
     )
@@ -538,6 +536,7 @@ class VolumeListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+   gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -823,7 +822,8 @@ class VolumeListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
+                floatingFilter = {true}
+domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}
@@ -835,6 +835,7 @@ class VolumeListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
+                  imagClass:'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -847,7 +848,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
-                <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

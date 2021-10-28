@@ -32,7 +32,10 @@ class AddIndivisualProduct extends Component {
 
             files: [],
             DataToCheck: [],
-            DropdownChanged: true
+            DropdownChanged: true,
+            uploadAttachements: true,
+            isSurfaceTreatment: false,
+
         }
     }
 
@@ -69,6 +72,7 @@ class AddIndivisualProduct extends Component {
                             // isLoader: false,
                             effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
                             files: Data.Attachements,
+                            isSurfaceTreatment: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
                 }
@@ -125,6 +129,8 @@ class AddIndivisualProduct extends Component {
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
         const { files, } = this.state;
+
+        this.setState({ uploadAttachements: false })
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -200,6 +206,7 @@ class AddIndivisualProduct extends Component {
         this.setState({
             RawMaterial: [],
             selectedPlants: [],
+            isSurfaceTreatment: false,
         })
         this.props.getProductData('', res => { })
         this.props.hideForm()
@@ -210,16 +217,19 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, uploadAttachements, isSurfaceTreatment } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
 
 
-            if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
-                DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+            if (DropdownChanged
+                // && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
+                // DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
+                // DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber
+                // && uploadAttachements
+            ) {
                 this.cancel()
                 return false;
             }
@@ -235,30 +245,31 @@ class AddIndivisualProduct extends Component {
                 ECNNumber: values.ECNNumber,
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
-                GroupCode: values.GroupCode,
+                ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
                 EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
-                IsForcefulUpdated: true
+                IsForcefulUpdated: true,
+                IsConsideredForMBOM: isSurfaceTreatment,
             }
 
             if (isEditFlag) {
+                this.props.reset()
+                this.props.updateProduct(updateData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
+                        this.cancel()
+                    }
+                });
+                // const toastrConfirmOptions = {
+                //     onOk: () => {
 
-                const toastrConfirmOptions = {
-                    onOk: () => {
-                        this.props.reset()
-                        this.props.updateProduct(updateData, (res) => {
-                            if (res.data.Result) {
-                                toastr.success(MESSAGES.UPDATE_PART_SUCESS);
-                                this.cancel()
-                            }
-                        });
-                    },
-                    onCancel: () => { },
-                    component: () => <ConfirmComponent />,
-                }
-                return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+                //     },
+                //     onCancel: () => { },
+                //     component: () => <ConfirmComponent />,
+                // }
+                // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
             }
 
 
@@ -277,13 +288,14 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 // Plants: [],
-                Attachements: files
+                Attachements: files,
+                IsConsideredForMBOM: isSurfaceTreatment,
             }
 
             this.props.reset()
             this.props.createProduct(formData, (res) => {
                 if (res.data.Result === true) {
-                    toastr.success(MESSAGES.PART_ADD_SUCCESS);
+                    toastr.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
                 }
             });
@@ -295,6 +307,14 @@ class AddIndivisualProduct extends Component {
             e.preventDefault();
         }
     };
+
+    /**
+    * @method onPressSurfaceTreatment
+    * @description Used for Surface Treatment
+    */
+    onPressSurfaceTreatment = () => {
+        this.setState({ isSurfaceTreatment: !this.state.isSurfaceTreatment, DropdownChanged: false });
+    }
 
     /**
     * @method render
@@ -356,6 +376,7 @@ class AddIndivisualProduct extends Component {
                                                             required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     {/* {initialConfiguration &&
@@ -386,6 +407,7 @@ class AddIndivisualProduct extends Component {
                                                             required={false}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
 
@@ -397,11 +419,12 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={""}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                                                     component={renderText}
-                                                                    //required={true}
+                                                                    required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
                                                             </Col>
                                                         )}
@@ -420,6 +443,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -433,6 +457,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -446,6 +471,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
 
@@ -486,7 +512,7 @@ class AddIndivisualProduct extends Component {
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 //minDate={moment()}
                                                                 />
 
@@ -495,7 +521,28 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
 
                                                 </Row>
+                                                <Row>
+                                                    <Col md="4" className="mb-5 pb-1">
+                                                        <label
+                                                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                                                                }`}
+                                                            onChange={this.onPressSurfaceTreatment}
+                                                        >
+                                                            Preferred for Impact Calculation
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={this.state.isSurfaceTreatment}
+                                                            // disabled={isEditFlag ? true : false}
+                                                            />
+                                                            <span
+                                                                className=" before-box"
+                                                                checked={this.state.isSurfaceTreatment}
+                                                                onChange={this.onPressSurfaceTreatment}
+                                                            />
+                                                        </label>
+                                                    </Col>
 
+                                                </Row>
                                                 <Row>
                                                     {/* <Col md="3">
                             <Field
@@ -539,12 +586,13 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
                                                         <label>
                                                             Upload Files (upload up to 3 files)
-                                </label>
+                                                        </label>
                                                         {this.state.files &&
                                                             this.state.files.length >= 3 ? (
                                                             <div class="alert alert-danger" role="alert">
@@ -572,8 +620,8 @@ class AddIndivisualProduct extends Component {
                                                                                     Browse
                                                                                 </span>
                                                                                 <br />
-                                                                                      file to upload
-                                                                             </span>
+                                                                                file to upload
+                                                                            </span>
                                                                         </div>
                                                                     )
                                                                 }
@@ -586,6 +634,7 @@ class AddIndivisualProduct extends Component {
                                                                         extra.reject ? { color: "red" } : {},
                                                                 }}
                                                                 classNames="draper-drop"
+                                                                disabled={isEditFlag ? true : false}
                                                             />
                                                         )}
                                                     </Col>

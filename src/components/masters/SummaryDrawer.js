@@ -62,11 +62,11 @@ function SummaryDrawer(props) {
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
                 <div className="container-fluid">
-                    <div className={'drawer-wrapper drawer-1500px'}>
+                    <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{'Master Summary'}</h3>
+                                    <h3>{`Master Summary (Token No.${approvalDetails.Token})`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -77,7 +77,7 @@ function SummaryDrawer(props) {
                         {loader && <LoaderCustom />}
                         <Row className="mx-0 mb-3">
                             <Col>
-                                <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} />
+                                <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
 
                                 <RMDomesticListing isMasterSummaryDrawer={true} />
 

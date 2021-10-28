@@ -20,7 +20,6 @@ import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, user
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
@@ -70,7 +69,8 @@ class AddMachineRate extends Component {
       machineFullValue: {},
       DataToChange: [],
       DropdownChange: true,
-      effectiveDate: ''
+      effectiveDate: '',
+      uploadAttachements: true
 
     }
   }
@@ -187,7 +187,6 @@ class AddMachineRate extends Component {
         isLoader: true,
         MachineID: editDetails.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getMachineData(editDetails.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -680,7 +679,6 @@ class AddMachineRate extends Component {
     this.props.checkAndGetMachineNumber(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         toastr.warning(res.data.Message);
-        $('input[name="MachineNumber"]').focus()
       }
     })
   }
@@ -710,6 +708,8 @@ class AddMachineRate extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+
+    this.setState({ uploadAttachements: false })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -782,8 +782,7 @@ class AddMachineRate extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-    console.log('DropdownChange: ', DropdownChange);
+      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate, uploadAttachements } = this.state;
 
 
     if (isViewFlag) {
@@ -842,7 +841,7 @@ class AddMachineRate extends Component {
           EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         }
         if (isEditFlag) {
-          if (DropdownChange) {
+          if (DropdownChange && uploadAttachements) {
             this.cancel();
             return false
           }
@@ -1412,10 +1411,10 @@ class AddMachineRate extends Component {
                                   Drag and Drop or{" "}
                                   <span className="text-primary">
                                     Browse
-                          </span>
+                                  </span>
                                   <br />
-                          file to upload
-                        </span>
+                                  file to upload
+                                </span>
                               </div>))}
                               styles={{
                                 dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },

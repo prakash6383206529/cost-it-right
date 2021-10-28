@@ -555,6 +555,7 @@ class LabourListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+   gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -606,7 +607,7 @@ class LabourListing extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {/* {this.state.isLoader && <LoaderCustom />} */}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form
@@ -798,7 +799,8 @@ class LabourListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
+                floatingFilter = {true}
+domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
@@ -809,6 +811,7 @@ class LabourListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
+                  imagClass:'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -820,7 +823,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

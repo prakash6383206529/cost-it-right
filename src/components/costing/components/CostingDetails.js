@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
@@ -13,7 +13,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
   getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -26,6 +26,7 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
+import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
 
@@ -90,6 +91,7 @@ function CostingDetails(props) {
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
   // client based costing
+  const [partDropdown, setPartDropdown] = useState([])
 
   const fieldValues = IsolateReRender(control);
 
@@ -186,12 +188,17 @@ function CostingDetails(props) {
     }
   }, [technology])
 
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
+
   /**
    * @method renderListing
    * @description Used show listing of unit of measurement
    */
   const renderListing = (label) => {
     const temp = []
+
 
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
@@ -208,6 +215,8 @@ function CostingDetails(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
+      setPartDropdown(temp)
+
       return temp
     }
 
@@ -484,9 +493,32 @@ function CostingDetails(props) {
    * @method closeCopyCostingDrawer
    * @description HIDE COPY COSTING DRAWER
    */
-  const closeCopyCostingDrawer = (e = '') => {
+  const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     nextToggle()
     setIsCopyCostingDrawer(false)
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    console.log('res from after copy costig before if: ');
+    if (type === ZBC) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+
+    if (type === VBC) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+        console.log('res from after copy costig: ', res);
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+    // resetGrid()
   }
 
   /**
@@ -689,6 +721,8 @@ function CostingDetails(props) {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+
+            console.log('res from after copy costig add detail: ', res);
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -821,6 +855,8 @@ function CostingDetails(props) {
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+          console.log('res from after copy costig from update costing confirm: ', res);
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -852,6 +888,8 @@ function CostingDetails(props) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+        console.log('res from after copy costig move to costing : ', res);
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1019,7 +1057,10 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getZBCCostingByCostingId('', (res) => {
+
+      console.log('res from after copy costig back to step one: ', res);
+    }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
@@ -1348,6 +1389,27 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
+  const filterList = (inputValue) => {
+    if (inputValue) {
+      let tempArr = []
+      tempArr = partDropdown && partDropdown.filter(i => {
+        return i.label.toLowerCase().includes(inputValue.toLowerCase())
+      }
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    } else {
+      return partDropdown
+    }
+  };
+  const promiseOptions = inputValue =>
+    new Promise(resolve => {
+      resolve(filterList(inputValue));
+    });
+
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1404,7 +1466,8 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        <SearchableSelectHookForm
+                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                        <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
                           placeholder={"Select"}
@@ -1413,7 +1476,7 @@ function CostingDetails(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          options={renderListing("PartList")}
+                          asyncOptions={promiseOptions}
                           mandatory={true}
                           isLoading={false}
                           handleChange={handlePartChange}
@@ -1513,7 +1576,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
+                          label={`Current Price (Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1602,7 +1665,7 @@ function CostingDetails(props) {
                                     let displayCopyBtn = (item.Status === DRAFT ||
                                       item.Status === PENDING ||
                                       item.Status === WAITING_FOR_APPROVAL ||
-                                      item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+                                      item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                     let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -1736,12 +1799,10 @@ function CostingDetails(props) {
                               </thead>
                               <tbody>
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
-                                  console.log('item: ', item);
-
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
                                     item.Status === WAITING_FOR_APPROVAL ||
-                                    item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+                                    item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -1807,7 +1868,7 @@ function CostingDetails(props) {
                                         {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                         {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                       </td>
@@ -1855,6 +1916,7 @@ function CostingDetails(props) {
                       partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
                       costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
                       toggle={props.toggle}
+                      IsCostingViewMode={IsCostingViewMode}
                     />
                   </ViewCostingContext.Provider>
                 )}

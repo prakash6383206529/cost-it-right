@@ -171,6 +171,7 @@ function AddToComparisonDrawer(props) {
       setIsZbcSelected(false)
       setIsVbcSelected(false)
       setCostingDropdown([])
+      setValue('costings', '')
       dispatch(getClientSelectList((res) => {
         dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))

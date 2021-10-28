@@ -107,15 +107,17 @@ export const API = {
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
+  productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
   getProductById: `${BASE_URL}/masters-product/get-by-id`,
   createProduct: `${BASE_URL}/masters-product/create`,
   updateProduct: `${BASE_URL}/masters-product/update`,
-  deleteProduct: `${BASE_URL}/masters-product/delete`,
+  deleteProduct: `${BASE_URL}/masters-product/delete/productid/loggedinuserid`,
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+  productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -191,6 +193,7 @@ export const API = {
   approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
   rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
+  masterFinalLeveluser: `${BASE_URL}/masters-approval-raw-material/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -493,6 +496,8 @@ export const API = {
   getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-payment-term-applicability`,
   getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
+  getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
+  getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -527,6 +532,7 @@ export const API = {
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
+  checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -681,6 +687,12 @@ export const API = {
   getSelectedCostingStatusList: `${BASE_URL}/app-approval-system/get-all-approval-status`,
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
+
+
+  // ApproveReject Drawer
+
+
+
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -849,6 +861,12 @@ export const API = {
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
   deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
+  draftExchangeRateSimulation: `${BASE_URL}/simulation/draft-simulation-exchange-rate`,
+  getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
+  runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
+  getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
+  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
+  uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -924,6 +942,7 @@ export const SET_ACTUAL_BOM_DATA = 'SET_ACTUAL_BOM_DATA'
 //PRODUCT MASTER
 export const GET_PRODUCT_DATA_LIST = 'GET_PRODUCT_DATA_LIST'
 export const GET_PRODUCT_UNIT_DATA = 'GET_PRODUCT_UNIT_DATA'
+export const PRODUCT_GROUPCODE_SELECTLIST = 'PRODUCT_GROUPCODE_SELECTLIST'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
@@ -1167,6 +1186,7 @@ export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DAT
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS'
 export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST'
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
+export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
 //COSTING
 export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
@@ -1283,6 +1303,9 @@ export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LE
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
 export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
+export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
+export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
+export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1315,6 +1338,7 @@ export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
+export const GET_SELECTLIST_SIMULATION_TOKENS = 'GET_SELECTLIST_SIMULATION_TOKENS'
 
 
 //PRIVILEGE
@@ -1403,6 +1427,7 @@ export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
+export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1418,6 +1443,7 @@ export const REJECTED = 'Rejected'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
+export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1568,7 +1594,7 @@ export const VIEW_COSTING_DATA = {
   otherDiscountValue: '',
   anyOtherCost: 'Any Other Cost',
   remark: 'Remark',
-  nPOPriceWithCurrency: 'Net PO Price(INR)',
+  nPOPriceWithCurrency: 'Net PO Price (INR)',
   currency: 'Currency',
   nPOPrice: 'Net PO Price',
   attachment: 'Attachment',
@@ -1662,3 +1688,10 @@ export const DashboardMaster = "Analytics and Reports"
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
+
+export const APPROVAL_ID = 3
+export const RM_MASTER_ID = 1
+
+
+//approve reject drawer
+export const provisional = "Provisional"

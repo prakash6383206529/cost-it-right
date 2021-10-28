@@ -277,7 +277,8 @@ class UOMMaster extends Component {
   }
 
   resetState() {
-    gridOptions.columnApi.resetColumnState();
+   gridOptions.columnApi.resetColumnState();
+   gridOptions.api.setFilterModel(null);
   }
 
 
@@ -366,7 +367,8 @@ class UOMMaster extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
+                    floatingFilter = {true}
+domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}

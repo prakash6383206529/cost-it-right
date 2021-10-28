@@ -21,6 +21,9 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
+import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
+import ERSimulation from './SimulationPages/ERSimulation';
+import OtherCostingSimulation from './OtherCostingSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -33,6 +36,8 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
@@ -42,6 +47,9 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
+    const [onLoad, setOnLoad] = useState(false)
+    const [filterStatus, setFilterStatus] = useState('')
+    const [isRowSelected, setIsRowSelected] = useState(0)
 
     const dispatch = useDispatch()
 
@@ -49,36 +57,60 @@ function Simulation(props) {
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getCostingTechnologySelectList(() => { }))
         setShowEditTable(false)
+        if (props.isRMPage) {
+            setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+            setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+
+            setMaster({ label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
+            setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
+            setEditWarning(applyEditCondSimulation(getValues('Masters').value))
+            setShowMasterList(true)
+        }
+        // setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
+        setOnLoad(true)
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
+    const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
+
+    // useEffect(() => {
+    //     editTable()
+    // }, [rmDomesticListing, rmImportListing])
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setMaster(value)
         setShowMasterList(false)
+        setTechnology({ label: '', value: '' })
+        setValue('Technology', '')
         dispatch(setMasterForSimulation(value))
-        if (value !== '' && (Object.keys(technology).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+            // setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
+        setEditWarning(applyEditCondSimulation(value.value))
+
     }
 
     const handleTechnologyChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
-        dispatch(setTechnologyForSimulation(value))
-
-        if (value !== '' && Object.keys(master).length > 0) {
-            setShowMasterList(true)
-        }
+        setShowMasterList(false)
+        setTimeout(() => {
+            dispatch(setTechnologyForSimulation(value))
+            if (value !== '' && Object.keys(master).length > 0) {
+                setShowMasterList(true)
+            }
+        }, 100);
     }
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        let temp1 = getFilteredRMData(TempData)
+        temp = temp1 && temp1.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -100,7 +132,7 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
@@ -121,9 +153,9 @@ function Simulation(props) {
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, rmDomesticListing && rmDomesticListing.length > 0 ? rmDomesticListing : [])
+                return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, rmImportListing && rmImportListing.length > 0 ? rmImportListing : [])
+                return returnExcelColumn(RMImportSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
             default:
                 return 'foo';
         }
@@ -154,7 +186,7 @@ function Simulation(props) {
     const cancelEditPage = () => {
         setShowEditTable(false)
         setIsBulkUpload(false)
-        setTableData([])
+        // setTableData([])
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
     }
@@ -172,61 +204,82 @@ function Simulation(props) {
             setIsBulkUpload(true)
         }
     }
+    let selectedRowCount = 0
+    const rowSelected = (value) => {
+        selectedRowCount = value
+        setIsRowSelected(value)
+    }
 
-    const editTable = () => {
+    const editTable = (Data) => {
+        setTableData(Data)
         // alert('Hello')
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
+        if (selectedRowCount === 0) {
+            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
+        }
         switch (master.value) {
             case RMDOMESTIC:
-
-                rmDomesticListing && rmDomesticListing.forEach((element, index) => {
-
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
+                Data && Data.forEach((element, index) => {
                     if (index !== 0) {
-                        if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
-                            //     toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            return false
+                            // return false
                         }
-                        if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            return false
+                            // return false
                         }
-                        if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
-                            // toastr.warning('Please select one Plant at a time.')
+                        if (element.PlantId !== Data[index - 1].PlantId) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            return false
+                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    // setShowEditTable(true)
+                    (selectedRowCount !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 }
+                //  else {
+                //     setEditWarning(true)
+                // }
                 break;
             case RMIMPORT:
-                rmImportListing.forEach((element, index) => {
+                Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
-                        if (element.CostingHead !== rmImportListing[index - 1].CostingHead) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
                             // toastr.warning('Please select either ZBC or VBC costing head at a time.')
                             setEditWarning(true);
                             flag = false
                             return false
                         }
-                        if (element.VendorName !== rmImportListing[index - 1].VendorName) {
+                        if (element.VendorName !== Data[index - 1].VendorName) {
                             // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                             return false
                         }
-                        if (element.PlantId !== rmImportListing[index - 1].PlantId) {
+                        if (element.PlantId !== Data[index - 1].PlantId) {
                             // toastr.warning('Please select one Plant at a time.')
                             setEditWarning(true);
                             plantFlag = false
@@ -244,6 +297,10 @@ function Simulation(props) {
                 break;
         }
 
+        if (selectedRowCount === 0) {
+            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
+        }
+
     }
 
     const openEditPage = () => {
@@ -254,25 +311,27 @@ function Simulation(props) {
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmDomesticListing)} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} technology={technology.label} master={master.label} />
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmImportListing)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+            case EXCHNAGERATE:
+                return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
             default:
                 break;
         }
     }
 
-    useEffect(() => {
-
-    }, [rmDomesticListing])
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
-        return <CostingSimulation simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        const masterId = location?.state?.master
+        // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
+        if (getOtherCostingSimulation(String(masterId))) {
+            return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
+        }
+        return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
     }
-
-
 
     return (
         <div className="container-fluid simulation-page">
@@ -339,14 +398,19 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant and Vendor from the filters before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
-                                    <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                        {/* {true ? '' : renderColumn(master.label)} */}
-                                        {!editWarning ? renderColumn(master.value) : ''}
-                                    </ExcelFile>
-                                    <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                    {
+                                        !isUploadSimulation(master.value) &&
+                                        <>
+                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                                {/* {true ? '' : renderColumn(master.label)} */}
+                                                {!editWarning ? renderColumn(master.value) : ''}
+                                            </ExcelFile>
+                                            <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                        </>
+                                    }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
 
 

@@ -26,6 +26,7 @@ import { Redirect } from 'react-router'
 const gridOptions = {};
 
 function ApprovalListing(props) {
+  const { isDashboard } = props
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
   const [dShown, setDshown] = useState(false)
@@ -41,6 +42,7 @@ function ApprovalListing(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
+  const [isLoader, setIsLoader] = useState(true)
   const dispatch = useDispatch()
 
   const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -63,9 +65,6 @@ function ApprovalListing(props) {
 
   }, [])
 
-  useEffect(() => {
-
-  }, [selectedIds])
 
   /**
    * @method getTableData
@@ -85,11 +84,12 @@ function ApprovalListing(props) {
       createdBy: createdBy,
       requestedBy: requestedBy,
       status: status,
+      isDashboard: isDashboard ?? false
     }
 
     dispatch(
       getApprovalList(filterData, (res) => {
-
+        setIsLoader(false)
         if (res.status === 204 && res.data === '') {
           setTableData([])
         } else if (res && res.data && res.data.DataList) {
@@ -317,6 +317,7 @@ function ApprovalListing(props) {
 
 
   const defaultColDef = {
+
     resizable: true,
     filter: true,
     sortable: true,
@@ -378,7 +379,7 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-
+            {/* {isLoader && <LoaderCustom />} */}
             <Row className="pt-4 blue-before">
               {shown &&
                 <Col lg="10" md="12" className="filter-block">
@@ -505,6 +506,7 @@ function ApprovalListing(props) {
                     className="ag-theme-material"
                   >
                     <AgGridReact
+                      floatingFilter={true}
                       style={{ height: '100%', width: '100%' }}
                       defaultColDef={defaultColDef}
                       domLayout='autoHeight'

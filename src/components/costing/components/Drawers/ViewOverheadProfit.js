@@ -310,10 +310,9 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
-                          <th>{` Applicability`}</th>
-                          <th>{`Rejection(%)`}</th>
-                          <th>{`Cost(Applicability)`}</th>
-
+                          <th>{`Applicability`}</th>
+                          <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
+                          <th>{`Cost (Applicability)`}</th>
                           <th>{`Net Rejection`}</th>
                         </tr>
                       </thead>
