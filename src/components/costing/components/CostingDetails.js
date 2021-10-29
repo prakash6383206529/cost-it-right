@@ -192,6 +192,10 @@ function CostingDetails(props) {
     }
   }, [technology])
 
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
+
   /**
    * @method renderListing
    * @description Used show listing of unit of measurement
