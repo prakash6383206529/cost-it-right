@@ -789,7 +789,7 @@ button.add-btn {
   }
 }
 
-.table.cr-brdr-main thead th{color:#3D4465;}
+.table.cr-brdr-main thead th{color:#3D4465; vertical-align: middle;}
 .withBorder .form-control,.form-control {
   border: 1px solid #c2cbe8;
   &::placeholder{
@@ -1530,7 +1530,7 @@ button.user-btn.pull-right {
     font-weight: 500;
 }
 .react-bs-table table td {font-size: 14px;
-    color: #8a91ac;}
+    color: $grid-font;}
 .email-input {
   .inputbox {
     border-bottom:none;}
@@ -1713,8 +1713,8 @@ button.user-btn.pull-right {
  .cr-innertool-cost.row{background-color: #E7F2FC;color:#3D4465;border-bottom:1px solid #C2CBE8;    margin-bottom: 15px;}
  .cr-tbl-label{color:#A4ABC5;font-size:16px}
  .cr-bg-tbl{background-color: #E7F2FC;}
- .cr-brdr-main tbody td{color:#8A91AC;font-size:15px;font-weight: normal;}
- .cr-brdr-main tbody .cr-tbl-label{font-size: 15px;}
+ .cr-brdr-main tbody td{color:$grid-font;font-size:15px;font-weight: normal;}
+ .cr-brdr-main tbody .cr-tbl-label{font-size: 15px; font-weight: 500;color: #8A91AC;}
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
@@ -1798,7 +1798,7 @@ $roboto: "Roboto", sans-serif;
 			input {
         min-height: 40px;
         &:disabled{
-          color: hsl(0,0%,60%);
+          color: #616366;
           font-size: 13px;
         }
 			}
@@ -1903,7 +1903,6 @@ $roboto: "Roboto", sans-serif;
 .checkbox-text{line-height: initial;}
 .small-grey-text {
 	font-size: 13px;
-	color: #8A91AC;
 }
 .small-square-btn {
 	background-color: #f8a00033;
@@ -2197,7 +2196,7 @@ body {
 	}
 }
 .grey-text {
-	color: #8A91AC;
+	color: #5c5e64;
 }
 .btn-small-primary-circle {
 	width: 25px;
@@ -2772,7 +2771,7 @@ input[type="number"].form-control {
     margin: 0 0 15px;
   }
   table{
-    td{color: #8A91AC;}
+    td{color: $grid-font;}
   }
 }
 .bom-viewer-main{
@@ -4207,7 +4206,7 @@ body{
   color: #FC5774;
   line-height: initial;
   min-width: 70px;
-  max-width: 70px !important;
+  // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -6188,42 +6187,74 @@ body{
       left: 38px;
     }
   }
-  .drawer-side-input {
-    margin:0;
-    display: flex !important;
-    .form-group.inputbox.withBorder {
-     
-      min-height: 0;
-      margin-bottom: 0 !important;
-      label {
-        display: none;
-      }
-      input {
-        min-width: 12rem;
-        position:absolute;
-        right: 15px;
-        margin-top: -6px;
-      }
-    }
+  .unset-height {
+    min-height: auto !important;
   }
-  .drawer-side-input-other {
-    width: 100%;
-    margin-bottom: -1rem;
-    .toggle-button-per-and-fix {
-      margin-top: 0.5rem;
-    display: flex !important;
-    .form-group.inputbox.withBorder {
-         min-width: 12rem;
-         margin-right: 1rem;
-         min-height: 0;
-         margin-bottom: 0 !important;
-         label {
-           display: none;
-         }
-       }
+  .costing-summary {
+     display: flex;
+     justify-content: flex-end;
+  }
+  .d-none {
+    display: none !important;
+  }
+  .costing-details-page {
+    .costing-header-table {
+      table {
+        @media screen and (max-width:$miniDesktop) {
+          min-width: 1920px;
+        }
+      }
     }
   }
 
+.user-costing-tab {
+  .col-md-12 {
+    overflow: auto;
+    table {
+      min-width: 1366px;
+      margin-bottom: 2px;
+      td, th {
+         padding-left: 10px;
+         padding-right: 10px;
+      }
+    }
+  }
+}
+.drawer-side-input {
+  margin:0;
+  display: flex !important;
+  .form-group.inputbox.withBorder {
+   
+    min-height: 0;
+    margin-bottom: 0 !important;
+    label {
+      display: none;
+    }
+    input {
+      min-width: 12rem;
+      position:absolute;
+      right: 15px;
+      margin-top: -6px;
+    }
+  }
+}
+.drawer-side-input-other {
+  width: 100%;
+  margin-bottom: -1rem;
+  .toggle-button-per-and-fix {
+    margin-top: 0.5rem;
+  display: flex !important;
+  .form-group.inputbox.withBorder {
+       min-width: 12rem;
+       margin-right: 1rem;
+       min-height: 0;
+       margin-bottom: 0 !important;
+       label {
+         display: none;
+       }
+     }
+  }
+}
 .combine-tooltip {
   right: -20px;
   top: 8px;

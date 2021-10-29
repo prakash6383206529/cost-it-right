@@ -306,6 +306,13 @@ class AssemblyPartListing extends Component {
             } else {
                 return false
             }
+
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
+
+
             return item
         })
         return (

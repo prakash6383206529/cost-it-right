@@ -16,6 +16,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import OtherCostingSimulation from './OtherCostingSimulation';
+import { debounce } from 'lodash';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
@@ -209,8 +210,8 @@ function OtherVerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    const runSimulation = () => {
-        if (selectedRowData.length === 0) {             //     for condition
+    const runSimulation = debounce(() => {
+        if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one costing.')
             return false
         }
@@ -252,7 +253,7 @@ function OtherVerifySimulation(props) {
         }
 
 
-    }
+    }, 500)
 
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {

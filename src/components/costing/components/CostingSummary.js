@@ -31,11 +31,11 @@ function CostingSummary(props) {
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false)
   const [part, setPart] = useState([])
+  const [partDropdown, setPartDropdown] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [TechnologyId, setTechnologyId] = useState('')
   const [disabled, setDisabled] = useState(false)
   const [showWarningMsg, setShowWarningMsg] = useState(false)
-  const [partDropdown, setPartDropdown] = useState([])
   const partNumber = useSelector(state => state.costing.partNo);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -406,8 +406,8 @@ function CostingSummary(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={technology.length === 0 ? true : false}
-                        />
+                          disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
+                        /> 
                       </Col>
 
                       <Col className="col-md-15">
@@ -499,7 +499,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
+                          label={`Current Price (Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
                           name={'ShareOfBusiness'}
                           Controller={Controller}
                           control={control}

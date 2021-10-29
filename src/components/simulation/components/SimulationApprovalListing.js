@@ -2,7 +2,6 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
@@ -537,7 +536,7 @@ function SimulationApprovalListing(props) {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div
-                                className="ag-theme-material simulation-history"
+                                className="ag-theme-material"
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
@@ -565,7 +564,6 @@ function SimulationApprovalListing(props) {
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
-                                    {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Master"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>

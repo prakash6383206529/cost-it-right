@@ -255,7 +255,7 @@ function Plastic(props) {
               <Row className={''}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Gross Weight(Kg)`}
+                    label={`Gross Weight (Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
                     control={control}
@@ -276,10 +276,6 @@ function Plastic(props) {
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
                     disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                  // disabled={props.CostingViewMode ? props.CostingViewMode :
-                  //   getPlasticData ? getPlasticData.length > 0 ? true : false
-                  //     :
-                  //     WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -326,7 +322,7 @@ function Plastic(props) {
               <Row className={'mt25'}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Total Gross Weight(Kg)`}
+                    label={`Total Gross Weight (Kg)`}
                     name={'grossWeight'}
                     Controller={Controller}
                     control={control}
@@ -507,8 +503,8 @@ function Plastic(props) {
               className="reset mr15 cancel-btn"
             >
               <div className={'cancel-icon'}></div>
-                CANCEL
-              </button>
+              CANCEL
+            </button>
             <button
               type="submit"
               disabled={props.CostingViewMode}

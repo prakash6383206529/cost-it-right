@@ -193,7 +193,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -216,7 +216,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.finishDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -239,7 +239,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -262,7 +262,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                   </Row>
@@ -288,7 +288,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -335,7 +335,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -375,7 +375,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.feedRev}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -438,7 +438,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -485,6 +485,7 @@ function Facing(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
+                disabled={props.CostingViewMode ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>

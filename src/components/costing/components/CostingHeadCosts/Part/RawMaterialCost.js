@@ -813,7 +813,7 @@ function RawMaterialCost(props) {
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
-                                  disabled={(CostingViewMode && item.WeightCalculationId === EMPTY_GUID) ? true : false}
+                                  disabled={false}
                                   onClick={() => toggleWeightCalculator(index)}
                                 />
                               </td>
@@ -1085,6 +1085,7 @@ function RawMaterialCost(props) {
       {isWeightDrawerOpen && (
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
+          CostingViewMode={CostingViewMode}
           closeDrawer={closeWeightDrawer}
           isEditFlag={CostingViewMode ? false : true}
           inputDiameter={inputDiameter}

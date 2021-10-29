@@ -192,12 +192,17 @@ function CostingDetails(props) {
     }
   }, [technology])
 
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
+
   /**
    * @method renderListing
    * @description Used show listing of unit of measurement
    */
   const renderListing = (label) => {
     const temp = []
+
 
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
@@ -1564,7 +1569,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
+                          label={`Current Price (Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1904,6 +1909,7 @@ function CostingDetails(props) {
                       partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
                       costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
                       toggle={props.toggle}
+                      IsCostingViewMode={IsCostingViewMode}
                     />
                   </ViewCostingContext.Provider>
                 )}

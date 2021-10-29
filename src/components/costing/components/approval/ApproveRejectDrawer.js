@@ -7,7 +7,8 @@ import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFil
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
-import { APPROVER } from '../../../../config/constants'
+import PushButtonDrawer from './PushButtonDrawer'
+import {APPROVER, EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import { debounce } from 'lodash'
@@ -113,31 +114,30 @@ function ApproveRejectDrawer(props) {
 
 
   const getApproversList = (departObj) => {
-    let uniqueTechnologyIdArray = []
+    let values = []
     let approverDropdownValue = []
-
-    // GET UNIQUE TECHNOLOGYID 
-    selectedRowData.map(item => {
-      if (!(uniqueTechnologyIdArray.includes(item.SimulationTechnologyId))) {
-        uniqueTechnologyIdArray.push(item.SimulationTechnologyId)
+    let pushDD = []
+    selectedRowData && selectedRowData.map(item => {
+      if (!(values.includes(item.SimulationTechnologyId))) {
+        values.push(item.SimulationTechnologyId)
       }
-      return null
     })
-
-    // IF SELECTED TECHNOLOGY ID IS MORE THAN ONE
-    if (uniqueTechnologyIdArray.length > 1) {
-
-      // MULTIPLE TIME API CALL
-      uniqueTechnologyIdArray.map(item => {
+    if (values.length > 1) {
+      values.map(item => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
+          //NEED TO MAKE THIS 2   
+          // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           TechnologyId: item,
           ReasonId: 0
         }
 
         dispatch(
           getAllSimulationApprovalList(obj, (res) => {
+            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+            // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
@@ -149,48 +149,45 @@ function ApproveRejectDrawer(props) {
               })
               return null
             })
-
-            // PUT EVERY RESPONCE IN ARRAY IN ARRAY FORMAT 
             approverDropdownValue.push(tempDropdownList)
-            let technologyIdArrayOfObj = []
+            let allObjVal = []
 
-            // ACCESS EACH ARRAY ONE BY ONE AND TAKE OUT EACH USER'S UNIQUE ID IN AN ARRAY
             for (let v = 0; v < approverDropdownValue.length; v++) {
-              let technologyIdObj = []
-              approverDropdownValue && approverDropdownValue[v].map(item => {
-                technologyIdObj.push(item?.value)
-                return null
+              let valueOfAllArrays = []
+              approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
+                valueOfAllArrays.push(itemmmm?.value)
+
               })
-              technologyIdArrayOfObj.push(technologyIdObj)
+              allObjVal.push(valueOfAllArrays)
             }
 
-            // FILTER FIRST 2 ARRAY TO GET SIMILAR VALUES WHICH ARE MAXIMUM MANDATORY TO MATCH IN EACH ARRAY 
-            let filteredArrayOfIndex0_1 = technologyIdArrayOfObj.length && technologyIdArrayOfObj[0]?.filter(value => technologyIdArrayOfObj.length && technologyIdArrayOfObj[1]?.includes(value));
+            let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
+            let filteredArray = filteredArray1
+            for (let v = 2; v < allObjVal.length; v++) {
+              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
 
-            // FILTER WITH -> OTHER ARRAY IN INDEX -AND- OTHER ARRAY IN ROW
-            let filteredArray = filteredArrayOfIndex0_1
-            for (let v = 2; v < technologyIdArrayOfObj.length; v++) {
-              filteredArray = filteredArray && filteredArray?.filter(value => technologyIdArrayOfObj && technologyIdArrayOfObj[v]?.includes(value));
             }
 
-            let approveDropdownVal = []
-
-            // CONVERTING UNIQUE KEY OF USER'S TO THE WHOLE OBJECT
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
-                  approveDropdownVal.push(i)
+                  pushDD.push(i)
                 }
-                return null
               })
-              return null
             })
-            setApprovalDropDown(approveDropdownVal)
           },
           ),
         )
-        return null
       })
+
+
+      if (pushDD[0]?.value === EMPTY_GUID || pushDD.length === 0) {
+
+        toastr.warning('User does not exist on next level for selected simulation.')
+        return false
+      }
+
+      setApprovalDropDown(pushDD)
     } else {
 
       let obj = {
@@ -204,7 +201,7 @@ function ApproveRejectDrawer(props) {
       dispatch(
         getAllSimulationApprovalList(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           let tempDropdownList = []
           res.data.DataList && res.data.DataList.map((item) => {
@@ -222,6 +219,7 @@ function ApproveRejectDrawer(props) {
         ),
       )
     }
+
   }
 
   const handleTokenDropDownChange = (value) => {

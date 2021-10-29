@@ -68,6 +68,8 @@ function OtherCostingSimulation(props) {
         hideDiscount: false,
         hideOveheadAndProfit: false
     })
+    const [amendmentDetails, setAmendmentDetails] = useState({})
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -131,7 +133,14 @@ function OtherCostingSimulation(props) {
         setTokenNo(tokenNo)
         setCostingArr(Data.SimulatedCostingList)
         setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-
+        setLoader(false)
+        let tempObj = {}
+        tempObj.EffectiveDate = Data?.EffectiveDate
+        tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
+        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+        tempObj.Technology = Data?.SimulatedCostingList[0]?.Technology
+        tempObj.Vendor = Data?.SimulatedCostingList[0]?.VendorName
+        setAmendmentDetails(tempObj)
     }
 
 
@@ -625,7 +634,7 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
                                                     {
                                                         String(master) === String(EXCHNAGERATE) &&
                                                         <>
@@ -745,6 +754,7 @@ function OtherCostingSimulation(props) {
                                 tokenNo={tokenNo}
                                 vendorIdState={vendorIdState}
                                 EffectiveDate={simulationDetail.EffectiveDate}
+                                amendmentDetails={amendmentDetails}
                             />}
                     </div>
 

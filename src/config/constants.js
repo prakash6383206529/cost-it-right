@@ -497,6 +497,7 @@ export const API = {
   getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
+  getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -1439,6 +1440,7 @@ export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
+export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1608,7 +1610,7 @@ export const VIEW_COSTING_DATA = {
   otherDiscountValue: '',
   anyOtherCost: 'Any Other Cost',
   remark: 'Remark',
-  nPOPriceWithCurrency: 'Net PO Price(INR)',
+  nPOPriceWithCurrency: 'Net PO Price (INR)',
   currency: 'Currency',
   nPOPrice: 'Net PO Price',
   attachment: 'Attachment',
