@@ -15,8 +15,8 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 
 
 //DEVELOPMENT MIL URL

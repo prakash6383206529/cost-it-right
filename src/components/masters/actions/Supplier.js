@@ -61,9 +61,9 @@ export function getSupplierDataList(skip, obj, take, callback) {
     return (dispatch) => {
 
 
-        var queryParams = `isApplyPagination=${true}`;
-        var queryParams2 = `take=${take}`
-        var queryParams1 = `skip=${skip}`
+        var queryParams = `isApplyPagination=${false}`;
+        var queryParams2 = `take=${null}`
+        var queryParams1 = `skip=${null}`
         const QueryParams = `vendorType=${obj.vendorType != null || obj.vendorType != "" ? obj.vendorType : ""}&vendorName=${obj.vendorName != null || obj.vendorName != "" ? obj.vendorName : ""}&country=${obj.Country != null || obj.Country != "" ? obj.Country : ""}&vendorCode=${obj.VendorCode != null || obj.VendorCode != "" ? obj.VendorCode : ""}&city=${obj.City != null || obj.City != "" ? obj.City : ""}&state=${obj.State != null || obj.State != "" ? obj.State : ""} `
         const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, headers);
         request.then((response) => {
