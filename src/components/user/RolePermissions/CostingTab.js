@@ -281,7 +281,7 @@ class CostingTab extends Component {
     const { actionSelectList } = this.state;
     return (
       <div>
-        <div className="row form-group grant-user-grid">
+        <div className="row form-group grant-user-grid user-costing-tab">
           <div className="col-md-12">
             <Table className="table table-bordered" size="sm">
               <thead>

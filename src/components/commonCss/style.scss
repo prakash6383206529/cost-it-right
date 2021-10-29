@@ -6208,3 +6208,17 @@ body{
       }
     }
   }
+
+.user-costing-tab {
+  .col-md-12 {
+    overflow: auto;
+    table {
+      min-width: 1366px;
+      margin-bottom: 2px;
+      td, th {
+         padding-left: 10px;
+         padding-right: 10px;
+      }
+    }
+  }
+}
