@@ -17,7 +17,7 @@ import CPSimulation from './SimulationPages/CPSimulation';
 const gridOptions = {};
 
 export function Impactedmasterdata(props) {
-    const { isbulkUpload, data, masterId, viewCostingAndPartNo, isSimulationImpactMaster } = props;
+    const { isbulkUpload, data, masterId, viewCostingAndPartNo,isSimulationImpactMaster } = props;
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
 
@@ -182,10 +182,10 @@ export function Impactedmasterdata(props) {
             case EXCHNAGERATE:
                 return <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />
             case RMDOMESTIC:
-                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster} />
+                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
             case RMIMPORT:
                 return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster} />
-                case COMBINED_PROCESS:
+            case COMBINED_PROCESS:
                     return <CPSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster} />
             default:
                 break;
