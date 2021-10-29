@@ -154,8 +154,8 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-
-        this.getTableListData(0, '', "", "", 5000, data.state.floatingFilterData, false)
+        this.getTableListData(null, '', "", "", null, data.state.floatingFilterData, false)
+        data.setState({ enableExitFilterSearchButton: true })
 
     }
 
