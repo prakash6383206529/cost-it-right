@@ -59,13 +59,14 @@ class IndivisualPartListing extends Component {
 
 
 
-    ApiActionCreator(skip, take, obj) {
+    ApiActionCreator(skip, take, obj, isPagination) {
 
 
-        this.props.getPartDataList(skip, take, obj, (res) => {
+        this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
+
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
@@ -81,13 +82,12 @@ class IndivisualPartListing extends Component {
 
     onBtNext(data) {
 
-        console.log(data, "data")
         data.setState({ pageNo: data.state.pageNo + 1 })
 
         const nextNo = data.state.currentRowIndex + 10;
 
         //     //gridApi.paginationGoToNextPage();
-        data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData)
+        data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData, true)
         data.setState({ currentRowIndex: nextNo })
 
     };
@@ -99,7 +99,7 @@ class IndivisualPartListing extends Component {
             data.setState({ pageNo: data.state.pageNo - 1 })
             const previousNo = data.state.currentRowIndex - 10;
 
-            data.ApiActionCreator(previousNo, 10, this.state.floatingFilterData)
+            data.ApiActionCreator(previousNo, 10, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
 
         }
@@ -110,7 +110,7 @@ class IndivisualPartListing extends Component {
 
     onSearch(data) {
 
-        data.ApiActionCreator(0, 5000, this.state.floatingFilterData)
+        data.ApiActionCreator(0, 5000, this.state.floatingFilterData, false)
 
     }
 
@@ -119,7 +119,7 @@ class IndivisualPartListing extends Component {
         this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
         let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
         data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 10, emptyObj)
+        data.ApiActionCreator(0, 10, emptyObj, true)
 
     }
 
@@ -152,7 +152,7 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, 10, this.state.floatingFilterData)
+        this.ApiActionCreator(0, 10, this.state.floatingFilterData, true)
 
 
         //this.props.checkStatusCodeAPI(412, () => { })
