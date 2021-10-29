@@ -112,7 +112,7 @@ class IndivisualPartListing extends Component {
 
     onSearch(data) {
 
-        data.ApiActionCreator(0, 5000, this.state.floatingFilterData)
+        data.ApiActionCreator(null, null, this.state.floatingFilterData, false)
         data.setState({ enableExitFilterSearchButton: true })
 
     }
@@ -122,7 +122,7 @@ class IndivisualPartListing extends Component {
         this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
         let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
         data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 10, emptyObj)
+        data.ApiActionCreator(0, 10, emptyObj, true)
         data.setState({ enableExitFilterSearchButton: false })
         this.setState({ enableSearchFilterSearchButton: false })
 
