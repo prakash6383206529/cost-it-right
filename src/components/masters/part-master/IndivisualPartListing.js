@@ -50,8 +50,8 @@ class IndivisualPartListing extends Component {
             pageNo: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
-            enableExitFilterSearchButton:false,
-            enableSearchFilterSearchButton:false,
+            enableExitFilterSearchButton: false,
+            enableSearchFilterSearchButton: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
             loader: true
@@ -61,13 +61,14 @@ class IndivisualPartListing extends Component {
 
 
 
-    ApiActionCreator(skip, take, obj) {
+    ApiActionCreator(skip, take, obj, isPagination) {
 
 
-        this.props.getPartDataList(skip, take, obj, (res) => {
+        this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
+
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
@@ -83,13 +84,12 @@ class IndivisualPartListing extends Component {
 
     onBtNext(data) {
 
-        console.log(data, "data")
         data.setState({ pageNo: data.state.pageNo + 1 })
 
         const nextNo = data.state.currentRowIndex + 10;
 
         //     //gridApi.paginationGoToNextPage();
-        data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData)
+        data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData, true)
         data.setState({ currentRowIndex: nextNo })
 
     };
@@ -101,7 +101,7 @@ class IndivisualPartListing extends Component {
             data.setState({ pageNo: data.state.pageNo - 1 })
             const previousNo = data.state.currentRowIndex - 10;
 
-            data.ApiActionCreator(previousNo, 10, this.state.floatingFilterData)
+            data.ApiActionCreator(previousNo, 10, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
 
         }
@@ -112,8 +112,8 @@ class IndivisualPartListing extends Component {
 
     onSearch(data) {
 
-        data.ApiActionCreator(0, 5000, this.state.floatingFilterData)
-        data.setState({enableExitFilterSearchButton:true})
+        data.ApiActionCreator(null, null, this.state.floatingFilterData, false)
+        data.setState({ enableExitFilterSearchButton: true })
 
     }
 
@@ -122,9 +122,9 @@ class IndivisualPartListing extends Component {
         this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
         let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
         data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 10, emptyObj)
-        data.setState({enableExitFilterSearchButton:false})
-        this.setState({enableSearchFilterSearchButton:false})
+        data.ApiActionCreator(0, 10, emptyObj, true)
+        data.setState({ enableExitFilterSearchButton: false })
+        this.setState({ enableSearchFilterSearchButton: false })
 
 
     }
@@ -133,10 +133,10 @@ class IndivisualPartListing extends Component {
 
     onFloatingFilterChanged = (value) => {
 
-      this.setState({enableSearchFilterSearchButton:true})
+        this.setState({ enableSearchFilterSearchButton: true })
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            
+
             return false
         } else {
 
@@ -159,7 +159,7 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, 10, this.state.floatingFilterData)
+        this.ApiActionCreator(0, 10, this.state.floatingFilterData, true)
 
 
         //this.props.checkStatusCodeAPI(412, () => { })
@@ -495,16 +495,16 @@ class IndivisualPartListing extends Component {
         };
         return (
             <>
-              <div className="mt-3 pagination-button-container">
-                  <div>
-                  <button className={`user-btn mr5 `} disabled={this.state.pageNo===1 ? true: false} onClick={() => this.onBtPrevious(this)}>Previous</button>
-                  <button className="user-btn mr5"  onClick={() => this.onBtNext(this)}>Next</button>
-                  <button className={`user-btn mr5 `}  onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
-                  <button className="user-btn mr5"  onClick={() => this.onSearchExit(this)} disabled={ !(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
-                  </div>
-                <p>Page No : <b> {this.state.pageNo}</b></p>
-              </div>
-               
+                <div className="mt-3 pagination-button-container">
+                    <div>
+                        <button className={`user-btn mr5 `} disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}>Previous</button>
+                        <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>Next</button>
+                        <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
+                        <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
+                    </div>
+                    <p>Page No : <b> {this.state.pageNo}</b></p>
+                </div>
+
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
 

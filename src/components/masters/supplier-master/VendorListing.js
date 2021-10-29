@@ -58,8 +58,8 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: 0,
             pageNo: 1,
-            enableSearchFilterSearchButton:false,
-            enableExitFilterSearchButton:false,
+            enableSearchFilterSearchButton: false,
+            enableExitFilterSearchButton: false,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -88,7 +88,7 @@ class VendorListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData)
+        this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData, true)
         this.applyPermission(this.props.topAndLeftMenuData)
     }
 
@@ -100,7 +100,7 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        this.setState({enableSearchFilterSearchButton:true})
+        this.setState({ enableSearchFilterSearchButton: true })
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 
@@ -129,7 +129,7 @@ class VendorListing extends Component {
         const nextNo = data.state.currentRowIndex + 10;
 
         //     //gridApi.paginationGoToNextPage();
-        data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData)
+        data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData, true)
         data.setState({ currentRowIndex: nextNo })
 
     }
@@ -142,7 +142,7 @@ class VendorListing extends Component {
             const previousNo = data.state.currentRowIndex - 10;
 
 
-            data.getTableListData(previousNo, '', "", "", 10, this.state.floatingFilterData)
+            data.getTableListData(previousNo, '', "", "", 10, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
 
         }
@@ -153,8 +153,8 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-        this.getTableListData(0, '', "", "", 5000, data.state.floatingFilterData)
-        data.setState({enableExitFilterSearchButton:true})
+        this.getTableListData(null, '', "", "", null, data.state.floatingFilterData, false)
+        data.setState({ enableExitFilterSearchButton: true })
 
     }
 
@@ -163,10 +163,10 @@ class VendorListing extends Component {
         this.setState({ floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" } })
         let emptyObj = { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" }
 
-        this.getTableListData(0, '', "", "", 10, emptyObj)
+        this.getTableListData(0, '', "", "", 10, emptyObj, true)
         data.setState({ pageNo: 1 })
-        data.setState({enableExitFilterSearchButton:false})
-        this.setState({enableSearchFilterSearchButton:false})
+        data.setState({ enableExitFilterSearchButton: false })
+        this.setState({ enableSearchFilterSearchButton: false })
     }
     /**
     * @method applyPermission
@@ -201,16 +201,17 @@ class VendorListing extends Component {
     * @method getTableListData
     * @description GET VENDOR DATA LIST
     */
-    getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj) => {
+    getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj, isPagination) => {
         let filterData = {
             vendorType: vendorType,
             vendorName: vendorName,
             country: country,
         }
-        this.props.getSupplierDataList(skip, obj, take, res => {
+        this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
+
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
@@ -454,7 +455,7 @@ class VendorListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(null, null, null)
+            this.getTableListData(this.state.currentRowIndex, '', "", "", 10, this.state.floatingFilterData, true)
         })
     }
 
@@ -467,7 +468,10 @@ class VendorListing extends Component {
         const vType = vendorType && vendorType != null ? vendorType.value : null;
         const vName = vendorName && vendorName != null ? vendorName.value : null;
         const Country = country && country != null ? country.value : null;
-        this.getTableListData(vType, vName, Country)
+
+
+        this.getTableListData(this.state.currentRowIndex, '', "", "", 10, this.state.floatingFilterData, true)
+        //this.getTableListData(vType, vName, Country)
     }
 
     /**
@@ -616,20 +620,20 @@ class VendorListing extends Component {
                         <Col md="12" className="d-flex justify-content-between">
                             <h1 className="mb-0">Vendor Master</h1>
                         </Col>
-                        <Col md="12"> 
-                        <div className="mt-3 pagination-button-container">
-                            <div>
-                            <button className={`user-btn mr5 `} disabled={this.state.pageNo===1 ? true: false} onClick={() => this.onBtPrevious(this)}>Previous</button>
-                            <button className="user-btn mr5"  onClick={() => this.onBtNext(this)}>Next</button>
-                            <button className={`user-btn mr5 `}  onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
-                            <button className="user-btn mr5"  onClick={() => this.onSearchExit(this)} disabled={ !(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
-                                {/* <button className="user-btn mr5" onClick={() => this.onBtPrevious(this)}>To Previous</button>
+                        <Col md="12">
+                            <div className="mt-3 pagination-button-container">
+                                <div>
+                                    <button className={`user-btn mr5 `} disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}>Previous</button>
+                                    <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>Next</button>
+                                    <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
+                                    <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
+                                    {/* <button className="user-btn mr5" onClick={() => this.onBtPrevious(this)}>To Previous</button>
                                 <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>To Next</button>
                                 <button className="user-btn mr5" onClick={() => this.onSearch(this)}> Filter Search</button>
                                 <button className="user-btn mr5" onClick={() => this.onSearchExit(this)}>Exit Filter Search</button> */}
+                                </div>
+                                <p>Page No : <b> {this.state.pageNo}</b></p>
                             </div>
-                             <p>Page No : <b> {this.state.pageNo}</b></p>
-                </div>
                         </Col>
                     </Row>
                     <Row className="pt-4 px-15 blue-before">

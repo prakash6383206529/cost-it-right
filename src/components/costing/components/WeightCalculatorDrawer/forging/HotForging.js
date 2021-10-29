@@ -248,7 +248,7 @@ function HotForging(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.finishedWeight}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
                     <Col md="2" className="m-height-44-label-inside">
@@ -273,7 +273,7 @@ function HotForging(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.machiningStock}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
                     <Col md="2" className="m-height-44-label-inside">
@@ -506,6 +506,7 @@ function HotForging(props) {
                 </Col>
                 <LossStandardTable
                   dropDownMenu={dropDown}
+                  CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                   calculation={calculateInputWeight}
                   weightValue={inputWeightValue}
                   netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
@@ -528,6 +529,7 @@ function HotForging(props) {
                 type="submit"
                 onClick={onSubmit}
                 // disabled={isSubmitted ? true : false}
+                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>
