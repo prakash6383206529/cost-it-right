@@ -620,19 +620,16 @@ class VendorListing extends Component {
                             <h1 className="mb-0">Vendor Master</h1>
                         </Col>
                         <Col md="12"> 
-                        <div className="mt-3 pagination-button-container">
+                        {/* <div className="mt-3 pagination-button-container">
                             <div>
                             <button className={`user-btn mr5 `} disabled={this.state.pageNo===1 ? true: false} onClick={() => this.onBtPrevious(this)}>Previous</button>
                             <button className="user-btn mr5"  onClick={() => this.onBtNext(this)}>Next</button>
                             <button className={`user-btn mr5 `}  onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
                             <button className="user-btn mr5"  onClick={() => this.onSearchExit(this)} disabled={ !(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
-                                {/* <button className="user-btn mr5" onClick={() => this.onBtPrevious(this)}>To Previous</button>
-                                <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>To Next</button>
-                                <button className="user-btn mr5" onClick={() => this.onSearch(this)}> Filter Search</button>
-                                <button className="user-btn mr5" onClick={() => this.onSearchExit(this)}>Exit Filter Search</button> */}
+                                
                             </div>
                              <p>Page No : <b> {this.state.pageNo}</b></p>
-                </div>
+                        </div> */}
                         </Col>
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
