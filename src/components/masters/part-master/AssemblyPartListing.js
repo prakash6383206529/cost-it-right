@@ -294,7 +294,7 @@ class AssemblyPartListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -317,7 +317,7 @@ class AssemblyPartListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyPart}>
+            <ExcelSheet data={temp} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

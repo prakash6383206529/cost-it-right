@@ -57,11 +57,11 @@ export function createSupplierAPI(data, callback) {
  * @method getSupplierDataList
  * @description get Supplier's DataList 
  */
-export function getSupplierDataList(skip, obj, take, callback) {
+export function getSupplierDataList(skip, obj, take, isPagination, callback) {
     return (dispatch) => {
 
 
-        var queryParams = `isApplyPagination=${true}`;
+        var queryParams = `isApplyPagination=${isPagination}`;
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
         const QueryParams = `vendorType=${obj.vendorType != null || obj.vendorType != "" ? obj.vendorType : ""}&vendorName=${obj.vendorName != null || obj.vendorName != "" ? obj.vendorName : ""}&country=${obj.Country != null || obj.Country != "" ? obj.Country : ""}&vendorCode=${obj.VendorCode != null || obj.VendorCode != "" ? obj.VendorCode : ""}&city=${obj.City != null || obj.City != "" ? obj.City : ""}&state=${obj.State != null || obj.State != "" ? obj.State : ""} `
