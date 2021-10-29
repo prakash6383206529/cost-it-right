@@ -50,6 +50,8 @@ class IndivisualPartListing extends Component {
             pageNo: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
+            enableExitFilterSearchButton: false,
+            enableSearchFilterSearchButton: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
             loader: true
@@ -110,7 +112,8 @@ class IndivisualPartListing extends Component {
 
     onSearch(data) {
 
-        data.ApiActionCreator(0, 5000, this.state.floatingFilterData, false)
+        data.ApiActionCreator(0, 5000, this.state.floatingFilterData)
+        data.setState({ enableExitFilterSearchButton: true })
 
     }
 
@@ -119,7 +122,10 @@ class IndivisualPartListing extends Component {
         this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
         let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
         data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 10, emptyObj, true)
+        data.ApiActionCreator(0, 10, emptyObj)
+        data.setState({ enableExitFilterSearchButton: false })
+        this.setState({ enableSearchFilterSearchButton: false })
+
 
     }
 
@@ -127,6 +133,7 @@ class IndivisualPartListing extends Component {
 
     onFloatingFilterChanged = (value) => {
 
+        this.setState({ enableSearchFilterSearchButton: true })
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 
@@ -486,18 +493,22 @@ class IndivisualPartListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter
         };
-
         return (
             <>
-                <button onClick={() => this.onBtPrevious(this)}>To Previous</button>
-                <button onClick={() => this.onBtNext(this)}>To Next</button>
-                <button onClick={() => this.onSearch(this)}> Filter Search</button>
-                <button onClick={() => this.onSearchExit(this)}>Exit Filter Search</button>
-                <p>Page No :{this.state.pageNo}</p>
+                <div className="mt-3 pagination-button-container">
+                    <div>
+                        <button className={`user-btn mr5 `} disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}>Previous</button>
+                        <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>Next</button>
+                        <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
+                        <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
+                    </div>
+                    <p>Page No : <b> {this.state.pageNo}</b></p>
+                </div>
+
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
 
-                    <Row className="pt-4 no-filter-row">
+                    <Row className="pt-3 no-filter-row">
                         <Col md="8" className="filter-block">
 
                         </Col>
