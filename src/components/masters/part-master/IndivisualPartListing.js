@@ -47,6 +47,7 @@ class IndivisualPartListing extends Component {
             tableData: [],
             startIndexCurrentPage: 0,
             endIndexCurrentPage: 9,
+            totalRecordCount: "",
             pageNo: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
@@ -72,6 +73,8 @@ class IndivisualPartListing extends Component {
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
+                    totalRecordCount: Data[0].TotalRecordCount,
+
                 })
             } else {
 
@@ -84,13 +87,16 @@ class IndivisualPartListing extends Component {
 
     onBtNext(data) {
 
-        data.setState({ pageNo: data.state.pageNo + 1 })
+        if (data.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
 
-        const nextNo = data.state.currentRowIndex + 10;
+            data.setState({ pageNo: data.state.pageNo + 1 })
 
-        //     //gridApi.paginationGoToNextPage();
-        data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData, true)
-        data.setState({ currentRowIndex: nextNo })
+            const nextNo = data.state.currentRowIndex + 10;
+
+            //     //gridApi.paginationGoToNextPage();
+            data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData, true)
+            data.setState({ currentRowIndex: nextNo })
+        }
 
     };
 
@@ -112,7 +118,9 @@ class IndivisualPartListing extends Component {
 
     onSearch(data) {
 
-        data.ApiActionCreator(null, null, this.state.floatingFilterData, false)
+        this.setState({ pageNo: 1 })
+        data.setState({ currentRowIndex: 0 })
+        data.ApiActionCreator(0, 10, this.state.floatingFilterData, true)
         data.setState({ enableExitFilterSearchButton: true })
 
     }
@@ -502,7 +510,7 @@ class IndivisualPartListing extends Component {
                         <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
                         <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
                     </div>
-                    <p>Page No : <b> {this.state.pageNo}</b></p>
+                    <p>Page No : <b> {this.state.pageNo}  of {Math.ceil(this.state.totalRecordCount / 10)}</b></p>
                 </div>
 
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
