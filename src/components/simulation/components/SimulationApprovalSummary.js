@@ -482,6 +482,7 @@ function SimulationApprovalSummary(props) {
         params.api.paginationGoToPage(0);
 
         window.screen.width >= 1600 && params.api.sizeColumnsToFit()
+        
     };
 
     const onPageSizeChanged = (newPageSize) => {
