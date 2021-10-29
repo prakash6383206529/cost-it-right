@@ -117,7 +117,7 @@ function ApproveRejectDrawer(props) {
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    let pushDD = []
+    let listForDropdown = []
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
@@ -172,7 +172,7 @@ function ApproveRejectDrawer(props) {
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
-                  pushDD.push(i)
+                  listForDropdown.push(i)
                 }
               })
             })
@@ -182,13 +182,13 @@ function ApproveRejectDrawer(props) {
       })
 
 
-      if (pushDD[0]?.value === EMPTY_GUID || pushDD.length === 0) {
+      if (listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) {
 
         toastr.warning('User does not exist on next level for selected simulation.')
         return false
       }
 
-      setApprovalDropDown(pushDD)
+      setApprovalDropDown(listForDropdown)
     } else {
 
       let obj = {

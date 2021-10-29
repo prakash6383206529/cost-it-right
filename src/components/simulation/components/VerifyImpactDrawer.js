@@ -2,28 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
-import { toastr } from 'react-redux-toastr';
-import { checkForNull, loggedInUserId } from '../../../helper';
-import { runVerifySimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
-import { getImpactedMasterData, getLastSimulationData } from '../../../actions/Common';
 import moment from 'moment';
+import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 
 
 function VerifyImpactDrawer(props) {
-  const { list, technology, master, SimulationTechnologyIdState, simulationId, tokenNo, vendorIdState, EffectiveDate, amendmentDetails } = props
-  const [token, setToken] = useState('')
-  const [showverifyPage, setShowVerifyPage] = useState(false)
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails } = props
   const [shown, setshown] = useState(false)
   const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
   const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
-  const [showLastRevisionData, setShowLastRevisionData] = useState(false)
-  const [showImpactedData, setshowImpactedData] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -43,11 +36,9 @@ function VerifyImpactDrawer(props) {
 
     if (lastSimulationData) {
       setImpactedMasterDataListForLastRevisionData(lastSimulationData)
-      setShowLastRevisionData(true)
     }
     if (impactedMasterData) {
       setImpactedMasterDataListForImpactedMaster(impactedMasterData)
-      setshowImpactedData(true)
     }
   }, [lastSimulationData, impactedMasterData])
 
@@ -58,68 +49,6 @@ function VerifyImpactDrawer(props) {
     }
 
   }, [EffectiveDate, vendorIdState, simulationId])
-
-  const verifySimulation = () => {
-    let basicRateCount = 0
-    let basicScrapCount = 0
-
-    list && list.map((li) => {
-      if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-
-        basicRateCount = basicRateCount + 1
-      }
-      if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-        basicScrapCount = basicScrapCount + 1
-      }
-      return null;
-    })
-
-    if (basicRateCount === list.length && basicScrapCount === list.length) {
-      toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
-      return false
-    }
-
-    // setShowVerifyPage(true)
-    /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
-    let obj = {}
-    obj.Technology = technology
-    obj.SimulationTechnologyId = selectedTechnologyForSimulation.value
-    obj.Vendor = list[0].VendorName
-    obj.Masters = master
-    obj.LoggedInUserId = loggedInUserId()
-
-    let tempArr = []
-    list && list.map(item => {
-      let tempObj = {}
-      tempObj.CostingHead = item.CostingHead
-      tempObj.RawMaterialName = item.RawMaterial
-      tempObj.MaterialType = item.MaterialType
-      tempObj.RawMaterialGrade = item.RMGrade
-      tempObj.RawMaterialSpecification = item.RMSpec
-      tempObj.RawMaterialCategory = item.Category
-      tempObj.UOM = item.UOM
-      tempObj.OldBasicRate = item.BasicRate
-      tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-      tempObj.OldScrapRate = item.ScrapRate
-      tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-      tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-      tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-      tempObj.OldNetLandedCost = item.NetLandedCost
-      tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-      tempObj.EffectiveDate = item.EffectiveDate
-      tempArr.push(tempObj)
-      return null
-    })
-    obj.SimulationRawMaterials = tempArr
-
-    dispatch(runVerifySimulation(obj, res => {
-
-      if (res.data.Result) {
-        setToken(res.data.Identity)
-        setShowVerifyPage(true)
-      }
-    }))
-  }
 
   return (
     <>
@@ -150,25 +79,10 @@ function VerifyImpactDrawer(props) {
                     <span>{amendmentDetails.Vendor}</span>
                   </span>
 
-                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Vendor Code:</span>
-                    <span>{amendmentDetails.Vendor}</span>
-                  </span> */}
-
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Technology:</span>
                     <span>{amendmentDetails.Technology}</span>
                   </span>
-
-                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Parts Supplied:</span>
-                    <span>120</span>
-                  </span>
-
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Parts Amended:</span>
-                    <span>120</span>
-                  </span> */}
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Master:</span>
@@ -185,20 +99,6 @@ function VerifyImpactDrawer(props) {
                     <span>{moment(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                   </span>
 
-                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Impact for Annum(INR):</span>
-                    <span>5000</span>
-                  </span>
-
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Impact for the Quarter(INR):</span>
-                    <span>12500</span>
-                  </span> */}
-
-                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Reason:</span>
-                    <span>Test</span>
-                  </span> */}
                 </Col>
               </Row>
 

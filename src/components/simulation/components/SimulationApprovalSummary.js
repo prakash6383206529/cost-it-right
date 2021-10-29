@@ -8,8 +8,8 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData, getImpactedMasterData } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation'
+import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -19,7 +19,6 @@ import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -30,16 +29,9 @@ const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master } = props;
+    const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
-    const [shown, setshown] = useState(false)
-    const [amendment, setAmendment] = useState(true)
-    const [token, setToken] = useState('')
-    const [showverifyPage, setShowVerifyPage] = useState(false)
     const [showImpactedData, setshowImpactedData] = useState(false)
-
-
-    const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -67,32 +59,24 @@ function SimulationApprovalSummary(props) {
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
 
     const dispatch = useDispatch()
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
-    const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-
-    const [acc1, setAcc1] = useState(false)
-    const [acc2, setAcc2] = useState(false)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
 
 
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { setValue, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -133,7 +117,6 @@ function SimulationApprovalSummary(props) {
 
 
     useEffect(() => {
-
         if (costingList.length > 0 && effectiveDate) {
             dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                 const Data = res.data.Data.ImpactedMasterDataList
@@ -145,13 +128,15 @@ function SimulationApprovalSummary(props) {
                     setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
 
                 }
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                if (simulationDetail.SimulationId !== undefined) {
+                    dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                }
             }))
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
 
-     useEffect(() => {
+    useEffect(() => {
         if (impactedMasterData) {
             setImpactedMasterDataListForImpactedMaster(impactedMasterData)
             setshowImpactedData(true)
@@ -224,17 +209,6 @@ function SimulationApprovalSummary(props) {
             })
             return tempDropdownList
         }
-    }
-
-    /**
-    * @method resetHandler
-    * @description Reseting all filter
-    */
-    const resetHandler = () => {
-        setValue('partNo', '')
-        setValue('plantCode', '')
-        setCostingList(oldCostingList)
-
     }
 
     const DisplayCompareCosting = (el, data) => {
@@ -407,12 +381,10 @@ function SimulationApprovalSummary(props) {
     }
     const freightCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
 
@@ -427,7 +399,6 @@ function SimulationApprovalSummary(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -437,7 +408,6 @@ function SimulationApprovalSummary(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
@@ -448,15 +418,6 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? `${cell}- ${row.RMGrade}` : '-';
     }
-
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-    };
 
     if (showListing === true) {
         return <Redirect to="/simulation-history" />
@@ -805,15 +766,15 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
-                            <Col md="6"className="text-right">
+                            <Col md="6" className="text-right">
                                 <div className={'right-details'}>
                                     <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
-                                            <i className="fa fa-minus" ></i>
-                                        ) : (
-                                            <i className="fa fa-plus"></i>
-                                        )}</button>
+                                        <i className="fa fa-minus" ></i>
+                                    ) : (
+                                        <i className="fa fa-plus"></i>
+                                    )}</button>
                                 </div>
-                                
+
                             </Col>
 
                             {lastRevisionDataAccordian &&
