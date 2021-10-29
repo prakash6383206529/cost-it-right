@@ -8,9 +8,9 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
-import { COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData, getImpactedMasterData } from '../../../actions/Common';
+import {getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData,setAttachmentFileData } from '../actions/Simulation'
+import {COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -65,6 +65,7 @@ function SimulationApprovalSummary(props) {
     const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
@@ -87,7 +88,7 @@ function SimulationApprovalSummary(props) {
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
-
+    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
@@ -152,24 +153,35 @@ function SimulationApprovalSummary(props) {
     }, [])
 
 
+
     useEffect(() => {
 
         if (costingList.length > 0 && effectiveDate) {
             dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                const masterId = res.data.Data.SimulationTechnologyId;
                 const Data = res.data.Data.ImpactedMasterDataList
+                const masterId = res.data.Data.SimulationTechnologyId;
+
                 if (res) {
                     setImpactedMasterDataListForLastRevisionData(Data)
                     setShowLastRevisionData(true)
                     setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
 
-
                 }
-
             }))
         }
+        if(simulationDetail.SimulationId){
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+        }
 
-    }, [effectiveDate, costingList])
+    }, [effectiveDate, costingList, simulationDetail.SimulationId])
+
+     useEffect(() => {
+        if (impactedMasterData) {
+            setImpactedMasterDataListForImpactedMaster(impactedMasterData)
+            setshowImpactedData(true)
+        }
+    }, [impactedMasterData])
+
 
 
     const closeViewDrawer = (e = '') => {
@@ -708,11 +720,17 @@ function SimulationApprovalSummary(props) {
                                     </button>
                                 </div>
                             </Col>
+                            {/* {acc3 && */}
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
 
                             </div>
+                            {/* } */}
+                            {/* <div className="accordian-content w-100 px-3 impacted-min-height">
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+
+                            </div> */}
 
                         </Row>
 
