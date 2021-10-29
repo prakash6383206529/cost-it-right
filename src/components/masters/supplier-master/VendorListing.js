@@ -59,7 +59,8 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: 0,
             pageNo: 1,
-
+            enableSearchFilterSearchButton:false,
+            enableExitFilterSearchButton:false,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -100,8 +101,7 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
-
+        this.setState({enableSearchFilterSearchButton:true})
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 
@@ -154,8 +154,8 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-
         this.getTableListData(0, '', "", "", 5000, data.state.floatingFilterData)
+        data.setState({enableExitFilterSearchButton:true})
 
     }
 
@@ -166,11 +166,9 @@ class VendorListing extends Component {
 
         this.getTableListData(0, '', "", "", 10, emptyObj)
         data.setState({ pageNo: 1 })
-
+        data.setState({enableExitFilterSearchButton:false})
+        this.setState({enableSearchFilterSearchButton:false})
     }
-
-
-
     /**
     * @method applyPermission
     * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -616,7 +614,21 @@ class VendorListing extends Component {
                     <Row>
                         <Col md="12" className="d-flex justify-content-between">
                             <h1 className="mb-0">Vendor Master</h1>
-                            <p>Page No :{this.state.pageNo}</p>
+                        </Col>
+                        <Col md="12"> 
+                        <div className="mt-3 pagination-button-container">
+                            <div>
+                            <button className={`user-btn mr5 `} disabled={this.state.pageNo===1 ? true: false} onClick={() => this.onBtPrevious(this)}>Previous</button>
+                            <button className="user-btn mr5"  onClick={() => this.onBtNext(this)}>Next</button>
+                            <button className={`user-btn mr5 `}  onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
+                            <button className="user-btn mr5"  onClick={() => this.onSearchExit(this)} disabled={ !(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
+                                {/* <button className="user-btn mr5" onClick={() => this.onBtPrevious(this)}>To Previous</button>
+                                <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>To Next</button>
+                                <button className="user-btn mr5" onClick={() => this.onSearch(this)}> Filter Search</button>
+                                <button className="user-btn mr5" onClick={() => this.onSearchExit(this)}>Exit Filter Search</button> */}
+                            </div>
+                             <p>Page No : <b> {this.state.pageNo}</b></p>
+                </div>
                         </Col>
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
@@ -749,18 +761,6 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-
-
-                <div>
-
-
-                    <button onClick={() => this.onBtPrevious(this)}>To Previous</button>
-                    <button onClick={() => this.onBtNext(this)}>To Next</button>
-                    <button onClick={() => this.onSearch(this)}> Filter Search</button>
-                    <button onClick={() => this.onSearchExit(this)}>Exit Filter Search</button>
-
-
-                </div>
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
