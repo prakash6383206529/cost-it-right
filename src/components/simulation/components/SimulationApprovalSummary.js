@@ -145,8 +145,10 @@ function SimulationApprovalSummary(props) {
                     setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
 
                 }
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
             }))
+        }
+        if(simulationDetail.SimulationId){
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
