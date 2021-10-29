@@ -308,7 +308,6 @@ export function getZBCCostingByCostingId(CostingId, callback) {
  * @description SET COSTING DATA LIST
  */
 export function setCostingDataList(flag, CostingDataList, callback) {
-  // console.log('flag: ', flag, CostingDataList);
   return (dispatch) => {
     dispatch({
       type: SET_COSTING_DATALIST_BY_COSTINGID,
@@ -460,6 +459,9 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+  console.log('TabData: ', TabData);
+
+
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -2126,6 +2128,7 @@ export function gridDataAdded(IsCostingDateDisabled) {
  * @description SET OVERHEAD PROFIT TAB DATA  
  */
 export function setRMCutOff(cutOffObj) {
+  console.log('cutOffObj: ', cutOffObj);
   return (dispatch) => {
     dispatch({
       type: SET_CUTOFF_RMC,
@@ -2181,4 +2184,20 @@ export function checkDataForCopyCosting(data, callback) {
       apiErrors(error)
     })
   }
+}
+
+/*
+* @method saveAssemblyPartRowCostingCalculation
+* @description SAVE ASSEMBLY COSTING RM+CC TAB
+*/
+export function saveAssemblyPartRowCostingCalculation(data, callback) {
+ return (dispatch) => {
+   const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, headers);
+   request.then((response) => {
+     callback(response);
+   }).catch((error) => {
+     dispatch({ type: API_FAILURE });
+     apiErrors(error);
+   });
+ };
 }

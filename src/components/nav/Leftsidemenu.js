@@ -27,7 +27,7 @@ class Leftmenu extends Component {
 		if (location && location !== undefined) {
 
 			this.props.getModuleIdByPathName(location.pathname, res => {
-				// this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
+				this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
 			})
 		}
 

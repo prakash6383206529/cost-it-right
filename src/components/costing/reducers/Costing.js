@@ -275,14 +275,15 @@ export default function costingReducer(state = initialState, action) {
         rateCriteriaByCapacitySelectList: action.payload
       };
     case SET_RMCC_TAB_DATA:
+      const tempRMData = [...action.payload]
+      console.log(action.payload, "action.payloadaction.payload");
       return {
         ...state,
         loading: false,
-        RMCCTabData: action.payload
+        RMCCTabData: tempRMData
       };
     case SET_COSTING_DATALIST_BY_COSTINGID:
       const Costingdata1 = action.payload
-      console.log('Costingdata1: ', Costingdata1);
       return {
         ...state,
         loading: false,

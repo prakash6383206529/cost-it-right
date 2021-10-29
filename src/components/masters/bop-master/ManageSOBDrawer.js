@@ -68,7 +68,7 @@ function ManageSOBDrawer(props) {
             ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage !== 0 ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
 
           }
-          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
+          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { 0: tempData })
           setGridData(tempArray)
           setGridDataOldArray(tempArray)
 

@@ -80,7 +80,7 @@ function RawMaterialCost(props) {
       }
 
       if (!CostingViewMode) {
-        props.setRMCost(gridData, Params)
+        props.setRMCost(gridData, Params,item)
       }
       selectedIds(gridData)
 
@@ -89,7 +89,7 @@ function RawMaterialCost(props) {
         dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
       }
 
-    }, 100)
+    }, 500)
   }, [gridData]);
 
   /**
@@ -619,7 +619,7 @@ function RawMaterialCost(props) {
       const ApplicableFinishWeight = (checkForNull(tempData?.FinishWeight) !== 0) ? (GrossWeight - FinishWeight) * tempData?.ScrapRate : 0;
       const NetLandedCost = (GrossWeight * tempData?.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
-      tempArr = Object.assign([...gridData], { [0]: tempData })
+      tempArr = Object.assign([...gridData], { 0: tempData })
       setGridData(tempArr)
       setValue(`${rmGridFields}.${0}.GrossWeight`, GrossWeight)
       setValue(`${rmGridFields}.${0}.FinishWeight`, checkForNull(tempData?.FinishWeight))
@@ -707,7 +707,7 @@ function RawMaterialCost(props) {
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
-      let tempArr = Object.assign([...gridData], { [0]: tempData })
+      let tempArr = Object.assign([...gridData], { 0: tempData })
       setGridData(tempArr)
 
       setTimeout(() => {
@@ -733,7 +733,7 @@ function RawMaterialCost(props) {
       const ApplicableFinishWeight = (tempData.FinishWeight !== 0) ? (tempData.GrossWeight - tempData.FinishWeight) * tempData.ScrapRate : 0;
       const NetLandedCost = (tempData.GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
-      let tempArr = Object.assign([...gridData], { [0]: tempData })
+      let tempArr = Object.assign([...gridData], { 0: tempData })
       setValue('RMTotal', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
       setGridData(tempArr)
 

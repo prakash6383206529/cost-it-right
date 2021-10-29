@@ -29,7 +29,6 @@ function ApprovalListing(props) {
   const { isDashboard } = props
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
-  const [dShown, setDshown] = useState(false)
 
   const [tableData, setTableData] = useState([])
   const [approvalData, setApprovalData] = useState('')
@@ -41,7 +40,6 @@ function ApprovalListing(props) {
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
   const [isLoader, setIsLoader] = useState(true)
   const dispatch = useDispatch()
 
@@ -151,7 +149,7 @@ function ApprovalListing(props) {
    * @method onSubmit
    * @description filtering data on Apply button
    */
-  const onSubmit = (values) => {
+  const onSubmit = () => {
     const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
     const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
     const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
@@ -181,7 +179,6 @@ function ApprovalListing(props) {
 
   const createdOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
@@ -198,7 +195,6 @@ function ApprovalListing(props) {
 
   const oldpriceFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
         {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
@@ -209,7 +205,6 @@ function ApprovalListing(props) {
 
   const requestedOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
@@ -332,7 +327,7 @@ function ApprovalListing(props) {
 
   };
 
-  const onPageSizeChanged = (newPageSize) => {
+  const onPageSizeChanged = () => {
     var value = document.getElementById('page-size').value;
     gridApi.paginationSetPageSize(Number(value));
   };

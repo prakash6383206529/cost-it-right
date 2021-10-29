@@ -241,8 +241,14 @@ function Simulation(props) {
                             vendorFlag = false
                             // return false
                         }
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
+                            vendorFlag = false
+                            return false
+                        }
                         if (element.PlantId !== Data[index - 1].PlantId) {
-                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                         
                             setEditWarning(true);
                             plantFlag = false
                             // return false
