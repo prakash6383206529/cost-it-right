@@ -310,8 +310,12 @@ function RunSimulationDrawer(props) {
                                                                     />
                                                                 </label>
                                                                 {(el.Text === "Additional Other Cost") && inputOtherCost ?
-                                                                 <Fragment>
-                                                                      <div className="toggle-button-per-and-fix">
+
+
+
+
+                                                                    <Fragment>
+                                                                        <div className="toggle-button-per-and-fix">
                                                                         <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span> 
                                                                         <Switch
                                                                             onChange={onChange}
@@ -344,11 +348,15 @@ function RunSimulationDrawer(props) {
                                                                             errors={errors.OtherCost}
                                                                             disabled={false}
                                                                         />
-                                                                        </div>
+
+                                                                      </div>
+
                                                                     </Fragment>
 
                                                                     : " "
                                                                 }
+
+
                                                                 {(el.Text === "Additional Discount %") && inputAdditionalDiscount ?
                                                                     <TextFieldHookForm
                                                                         label=""

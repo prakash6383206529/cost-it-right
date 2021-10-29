@@ -6181,8 +6181,6 @@ body{
     }
   }
 }
-
-
   .token-no-grid {
     .ag-cell-value {
       position: absolute;
@@ -6256,4 +6254,8 @@ body{
        }
      }
   }
+}
+.combine-tooltip {
+  right: -20px;
+  top: 8px;
 }
