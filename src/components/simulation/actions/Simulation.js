@@ -15,7 +15,9 @@ import {
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
-    GET_SELECTLIST_SIMULATION_TOKENS
+    GET_SELECTLIST_SIMULATION_TOKENS,
+    GET_IMPACTED_MASTER_DATA,
+    GET_LAST_SIMULATION_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -563,3 +565,50 @@ export function uploadSimulationAttachment(data, callback) {
             })
     }
 }
+
+
+
+export function getLastSimulationData(vendorId, effectiveDate, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
+
+        const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_LAST_SIMULATION_DATA,
+                    payload: response.data.Data.ImpactedMasterDataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function getImpactedMasterData(simulationId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const queryParams = `simulationId=${simulationId}`
+        const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
+        request.then((response) => {
+            console.log(response.data.Data.ImpactedMasterDataList, 'lllkokl')
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_IMPACTED_MASTER_DATA,
+                    payload: response.data.Data.ImpactedMasterDataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
