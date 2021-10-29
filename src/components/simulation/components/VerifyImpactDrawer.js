@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import moment from 'moment';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
@@ -380,7 +379,7 @@ function VerifyImpactDrawer(props) {
               {/* {shown &&
                   <div className="accordian-content w-100">
                     <Col md="12" className="mb-3">
-                      <BootstrapTable
+                      {/* <BootstrapTable
                         data={rmDomesticListing}
                         striped={false}
                         bordered={true}
@@ -409,11 +408,11 @@ function VerifyImpactDrawer(props) {
                         <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
                         <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                         <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
-                      </BootstrapTable>
+                      </BootstrapTable> */}
 
-                    </Col>
+                    {/* </Col>
                   </div>
-                } */}
+                }  */}
               {/* </Row> */}
 
               <Row className="pr-0 mx-0">
@@ -545,7 +544,7 @@ function VerifyImpactDrawer(props) {
                 {/* {acc3 &&
                   <div className="accordian-content w-100">
                     <Col md="12" className="mb-3">
-                      <BootstrapTable
+                      {/* <BootstrapTable
                         data={rmDomesticListing}
                         striped={false}
                         bordered={true}
@@ -571,11 +570,11 @@ function VerifyImpactDrawer(props) {
                         <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
                         <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                         <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
-                      </BootstrapTable>
-
+                      </BootstrapTable> */}
+{/* 
                     </Col>
                   </div>
-                } */}
+                } */} 
               </Row>
 
 

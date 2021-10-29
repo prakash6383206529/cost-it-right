@@ -5,7 +5,6 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
