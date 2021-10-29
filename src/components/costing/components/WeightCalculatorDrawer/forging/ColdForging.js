@@ -326,7 +326,7 @@ function ColdForging(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.inputOuterDiameter}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
                     />
                   </Col>
                   <Col md="2" className="m-height-44-label-inside">
@@ -351,7 +351,7 @@ function ColdForging(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.inputLength}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
                     />
                   </Col>
                   <Col md="2" className="m-height-44-label-inside">
@@ -427,7 +427,7 @@ function ColdForging(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.flash}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
                     />
                   </Col>
                   <Col md="2" className="m-height-44-label-inside">
@@ -474,7 +474,7 @@ function ColdForging(props) {
                       onChange={onToggleChange}
                       checked={isChecked}
                       id="normal-switch"
-                      disabled={false}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       background="#4DC771"
                       onColor="#4DC771"
                       onHandleColor="#ffffff"
@@ -512,7 +512,7 @@ function ColdForging(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.description}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
                     {!showLabel && (
@@ -538,7 +538,7 @@ function ColdForging(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.forgingOuterDiameter}
-                          disabled={false}
+                          disabled={props.CostingViewMode ? props.CostingViewMode : false}
                         />
                       </Col>
                     )}
@@ -565,7 +565,7 @@ function ColdForging(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.forgingLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
                     {showLabel && (
@@ -592,7 +592,7 @@ function ColdForging(props) {
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.breadth}
-                            disabled={false}
+                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
                           />
                         </Col>
                         <Col md="2" className="m-height-44-label-inside">
@@ -617,7 +617,7 @@ function ColdForging(props) {
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.height}
-                            disabled={false}
+                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
                           />
                         </Col>
                         <Col md="2" className="m-height-44-label-inside">
@@ -642,7 +642,7 @@ function ColdForging(props) {
                             className=""
                             customClassName={'withBorder'}
                             errors={errors.number}
-                            disabled={false}
+                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
                           />
                         </Col>
                       </Fragment>
@@ -721,6 +721,7 @@ function ColdForging(props) {
                         ) : (
                           <button
                             type="submit"
+                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
                             className={'user-btn mt30 pull-left'}
                             onClick={() => { }}
                           >
@@ -972,6 +973,7 @@ function ColdForging(props) {
             <button
               type="submit"
               // disabled={isSubmitted ? true : false}
+              disabled={props.CostingViewMode ? props.CostingViewMode : false}
               onClick={onSave}
               className="btn-primary save-btn"
             >

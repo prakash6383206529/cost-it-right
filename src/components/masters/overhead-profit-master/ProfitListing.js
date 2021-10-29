@@ -453,6 +453,10 @@ class ProfitListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+
+            }
 
             return item
         })
@@ -697,8 +701,8 @@ class ProfitListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
                                     floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -709,7 +713,7 @@ class ProfitListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

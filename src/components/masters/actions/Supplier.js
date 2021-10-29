@@ -57,7 +57,7 @@ export function createSupplierAPI(data, callback) {
  * @method getSupplierDataList
  * @description get Supplier's DataList 
  */
-export function getSupplierDataList(skip, obj, take, callback) {
+export function getSupplierDataList(skip, obj, take, isPagination, callback) {
     return (dispatch) => {
 
 
