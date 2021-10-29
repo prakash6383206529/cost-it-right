@@ -8,7 +8,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { CONSTANT } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
@@ -395,8 +395,8 @@ function AddBOP(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-                        floatingFilter = {true}
-domLayout='autoHeight'
+                        floatingFilter={true}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={bopDrawerList}
                         pagination={true}

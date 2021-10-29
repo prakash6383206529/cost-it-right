@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError, } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
@@ -306,7 +306,7 @@ class ClientListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
-       gridOptions.api.setFilterModel(null);
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -401,10 +401,10 @@ class ClientListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
-                                floatingFilter = {true}
+                                floatingFilter={true}
 
 
-domLayout='autoHeight'
+                                domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}

@@ -4,7 +4,7 @@ import { Container, Row, Col, Button, Table } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import ConfirmComponent from '../../helper/ConfirmComponent';
 import LoaderCustom from '../common/LoaderCustom';
@@ -271,8 +271,8 @@ class LevelTechnologyListing extends Component {
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
-									floatingFilter = {true}
-domLayout='autoHeight'
+									floatingFilter={true}
+									domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
 									pagination={true}

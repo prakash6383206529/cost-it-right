@@ -7,7 +7,7 @@ import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -530,8 +530,8 @@ class VBCPlantListing extends Component {
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                            <div className="filter mr-0"></div>
+                                        </button>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -578,12 +578,12 @@ class VBCPlantListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            floatingFilter = {true}
-domLayout='autoHeight'
+                            floatingFilter={true}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
@@ -594,7 +594,7 @@ domLayout='autoHeight'
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: CONSTANT.EMPTY_DATA,
-                                imagClass:'imagClass'
+                                imagClass: 'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}
                         >
@@ -605,7 +605,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

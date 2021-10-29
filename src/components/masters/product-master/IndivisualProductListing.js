@@ -5,7 +5,7 @@ import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import moment from 'moment';
@@ -173,7 +173,7 @@ class IndivisualProductListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch"  className="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
                             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}

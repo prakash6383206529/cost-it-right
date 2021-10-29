@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../common/NoContentFound'
-import { CONSTANT } from '../../helper/AllConastant'
+import { CONSTANT } from '../../config/constants'
 import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'

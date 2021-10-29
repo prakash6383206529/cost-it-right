@@ -4,7 +4,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import moment from 'moment'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation';
@@ -16,12 +16,12 @@ import { ZBC } from '../../../config/constants';
 const gridOptions = {};
 
 export function Summarysection(props) {
-    const {isbulkUpload} = props;
+    const { isbulkUpload } = props;
 
-    
-    
-    
-    
+
+
+
+
     const [simulationDetail, setSimulationDetail] = useState({})
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
@@ -250,7 +250,7 @@ export function Summarysection(props) {
 
     return (
         <>
-             <Row>
+            <Row>
                 <Col md="10">
                     <div className="left-border">{'Summary:'}</div>
                 </Col>
@@ -283,12 +283,12 @@ export function Summarysection(props) {
                                             </div>
                                             <div
                                                 className="ag-theme-material"
-                                                
+
                                             >
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                                    domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={costingList}
                                                     pagination={true}
@@ -314,7 +314,7 @@ domLayout='autoHeight'
                                                     <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
-                                                    <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"  type="rightAligned"></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions" type="rightAligned"></AgGridColumn>
                                                     {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                     <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 

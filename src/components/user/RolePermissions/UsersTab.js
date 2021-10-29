@@ -6,7 +6,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../helper/AllConastant";
+import { CONSTANT } from "../../../config/constants";
 import { USERS, } from "../../../config/constants";
 import Switch from "react-switch";
 

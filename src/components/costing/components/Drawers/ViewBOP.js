@@ -3,7 +3,7 @@ import { checkForDecimalAndNull } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {

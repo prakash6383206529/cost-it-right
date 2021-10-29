@@ -1,5 +1,5 @@
- 
- import React, { Component } from 'react';
+
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
@@ -11,7 +11,7 @@ import {
 import { getPlantBySupplier } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr'
@@ -676,8 +676,8 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    floatingFilter = {true}
-domLayout='autoHeight'
+                    floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -688,7 +688,7 @@ domLayout='autoHeight'
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass power-listing'
+                      imagClass: 'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
@@ -713,7 +713,7 @@ domLayout='autoHeight'
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass power-listing'
+                      imagClass: 'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

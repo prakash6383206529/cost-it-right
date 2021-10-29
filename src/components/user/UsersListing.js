@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -288,7 +288,7 @@ class UsersListing extends Component {
 		if (ActivateAccessibility) {
 			return (
 				<>
-					<label htmlFor="normal-switch"  className="normal-switch">
+					<label htmlFor="normal-switch" className="normal-switch">
 						{/* <span>Switch with default style</span> */}
 						<Switch
 							onChange={() => this.handleChange(cellValue, rowData)}
@@ -415,7 +415,7 @@ class UsersListing extends Component {
 
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
-		 gridOptions.api.setFilterModel(null);
+		gridOptions.api.setFilterModel(null);
 	}
 
 	onGridReady = (params) => {
@@ -607,7 +607,7 @@ class UsersListing extends Component {
 						>
 							<AgGridReact
 								defaultColDef={defaultColDef}
-								floatingFilter = {true}
+								floatingFilter={true}
 								domLayout='autoHeight'
 								// columnDefs={c}
 								rowData={this.props.userDataList}
@@ -619,7 +619,7 @@ class UsersListing extends Component {
 								noRowsOverlayComponent={'customNoRowsOverlay'}
 								noRowsOverlayComponentParams={{
 									title: CONSTANT.EMPTY_DATA,
-									imagClass:'imagClass'
+									imagClass: 'imagClass'
 								}}
 								frameworkComponents={frameworkComponents}
 							>
@@ -633,7 +633,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status"  floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							<div className="paging-container d-inline-block float-right">

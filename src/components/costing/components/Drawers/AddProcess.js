@@ -5,7 +5,7 @@ import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../act
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { CONSTANT } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -289,8 +289,8 @@ function AddProcess(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-                        floatingFilter = {true}
-domLayout='autoHeight'
+                        floatingFilter={true}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={processDrawerList}
                         pagination={true}

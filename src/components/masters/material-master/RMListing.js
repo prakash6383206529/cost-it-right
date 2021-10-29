@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -363,8 +363,8 @@ class RMListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    floatingFilter = {true}
-domLayout='autoHeight'
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
@@ -375,7 +375,7 @@ domLayout='autoHeight'
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
