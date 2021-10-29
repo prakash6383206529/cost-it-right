@@ -40,7 +40,7 @@ function AttachmentSec(props) {
     //  const setAttachmentForSimulation = 
 
     useEffect(() => {
-        attachmentsData && attachmentsData.map(item => {
+        Attachements && Attachements.map(item => {
             if (item.AttachementCategory === IMPACT_SHEET) {
                 files.push(item)
                 setFiles(files)
@@ -61,7 +61,7 @@ function AttachmentSec(props) {
 
         })
         setIsOpen(!IsOpen)
-    }, [])
+    }, [Attachements])
 
 
 
