@@ -126,12 +126,16 @@ class VendorListing extends Component {
 
     onBtNext(data) {
 
-        data.setState({ pageNo: data.state.pageNo + 1 })
-        const nextNo = data.state.currentRowIndex + 10;
+        if (data.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
 
-        //     //gridApi.paginationGoToNextPage();
-        data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData, true)
-        data.setState({ currentRowIndex: nextNo })
+            data.setState({ pageNo: data.state.pageNo + 1 })
+            const nextNo = data.state.currentRowIndex + 10;
+
+            //     //gridApi.paginationGoToNextPage();
+            data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData, true)
+            data.setState({ currentRowIndex: nextNo })
+
+        }
 
     }
 
@@ -154,7 +158,10 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-        this.getTableListData(null, '', "", "", null, data.state.floatingFilterData, false)
+
+        this.setState({ pageNo: 1 })
+        data.setState({ currentRowIndex: 0 })
+        this.getTableListData(0, '', "", "", 10, data.state.floatingFilterData, true)
         data.setState({ enableExitFilterSearchButton: true })
 
     }
