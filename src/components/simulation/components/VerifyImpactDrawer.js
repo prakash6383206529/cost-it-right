@@ -28,6 +28,7 @@ function VerifyImpactDrawer(props) {
   const [compareCostingObj, setCompareCostingObj] = useState([])
   const [simulationTechnologyIdOfRevisionData, setSimulationTechnologyIdOfRevisionData] = useState("")
   const [lastRevisionData, SetLastRevisionData] = useState([])
+  const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -356,11 +357,11 @@ function VerifyImpactDrawer(props) {
                 <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
-                    <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                    <a onClick={() => setLastRevisionDataAccordial(!lastRevisionDataAccordial)} className={`${lastRevisionDataAccordial ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {acc3 && <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={true} />}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={true} />}
 
                 </div>
               </Row>

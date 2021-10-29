@@ -251,7 +251,6 @@ function Simulation(props) {
         }
     }
     let selectedRowCount = 0
-    console.log(selectedRowCount, 'selectedRowCountLOG')
     const rowSelected = (value) => {
         selectedRowCount = value
         setIsRowSelected(value)

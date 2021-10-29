@@ -203,6 +203,7 @@ function CostingDetails(props) {
   const renderListing = (label) => {
     const temp = []
 
+
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
         if (item.Value === '0') return false
