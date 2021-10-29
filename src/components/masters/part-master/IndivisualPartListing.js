@@ -51,8 +51,6 @@ class IndivisualPartListing extends Component {
             pageNo: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
-            enableExitFilterSearchButton: false,
-            enableSearchFilterSearchButton: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
             loader: true
@@ -131,9 +129,8 @@ class IndivisualPartListing extends Component {
         let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
         data.setState({ pageNo: 1 })
         data.ApiActionCreator(0, 10, emptyObj, true)
-        data.setState({ enableExitFilterSearchButton: false })
-        this.setState({ enableSearchFilterSearchButton: false })
-
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
 
     }
 
@@ -447,14 +444,16 @@ class IndivisualPartListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
+    // resetState() {
+    //     gridOptions.columnApi.resetColumnState();
+    //     gridOptions.api.setFilterModel(null);
+    // }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-    }
+    // resetState() {
+    //     gridOptions.columnApi.resetColumnState();
+    //     this.onSearchExit(null)
+       
+    // }
 
     /**
     * @method render
@@ -503,17 +502,7 @@ class IndivisualPartListing extends Component {
         };
         return (
             <>
-                <div className="mt-3 pagination-button-container">
-                    <div>
-                        <button className={`user-btn mr5 `} disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}>Previous</button>
-                        <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>Next</button>
-                        <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
-                        <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
-                    </div>
-                    <p>Page No : <b> {this.state.pageNo}  of {Math.ceil(this.state.totalRecordCount / 10)}</b></p>
-                </div>
-
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
 
                     <Row className="pt-3 no-filter-row">
@@ -523,6 +512,7 @@ class IndivisualPartListing extends Component {
                         <Col md="6" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -559,7 +549,7 @@ class IndivisualPartListing extends Component {
                                         //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
                                         <div className="refresh mr-0"></div>
                                     </button>
 
@@ -599,7 +589,7 @@ class IndivisualPartListing extends Component {
                                     title: CONSTANT.EMPTY_DATA,
                                 }}
                                 frameworkComponents={frameworkComponents}
-                            // suppressPaginationPanel={true}
+                            //    suppressPaginationPanel={true}
                             >
                                 <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
@@ -610,13 +600,20 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
+                            <div className="button-wrapper">
+                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
                                     <option value="10" selected={true}>10</option>
                                     <option value="50">50</option>
                                     <option value="100">100</option>
                                 </select>
+                             </div>
+                             <div className="d-flex pagination-button-container">
+                                <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
+                              <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                              <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
+                          </div>
                         </div>
                     </div>
 

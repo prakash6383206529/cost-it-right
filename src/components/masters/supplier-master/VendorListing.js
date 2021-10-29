@@ -58,8 +58,6 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: "",
             pageNo: 1,
-            enableSearchFilterSearchButton: false,
-            enableExitFilterSearchButton: false,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -173,8 +171,8 @@ class VendorListing extends Component {
 
         this.getTableListData(0, '', "", "", 10, emptyObj, true)
         data.setState({ pageNo: 1 })
-        data.setState({ enableExitFilterSearchButton: false })
-        this.setState({ enableSearchFilterSearchButton: false })
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
     /**
     * @method applyPermission
@@ -571,10 +569,10 @@ class VendorListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
+    // resetState() {
+    //     gridOptions.columnApi.resetColumnState();
+    //     gridOptions.api.setFilterModel(null);
+    // }
 
 
     /**
@@ -618,7 +616,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form
 
@@ -629,21 +627,7 @@ class VendorListing extends Component {
                         <Col md="12" className="d-flex justify-content-between">
                             <h1 className="mb-0">Vendor Master</h1>
                         </Col>
-                        <Col md="12">
-                            <div className="mt-3 pagination-button-container">
-                                <div>
-                                    <button className={`user-btn mr5 `} disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}>Previous</button>
-                                    <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>Next</button>
-                                    <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
-                                    <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
-                                    {/* <button className="user-btn mr5" onClick={() => this.onBtPrevious(this)}>To Previous</button>
-                                <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>To Next</button>
-                                <button className="user-btn mr5" onClick={() => this.onSearch(this)}> Filter Search</button>
-                                <button className="user-btn mr5" onClick={() => this.onSearchExit(this)}>Exit Filter Search</button> */}
-                                </div>
-                                <p>Page No : <b> {this.state.pageNo} of {Math.ceil(this.state.totalRecordCount / 10)}</b></p>
-                            </div>
-                        </Col>
+                        
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
                         {this.state.shown && (
@@ -719,14 +703,15 @@ class VendorListing extends Component {
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {this.state.shown ? (
+                                    {/* {this.state.shown ? (
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
                                         <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="filter mr-0"></div>
                                         </button>
-                                    )}
+                                    )} */}
+                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -766,7 +751,7 @@ class VendorListing extends Component {
                                         //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
                                         <div className="refresh mr-0"></div>
                                     </button>
 
@@ -813,13 +798,20 @@ class VendorListing extends Component {
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
-                        <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                        <div className="button-wrapper">
+                             <div className="paging-container d-inline-block float-right">
+                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                             </div>
+                             <div className="d-flex pagination-button-container">
+                                <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
+                              <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                              <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
+                            </div>
+                          </div>
                     </div>
                 </div>
 
