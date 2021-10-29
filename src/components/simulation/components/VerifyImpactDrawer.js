@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
@@ -9,17 +9,15 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { Impactedmasterdata } from './ImpactedMasterData';
-import { Fgwiseimactdata } from './FgWiseImactData';
+import { Fgwiseimactdata } from './FgWiseImactData'
 import { EMPTY_GUID } from '../../../config/constants';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { getLastSimulationData } from '../../../actions/Common';
-import { useEffect } from 'react';
-
+import { getImpactedMasterData, getLastSimulationData } from '../../../actions/Common';
+import moment from 'moment';
 
 
 function VerifyImpactDrawer(props) {
-  const { isDomestic, list, isbulkUpload, rowCount, technology, master, SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate } = props
-  const [colorClass, setColorClass] = useState('')
+  const { list, technology, master, SimulationTechnologyIdState, simulationId, tokenNo, vendorIdState, EffectiveDate, amendmentDetails } = props
   const [token, setToken] = useState('')
   const [showverifyPage, setShowVerifyPage] = useState(false)
   const [shown, setshown] = useState(false)
@@ -29,10 +27,15 @@ function VerifyImpactDrawer(props) {
   const [simulationTechnologyIdOfRevisionData, setSimulationTechnologyIdOfRevisionData] = useState("")
   const [lastRevisionData, SetLastRevisionData] = useState([])
   const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
+  const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+  const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
+  const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
+  const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
+  const [showLastRevisionData, setShowLastRevisionData] = useState(false)
+  const [showImpactedData, setshowImpactedData] = useState(false)
 
   const dispatch = useDispatch()
 
-  const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
 
   const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
   useEffect(() => {
@@ -61,6 +64,26 @@ function VerifyImpactDrawer(props) {
     }
     props.closeDrawer('', type)
   }
+
+  useEffect(() => {
+
+    if (lastSimulationData) {
+      setImpactedMasterDataListForLastRevisionData(lastSimulationData)
+      setShowLastRevisionData(true)
+    }
+    if (impactedMasterData) {
+      setImpactedMasterDataListForImpactedMaster(impactedMasterData)
+      setshowImpactedData(true)
+    }
+  }, [lastSimulationData, impactedMasterData])
+
+  useEffect(() => {
+    if (vendorIdState && EffectiveDate && simulationId !== undefined) {
+      dispatch(getLastSimulationData(vendorIdState, EffectiveDate, () => { }))
+      dispatch(getImpactedMasterData(simulationId, () => { }))
+    }
+
+  }, [EffectiveDate, vendorIdState, simulationId])
 
   const verifySimulation = () => {
     let basicRateCount = 0
@@ -124,78 +147,11 @@ function VerifyImpactDrawer(props) {
     }))
   }
 
-  /**
-  * @method freightCostFormatter
-  * @description Renders buttons
-  */
-  const freightCostFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? cell : '-';
-  }
-
-
-
-  const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
-  }
-
-  const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.BasicRate} </span>
-      </>
-    )
-  }
-
-  const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.ScrapRate}</span>
-      </>
-    )
-  }
+  
 
   // const colorCheck = 
 
-  const costFormatter = (cell, row, enumObject, rowIndex) => {
-    const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
-    const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-    return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-  }
 
-
-
-  const beforeSaveCell = (row, cellName, cellValue) => {
-    if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
-      if (cellValue.length > 8) {
-        toastr.warning("Value should not be more than 8")
-        return false
-      }
-      return true
-    } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-      toastr.warning('Please enter a valid positive numbers.')
-      return false
-    }
-  }
-
-  const afterSaveCell = (row, cellName, cellValue, index) => {
-
-    if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-      setColorClass('red-value form-control')
-    } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-      setColorClass('green-value form-control')
-    } else {
-      setColorClass('form-class')
-    }
-    return false
-
-  }
-
-  const NewcostFormatter = (cell, row, enumObject, rowIndex) => {
-    const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
-    const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-    return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
-  }
 
   const renderCostingHead = () => {
     return <>Costing Head </>
@@ -271,25 +227,25 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
-              {/* 
+              
               <Row >
                 <Col md="12" className="mt-3">
                   <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Vendor Name:</span>
-                    <span>M/S Vendor</span>
+                    <span class="cr-tbl-label d-block">Vendor :</span>
+                    <span>{amendmentDetails.Vendor}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Vendor Code:</span>
-                    <span>12001</span>
+                    <span>{amendmentDetails.Vendor}</span>
                   </span>
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Technology:</span>
-                    <span>SheetMetal</span>
+                    <span>{amendmentDetails.Technology}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Parts Supplied:</span>
                     <span>120</span>
                   </span>
@@ -297,24 +253,24 @@ function VerifyImpactDrawer(props) {
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Parts Amended:</span>
                     <span>120</span>
-                  </span>
+                  </span> */}
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Master:</span>
-                    <span>RM domestic</span>
+                    <span>{amendmentDetails.SimulationAppliedOn}</span>
                   </span>
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Costing Head:</span>
-                    <span>VBC</span>
+                    <span>{amendmentDetails.CostingHead}</span>
                   </span>
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Effective Date:</span>
-                    <span>21-06-21</span>
+                    <span>{moment(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Impact for Annum(INR):</span>
                     <span>5000</span>
                   </span>
@@ -322,14 +278,14 @@ function VerifyImpactDrawer(props) {
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Impact for the Quarter(INR):</span>
                     <span>12500</span>
-                  </span>
+                  </span> */}
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
+                  {/* <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Reason:</span>
                     <span>Test</span>
-                  </span>
+                  </span> */}
                 </Col>
-              </Row> */}
+              </Row> 
 
               {/* <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>
@@ -339,7 +295,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
-                  <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
+                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
                 </div>
                 }
               </Row>
@@ -361,7 +317,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAccordial && <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={true} />}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={true} />}
 
                 </div>
               </Row>
