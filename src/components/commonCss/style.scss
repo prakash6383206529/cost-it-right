@@ -6222,3 +6222,38 @@ body{
     }
   }
 }
+.drawer-side-input {
+  margin:0;
+  display: flex !important;
+  .form-group.inputbox.withBorder {
+   
+    min-height: 0;
+    margin-bottom: 0 !important;
+    label {
+      display: none;
+    }
+    input {
+      min-width: 12rem;
+      position:absolute;
+      right: 15px;
+      margin-top: -6px;
+    }
+  }
+}
+.drawer-side-input-other {
+  width: 100%;
+  margin-bottom: -1rem;
+  .toggle-button-per-and-fix {
+    margin-top: 0.5rem;
+  display: flex !important;
+  .form-group.inputbox.withBorder {
+       min-width: 12rem;
+       margin-right: 1rem;
+       min-height: 0;
+       margin-bottom: 0 !important;
+       label {
+         display: none;
+       }
+     }
+  }
+}
