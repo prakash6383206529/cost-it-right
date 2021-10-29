@@ -203,7 +203,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutterDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -228,7 +228,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLengthOfArea}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -253,7 +253,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.areaWidth}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -297,7 +297,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -322,7 +322,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -371,7 +371,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -436,7 +436,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.toothFeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -517,7 +517,7 @@ function SideFaceMiling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -559,6 +559,7 @@ function SideFaceMiling(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
+                disabled={props.CostingViewMode ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={"save-icon"}></div>

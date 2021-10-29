@@ -280,7 +280,7 @@ function SheetMetalBaicDrawer(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.CycleTime}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                   }
@@ -309,7 +309,7 @@ function SheetMetalBaicDrawer(props) {
                       customClassName={'withBorder'}
                       errors={errors.Cavity}
                       // disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
 
@@ -335,7 +335,7 @@ function SheetMetalBaicDrawer(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Efficiency}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="4">
@@ -415,6 +415,7 @@ function SheetMetalBaicDrawer(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
+                disabled={props.CostingViewMode ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={"save-icon"}></div>

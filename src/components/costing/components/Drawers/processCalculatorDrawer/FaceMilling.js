@@ -202,7 +202,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.OuterDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -227,7 +227,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLengthOfArea}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -252,7 +252,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.areaWidth}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -296,7 +296,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -321,7 +321,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -370,7 +370,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -435,7 +435,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.toothFeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -516,7 +516,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -546,12 +546,10 @@ function FaceMilling(props) {
               </div>
             </Col>
             <div className="mt25 col-md-12 text-right">
-              <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn"              >
-                <div className={'cancel-icon'}></div>CANCEL </button>
-              <button type="submit" className="btn-primary save-btn">
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+              <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn">
+                <div className={'cancel-icon'}></div>CANCEL</button>
+              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
+                <div className={"save-icon"}></div>
                 {'SAVE'}
               </button>
             </div>
