@@ -349,11 +349,6 @@ function RunSimulationDrawer(props) {
 
                                                                     : " "
                                                                 }
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 493eabf3b (run simulation drawer toggle button and input box issue fixed)
                                                                 {(el.Text === "Additional Discount %") && inputAdditionalDiscount ?
                                                                     <TextFieldHookForm
                                                                         label=""
