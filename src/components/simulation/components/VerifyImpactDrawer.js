@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
-import moment from 'moment';
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
-import NoContentFound from '../../common/NoContentFound';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getFgWiseImpactData, runVerifySimulation } from '../actions/Simulation';
@@ -17,6 +13,7 @@ import { Fgwiseimactdata } from './FgWiseImactData';
 import { EMPTY_GUID } from '../../../config/constants';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { getLastSimulationData } from '../../../actions/Common';
+import { useEffect } from 'react';
 
 
 
@@ -26,20 +23,11 @@ function VerifyImpactDrawer(props) {
   const [token, setToken] = useState('')
   const [showverifyPage, setShowVerifyPage] = useState(false)
   const [shown, setshown] = useState(false)
-  const [acc1, setAcc1] = useState(false)
-  const [acc2, setAcc2] = useState(false)
   const [acc3, setAcc3] = useState(false)
   const [id, setId] = useState('')
   const [compareCostingObj, setCompareCostingObj] = useState([])
   const [simulationTechnologyIdOfRevisionData, setSimulationTechnologyIdOfRevisionData] = useState("")
   const [lastRevisionData, SetLastRevisionData] = useState([])
-
-  const rmDomesticListing = useSelector(state => state.material.rmDataList)
-
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  })
 
   const dispatch = useDispatch()
 
@@ -71,14 +59,6 @@ function VerifyImpactDrawer(props) {
       return
     }
     props.closeDrawer('', type)
-  }
-
-  /**
-   * @method shearingCostFormatter
-   * @description Renders buttons
-   */
-  const shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? cell : '-';
   }
 
   const verifySimulation = () => {
@@ -130,6 +110,7 @@ function VerifyImpactDrawer(props) {
       tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
       tempObj.EffectiveDate = item.EffectiveDate
       tempArr.push(tempObj)
+      return null
     })
     obj.SimulationRawMaterials = tempArr
 
@@ -150,10 +131,6 @@ function VerifyImpactDrawer(props) {
     return cell != null ? cell : '-';
   }
 
-
-  const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
-  }
 
 
   const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
@@ -184,9 +161,6 @@ function VerifyImpactDrawer(props) {
     return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
   }
 
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
 
 
   const beforeSaveCell = (row, cellName, cellValue) => {
@@ -252,16 +226,7 @@ function VerifyImpactDrawer(props) {
     return <>Effective <br /> Date</>
   }
 
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-
-  };
+ 
   const DisplayCompareCosting = (el, data) => {
 
 
@@ -375,158 +340,15 @@ function VerifyImpactDrawer(props) {
                 {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
                   <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
                 </div>
-                } */}
-              {/* {shown &&
-                  <div className="accordian-content w-100">
-                    <Col md="12" className="mb-3">
-                      {/* <BootstrapTable
-                        data={rmDomesticListing}
-                        striped={false}
-                        bordered={true}
-                        hover={false}
-                        options={options}
-                        // exportCSV
-                        //ignoreSinglePage
-                        className="add-volume-table sm-headrgroup-table"
-                        pagination>
-                        <TableHeaderColumn row='0' rowSpan='2' dataField="CostingHead" width={115} columnTitle={true} editable={false} dataAlign="left" dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-                        <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
-                        <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false}  >Scrap Rate (INR)</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
-                        <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
-                      </BootstrapTable> */}
-
-                    {/* </Col>
-                  </div>
-                }  */}
-              {/* </Row> */}
+                }
+              </Row>
 
               <Row className="pr-0 mx-0">
                 <Col md="12"> <HeaderTitle title={'FG wise Impact:'} /></Col>
               </Row>
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  <Fgwiseimactdata
-                    DisplayCompareCosting={DisplayCompareCosting}
-
-                    SimulationId={simulationId} />
-                </Col>
-              </Row>
-              {/* <Row className="mb-3 pr-0 mx-0">
-                <Col md="12">
-                  <div className="table-responsive">
-                    <table className="table cr-brdr-main accordian-table-with-arrow">
-                      <thead>
-                        <tr>
-                          <th><span>Part Number</span></th>
-                          <th><span>Rev Number/ECN Number</span></th>
-                          <th><span>Part Name</span></th>
-                          <th><span>Old Cost/Pc</span></th>
-                          <th><span>New Cost/pc</span></th>
-                          <th><span>Impact/Pc</span></th>
-                          <th><span>Volume</span></th>
-                          <th><span>Impact/Month</span></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="accordian-with-arrow">
-                          <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
-                          <td><span>1</span></td>
-                          <td><span>This is A model</span></td>
-                          <td><span>0</span></td>
-                          <td><span>0</span></td>
-                          <td><span>24(INR)</span></td>
-                          <td><span>2000</span></td>
-                          <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                        </tr>
-                        {acc1 &&
-                          <>
-                            <tr className="accordian-content">
-                              <td><span>Part 1</span></td>
-                              <td><span>1</span></td>
-                              <td><span>Part number</span></td>
-                              <td><span>24(INR)</span></td>
-                              <td><span>26(INR)</span></td>
-                              <td><span>2(INR)</span></td>
-                              <td><span>1000</span></td>
-                              <td><span>2000 (INR)</span></td>
-                            </tr>
-                            <tr className="accordian-content">
-                              <td><span>Part 2</span></td>
-                              <td><span>1</span></td>
-                              <td><span>Part number</span></td>
-                              <td><span>24(INR)</span></td>
-                              <td><span>26(INR)</span></td>
-                              <td><span>2(INR)</span></td>
-                              <td><span>1000</span></td>
-                              <td><span>2000 (INR)</span></td>
-                            </tr>
-                            <tr className="accordian-content">
-                              <td><span>Part 3</span></td>
-                              <td><span>1</span></td>
-                              <td><span>Part number</span></td>
-                              <td><span>24(INR)</span></td>
-                              <td><span>26(INR)</span></td>
-                              <td><span>2(INR)</span></td>
-                              <td><span>1000</span></td>
-                              <td><span>2000 (INR)</span></td>
-                            </tr>
-                          </>
-                        }
-                      </tbody>
-
-                      <tbody>
-                        <tr className="accordian-with-arrow">
-                          <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
-                          <td><span>1</span></td>
-                          <td><span>This is A model</span></td>
-                          <td><span>0</span></td>
-                          <td><span>0</span></td>
-                          <td><span>24(INR)</span></td>
-                          <td><span>2000</span></td>
-                          <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                        </tr>
-                        {acc2 &&
-                          <>
-                            <tr className="accordian-content">
-                              <td><span>Part 1</span></td>
-                              <td><span>1</span></td>
-                              <td><span>Part number</span></td>
-                              <td><span>24(INR)</span></td>
-                              <td><span>26(INR)</span></td>
-                              <td><span>2(INR)</span></td>
-                              <td><span>1000</span></td>
-                              <td><span>2000 (INR)</span></td>
-                            </tr>
-                            <tr className="accordian-content">
-                              <td><span>Part 2</span></td>
-                              <td><span>1</span></td>
-                              <td><span>Part number</span></td>
-                              <td><span>24(INR)</span></td>
-                              <td><span>26(INR)</span></td>
-                              <td><span>2(INR)</span></td>
-                              <td><span>1000</span></td>
-                              <td><span>2000 (INR)</span></td>
-                            </tr>
-                          </>
-                        }
-                      </tbody>
-                    </table>
-                  </div>
+                  <Fgwiseimactdata />
                 </Col>
               </Row> */}
 
@@ -538,43 +360,9 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {acc3 && <Impactedmasterdata data={lastRevisionData} masterId={simulationTechnologyIdOfRevisionData} viewCostingAndPartNo={true} />}
+                  {acc3 && <Impactedmasterdata data={[]} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={true} />}
 
                 </div>
-                {/* {acc3 &&
-                  <div className="accordian-content w-100">
-                    <Col md="12" className="mb-3">
-                      {/* <BootstrapTable
-                        data={rmDomesticListing}
-                        striped={false}
-                        bordered={true}
-                        hover={false}
-                        options={options}
-                        // exportCSV
-                        //ignoreSinglePage
-                        className="add-volume-table sm-headrgroup-table impact-drawer-table"
-                        pagination>
-                        <TableHeaderColumn row='0' rowSpan='2' dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
-                       <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-                        <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
-                        <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' dataAlign="center" columnTitle={false} editable={false} searchable={false}  >Scrap Rate (INR)</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >Old</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={false} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">New</TableHeaderColumn>
-                        <TableHeaderColumn row='0' tdStyle={{ minWidth: '200px', width: '200px' }} width={200} colSpan='2' columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
-                        <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
-                        <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
-                      </BootstrapTable> */}
-{/* 
-                    </Col>
-                  </div>
-                } */} 
               </Row>
 
 

@@ -674,10 +674,6 @@ function CostingSimulation(props) {
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
                                 SimulationTechnologyIdState={SimulationTechnologyIdState}
-                                simulationId={simulationId}
-                                tokenNo={tokenNo}
-                                vendorIdState={vendorIdState}
-                                EffectiveDate={simulationDetail.EffectiveDate}
                             />}
                     </div>
 
