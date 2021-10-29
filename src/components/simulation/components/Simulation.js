@@ -523,7 +523,7 @@ function Simulation(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
                                     <div className="flex-fills hide-label pl-0">
-                                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                                    <TooltipCustom customClass= "combine-tooltip" tooltipText="Please enter first few digits to see the part numbers" />
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
