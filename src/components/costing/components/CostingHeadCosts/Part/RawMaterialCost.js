@@ -1085,6 +1085,7 @@ function RawMaterialCost(props) {
       {isWeightDrawerOpen && (
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
+          CostingViewMode={CostingViewMode}
           closeDrawer={closeWeightDrawer}
           isEditFlag={CostingViewMode ? false : true}
           inputDiameter={inputDiameter}
