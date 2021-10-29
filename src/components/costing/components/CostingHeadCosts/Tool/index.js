@@ -337,7 +337,7 @@ function Tool(props) {
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
-                      label="Amortization Quantity(Tool Life)"
+                      label="Amortization Quantity (Tool Life)"
                       name={`Life`}
                       Controller={Controller}
                       control={control}

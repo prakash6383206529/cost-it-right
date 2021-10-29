@@ -1076,7 +1076,7 @@ const CostingSummaryTable = (props) => {
                         </span>
                         <span class="d-block small-grey-text">Tool Price</span>
                         <span class="d-block small-grey-text">
-                          Amortization Quantity(Tool Life)
+                          Amortization Quantity (Tool Life)
                         </span>
                       </td>
                       {viewCostingData &&
@@ -1174,7 +1174,7 @@ const CostingSummaryTable = (props) => {
                     {
                       !simulationDrawer &&
                       <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
-                        <th>Net PO Price(INR)</th>
+                        <th>Net PO Price (INR)</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
                             return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -1192,7 +1192,7 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <div>
-                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.currency.currencyTitle : ''}</span> {' '}
+                                <span className={`d-inline-block w-50 small-grey-text ${VARIANCE ? 'd-none' : ''} `}>{data.CostingHeading !== VARIANCE ? data.currency.currencyTitle : ''}</span> {' '}
                                 <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                             </td>
@@ -1202,7 +1202,7 @@ const CostingSummaryTable = (props) => {
                     {
                       !simulationDrawer &&
                       <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
-                        <th>Net PO Price (in Currency) </th>
+                        <th>Net PO Price (INR Currency) </th>
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
@@ -1217,7 +1217,7 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
-                        viewCostingData.map((data, index) => {
+                        viewCostingData.map((data, index) => {                    
                           return (
 
                             <td>
@@ -1258,7 +1258,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr>
-                      <th>Remark</th>
+                      <th>Remarks</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td><span className="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.remark : ''}</span></td>
@@ -1273,7 +1273,7 @@ const CostingSummaryTable = (props) => {
 
                           return (
 
-                            <td class="text-center">
+                            <td class="text-center costing-summary">
                               {
                                 data.status === DRAFT &&
                                 <button

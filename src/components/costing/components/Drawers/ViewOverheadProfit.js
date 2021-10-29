@@ -312,7 +312,7 @@ function ViewOverheadProfit(props) {
                         <tr>
                           <th>{` Applicability`}</th>
                           <th>{`Rejection(%)`}</th>
-                          <th>{`Cost(Applicability)`}</th>
+                          <th>{`Cost (Applicability)`}</th>
 
                           <th>{`Net Rejection`}</th>
                         </tr>
