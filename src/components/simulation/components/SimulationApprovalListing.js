@@ -296,7 +296,7 @@ function SimulationApprovalListing(props) {
         })
 
         if (!allEqual(arr)) {
-            toastr.warning('Please select costing of similar Status.')
+            toastr.warning('Please select token of similar Status.')
             gridApi.deselectAll()
         }
 
@@ -357,7 +357,7 @@ function SimulationApprovalListing(props) {
         let technologyCount = 0
       
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one approval to send for approval.')
+            toastr.warning('Please select atleast one token to send for approval.')
             return false
         }
 
@@ -390,7 +390,7 @@ function SimulationApprovalListing(props) {
         // }
 
         if (count > 0) {
-             toastr.warning("Reason should be same for sending multiple costing for approval")
+             toastr.warning("Reason should be same for sending multiple token for approval")
              return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)

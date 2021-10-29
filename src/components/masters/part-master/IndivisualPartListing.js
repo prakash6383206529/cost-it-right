@@ -490,7 +490,7 @@ class IndivisualPartListing extends Component {
         };
         return (
             <>
-              <div className="mt-3 pagination-button-container">
+              {/* <div className="mt-3 pagination-button-container">
                   <div>
                   <button className={`user-btn mr5 `} disabled={this.state.pageNo===1 ? true: false} onClick={() => this.onBtPrevious(this)}>Previous</button>
                   <button className="user-btn mr5"  onClick={() => this.onBtNext(this)}>Next</button>
@@ -498,7 +498,7 @@ class IndivisualPartListing extends Component {
                   <button className="user-btn mr5"  onClick={() => this.onSearchExit(this)} disabled={ !(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
                   </div>
                 <p>Page No : <b> {this.state.pageNo}</b></p>
-              </div>
+              </div> */}
                
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {/* {this.props.loading && <Loader />} */}
