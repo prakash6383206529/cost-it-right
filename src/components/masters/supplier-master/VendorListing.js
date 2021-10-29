@@ -56,7 +56,7 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
             currentRowIndex: 0,
-            totalRecordCount: 0,
+            totalRecordCount: "",
             pageNo: 1,
             enableSearchFilterSearchButton: false,
             enableExitFilterSearchButton: false,
@@ -89,6 +89,7 @@ class VendorListing extends Component {
 
     componentDidMount() {
         this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData, true)
+
         this.applyPermission(this.props.topAndLeftMenuData)
     }
 
@@ -216,6 +217,7 @@ class VendorListing extends Component {
                 this.setState({
                     tableData: Data,
                     totalRecordCount: Data[0].TotalRecordCount,
+
                 })
             } else {
 
@@ -632,7 +634,7 @@ class VendorListing extends Component {
                                 <button className="user-btn mr5" onClick={() => this.onSearch(this)}> Filter Search</button>
                                 <button className="user-btn mr5" onClick={() => this.onSearchExit(this)}>Exit Filter Search</button> */}
                                 </div>
-                                <p>Page No : <b> {this.state.pageNo}</b></p>
+                                <p>Page No : <b> {this.state.pageNo} of {Math.ceil(this.state.totalRecordCount / 10)}</b></p>
                             </div>
                         </Col>
                     </Row>
