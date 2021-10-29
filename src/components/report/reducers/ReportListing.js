@@ -3,7 +3,7 @@ import {
 } from '../../../config/constants';
 
 const initialState = {
-
+    reportListing: []
 };
 
 export default function ReportListingReducers(state = initialState, action) {
@@ -24,10 +24,12 @@ export default function ReportListingReducers(state = initialState, action) {
                     return Arr
                 }
             })
+            let arr1 = [...state.reportListing, ...Arr]
+
             return {
                 ...state,
                 loading: false,
-                reportListing: Arr
+                reportListing: arr1
             }
 
         default:

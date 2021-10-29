@@ -90,6 +90,7 @@ function SimulationApprovalSummary(props) {
     const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
+
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
     const [acc3, setAcc3] = useState(false)
@@ -126,7 +127,8 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,
+
             })
             dispatch(setAttachmentFileData(Attachements, () => { }))
             setIsApprovalDone(IsSent)
