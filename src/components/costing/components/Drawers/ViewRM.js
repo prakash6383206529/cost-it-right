@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../config/constants';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { EMPTY_GUID } from '../../../../config/constants';
 
 function ViewRM(props) {
@@ -144,7 +144,7 @@ function ViewRM(props) {
                   {viewRM.length === 0 && (
                     <tr>
                       <td colSpan={9}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   )}

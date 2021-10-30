@@ -7,7 +7,7 @@ import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../..
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -411,7 +411,7 @@ class ZBCPlantListing extends Component {
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
             clearSearch: true,
-            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
@@ -579,7 +579,7 @@ class ZBCPlantListing extends Component {
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
+                                title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}

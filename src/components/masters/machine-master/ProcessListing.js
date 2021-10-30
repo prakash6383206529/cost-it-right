@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { searchableSelect } from '../../layout/FormInputs'
 import { Loader } from '../../common/Loader'
-import { CONSTANT } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import {
   getInitialPlantSelectList, getInitialMachineSelectList, deleteProcess,
   getProcessDataList,
@@ -480,7 +480,7 @@ class ProcessListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -650,7 +650,7 @@ class ProcessListing extends Component {
                   loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
-                    title: CONSTANT.EMPTY_DATA,
+                    title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
                 >

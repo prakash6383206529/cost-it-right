@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -263,7 +263,7 @@ class RMListing extends Component {
         const { AddAccessibility, DownloadAccessibility } = this.props;
         const options = {
             clearSearch: true,
-            noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             onExportToCSV: this.handleExportCSVButtonClick,
@@ -374,7 +374,7 @@ class RMListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}

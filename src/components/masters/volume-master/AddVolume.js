@@ -18,7 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 
 const gridOptions = {};
 
@@ -868,7 +868,7 @@ class AddVolume extends Component {
                                   loadingOverlayComponent={'customLoadingOverlay'}
                                   noRowsOverlayComponent={'customNoRowsOverlay'}
                                   noRowsOverlayComponentParams={{
-                                    title: CONSTANT.EMPTY_DATA,
+                                    title: EMPTY_DATA,
                                   }}
                                   frameworkComponents={frameworkComponents}
                                   stopEditingWhenCellsLoseFocus={true}

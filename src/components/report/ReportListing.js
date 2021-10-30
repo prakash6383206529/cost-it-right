@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../common/NoContentFound'
-import { CONSTANT } from '../../config/constants'
+import { EMPTY_DATA } from '../../config/constants'
 import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
@@ -283,7 +283,7 @@ function ReportListing(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         paginationShowsTotal: renderPaginationShowsTotal(),
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -517,7 +517,7 @@ function ReportListing(props) {
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                            title: CONSTANT.EMPTY_DATA,
+                            title: EMPTY_DATA,
                         }}
                         //suppressRowClickSelection={true}
                         rowSelection={'multiple'}

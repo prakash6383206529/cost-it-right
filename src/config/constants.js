@@ -1699,18 +1699,14 @@ export const provisional = "Provisional"
 
 //AllConastant File Moved here
 
-export const CONSTANT = {
-
-  NAME: 'Name',
-  TYPE: 'Type',
-  CATEGORY: 'Category',
-  MATERIAL: 'Raw Material',
-  GRADE: 'Grade',   //used
-  SPECIFICATION: 'Specification',
-  DATE: 'Created Date',
-  EMPTY_DATA: 'No Record Found',
-
-};
+export const NAME = 'Name';
+export const TYPE = 'Type';
+export const CATEGORY = 'Category';
+export const MATERIAL = 'Raw Material';
+export const GRADE = 'Grade';
+export const SPECIFICATION = 'Specification';
+export const DATE = 'Created Date';
+export const EMPTY_DATA = 'No Record Found';
 
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';

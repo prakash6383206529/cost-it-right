@@ -6,7 +6,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../config/constants";
+import { EMPTY_DATA } from "../../../config/constants";
 import { MASTERS, } from "../../../config/constants";
 import Switch from "react-switch";
 
@@ -346,7 +346,7 @@ class MastersTab extends Component {
                   })}
               </tbody>
             </Table>
-            {this.state.Modules.length === 0 && (<NoContentFound title={CONSTANT.EMPTY_DATA} />)}
+            {this.state.Modules.length === 0 && (<NoContentFound title={EMPTY_DATA} />)}
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
@@ -363,7 +363,7 @@ class ExchangeRateListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             exportCSVBtn: this.createCustomExportCSVButton,
@@ -488,7 +488,7 @@ class ExchangeRateListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                     }}
                                     frameworkComponents={this.frameworkComponents}
                                 >

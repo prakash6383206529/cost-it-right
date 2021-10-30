@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError, } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
@@ -320,7 +320,7 @@ class ClientListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             // exportCSVBtn: this.createCustomExportCSVButton,
             // onExportToCSV: this.handleExportCSVButtonClick,
@@ -414,7 +414,7 @@ class ClientListing extends Component {
                                 loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
-                                    title: CONSTANT.EMPTY_DATA,
+                                    title: EMPTY_DATA,
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >

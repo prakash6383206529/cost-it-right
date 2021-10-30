@@ -17,7 +17,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -676,7 +676,7 @@ function SimulationApprovalSummary(props) {
                                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
-                                                                    title: CONSTANT.EMPTY_DATA,
+                                                                    title: EMPTY_DATA,
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >

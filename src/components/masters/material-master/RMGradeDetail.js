@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getRowMaterialDataAPI, deleteRMGradeAPI } from '../../actions/Material';
 import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../config/constants';
+import { MATERIAL, GRADE, TYPE, DATE, EMPTY_DATA } from '../../../config/constants';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { toastr } from 'react-redux-toastr';
@@ -76,10 +76,10 @@ class RMGradeDetail extends Component {
                             {this.props.rowMaterialGradeDetail && this.props.rowMaterialGradeDetail.length > 0 &&
                                 <thead>
                                     <tr>
-                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.GRADE}`}</th>
-                                        <th>{`${CONSTANT.MATERIAL} ${CONSTANT.TYPE}`}</th>
+                                        <th>{`${MATERIAL} ${GRADE}`}</th>
+                                        <th>{`${MATERIAL} ${TYPE}`}</th>
                                         {/* <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th> */}
-                                        <th>{`${CONSTANT.DATE}`}</th>
+                                        <th>{`${DATE}`}</th>
                                         <th>{``}</th>
                                     </tr>
                                 </thead>}
@@ -99,7 +99,7 @@ class RMGradeDetail extends Component {
                                             </tr>
                                         )
                                     })}
-                                {this.props.rowMaterialGradeDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.rowMaterialGradeDetail === undefined && <NoContentFound title={EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>

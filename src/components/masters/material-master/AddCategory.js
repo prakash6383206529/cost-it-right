@@ -7,7 +7,7 @@ import { renderText } from "../../layout/FormInputs";
 import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../config/constants';
+import { CATEGORY, NAME } from '../../../config/constants';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import saveImg from '../../../assests/images/check.png'
@@ -126,7 +126,7 @@ class AddCategory extends Component {
                                 <Row>
                                     <Col md="12">
                                         <Field
-                                            label={`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}
+                                            label={`${CATEGORY} ${NAME}`}
                                             name={"CategoryName"}
                                             type="text"
                                             placeholder={''}

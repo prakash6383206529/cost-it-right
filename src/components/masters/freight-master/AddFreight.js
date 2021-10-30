@@ -19,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import moment from "moment";
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../config/constants";
+import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -914,7 +914,7 @@ class AddFreight extends Component {
                               </tbody>
                             </Table>
                             {this.state.gridTable.length === 0 && (
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             )}
                           </Col>
 

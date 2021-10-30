@@ -20,7 +20,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { CONSTANT } from "../../config/constants";
+import { EMPTY_DATA } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -1653,7 +1653,7 @@ class UserRegistration extends Component {
                                 }
                               </tbody>
                             </Table>
-                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                           </div>
                         </div>
                       </>
@@ -1765,7 +1765,7 @@ class UserRegistration extends Component {
                                 }
                               </tbody>
                             </Table>
-                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                           </div>
                         </div>
                       </>
@@ -1868,7 +1868,7 @@ class UserRegistration extends Component {
                                     }
                                   </tbody>
                                 </Table>
-                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                               </div>
                             </div>
                           </>

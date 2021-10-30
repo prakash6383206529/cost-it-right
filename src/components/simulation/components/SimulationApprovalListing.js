@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
-import { CONSTANT } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
@@ -341,7 +341,7 @@ function SimulationApprovalListing(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
         firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -541,7 +541,7 @@ function SimulationApprovalListing(props) {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
