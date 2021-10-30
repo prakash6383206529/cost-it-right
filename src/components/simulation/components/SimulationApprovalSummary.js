@@ -9,8 +9,8 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList, getLastSimulationData, getImpactedMasterData } from '../../../actions/Common';
-import {getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData,setAttachmentFileData } from '../actions/Simulation'
-import {COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData } from '../actions/Simulation'
+import { COMBINED_PROCESS, EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -171,13 +171,13 @@ function SimulationApprovalSummary(props) {
                 }
             }))
         }
-        if(simulationDetail.SimulationId){
+        if (simulationDetail.SimulationId) {
             dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
 
-     useEffect(() => {
+    useEffect(() => {
         if (impactedMasterData) {
             setImpactedMasterDataListForImpactedMaster(impactedMasterData)
             setshowImpactedData(true)
@@ -901,15 +901,15 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
-                            <Col md="6"className="text-right">
+                            <Col md="6" className="text-right">
                                 <div className={'right-details'}>
                                     <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
-                                            <i className="fa fa-minus" ></i>
-                                        ) : (
-                                            <i className="fa fa-plus"></i>
-                                        )}</button>
+                                        <i className="fa fa-minus" ></i>
+                                    ) : (
+                                        <i className="fa fa-plus"></i>
+                                    )}</button>
                                 </div>
-                                
+
                             </Col>
 
                             {lastRevisionDataAccordian &&

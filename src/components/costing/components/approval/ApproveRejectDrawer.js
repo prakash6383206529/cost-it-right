@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/Hook
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import {APPROVER, EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { APPROVER, EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import { debounce } from 'lodash'
@@ -116,7 +116,7 @@ function ApproveRejectDrawer(props) {
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    let pushDD = []
+    let finalListForDropdown = []
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
@@ -171,7 +171,7 @@ function ApproveRejectDrawer(props) {
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
-                  pushDD.push(i)
+                  finalListForDropdown.push(i)
                 }
               })
             })
@@ -181,13 +181,13 @@ function ApproveRejectDrawer(props) {
       })
 
 
-      if (pushDD[0]?.value === EMPTY_GUID || pushDD.length === 0) {
+      if (finalListForDropdown[0]?.value === EMPTY_GUID || finalListForDropdown.length === 0) {
 
         toastr.warning('User does not exist on next level for selected simulation.')
         return false
       }
 
-      setApprovalDropDown(pushDD)
+      setApprovalDropDown(finalListForDropdown)
     } else {
 
       let obj = {

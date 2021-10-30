@@ -3,11 +3,9 @@ import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getFgWiseImpactData, runVerifySimulation } from '../actions/Simulation';
-import { useForm } from 'react-hook-form'
+import { checkForNull, formViewData, loggedInUserId } from '../../../helper';
+import { getComparisionSimulationData, runVerifySimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
-import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import { EMPTY_GUID } from '../../../config/constants';
@@ -21,7 +19,6 @@ function VerifyImpactDrawer(props) {
   const [token, setToken] = useState('')
   const [showverifyPage, setShowVerifyPage] = useState(false)
   const [shown, setshown] = useState(false)
-  const [acc3, setAcc3] = useState(false)
   const [id, setId] = useState('')
   const [compareCostingObj, setCompareCostingObj] = useState([])
   const [simulationTechnologyIdOfRevisionData, setSimulationTechnologyIdOfRevisionData] = useState("")
@@ -147,7 +144,7 @@ function VerifyImpactDrawer(props) {
     }))
   }
 
-  
+
 
   // const colorCheck = 
 
@@ -183,7 +180,7 @@ function VerifyImpactDrawer(props) {
     return <>Effective <br /> Date</>
   }
 
- 
+
   const DisplayCompareCosting = (el, data) => {
 
 
@@ -227,7 +224,7 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
-              
+
               <Row >
                 <Col md="12" className="mt-3">
                   <span class="d-inline-block mr-2 mb-4 pl-3">
@@ -285,9 +282,9 @@ function VerifyImpactDrawer(props) {
                     <span>Test</span>
                   </span> */}
                 </Col>
-              </Row> 
+              </Row>
 
-              {/* <Row className="mb-3 pr-0 mx-0">
+              <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
@@ -307,7 +304,7 @@ function VerifyImpactDrawer(props) {
                 <Col md="12">
                   <Fgwiseimactdata />
                 </Col>
-              </Row> */}
+              </Row>
 
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
