@@ -51,7 +51,7 @@ class IndivisualPartListing extends Component {
             endIndexCurrentPage: 9,
             totalRecordCount: 0,
             pageNo: 1,
-            floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", search: "" },
+            floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
             warningMessage: false,
             isBulkUpload: false,
@@ -68,19 +68,25 @@ class IndivisualPartListing extends Component {
 
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
 
-            if (res.status === 202) { apiErrors(res) }
-            if (res.status === 204 && res.data === '') {
+
+            if (res.status === 202) {
+                this.setState({ pageNo: 0 })
+                this.setState({ totalRecordCount: 0 })
+
+                return
+            }
+            else if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
 
                 let Data = res.data.DataList;
-                if (this.state.totalRecordCount == 0) {
-                    this.setState({
-                        tableData: Data,
-                        totalRecordCount: Data[0].TotalRecordCount,
 
-                    })
-                }
+                this.setState({
+                    tableData: Data,
+                    totalRecordCount: Data[0].TotalRecordCount,
+
+                })
+
             } else {
 
             }
@@ -449,18 +455,6 @@ class IndivisualPartListing extends Component {
             </ExcelSheet>);
     }
 
-    onFilterTextBoxChanged(e) {
-
-        if (e.target.value == "") {
-            this.setState({ warningMessage: false })
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
-        } else {
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
-            this.setState({ warningMessage: true })
-
-        }
-        this.state.gridApi.setQuickFilter(e.target.value);
-    }
 
     // resetState() {
     //     gridOptions.columnApi.resetColumnState();
@@ -582,7 +576,9 @@ class IndivisualPartListing extends Component {
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            <Row className="pt-5 no-filter-row">
+                            </Row>
+
                             {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
                         </div>
                         <div
