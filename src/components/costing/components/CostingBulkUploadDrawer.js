@@ -332,10 +332,10 @@ class CostingBulkUploadDrawer extends Component {
                                                                 Drag and Drop or{" "}
                                                                 <span className="text-primary">
                                                                     Browse
-                                                                        </span>
+                                                                </span>
                                                                 <br />
-                                                                      file to upload
-                                                                     </span>
+                                                                file to upload
+                                                            </span>
                                                         </div>
                                                     )
                                                 }
@@ -362,7 +362,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 className="reset mr15 cancel-btn"
                                             >
                                                 <div className={'cancel-icon'}></div>
-                                                    CANCEL
+                                                CANCEL
                                             </button>
                                             <button type="submit" className="btn-primary save-btn">
                                                 <div className={'save-icon'}></div>
@@ -401,7 +401,8 @@ export default connect(mapStateToProps,
     {
         bulkUploadCosting,
         getCostingTechnologySelectList,
-        plasticBulkUploadCosting
+        plasticBulkUploadCosting,
+        machiningBulkUploadCosting
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,
