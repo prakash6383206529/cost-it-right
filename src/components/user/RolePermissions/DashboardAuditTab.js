@@ -6,7 +6,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../helper/AllConastant";
+import { CONSTANT } from "../../../config/constants";
 import { DASHBOARD_AND_AUDIT, } from "../../../config/constants";
 import Switch from "react-switch";
 
@@ -182,7 +182,7 @@ class DashboardAuditTab extends Component {
         return (
           <td className="text-center">
             {
-              <label htmlFor="normal-switch"  className="normal-switch">
+              <label htmlFor="normal-switch" className="normal-switch">
                 <Switch
                   onChange={() => this.actionCheckHandler(parentIndex, index)}
                   checked={item.IsChecked}

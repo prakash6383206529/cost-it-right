@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -596,7 +596,7 @@ class UsersListing extends Component {
 								noRowsOverlayComponent={'customNoRowsOverlay'}
 								noRowsOverlayComponentParams={{
 									title: CONSTANT.EMPTY_DATA,
-									imagClass:'imagClass'
+									imagClass: 'imagClass'
 								}}
 								frameworkComponents={frameworkComponents}
 							>

@@ -6,7 +6,7 @@ import { toastr } from 'react-redux-toastr';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
@@ -459,6 +459,7 @@ class LevelsListing extends Component {
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
+														floatingFilter={true}
 														domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}

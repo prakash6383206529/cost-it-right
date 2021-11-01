@@ -13,7 +13,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { GENERATOR_DIESEL, } from '../../../config/constants';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { CONSTANT } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";

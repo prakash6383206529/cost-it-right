@@ -17,7 +17,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -158,7 +158,7 @@ function SimulationApprovalSummary(props) {
                 }
             }))
         }
-        if(simulationDetail.SimulationId){
+        if (simulationDetail.SimulationId) {
             dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 

@@ -18,7 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { CONSTANT } from '../../../config/constants'
 
 const gridOptions = {};
 

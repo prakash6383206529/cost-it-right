@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { getTaxDetailsDataList, deleteTaxDetails, } from '../actions/TaxMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -148,10 +148,10 @@ class TaxListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-   effectiveDateFormatter = (props) => {
+  effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-}
+  }
 
 
   /**
@@ -160,7 +160,7 @@ class TaxListing extends Component {
 */
   buttonFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
@@ -174,11 +174,11 @@ class TaxListing extends Component {
     this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
-};
-onPageSizeChanged = (newPageSize) => {
+  };
+  onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
     this.state.gridApi.paginationSetPageSize(Number(value));
-};
+  };
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
@@ -207,13 +207,13 @@ onPageSizeChanged = (newPageSize) => {
       resizable: true,
       filter: true,
       sortable: true,
-  };
-   const frameworkComponents = {
-  
+    };
+    const frameworkComponents = {
+
       effectiveDateRenderer: this.effectiveDateFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound
-  };
+    };
     return (
       < >
         {/* {this.props.loading && <Loader />} */}
@@ -268,50 +268,50 @@ onPageSizeChanged = (newPageSize) => {
 
               </BootstrapTable> */}
               <div className="ag-grid-react">
-                      <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                        <div className="ag-grid-header">
-                          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
-                        <div
-                          className="ag-theme-material">
-                          <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter = {true}
-                            domLayout='autoHeight'
-                            // columnDefs={c}
-                            rowData={this.props.taxDataList}
-                            pagination={true}
-                            paginationPageSize={10}
-                            onGridReady={this.onGridReady}
-                            gridOptions={this.gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                              title: CONSTANT.EMPTY_DATA,
-                              imagClass:'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            suppressRowClickSelection={true}
-                            rowSelection={'multiple'}
-                          >
-                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                            <AgGridColumn field="TaxName" headerName="Tax Name"></AgGridColumn>
-                            <AgGridColumn field="Country" headerName="Country"></AgGridColumn>
-                            <AgGridColumn field="Rate" headerName="Rate (%)"></AgGridColumn>
-                            <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                            <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
-                          </AgGridReact>
-                          <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                              <option value="10" selected={true}>10</option>
-                              <option value="50">50</option>
-                              <option value="100">100</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      </div>
+                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-header">
+                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  </div>
+                  <div
+                    className="ag-theme-material">
+                    <AgGridReact
+                      defaultColDef={defaultColDef}
+                      floatingFilter={true}
+                      domLayout='autoHeight'
+                      // columnDefs={c}
+                      rowData={this.props.taxDataList}
+                      pagination={true}
+                      paginationPageSize={10}
+                      onGridReady={this.onGridReady}
+                      gridOptions={this.gridOptions}
+                      loadingOverlayComponent={'customLoadingOverlay'}
+                      noRowsOverlayComponent={'customNoRowsOverlay'}
+                      noRowsOverlayComponentParams={{
+                        title: CONSTANT.EMPTY_DATA,
+                        imagClass: 'imagClass'
+                      }}
+                      frameworkComponents={frameworkComponents}
+                      suppressRowClickSelection={true}
+                      rowSelection={'multiple'}
+                    >
+                      {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                      <AgGridColumn field="TaxName" headerName="Tax Name"></AgGridColumn>
+                      <AgGridColumn field="Country" headerName="Country"></AgGridColumn>
+                      <AgGridColumn field="Rate" headerName="Rate (%)"></AgGridColumn>
+                      <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
+                      <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
+                      <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
+                    </AgGridReact>
+                    <div className="paging-container d-inline-block float-right">
+                      <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                        <option value="10" selected={true}>10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Col>
           </Row>
           {isOpen && (

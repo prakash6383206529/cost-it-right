@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, } from "../../actions/auth/AuthActions";
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants'
 import NoContentFound from '../common/NoContentFound';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';

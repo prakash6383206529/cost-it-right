@@ -7,7 +7,7 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../dashboard/ChartsDashboard';
 import { getBOPCategorySelectList } from '../actions/BoughtOutParts';
@@ -227,7 +227,6 @@ function Insights(props) {
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 domLayout='autoHeight'
-                                                floatingFilter={true}
                                                 rowData={rowData}
                                                 rowSelection={'single'}
                                                 onSelectionChanged={onSelectionChanged}

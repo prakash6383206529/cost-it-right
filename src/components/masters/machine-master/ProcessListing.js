@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { searchableSelect } from '../../layout/FormInputs'
 import { Loader } from '../../common/Loader'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { CONSTANT } from '../../../config/constants'
 import {
   getInitialPlantSelectList, getInitialMachineSelectList, deleteProcess,
   getProcessDataList,
@@ -639,8 +639,8 @@ class ProcessListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
                   floatingFilter={true}
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.processList}
                   pagination={true}

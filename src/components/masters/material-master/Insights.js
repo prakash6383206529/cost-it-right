@@ -9,7 +9,7 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
 import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../dashboard/ChartsDashboard';
 

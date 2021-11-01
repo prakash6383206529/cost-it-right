@@ -7,7 +7,7 @@ import { renderText } from "../../layout/FormInputs";
 import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import saveImg from '../../../assests/images/check.png'
