@@ -60,7 +60,7 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: 0,
             pageNo: 1,
-            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "", search: "" },
+            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
@@ -219,17 +219,24 @@ class VendorListing extends Component {
             country: country,
         }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-            if (res.status === 204 && res.data === '') {
+
+            if (res.status === 202) {
+                this.setState({ pageNo: 0 })
+                this.setState({ totalRecordCount: 0 })
+
+                return
+            }
+            else if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
-                if (this.state.totalRecordCount === 0) {
-                    let Data = res.data.DataList;
-                    this.setState({
-                        tableData: Data,
-                        totalRecordCount: Data[0].TotalRecordCount,
 
-                    })
-                }
+                let Data = res.data.DataList;
+                this.setState({
+                    tableData: Data,
+                    totalRecordCount: Data[0].TotalRecordCount,
+
+                })
+
             } else {
 
             }
@@ -572,13 +579,7 @@ class VendorListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
-        if (e.target.value == "") {
-            this.setState({ warningMessage: false })
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
-        } else {
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
-            this.setState({ warningMessage: true })
-        }
+
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
@@ -774,7 +775,8 @@ class VendorListing extends Component {
                 </form>
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <Row className="pt-5 no-filter-row">
+                        </Row>
                         {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
                     </div>
                     <div
