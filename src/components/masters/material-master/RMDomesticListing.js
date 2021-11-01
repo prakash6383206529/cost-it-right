@@ -357,57 +357,6 @@ function RMDomesticListing(props) {
 
 
     /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    const renderListing = (label) => {
-
-        const temp = [];
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'material') {
-            filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'grade') {
-            filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'VendorNameList') {
-            filterRMSelectList && filterRMSelectList.Vendors && filterRMSelectList.Vendors.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'technology') {
-            technologySelectList && technologySelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-    }
-
-    /**
     * @method handleRMChange
     * @description  used to handle row material selection
     */
@@ -436,93 +385,23 @@ function RMDomesticListing(props) {
     * @method handleGradeChange
     * @description  used to handle row material grade selection
     */
-    const handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setRMGrade(newValue);
-
-            const fun = () => {
-
-                dispatch(getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { }))
-                dispatch(getVendorFilterByGradeSelectList(RMGrade.value, () => { }))
-            }
-            fun();
-        } else {
-            setRMGrade([]);
-        }
-    }
 
     /**
      * @method handleVendorName
      * @description called
      */
-    const handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setvendorName(newValue);
-            dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
-            dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
-
-
-        } else {
-            setvendorName([]);
-        }
-    }
 
     /**
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
-    const filterList = () => {
-        // const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
-        const plants = getValues('Plant')
 
-        const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
-        const plantId = plants ? plants.value : null;
-        const RMid = RawMaterial ? RawMaterial.value : null;
-        const RMGradeid = RMGrade ? RMGrade.value : null;
-        const Vendorid = vendorName ? vendorName.value : null;
-        const technologyId = technology ? technology.value : 0
-
-        if (isSimulation) {
-            dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plants.label, value: plants.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
-            setTimeout(() => {
-
-                getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-                // this.props.apply()  
-                // props.apply()
-
-            }, 500);
-        } else {
-            getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-
-        }
-    }
 
     /**
     * @method resetFilter
     * @description Reset user filter
     */
-    const resetFilter = () => {
-        if (isSimulation) {
-            dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
-        }
 
-        setcostingHead([]);
-        setRawMaterial([]);
-        setRMGrade([]);
-        setvendorName([]);
-        setplant([]);
-        settechnology([]);
-        setvalue({ min: 0, max: 0 });
-        setValue('CostingHead', '')
-        setValue('Plant', '')
-        setValue('Technology', '')
-        setValue('RawMaterialId', '')
-        setValue('RawMaterialGradeId', '')
-        setValue('VendorId', '')
-        getDataList(null)
-        dispatch(getRawMaterialFilterSelectList(() => { }))
-
-    }
 
     const formToggle = () => {
         props.formToggle()
