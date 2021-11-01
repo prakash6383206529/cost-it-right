@@ -93,55 +93,19 @@ class SpecificationListing extends Component {
     * @method renderListing
     * @description Used show listing of row material
     */
-    renderListing = (label) => {
-        const { filterRMSelectList } = this.props;
-        const temp = [];
 
-        if (label === 'material') {
-            filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'grade') {
-            filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-    }
 
     /**
     * @method handleGrade
     * @description  used to handle type of listing change
     */
-    handleGrade = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ RMGrade: newValue }, () => {
-                const { RMGrade } = this.state;
-                this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
-            });
-        } else {
-            this.setState({ RMGrade: [], });
-        }
-    }
+
 
     /**
     * @method handleMaterialChange
     * @description  used to material change and get grade's
     */
-    handleMaterialChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
-                const { RawMaterial } = this.state;
-                this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
-            });
-        } else {
-            this.setState({ RawMaterial: [], RMGrade: [] });
-        }
-    }
+
 
     /**
     * @method editItemDetails
@@ -245,29 +209,13 @@ class SpecificationListing extends Component {
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
-    filterList = () => {
-        const { RMGrade, RawMaterial } = this.state;
-        const filterRM = RawMaterial ? RawMaterial.value : '';
-        const filterGrade = RMGrade ? RMGrade.value : '';
-        this.getSpecificationListData(filterRM, filterGrade)
-    }
+
 
     /**
     * @method resetFilter
     * @description Reset user filter
     */
-    resetFilter = () => {
-        this.setState({
-            RMGrade: [],
-            RawMaterial: [],
-        }, () => {
-            const { RMGrade, RawMaterial } = this.state;
-            const filterRM = RawMaterial ? RawMaterial.value : '';
-            const filterGrade = RMGrade ? RMGrade.value : '';
-            this.props.getRawMaterialFilterSelectList(() => { })
-            this.getSpecificationListData(filterRM, filterGrade)
-        })
-    }
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })

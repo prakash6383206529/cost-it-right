@@ -87,10 +87,7 @@ class ClientListing extends Component {
         }
     }
 
-    // Get updated Supplier's list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData(null, null)
-    }
+
 
     /**
     * @method getTableListData
@@ -221,21 +218,7 @@ class ClientListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
-    /**
-    * @method filterList
-    * @description Filter DATALIST
-    */
-    filterList = () => {
-        this.getTableListData(null, null)
-    }
 
-    /**
-    * @method resetFilter
-    * @description RESET FILTERS
-    */
-    resetFilter = () => {
-        this.getTableListData(null, null)
-    }
 
     formToggle = () => {
         this.setState({ isOpenVendor: true })
