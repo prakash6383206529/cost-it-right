@@ -4,7 +4,7 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
 import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
@@ -620,7 +620,7 @@ class FreightListing extends Component {
                   // loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
-                    title: CONSTANT.EMPTY_DATA,
+                    title: EMPTY_DATA,
                     imagClass: 'imagClass'
                   }}
                   frameworkComponents={frameworkComponents}

@@ -5,7 +5,7 @@ import { getAllRoleAPI, deleteRoleAPI, getLeftMenu } from '../../../actions/auth
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { loggedInUserId } from '../../../helper/auth';
 import { checkPermission } from '../../../helper/util';
@@ -171,7 +171,7 @@ class RolesListing extends Component {
     const { AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: (<NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (<NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -260,7 +260,7 @@ class RolesListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
+                      title: EMPTY_DATA,
                       imagClass: 'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}

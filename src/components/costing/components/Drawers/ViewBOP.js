@@ -3,7 +3,7 @@ import { checkForDecimalAndNull } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../config/constants'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
@@ -88,7 +88,7 @@ function ViewBOP(props) {
                     {viewBOPCost.length === 0 && (
                       <tr>
                         <td colSpan={7}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     )}
@@ -122,7 +122,7 @@ function ViewBOP(props) {
 
                         <tr>
                           <td colSpan={7}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                     }

@@ -9,7 +9,7 @@ import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, 
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -924,7 +924,7 @@ class AddLabour extends Component {
                           </tbody>
                         </Table>
                         {this.state.gridTable.length === 0 && (
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         )}
                       </Col>
                     </Row>

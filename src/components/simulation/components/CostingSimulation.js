@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -585,7 +585,7 @@ function CostingSimulation(props) {
                                                     loadingOverlayComponent={'customLoadingOverlay'}
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
+                                                        title: EMPTY_DATA,
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                     suppressRowClickSelection={true}

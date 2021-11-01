@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 
 class PackagListing extends Component {
@@ -40,7 +40,7 @@ class PackagListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: <NoContentFound title={EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
 
         };

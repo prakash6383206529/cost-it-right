@@ -9,7 +9,7 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
 import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../dashboard/ChartsDashboard';
 import { getProcessesSelectList } from '../actions/MachineMaster';
@@ -283,7 +283,7 @@ function Insights(props) {
                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
-                                                    title: CONSTANT.EMPTY_DATA,
+                                                    title: EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >

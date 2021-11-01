@@ -13,7 +13,7 @@ import { toastr } from "react-redux-toastr";
 import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
 import { EAccessType } from "../../config/masterData";
 import NoContentFound from '../common/NoContentFound';
-import { CONSTANT } from '../../config/constants';
+import { EMPTY_DATA } from '../../config/constants';
 
 class PermissionsUserWise extends Component {
     constructor(props) {
@@ -720,7 +720,7 @@ class PermissionsUserWise extends Component {
                                             </tr>
                                         )
                                     })}
-                                    {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                    {this.state.Modules.length == 0 && <NoContentFound title={EMPTY_DATA} />}
                                 </tbody>
                             </Table>
 

@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
-import { CONSTANT } from '../../config/constants';
+import { EMPTY_DATA } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -453,7 +453,7 @@ class UsersListing extends Component {
 		const { EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
 		const options = {
 			clearSearch: true,
-			noDataText: (this.props.userDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+			noDataText: (this.props.userDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 			paginationShowsTotal: this.renderPaginationShowsTotal,
 			prePage: <span className="prev-page-pg"></span>, // Previous page button text
 			nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -595,7 +595,7 @@ class UsersListing extends Component {
 								loadingOverlayComponent={'customLoadingOverlay'}
 								noRowsOverlayComponent={'customNoRowsOverlay'}
 								noRowsOverlayComponentParams={{
-									title: CONSTANT.EMPTY_DATA,
+									title: EMPTY_DATA,
 									imagClass: 'imagClass'
 								}}
 								frameworkComponents={frameworkComponents}

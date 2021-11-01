@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../config/constants';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
@@ -140,7 +140,7 @@ function PackageCost(props) {
                     {gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={7}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }

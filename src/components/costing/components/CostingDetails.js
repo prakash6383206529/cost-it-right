@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -1765,7 +1765,7 @@ function CostingDetails(props) {
                                   <tr>
                                     <td colSpan={7}>
                                       <NoContentFound
-                                        title={CONSTANT.EMPTY_DATA}
+                                        title={EMPTY_DATA}
                                       />
                                     </td>
                                   </tr>
@@ -1898,7 +1898,7 @@ function CostingDetails(props) {
                                   <tr>
                                     <td colSpan={7}>
                                       <NoContentFound
-                                        title={CONSTANT.EMPTY_DATA}
+                                        title={EMPTY_DATA}
                                       />
                                     </td>
                                   </tr>

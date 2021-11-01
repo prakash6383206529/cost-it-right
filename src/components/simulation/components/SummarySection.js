@@ -4,7 +4,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import moment from 'moment'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation';
@@ -299,7 +299,7 @@ export function Summarysection(props) {
                                                     loadingOverlayComponent={'customLoadingOverlay'}
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
+                                                        title: EMPTY_DATA,
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                 >
