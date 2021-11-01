@@ -57,7 +57,7 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
             currentRowIndex: 0,
-            totalRecordCount: 0,
+            totalRecordCount: "",
             pageNo: 1,
             enableSearchFilterSearchButton:false,
             enableExitFilterSearchButton:false,
@@ -90,6 +90,7 @@ class VendorListing extends Component {
 
     componentDidMount() {
         this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData, true)
+
         this.applyPermission(this.props.topAndLeftMenuData)
     }
 
@@ -217,6 +218,7 @@ class VendorListing extends Component {
                 this.setState({
                     tableData: Data,
                     totalRecordCount: Data[0].TotalRecordCount,
+
                 })
             } else {
 
@@ -619,17 +621,21 @@ class VendorListing extends Component {
                         <Col md="12" className="d-flex justify-content-between">
                             <h1 className="mb-0">Vendor Master</h1>
                         </Col>
-                        <Col md="12"> 
-                        {/* <div className="mt-3 pagination-button-container">
-                            <div>
-                            <button className={`user-btn mr5 `} disabled={this.state.pageNo===1 ? true: false} onClick={() => this.onBtPrevious(this)}>Previous</button>
-                            <button className="user-btn mr5"  onClick={() => this.onBtNext(this)}>Next</button>
-                            <button className={`user-btn mr5 `}  onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
-                            <button className="user-btn mr5"  onClick={() => this.onSearchExit(this)} disabled={ !(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
-                                
+                        <Col md="12">
+                            <div className="mt-3 pagination-button-container">
+                                <div>
+                                    <button className={`user-btn mr5 `} disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}>Previous</button>
+                                    <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>Next</button>
+                                    <button className={`user-btn mr5 `} onClick={() => this.onSearch(this)} disabled={!this.state.enableSearchFilterSearchButton} > Filter Search</button>
+                                    <button className="user-btn mr5" onClick={() => this.onSearchExit(this)} disabled={!(this.state.enableExitFilterSearchButton)} >Exit Filter Search</button>
+                                    {/* <button className="user-btn mr5" onClick={() => this.onBtPrevious(this)}>To Previous</button>
+                                <button className="user-btn mr5" onClick={() => this.onBtNext(this)}>To Next</button>
+                                <button className="user-btn mr5" onClick={() => this.onSearch(this)}> Filter Search</button>
+                                <button className="user-btn mr5" onClick={() => this.onSearchExit(this)}>Exit Filter Search</button> */}
+                                </div>
+                                <p>Page No : <b> {this.state.pageNo} of {Math.ceil(this.state.totalRecordCount / 10)}</b></p>
                             </div>
-                             <p>Page No : <b> {this.state.pageNo}</b></p>
-                        </div> */}
+                            
                         </Col>
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
