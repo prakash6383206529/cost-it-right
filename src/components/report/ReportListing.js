@@ -18,6 +18,7 @@ import LoaderCustom from '../common/LoaderCustom';
 
 
 
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -442,6 +443,7 @@ function ReportListing(props) {
                 //<button onClick={() => onBtPageFifty()}>To Page 50</button> */}
 
             </div>
+
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
