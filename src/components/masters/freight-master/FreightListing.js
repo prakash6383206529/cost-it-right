@@ -4,7 +4,7 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
 import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
@@ -393,7 +393,7 @@ class FreightListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       // exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -620,8 +620,8 @@ class FreightListing extends Component {
                   // loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
-                    title: CONSTANT.EMPTY_DATA,
-                    imagClass:'imagClass'
+                    title: EMPTY_DATA,
+                    imagClass: 'imagClass'
                   }}
                   frameworkComponents={frameworkComponents}
                 >

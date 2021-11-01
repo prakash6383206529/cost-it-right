@@ -10,7 +10,7 @@ import {
 import { getPlantBySupplier } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr'
@@ -438,7 +438,7 @@ class PowerListing extends Component {
     const { isEditFlag, } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -677,8 +677,8 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -688,8 +688,8 @@ class PowerListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass power-listing'
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
@@ -714,8 +714,8 @@ class PowerListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass power-listing'
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

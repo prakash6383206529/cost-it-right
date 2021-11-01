@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
@@ -118,7 +118,7 @@ function PackageCost(props) {
                       <th>{`Packaging Description`}</th>
                       <th>{`Packaging Type/Percentage`}</th>
                       <th>{`Cost`}</th>
-                      <th style={{ width: "130px",textAlign:"right"}} className="costing-border-right"  >{`Action`}</th>
+                      <th style={{ width: "130px", textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -129,7 +129,7 @@ function PackageCost(props) {
                             <td>{item.PackagingDescription}</td>
                             <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
                             <td>{item.PackagingCost}</td>
-                            <td style={{textAlign:"right"}}>
+                            <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>
@@ -140,7 +140,7 @@ function PackageCost(props) {
                     {gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={7}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }

@@ -7,7 +7,7 @@ import { focusOnError, } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import AddReason from './AddReason';
@@ -320,8 +320,9 @@ class ReasonListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      exportCSVBtn: this.createCustomExportCSVButton,
+      noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -450,8 +451,8 @@ class ReasonListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}
@@ -461,7 +462,7 @@ class ReasonListing extends Component {
                 loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
+                  title: EMPTY_DATA,
                 }}
                 frameworkComponents={frameworkComponents}
               >

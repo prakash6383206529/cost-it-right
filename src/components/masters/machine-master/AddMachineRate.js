@@ -15,7 +15,7 @@ import {
 } from '../actions/MachineMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -1357,7 +1357,7 @@ class AddMachineRate extends Component {
                             </tbody>
                           </Table>
                           {this.state.processGrid.length === 0 &&
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           }
                         </Col>
                       </Row>

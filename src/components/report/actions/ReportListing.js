@@ -42,7 +42,7 @@ const headers = config
  */
 export function getReportListing(index, take, isPagination, data, callback) {
     return (dispatch) => {
-        const departmentQueryParams = `departmentCode=${userDepartmetList()}`
+        const departmentQueryParams = `&departmentCode=${userDepartmetList()}`
         const queryParams = `costingNumber=${data.costingNumber}&toDate=${data.toDate}&fromDate=${data.fromDate}&statusId=${data.statusId}&technologyId=${data.technologyId}&plantCode=${data.plantCode}&vendorCode=${data.vendorCode}&userId=${data.userId}&isSortByOrderAsc=${data.isSortByOrderAsc}`
 
 

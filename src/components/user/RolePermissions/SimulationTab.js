@@ -6,7 +6,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../helper/AllConastant";
+import { EMPTY_DATA } from "../../../config/constants";
 import { SIMULATION, } from "../../../config/constants";
 import Switch from "react-switch";
 
@@ -368,7 +368,7 @@ class SimulationTab extends Component {
                             </tbody>
                         </Table>
                         {this.state.Modules.length === 0 && (
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                         )}
                     </div>
                 </div>

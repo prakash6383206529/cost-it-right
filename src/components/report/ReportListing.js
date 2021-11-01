@@ -1,16 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import moment from 'moment'
-import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, userDetails } from '../../helper/auth'
-import { Badge } from 'reactstrap'
+import { loggedInUserId, userDetails, } from '../../helper/auth'
 import NoContentFound from '../common/NoContentFound'
-import { CONSTANT } from '../../helper/AllConastant'
-import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
+import { EMPTY_DATA } from '../../config/constants'
+import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,7 +15,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
-import { table } from 'react-dom-factories';
+
+
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -66,7 +63,7 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
-    const [currentRowIndex, setcurrentRowIndex] = useState(0)
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
 
@@ -85,28 +82,6 @@ function ReportListing(props) {
 
 
 
-
-
-    // const onFloatingFilterChanged = (value) => {
-
-    //     // console.log(value.column.colId, "filter")
-
-    //     // console.log(value.filterInstance.appliedModel.filter == null ? "null" : value.filterInstance.appliedModel.filter, "filter")
-
-
-
-    // }
-
-    const onPageChange = (params) => {
-
-
-        // if (params.api.paginationProxy.bottomDisplayedRowIndex > 9) {
-
-        //     getTableData(params.api.paginationProxy.bottomDisplayedRowIndex)
-        // }
-
-    }
-
     const onBtFirst = () => {
         gridApi.paginationGoToFirstPage();
     };
@@ -115,40 +90,8 @@ function ReportListing(props) {
         gridApi.paginationGoToLastPage();
     };
 
-    // const onBtNext = () => {
-
-    //     const nextNo = currentRowIndex + 10;
-
-    //     console.log(nextNo, "next")
 
 
-    //     //gridApi.paginationGoToNextPage();
-    //     getTableData(nextNo)
-    //     setcurrentRowIndex(nextNo)
-
-    // };
-
-    // const onBtPrevious = () => {
-
-    //     if (currentRowIndex >= 10) {
-    //         const previousNo = currentRowIndex - 10;
-
-
-    //         console.log(previousNo, "pre")
-
-
-
-    //         getTableData(previousNo)
-    //         setcurrentRowIndex(previousNo)
-
-    //     }
-    //  gridApi.paginationGoToPreviousPage();
-
-
-
-    // };
-
-    console.log(currentRowIndex, "current")
 
     const onBtPageFive = () => {
         gridApi.paginationGoToPage(4);
@@ -237,8 +180,6 @@ function ReportListing(props) {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
 
-            setLoader(false)
-
             // var t1 = performance.now();
             // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         }))
@@ -248,7 +189,7 @@ function ReportListing(props) {
 
     useEffect(() => {
         getTableData(0, 100, true);
-        getTableData(100, 4000, true);
+
 
     }, [])
 
@@ -263,6 +204,16 @@ function ReportListing(props) {
 
 
         setReportListingDataStateArray(reportListingData)
+        if (reportListingData.length > 0) {
+            if (totalRecordCount === 0) {
+                setTotalRecordCount(reportListingData[0].TotalRecordCount)
+                getTableData(100, reportListingData[0].TotalRecordCount, true);
+            }
+
+        }
+
+
+
 
 
     }, [reportListingData])
@@ -274,7 +225,7 @@ function ReportListing(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         paginationShowsTotal: renderPaginationShowsTotal(),
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -542,7 +493,7 @@ function ReportListing(props) {
                 <Row className="pt-4 blue-before">
 
 
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
@@ -592,7 +543,7 @@ function ReportListing(props) {
                         pagination={true}
                         //   suppressPaginationPanel={true}
                         suppressScrollOnNewData={true}
-                        onPaginationChanged={onPageChange}
+
                         paginationPageSize={10}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
@@ -601,7 +552,7 @@ function ReportListing(props) {
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                            title: CONSTANT.EMPTY_DATA,
+                            title: EMPTY_DATA,
                         }}
                         // suppressRowClickSelection={true}
                         rowSelection={'multiple'}

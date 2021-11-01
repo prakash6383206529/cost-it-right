@@ -15,8 +15,8 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.100:10132/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 
 
 //DEVELOPMENT MIL URL
@@ -1697,3 +1697,19 @@ export const RM_MASTER_ID = 1
 
 //approve reject drawer
 export const provisional = "Provisional"
+
+
+//AllConastant File Moved here
+
+export const NAME = 'Name';
+export const TYPE = 'Type';
+export const CATEGORY = 'Category';
+export const MATERIAL = 'Raw Material';
+export const GRADE = 'Grade';
+export const SPECIFICATION = 'Specification';
+export const DATE = 'Created Date';
+export const EMPTY_DATA = 'No Record Found';
+
+export const LEVEL0 = 'L0';
+export const LEVEL1 = 'L1';
+export const SUB_ASSEMBLY = 'Sub Assembly';
