@@ -13,7 +13,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { GENERATOR_DIESEL, } from '../../../config/constants';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
@@ -1875,7 +1875,7 @@ class AddPower extends Component {
                                 <tbody>
                                   <tr>
                                     <td colSpan="5">
-                                      {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                      {this.state.powerGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                                     </td>
                                   </tr>
                                 </tbody>

@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from '../../layout/FormInputs'
 import { required } from '../../../helper/validation'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -536,7 +536,7 @@ class VolumeListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
-   gridOptions.api.setFilterModel(null);
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -559,7 +559,7 @@ class VolumeListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       exportCSVBtn: this.createCustomExportCSVButton,
       onExportToCSV: this.handleExportCSVButtonClick,
@@ -822,8 +822,8 @@ class VolumeListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                floatingFilter = {true}
-domLayout='autoHeight'
+                floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}
@@ -834,8 +834,8 @@ domLayout='autoHeight'
                 loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >

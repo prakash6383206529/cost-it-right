@@ -18,7 +18,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -1915,7 +1915,7 @@ class AddMoreDetails extends Component {
                           <div className="form-group">
                             <label>
                               Year Of Manufacturing
-                                                    {/* <span className="asterisk-required">*</span> */}
+                              {/* <span className="asterisk-required">*</span> */}
                             </label>
                             <div className="inputbox date-section">
                               <DatePicker
@@ -2368,7 +2368,7 @@ class AddMoreDetails extends Component {
                               <div className="form-group">
                                 <label>
                                   Date of Purchase
-                                                    {/* <span className="asterisk-required">*</span> */}
+                                  {/* <span className="asterisk-required">*</span> */}
                                 </label>
                                 <div className="inputbox date-section">
                                   <DatePicker
@@ -2977,7 +2977,7 @@ class AddMoreDetails extends Component {
                                   }
                                 </tbody>
                               </Table>
-                              {this.state.labourGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              {this.state.labourGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                             </Col>
                           </div>
                         }
@@ -3147,7 +3147,7 @@ class AddMoreDetails extends Component {
                                   }
                                 </tbody>
                               </Table>
-                              {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              {this.state.processGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                             </Col>
                           </div>
                         }

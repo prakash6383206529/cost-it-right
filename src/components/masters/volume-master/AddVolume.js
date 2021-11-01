@@ -18,7 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 
 const gridOptions = {};
 
@@ -849,39 +849,39 @@ class AddVolume extends Component {
                           </Col>
 
                           <Col>
-                          <div className="ag-grid-wrapper add-volume-table" style={{ width: '100%', height: '100%' }}>
-                            {/* <Col md="12"> */}
-                            <div
-                              className="ag-theme-material"
+                            <div className="ag-grid-wrapper add-volume-table" style={{ width: '100%', height: '100%' }}>
+                              {/* <Col md="12"> */}
+                              <div
+                                className="ag-theme-material"
 
-                            >
-                              <AgGridReact
-                                style={{ height: '100%', width: '100%' }}
-                                defaultColDef={defaultColDef}
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={this.state.tableData}
-                                pagination={true}
-                                paginationPageSize={12}
-                                onGridReady={this.onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                  title: CONSTANT.EMPTY_DATA,
-                                }}
-                                frameworkComponents={frameworkComponents}
-                                stopEditingWhenCellsLoseFocus={true}
                               >
-                                <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
-                                <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
-                                <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Approved Quantity"></AgGridColumn>
-                                <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action"  type="rightAligned" ></AgGridColumn>
-                                <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
-                                <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
-                              </AgGridReact>
-                            </div>
-                            {/* <BootstrapTable
+                                <AgGridReact
+                                  style={{ height: '100%', width: '100%' }}
+                                  defaultColDef={defaultColDef}
+                                  domLayout='autoHeight'
+                                  // columnDefs={c}
+                                  rowData={this.state.tableData}
+                                  pagination={true}
+                                  paginationPageSize={12}
+                                  onGridReady={this.onGridReady}
+                                  gridOptions={gridOptions}
+                                  loadingOverlayComponent={'customLoadingOverlay'}
+                                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                                  noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                  }}
+                                  frameworkComponents={frameworkComponents}
+                                  stopEditingWhenCellsLoseFocus={true}
+                                >
+                                  <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
+                                  <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
+                                  <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Approved Quantity"></AgGridColumn>
+                                  <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action" type="rightAligned" ></AgGridColumn>
+                                  <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
+                                  <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
+                                </AgGridReact>
+                              </div>
+                              {/* <BootstrapTable
                             data={this.state.tableData}
                             striped={false}
                             hover={false}
@@ -896,8 +896,8 @@ class AddVolume extends Component {
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
                           </BootstrapTable> */}
-                            {/* </Col> */}
-                          </div>
+                              {/* </Col> */}
+                            </div>
                           </Col>
                         </Row>
                       </div>

@@ -12,7 +12,7 @@ import {
 } from '../../../../../helper'
 import Switch from 'react-switch'
 import NoContentFound from '../../../../common/NoContentFound'
-import { CONSTANT } from '../../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../../config/constants'
 import { deleteVendorPowerDetail } from '../../../../masters/actions/Fuel'
 
 function ColdForging(props) {
@@ -795,7 +795,7 @@ function ColdForging(props) {
                     {tableData.length === 0 && (
                       <tr>
                         <td colspan="8">
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     )}
