@@ -74,7 +74,7 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
                 });
             }
             callback(response)
-            if (response.status === 202) { apiErrors(response) }
+
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE

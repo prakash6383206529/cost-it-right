@@ -112,7 +112,7 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
                     payload: response.data.DataList,
                 });
                 callback(response);
-                if (response.status === 202) { apiErrors(response) }
+
 
             }
         }).catch((error) => {
