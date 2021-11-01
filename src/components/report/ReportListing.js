@@ -15,6 +15,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
+import WarningMessage from '../common/WarningMessage'
 
 
 
@@ -63,6 +64,7 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(true)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
@@ -208,6 +210,9 @@ function ReportListing(props) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
                 getTableData(100, reportListingData[0].TotalRecordCount, true);
+            }
+            if (totalRecordCount !== 0) {
+                setWarningMessage(false)
             }
 
         }
@@ -624,6 +629,9 @@ function ReportListing(props) {
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
+                    </div>
+                    <div className="warning-text">
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
                     </div>
                 </div>
             </div>
