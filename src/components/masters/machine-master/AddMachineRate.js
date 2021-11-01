@@ -20,7 +20,6 @@ import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, user
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
@@ -187,7 +186,6 @@ class AddMachineRate extends Component {
         isLoader: true,
         MachineID: editDetails.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getMachineData(editDetails.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -679,7 +677,6 @@ class AddMachineRate extends Component {
     this.props.checkAndGetMachineNumber(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         toastr.warning(res.data.Message);
-        $('input[name="MachineNumber"]').focus()
       }
     })
   }

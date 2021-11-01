@@ -60,6 +60,9 @@ function OtherCostingSimulation(props) {
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
     const [tableData, setTableData] = useState([])
+    const [vendorIdState, setVendorIdState] = useState("")
+    const [simulationTypeState, setSimulationTypeState] = useState("")
+    const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -70,6 +73,7 @@ function OtherCostingSimulation(props) {
         hideDiscount: false,
         hideOveheadAndProfit: false
     })
+    const [amendmentDetails, setAmendmentDetails] = useState({})
 
     const dispatch = useDispatch()
 
@@ -90,6 +94,12 @@ function OtherCostingSimulation(props) {
     const dataSet = (res) => {
         const tokenNo = res.data.Data.SimulationTokenNumber
         const Data = res.data.Data
+        var vendorId = Data.VendorId
+        var SimulationTechnologyId = Data.SimulationTechnologyId
+        var SimulationType = Data.SimulationType
+        setVendorIdState(vendorId)
+        setSimulationTechnologyIdState(SimulationTechnologyId)
+        setSimulationTypeState(SimulationType)
         Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
@@ -112,6 +122,13 @@ function OtherCostingSimulation(props) {
         setCostingArr(Data.SimulatedCostingList)
         setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
         setLoader(false)
+        let tempObj = {}
+        tempObj.EffectiveDate = Data?.EffectiveDate
+        tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
+        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+        tempObj.Technology = Data?.SimulatedCostingList[0]?.Technology
+        tempObj.Vendor = Data?.SimulatedCostingList[0]?.VendorName
+        setAmendmentDetails(tempObj)
     }
 
 
@@ -639,6 +656,12 @@ function OtherCostingSimulation(props) {
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
+                                SimulationTechnologyIdState={SimulationTechnologyIdState}
+                                simulationId={simulationId}
+                                tokenNo={tokenNo}
+                                vendorIdState={vendorIdState}
+                                EffectiveDate={simulationDetail.EffectiveDate}
+                                amendmentDetails={amendmentDetails}
                             />}
                     </div>
 

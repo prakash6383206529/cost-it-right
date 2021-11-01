@@ -15,8 +15,8 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 
 
 //DEVELOPMENT MIL URL
@@ -108,6 +108,7 @@ export const API = {
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
+  productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
@@ -496,6 +497,8 @@ export const API = {
   getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-payment-term-applicability`,
   getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
+  getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
+  getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -685,6 +688,12 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
 
+
+  // ApproveReject Drawer
+
+
+
+
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
   moduleSelectList: `${BASE_URL}/app-privilege-permission/get-module-select-list`,
@@ -858,6 +867,7 @@ export const API = {
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
+  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -870,7 +880,6 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
-
 
 }
 
@@ -1178,6 +1187,7 @@ export const GET_INTEREST_RATE_COMBO_DATA_SUCCESS = 'GET_INTEREST_RATE_COMBO_DAT
 export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS'
 export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST'
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
+export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
 //COSTING
 export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
@@ -1294,6 +1304,9 @@ export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LE
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
 export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
+export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
+export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
+export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1328,6 +1341,7 @@ export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
 export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
 export const SET_SAP_DATA = 'SET_SAP_DATA'
+export const GET_SELECTLIST_SIMULATION_TOKENS = 'GET_SELECTLIST_SIMULATION_TOKENS'
 
 
 //PRIVILEGE
@@ -1418,6 +1432,7 @@ export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
+export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1581,7 +1596,7 @@ export const VIEW_COSTING_DATA = {
   otherDiscountValue: '',
   anyOtherCost: 'Any Other Cost',
   remark: 'Remark',
-  nPOPriceWithCurrency: 'Net PO Price(INR)',
+  nPOPriceWithCurrency: 'Net PO Price (INR)',
   currency: 'Currency',
   nPOPrice: 'Net PO Price',
   attachment: 'Attachment',
@@ -1678,3 +1693,7 @@ export const VARIANCE = 'Variance'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
+
+
+//approve reject drawer
+export const provisional = "Provisional"

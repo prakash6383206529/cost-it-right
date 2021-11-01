@@ -108,8 +108,8 @@ function ViewRM(props) {
                     <th>{`RM Rate`}</th>
                     <th>{`Scrap Rate`}</th>
                     <th>{`Scrap Recovery %`}</th>
-                    <th>{`Gross Weight(Kg)`}</th>
-                    <th>{`Finish Weight(Kg)`}</th>
+                    <th>{`Gross Weight (Kg)`}</th>
+                    <th>{`Finish Weight (Kg)`}</th>
                     <th>{`Calculator`}</th>
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>

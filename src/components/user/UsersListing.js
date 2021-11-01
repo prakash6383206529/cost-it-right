@@ -10,7 +10,6 @@ import { MESSAGES } from '../../config/message';
 import { CONSTANT } from '../../helper/AllConastant';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
@@ -595,6 +594,7 @@ class UsersListing extends Component {
 								noRowsOverlayComponent={'customNoRowsOverlay'}
 								noRowsOverlayComponentParams={{
 									title: CONSTANT.EMPTY_DATA,
+									imagClass:'imagClass'
 								}}
 								frameworkComponents={frameworkComponents}
 							>

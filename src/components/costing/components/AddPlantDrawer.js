@@ -8,20 +8,24 @@ import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { ZBC } from '../../../config/constants';
 import { getPlantCode } from '../../../helper/validation';
+import { getVendorWithVendorCodeSelectList } from '../../masters/actions/Material';
 
 function AddPlantDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, control, reset } = useForm();
 
   const [plant, setPlant] = useState([]);
   const [data, setPlantData] = useState({});
   const [selectedPlants, setSelectedPlants] = useState([]);
+  const [vendor, setVendor] = useState([]);
 
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
+  const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
   useEffect(() => {
     const { zbcPlantGrid } = props;
+    dispatch(getVendorWithVendorCodeSelectList(() => { }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -55,6 +59,14 @@ function AddPlantDrawer(props) {
       });
       return temp;
     }
+    if (label === 'Vendor') {
+      vendorSelectList && vendorSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
 
   }
 
@@ -72,6 +84,23 @@ function AddPlantDrawer(props) {
       }))
     } else {
       setPlant([])
+    }
+  }
+
+  /**
+ * @method handleVendorChange
+ * @description  USED TO HANDLE VENDOR CHANGE
+ */
+  const handleVendorChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setVendor(newValue)
+      reset({ VendorPlant: '' })
+
+
+
+
+    } else {
+      setVendor([])
     }
   }
 
@@ -128,6 +157,22 @@ function AddPlantDrawer(props) {
                     mandatory={true}
                     handleChange={handlePlantChange}
                     errors={errors.Plant}
+                  />
+                </Col>
+                <Col md="12">
+                  <SearchableSelectHookForm
+                    label={"Vendor"}
+                    name={"Vendor"}
+                    placeholder={"-Select-"}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: true }}
+                    register={register}
+                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                    options={renderListing("Vendor")}
+                    mandatory={true}
+                    handleChange={handleVendorChange}
+                    errors={errors.Vendor}
                   />
                 </Col>
               </Row>

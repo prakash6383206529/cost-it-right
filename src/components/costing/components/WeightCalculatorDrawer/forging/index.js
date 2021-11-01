@@ -86,6 +86,7 @@ function ForgingCalculator(props) {
                 <HotForging
                   rmRowData={props.rmRowData}
                   toggleDrawer={props.toggleDrawer}
+                  CostingViewMode={props.CostingViewMode}
                 />
               </TabPane>
             )}
@@ -94,6 +95,7 @@ function ForgingCalculator(props) {
                 <ColdForging
                   rmRowData={props.rmRowData}
                   toggleDrawer={props.toggleDrawer}
+                  CostingViewMode={props.CostingViewMode}
                 />
               </TabPane>
             )}

@@ -11,7 +11,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
-import $ from 'jquery';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
@@ -275,7 +274,6 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -334,7 +332,6 @@ class AddOperation extends Component {
     this.props.checkAndGetOperationCode(e.target.value, '', res => {
       if (res && res.data && res.data.Result === false) {
         toastr.warning(res.data.Message);
-        $('input[name="OperationCode"]').focus()
       }
     })
   }
@@ -343,7 +340,6 @@ class AddOperation extends Component {
       if (res && res.data && res.data.Result === false) {
 
         toastr.warning(res.data.Message);
-        $('input[name="OperationCode"]').focus()
       } else {
         this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
           this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')

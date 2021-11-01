@@ -13,7 +13,7 @@ import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../masters/actions/OtherOperation';
-import { partComponentBulkUpload } from '../masters/actions/Part';
+import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../masters/actions/InterestRateMaster';
@@ -351,7 +351,15 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else {
+        } else if (fileName === 'ProductComponent') {
+
+            this.props.productComponentBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        }
+
+        else {
 
         }
 
@@ -514,6 +522,7 @@ export default connect(mapStateToProps, {
     bulkUploadMachineVBC,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
+    productComponentBulkUpload,
     bulkUploadBOPDomesticZBC,
     bulkUploadBOPDomesticVBC,
     bulkUploadBOPImportZBC,

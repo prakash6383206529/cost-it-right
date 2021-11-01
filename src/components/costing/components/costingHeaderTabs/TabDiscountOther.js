@@ -569,7 +569,7 @@ function TabDiscountOther(props) {
                     </Col>
                     <Col md="4">
                       <TextFieldHookForm
-                        label="Net PO Price(INR)"
+                        label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         control={control}
@@ -652,7 +652,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                         />
                       </Col>}
-                    <Col md="1" >
+                    <Col md="2">
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}

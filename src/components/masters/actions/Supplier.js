@@ -57,10 +57,15 @@ export function createSupplierAPI(data, callback) {
  * @method getSupplierDataList
  * @description get Supplier's DataList 
  */
-export function getSupplierDataList(filterData, callback) {
+export function getSupplierDataList(skip, obj, take, isPagination, callback) {
     return (dispatch) => {
-        const QueryParams = `vendor_type=${filterData.vendor_type}&vendor_name=${filterData.vendor_name}&country=${filterData.country}`
-        const request = axios.get(`${API.getAllSupplierAPI}?${QueryParams}`, headers);
+
+
+        var queryParams = `isApplyPagination=${false}`;
+        var queryParams2 = `take=${null}`
+        var queryParams1 = `skip=${null}`
+        const QueryParams = `vendorType=${obj.vendorType != null || obj.vendorType != "" ? obj.vendorType : ""}&vendorName=${obj.vendorName != null || obj.vendorName != "" ? obj.vendorName : ""}&country=${obj.Country != null || obj.Country != "" ? obj.Country : ""}&vendorCode=${obj.VendorCode != null || obj.VendorCode != "" ? obj.VendorCode : ""}&city=${obj.City != null || obj.City != "" ? obj.City : ""}&state=${obj.State != null || obj.State != "" ? obj.State : ""} `
+        const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -86,7 +91,7 @@ export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (isEditFlag) {
-            axios.get(`${API.getSupplierAPI}/${supplierId}`, headers)
+            axios.get(`${API.getSupplierAPI} /${supplierId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({

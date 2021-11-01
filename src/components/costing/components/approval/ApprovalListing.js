@@ -26,6 +26,7 @@ import { Redirect } from 'react-router-dom'
 const gridOptions = {};
 
 function ApprovalListing(props) {
+  const { isDashboard } = props
   const loggedUser = loggedInUserId()
   const [shown, setshown] = useState(false)
   const [dShown, setDshown] = useState(false)
@@ -64,9 +65,7 @@ function ApprovalListing(props) {
 
   }, [])
 
-  useEffect(() => {
 
-  }, [selectedIds])
   /**
    * @method getTableData
    * @description getting approval list table
@@ -85,6 +84,7 @@ function ApprovalListing(props) {
       createdBy: createdBy,
       requestedBy: requestedBy,
       status: status,
+      isDashboard: isDashboard ?? false
     }
 
     dispatch(

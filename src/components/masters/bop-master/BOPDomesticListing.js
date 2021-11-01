@@ -375,8 +375,14 @@ class BOPDomesticListing extends Component {
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
             }
+
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
             return item
         })
+
 
         return (
 
@@ -445,9 +451,9 @@ class BOPDomesticListing extends Component {
 
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
-                            <Col md="12" lg="10" className="filter-block">
+                            <Col md="12" lg="10" className="filter-block ">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                     <div className="flex-fill">
@@ -607,6 +613,7 @@ class BOPDomesticListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
                                     floatingFilter={true}
                                     // columnDefs={c}
@@ -619,6 +626,7 @@ class BOPDomesticListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

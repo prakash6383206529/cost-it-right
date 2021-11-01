@@ -840,7 +840,7 @@ function RawMaterialCost(props) {
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
-                                  disabled={(CostingViewMode && item.WeightCalculationId === EMPTY_GUID) ? true : false}
+                                  disabled={false}
                                   onClick={() => toggleWeightCalculator(index)}
                                 />
                               </td>
@@ -990,7 +990,7 @@ function RawMaterialCost(props) {
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
                   <Col md="2">
-                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
+                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={CostingViewMode} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
@@ -1112,6 +1112,7 @@ function RawMaterialCost(props) {
       {isWeightDrawerOpen && (
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
+          CostingViewMode={CostingViewMode}
           closeDrawer={closeWeightDrawer}
           isEditFlag={CostingViewMode ? false : true}
           inputDiameter={inputDiameter}

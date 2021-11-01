@@ -292,7 +292,7 @@ class AssemblyPartListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -304,11 +304,18 @@ class AssemblyPartListing extends Component {
             } else {
                 return false
             }
+
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
+
+
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyPart}>
+            <ExcelSheet data={temp} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -416,8 +423,8 @@ class AssemblyPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            domLayout='autoHeight'
                             floatingFilter={true}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
                             pagination={true}

@@ -560,11 +560,11 @@ function TabOverheadProfit(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressIncludeSurfaceTreatment}
                   >
-                    Include Surface Treatment Cost in Overhead & Profit
+                    Include Surface Treatment Cost in Overheads & Profits
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
-                      disabled={CostingViewMode || !IsCheckBoxDisabled ? true : false}
+                      disabled={CostingViewMode ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -583,7 +583,7 @@ function TabOverheadProfit(props) {
                         <tr>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overheads`}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overhead`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Rejection`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net ICC`}</th>

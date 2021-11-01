@@ -27,7 +27,7 @@ $text-hover: #1b3bc9;
 $transition: 0.3s;
 $flex: flex;
 $bordercolor: #a8b6c1;
-
+$grid-font:#000000de;
 $font-12: 12px;
 $font-13: 13px;
 $font-14: 14px;
@@ -43,3 +43,7 @@ $font-25: 25px;
 
 $positio-relative: relative;
 $positio-absolute: absolute;
+
+//break points:
+$belowLaptop :1365px;
+$miniDesktop :1366px;

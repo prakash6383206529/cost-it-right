@@ -60,9 +60,11 @@ class IndivisualProductListing extends Component {
     */
     getTableListData = () => {
         this.props.getProductDataList((res) => {
+
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
+
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
@@ -246,19 +248,18 @@ class IndivisualProductListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
-        })
+        this.getTableListData()
+        this.setState({ isBulkUpload: false })
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
+    // closeBulkUploadDrawer = () => {
+    //     this.setState({ isBulkUpload: false }, () => {
+    //     })
+    // }
 
 
 
@@ -294,7 +295,7 @@ class IndivisualProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -306,11 +307,14 @@ class IndivisualProductListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={temp} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -388,11 +392,25 @@ class IndivisualProductListing extends Component {
                                         onClick={this.formToggle}>
                                         <div className={'plus mr-0'}></div></button>
                                 )}
+
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+
+
                                 {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                 {/* DOWNLOAD */}
                                             </button>}>
@@ -463,9 +481,9 @@ class IndivisualProductListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'PartComponent'}
+                    fileName={'ProductComponent'}
                     isZBCVBCTemplate={false}
-                    messageLabel={'Part'}
+                    messageLabel={'Product'}
                     anchor={'right'}
                 />}
             </div >

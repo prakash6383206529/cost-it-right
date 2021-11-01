@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import $ from "jquery";
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -388,18 +387,6 @@ class OperationListing extends Component {
 
     }
 
-    plantFilter = (params) => {
-        console.log("COMING IN FILTER");
-        console.log('params: ', params);
-
-        // if (params.value.length>2) {return params.value;}
-        // if (params.value.length===2){
-        //   const countries = JSON.parse(localStorage.getItem('scanCountries'));
-        //   var found = countries.filter(function (countries) { return countries.alpha2_Country_Code == params.value });
-        //   return found[0].Country_Name;
-        // }
-    }
-
     /**
     * @method filterList
     * @description Filter user listing on the basis of role and department
@@ -446,7 +433,6 @@ class OperationListing extends Component {
     }
 
     bulkToggle = () => {
-        $("html,body").animate({ scrollTop: 0 }, "slow");
         this.setState({ isBulkUpload: true })
     }
 
@@ -742,8 +728,8 @@ class OperationListing extends Component {
                                 loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
-                                    customClassName: "operation-nodata",
                                     title: CONSTANT.EMPTY_DATA,
+                                    imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
@@ -752,7 +738,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} filter={true} getQuickFilterText={this.plantFilter}></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plants" floatingFilter={true} cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
@@ -779,7 +765,7 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </div>
+            </div >
         );
     }
 }

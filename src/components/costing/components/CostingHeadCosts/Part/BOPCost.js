@@ -300,7 +300,7 @@ function BOPCost(props) {
                     <tr>
                       <th>{`Insert Part No.`}</th>
                       <th>{`Insert Part Name`}</th>
-                      <th style={{ width: "220px" }} >{`Insert Cost(INR)`}</th>
+                      <th style={{ width: "220px" }} >{`Insert Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>

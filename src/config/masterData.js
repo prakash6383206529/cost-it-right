@@ -1317,6 +1317,39 @@ export const PartComponentTempData = [
 ]
 
 
+// USED IN BULK UPLOAD FOR PRODUCT COMPONENT
+
+export const ProductComponent = [
+    { label: 'ProductName', value: 'ProductName', }, //*
+    { label: 'ProductNumber', value: 'ProductNumber', }, //*
+    { label: 'ProductGroupCode', value: 'ProductGroupCode', }, //*
+    { label: 'ProductDescription', value: 'ProductDescription', },
+    { label: 'ECNNumber', value: 'ECNNumber', },
+    { label: 'RevisionNo', value: 'RevisionNo', },
+    { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
+    { label: 'Remark', value: 'Remark', },
+    { label: 'IsConsideredForMBOM', value: "IsConsideredForMBOM" },
+]
+
+export const ProductComponentTempData = [
+    {
+        'ProductName': 'Screw',
+        'ProductNumber': 'Product123',
+        'ProductGroupCode': 'GC1',
+        'ProductDescription': 'Part Description',
+        'ECNNumber': '1',
+        'RevisionNo': '1',
+        'DrawingNo': '1',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
+        "IsConsideredForMBOM": "YES or NO"                      //correction done
+    }
+]
+
+
+
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -1760,6 +1793,7 @@ export const FASTNERS = 12
 export const ASSEMBLY = 13
 export const MACHINING = 14
 export const FABRICATION = 15
+export const CORRUGATEDBOX = 20
 
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
@@ -1769,8 +1803,8 @@ export const RMDomesticSimulation = [
     { label: "RawMaterial", value: "RawMaterial" },
     {label:"RMCode",value:"RawMaterialCode"},
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "RMSpec", value: "RMSpec" },
+    { label: "RMSpecs", value: "RMSpec" },
+    { label: "RMCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
@@ -1790,6 +1824,7 @@ export const RMDomesticSimulation = [
     { label: "PlantId", value: "PlantId" },
 
 
+
 ]
 
 export const RMImportSimulation = [
@@ -1797,7 +1832,8 @@ export const RMImportSimulation = [
     { label: "RawMaterial", value: "RawMaterial" },
     {label:"RMCode",value:"RawMaterialCode"},
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
+    { label: "RMSpecs", value: "RMSpec" },
+    { label: "RMCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     //{ label: "Plant", value: "Plant" },
@@ -1813,6 +1849,7 @@ export const RMImportSimulation = [
     { label: "RawMaterialId", value: "RawMaterialId" },
     { label: "VendorId", value: "VendorId" },
     { label: "PlantId", value: "PlantId" },
+    { label: "RMCode", value: "RawMaterialCode", },
 
 ]
 
@@ -2288,7 +2325,7 @@ export const SLOTCUTTING = 'Slot Cutting'
 export const CHAMFERINGMILLER = 'Chamfering Miller'
 export const ENDMILL = 'End Mill'
 
-export const getTechnology = [1, 8, 7, 2, 4]
+export const getTechnology = [1, 8, 7, 2, 4, 20]
 export const technologyForDensity = [1, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
@@ -2302,13 +2339,13 @@ export const CostingSimulationDownload = [
     { label: "Technology", value: "Technology" },
     { label: "Raw Material", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "RawMaterial Specs", value: "RMSpec" },
-    { label: "RawMaterial Code", value: "RMCode" },
+    { label: "RM Specs", value: "RMSpec" },
+    { label: "RM Code", value: "RMCode" },
     { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
-    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },    
     { label: "Finish Weight", value: "RawMaterialFinishWeight" },
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
@@ -2478,6 +2515,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
+
+
 
 ]
 
