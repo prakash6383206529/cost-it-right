@@ -545,7 +545,7 @@ function ReportListing(props) {
                         </select>
                     </div>
                     <div className="warning-text">
-                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading more data'} />}
                     </div>
                 </div>
             </div>
