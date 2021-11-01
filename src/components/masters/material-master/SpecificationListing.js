@@ -400,70 +400,14 @@ class SpecificationListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="MaterialTypeId"
-                                            type="text"
-                                            // label="Raw Material"
-                                            component={searchableSelect}
-                                            placeholder={'Raw Material'}
-                                            options={this.renderListing('material')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleMaterialChange}
-                                            valueDescription={this.state.RawMaterial}
 
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="GradeId"
-                                            type="text"
-                                            // label="RM Grade"
-                                            component={searchableSelect}
-                                            placeholder={'RM Grade'}
-                                            options={this.renderListing('grade')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleGrade}
-                                            valueDescription={this.state.RMGrade}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md={6} className="text-right mb-3 search-user-block">
                             {this.state.shown ? (
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                     <div className="cancel-icon-white"></div></button>
                             ) : (
-                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                    <div className="filter mr-0"></div>
-                                </button>
+                                <>
+                                </>
                             )}
                             {AddAccessibility && <button
                                 type={'button'}
