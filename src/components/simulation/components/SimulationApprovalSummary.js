@@ -157,7 +157,7 @@ function SimulationApprovalSummary(props) {
                 }
             }))
         }
-        if (simulationDetail.SimulationId) {
+        if(simulationDetail.SimulationId){
             dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
