@@ -815,7 +815,7 @@ function SimulationApprovalSummary(props) {
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                         </div>
-                                                        1
+                                                        
                                                         <div
                                                             className="ag-theme-material"
                                                             style={{ height: '100%', width: '100%' }}
