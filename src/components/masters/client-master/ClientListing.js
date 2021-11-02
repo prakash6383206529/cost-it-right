@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError, } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
@@ -87,10 +87,7 @@ class ClientListing extends Component {
         }
     }
 
-    // Get updated Supplier's list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData(null, null)
-    }
+
 
     /**
     * @method getTableListData
@@ -221,21 +218,7 @@ class ClientListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
-    /**
-    * @method filterList
-    * @description Filter DATALIST
-    */
-    filterList = () => {
-        this.getTableListData(null, null)
-    }
 
-    /**
-    * @method resetFilter
-    * @description RESET FILTERS
-    */
-    resetFilter = () => {
-        this.getTableListData(null, null)
-    }
 
     formToggle = () => {
         this.setState({ isOpenVendor: true })
@@ -306,7 +289,7 @@ class ClientListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
-       gridOptions.api.setFilterModel(null);
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -320,7 +303,7 @@ class ClientListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             // exportCSVBtn: this.createCustomExportCSVButton,
             // onExportToCSV: this.handleExportCSVButtonClick,
@@ -401,10 +384,10 @@ class ClientListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
-                                floatingFilter = {true}
+                                floatingFilter={true}
 
 
-domLayout='autoHeight'
+                                domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}
@@ -414,7 +397,7 @@ domLayout='autoHeight'
                                 loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
-                                    title: CONSTANT.EMPTY_DATA,
+                                    title: EMPTY_DATA,
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >

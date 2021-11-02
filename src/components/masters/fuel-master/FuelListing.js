@@ -6,7 +6,7 @@ import {
     getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -325,7 +325,7 @@ class FuelListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
-       gridOptions.api.setFilterModel(null);
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -346,7 +346,7 @@ class FuelListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             // exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -506,8 +506,8 @@ class FuelListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    floatingFilter = {true}
-domLayout='autoHeight'
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.fuelDataList}
                                     pagination={true}
@@ -517,8 +517,8 @@ domLayout='autoHeight'
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

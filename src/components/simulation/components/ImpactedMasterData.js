@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Row, Col } from 'reactstrap'
-import { CONSTANT } from '../../../helper/AllConastant';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper';
 import moment from 'moment'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';

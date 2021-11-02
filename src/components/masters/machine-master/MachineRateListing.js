@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
@@ -85,149 +85,8 @@ class MachineRateListing extends Component {
         })
     }
 
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { technologySelectList, filterSelectList } = this.props;
-        const temp = [];
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'plant') {
-            filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'technology') {
-            technologySelectList && technologySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'VendorNameList') {
-            filterSelectList && filterSelectList.vendor && filterSelectList.vendor.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'ProcessNameList') {
-            filterSelectList && filterSelectList.processList && filterSelectList.processList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'MachineTypeList') {
-            filterSelectList && filterSelectList.machineTypes && filterSelectList.machineTypes.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-    }
 
     /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handlePlant
-    * @description  PLANT FILTER
-    */
-    handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue }, () => {
-                const { plant } = this.state;
-                this.props.getMachineTypeSelectListByPlant(plant.value, () => { })
-            });
-        } else {
-            this.setState({ plant: [], });
-        }
-    }
-
-    /**
-    * @method handleTechnology
-    * @description called
-    */
-    handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ technology: newValue, }, () => {
-                const { technology } = this.state;
-                this.props.getVendorSelectListByTechnology(technology.value, () => { })
-                this.props.getMachineTypeSelectListByTechnology(technology.value, () => { })
-            });
-        } else {
-            this.setState({ technology: [], })
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, }, () => {
-                const { vendorName } = this.state;
-                this.props.getMachineTypeSelectListByVendor(vendorName.value, () => { })
-            });
-        } else {
-            this.setState({ vendorName: [], })
-        }
-    };
-
-    /**
-    * @method handleProcessName
-    * @description called
-    */
-    handleProcessName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ processName: newValue });
-        } else {
-            this.setState({ processName: [] })
-        }
-    };
-
-    /**
-    * @method handleMachineType
-    * @description called
-    */
-    handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ machineType: newValue }, () => {
-                const { machineType } = this.state;
-                this.props.getProcessSelectListByMachineType(machineType.value, () => { })
-            });
-        } else {
-            this.setState({ machineType: [], })
-        }
-    };
 
     /**
     * @method editItemDetails
@@ -384,44 +243,13 @@ class MachineRateListing extends Component {
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
-    filterList = () => {
-        const { costingHead, plant, technology, vendorName, processName, machineType } = this.state;
-        this.setState({ isLoader: true })
 
-        const costingId = costingHead ? costingHead.value : '';
-        const technologyId = this.props.isSimulation ? this.props.technology : technology ? technology.value : 0;
-        const vendorId = vendorName ? vendorName.value : '';
-        const machineTypeId = machineType ? machineType.value : 0;
-        const processId = processName ? processName.value : '';
-        const plantId = plant ? plant.value : '';
-
-
-        this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
-    }
 
     /**
     * @method resetFilter
     * @description Reset user filter
     */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            plant: [],
-            technology: [],
-            vendorName: [],
-            processName: [],
-            machineType: [],
-            isLoader: true
-        }, () => {
-            this.props.getTechnologySelectList(() => { })
-            this.props.getInitialPlantSelectList(() => { })
-            this.props.getInitialVendorWithVendorCodeSelectList(() => { })
-            this.props.getInitialMachineTypeSelectList(() => { })
-            this.props.getInitialProcessesSelectList(() => { })
-            this.getDataList()
-        })
 
-    }
 
     displayForm = () => {
         this.props.displayForm()
@@ -522,112 +350,8 @@ class MachineRateListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                        {this.state.shown && (
-                            <Col md="12" lg="11" className="filter-block machine-rate-filter">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Costing Head'}
-                                            isClearable={false}
-                                            options={this.renderListing('costingHead')}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="plant"
-                                            type="text"
-                                            label={''}
-                                            component={searchableSelect}
-                                            placeholder={'Plant'}
-                                            isClearable={false}
-                                            options={this.renderListing('plant')}
-                                            handleChangeDescription={this.handlePlant}
-                                            valueDescription={this.state.plant}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="technology"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Technology'}
-                                            isClearable={false}
-                                            options={this.renderListing('technology')}
-                                            handleChangeDescription={this.handleTechnology}
-                                            valueDescription={this.state.technology}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorName"
-                                            type="text"
-                                            label={''}
-                                            component={searchableSelect}
-                                            placeholder={'Vendor'}
-                                            isClearable={false}
-                                            options={this.renderListing('VendorNameList')}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={false}
-                                            className="fullinput-icon"
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="MachineType"
-                                            type="text"
-                                            label=''
-                                            component={searchableSelect}
-                                            placeholder={'Machine'}
-                                            isClearable={false}
-                                            options={this.renderListing('MachineTypeList')}
-                                            handleChangeDescription={this.handleMachineType}
-                                            valueDescription={this.state.machineType}
-                                            disabled={false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="ProcessName"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Process'}
-                                            isClearable={false}
-                                            options={this.renderListing('ProcessNameList')}
-                                            handleChangeDescription={this.handleProcessName}
-                                            valueDescription={this.state.processName}
-                                            disabled={false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill w-180">
-                                        <button
-                                            type="button"
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
 
-                                        <button
-                                            type="button"
-                                            onClick={this.filterList}
-                                            className="user-btn"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
+
                         <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -635,9 +359,8 @@ class MachineRateListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        <>
+                                        </>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -712,7 +435,7 @@ class MachineRateListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}

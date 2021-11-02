@@ -9,7 +9,7 @@ import {
 import { searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -93,55 +93,19 @@ class SpecificationListing extends Component {
     * @method renderListing
     * @description Used show listing of row material
     */
-    renderListing = (label) => {
-        const { filterRMSelectList } = this.props;
-        const temp = [];
 
-        if (label === 'material') {
-            filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'grade') {
-            filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-    }
 
     /**
     * @method handleGrade
     * @description  used to handle type of listing change
     */
-    handleGrade = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ RMGrade: newValue }, () => {
-                const { RMGrade } = this.state;
-                this.props.getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { })
-            });
-        } else {
-            this.setState({ RMGrade: [], });
-        }
-    }
+
 
     /**
     * @method handleMaterialChange
     * @description  used to material change and get grade's
     */
-    handleMaterialChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
-                const { RawMaterial } = this.state;
-                this.props.getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { })
-            });
-        } else {
-            this.setState({ RawMaterial: [], RMGrade: [] });
-        }
-    }
+
 
     /**
     * @method editItemDetails
@@ -245,29 +209,13 @@ class SpecificationListing extends Component {
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
-    filterList = () => {
-        const { RMGrade, RawMaterial } = this.state;
-        const filterRM = RawMaterial ? RawMaterial.value : '';
-        const filterGrade = RMGrade ? RMGrade.value : '';
-        this.getSpecificationListData(filterRM, filterGrade)
-    }
+
 
     /**
     * @method resetFilter
     * @description Reset user filter
     */
-    resetFilter = () => {
-        this.setState({
-            RMGrade: [],
-            RawMaterial: [],
-        }, () => {
-            const { RMGrade, RawMaterial } = this.state;
-            const filterRM = RawMaterial ? RawMaterial.value : '';
-            const filterGrade = RMGrade ? RMGrade.value : '';
-            this.props.getRawMaterialFilterSelectList(() => { })
-            this.getSpecificationListData(filterRM, filterGrade)
-        })
-    }
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -374,7 +322,7 @@ class SpecificationListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -400,70 +348,14 @@ class SpecificationListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="MaterialTypeId"
-                                            type="text"
-                                            // label="Raw Material"
-                                            component={searchableSelect}
-                                            placeholder={'Raw Material'}
-                                            options={this.renderListing('material')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleMaterialChange}
-                                            valueDescription={this.state.RawMaterial}
 
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="GradeId"
-                                            type="text"
-                                            // label="RM Grade"
-                                            component={searchableSelect}
-                                            placeholder={'RM Grade'}
-                                            options={this.renderListing('grade')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleGrade}
-                                            valueDescription={this.state.RMGrade}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md={6} className="text-right mb-3 search-user-block">
                             {this.state.shown ? (
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                     <div className="cancel-icon-white"></div></button>
                             ) : (
-                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                    <div className="filter mr-0"></div>
-                                </button>
+                                <>
+                                </>
                             )}
                             {AddAccessibility && <button
                                 type={'button'}
@@ -536,8 +428,8 @@ class SpecificationListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    floatingFilter = {true}
-domLayout='autoHeight'
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rmSpecificationList}
                                     pagination={true}
@@ -547,8 +439,8 @@ domLayout='autoHeight'
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

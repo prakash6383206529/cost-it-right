@@ -17,7 +17,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
-import { LEVEL1 } from '../../../../helper/AllConastant';
+import { LEVEL1 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";

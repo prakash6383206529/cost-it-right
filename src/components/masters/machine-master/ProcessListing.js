@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { searchableSelect } from '../../layout/FormInputs'
 import { Loader } from '../../common/Loader'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import {
   getInitialPlantSelectList, getInitialMachineSelectList, deleteProcess,
   getProcessDataList,
@@ -92,21 +92,6 @@ class ProcessListing extends Component {
     }
   }
 
-  /**
-  * @method handleMachineType
-  * @description called
-  */
-  handleMachineType = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ machine: newValue }, () => {
-        const { machine } = this.state;
-        this.props.getPlantSelectListByMachine(machine.value, () => { })
-      });
-    } else {
-      this.setState({ machine: [], })
-      this.props.getInitialPlantSelectList(() => { })
-    }
-  };
 
   /**
   * @method editItemDetails
@@ -211,21 +196,6 @@ class ProcessListing extends Component {
     }
   }
 
-  /**
-   * @method handleMachineType
-   * @description called
-   */
-  handleMachineType = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ machine: newValue }, () => {
-        const { machine } = this.state
-        this.props.getPlantSelectListByMachine(machine.value, () => { })
-      })
-    } else {
-      this.setState({ machine: [] })
-      this.props.getInitialPlantSelectList(() => { })
-    }
-  }
 
   /**
    * @method editItemDetails
@@ -372,35 +342,7 @@ class ProcessListing extends Component {
     }
   }
 
-  /**
-   * @method filterList
-   * @description GET FILTER DATALIST
-   */
-  filterList = () => {
-    const { plant, machine } = this.state
-    const plantId = plant ? plant.value : ''
-    const machineId = machine ? machine.value : ''
 
-    this.getDataList(plantId, machineId)
-  }
-
-  /**
-   * @method resetFilter
-   * @description Reset user filter
-   */
-  resetFilter = () => {
-    this.setState(
-      {
-        plant: [],
-        machine: [],
-      },
-      () => {
-        this.props.getInitialPlantSelectList(() => { })
-        this.props.getInitialMachineSelectList(() => { })
-        this.getDataList()
-      },
-    )
-  }
 
   processToggler = () => {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
@@ -480,7 +422,7 @@ class ProcessListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -510,67 +452,7 @@ class ProcessListing extends Component {
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
-            {this.state.shown && (
-              <Col md="10" className="filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                  <div className="flex-fill">
-                    {/* <Field
-                      name="plant"
-                      type="text"
-                      label={''}
-                      component={searchableSelect}
-                      placeholder={'Plant'}
-                      isClearable={false}
-                      options={this.renderListing('plant')}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.handlePlant}
-                      valueDescription={this.state.plant}
-                    /> */}
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="MachineType"
-                      type="text"
-                      label=''
-                      component={searchableSelect}
-                      placeholder={'Machine'}
-                      isClearable={false}
-                      options={this.renderListing('Machine')}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.machine == null || this.state.machine.length == 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.handleMachineType}
-                      valueDescription={this.state.machine}
-                      disabled={false}
-                    />
-                  </div>
 
-
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {'Reset'}
-                    </button>
-
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="apply mr5"
-                    >
-                      {'Apply'}
-                    </button>
-                  </div>
-                </div>
-              </Col>
-            )}
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
@@ -639,8 +521,8 @@ class ProcessListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  floatingFilter = {true}
-domLayout='autoHeight'
+                  floatingFilter={true}
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.processList}
                   pagination={true}
@@ -650,7 +532,7 @@ domLayout='autoHeight'
                   loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
-                    title: CONSTANT.EMPTY_DATA,
+                    title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
                 >

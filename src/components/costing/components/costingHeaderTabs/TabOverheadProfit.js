@@ -7,7 +7,7 @@ import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
-import { LEVEL0 } from '../../../../helper/AllConastant';
+import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 
 function TabOverheadProfit(props) {

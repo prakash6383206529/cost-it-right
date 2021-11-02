@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import AddMaterialType from './AddMaterialType';
 import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -263,7 +263,7 @@ class RMListing extends Component {
         const { AddAccessibility, DownloadAccessibility } = this.props;
         const options = {
             clearSearch: true,
-            noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.rawMaterialTypeDataList === undefined ? <Loader /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             onExportToCSV: this.handleExportCSVButtonClick,
@@ -363,8 +363,8 @@ class RMListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    floatingFilter = {true}
-domLayout='autoHeight'
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
@@ -374,8 +374,8 @@ domLayout='autoHeight'
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

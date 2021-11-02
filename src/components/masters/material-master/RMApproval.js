@@ -9,7 +9,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -345,7 +345,7 @@ function RMApproval(props) {
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}

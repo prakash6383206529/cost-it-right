@@ -9,7 +9,7 @@ import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, 
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -809,7 +809,7 @@ class AddLabour extends Component {
                         <div className="form-group date-filed pr-3">
                           <label>
                             Effective Date
-                              {/* <span className="asterisk-required">*</span> */}
+                            {/* <span className="asterisk-required">*</span> */}
                           </label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -840,7 +840,7 @@ class AddLabour extends Component {
                                 onClick={this.updateGrid}
                               >
                                 Update
-                                </button>
+                              </button>
 
                               <button
                                 type="button"
@@ -848,7 +848,7 @@ class AddLabour extends Component {
                                 onClick={this.resetGridData}
                               >
                                 Cancel
-                                </button>
+                              </button>
                             </>
                           ) : (
                             <button
@@ -907,7 +907,7 @@ class AddLabour extends Component {
                           </tbody>
                         </Table>
                         {this.state.gridTable.length === 0 && (
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         )}
                       </Col>
                     </Row>

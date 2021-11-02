@@ -5,7 +5,7 @@ import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../act
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -98,7 +98,7 @@ function AddProcess(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -289,8 +289,8 @@ function AddProcess(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-                        floatingFilter = {true}
-domLayout='autoHeight'
+                        floatingFilter={true}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={processDrawerList}
                         pagination={true}
@@ -300,7 +300,7 @@ domLayout='autoHeight'
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
+                          title: EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}

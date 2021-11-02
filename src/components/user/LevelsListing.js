@@ -6,7 +6,7 @@ import { toastr } from 'react-redux-toastr';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
@@ -362,7 +362,7 @@ class LevelsListing extends Component {
 			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
 		const options = {
 			clearSearch: true,
-			noDataText: (this.props.usersListByTechnologyAndLevel === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+			noDataText: (this.props.usersListByTechnologyAndLevel === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 			afterSearch: this.afterSearch,
 			paginationShowsTotal: this.renderPaginationShowsTotal,
 			prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -437,7 +437,7 @@ class LevelsListing extends Component {
 												>
 													<AgGridReact
 														defaultColDef={defaultColDef}
-														floatingFilter = {true}
+														floatingFilter={true}
 														domLayout='autoHeight'
 														// columnDefs={c}
 														rowData={this.props.usersListByTechnologyAndLevel}
@@ -448,7 +448,7 @@ class LevelsListing extends Component {
 														loadingOverlayComponent={'customLoadingOverlay'}
 														noRowsOverlayComponent={'customNoRowsOverlay'}
 														noRowsOverlayComponentParams={{
-															title: CONSTANT.EMPTY_DATA,
+															title: EMPTY_DATA,
 														}}
 														frameworkComponents={frameworkComponents}
 													>

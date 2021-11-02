@@ -10,7 +10,7 @@ import {
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
-import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
+import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
