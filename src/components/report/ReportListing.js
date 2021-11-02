@@ -199,7 +199,18 @@ function ReportListing(props) {
 
 
     useEffect(() => {
-        getTableData(0, 100, true);
+
+
+
+        getTableData(0, 500, true);
+
+        return () => {
+
+            getTableData(0, 500, false);
+
+
+        }
+
 
 
     }, [])
@@ -218,15 +229,16 @@ function ReportListing(props) {
         if (reportListingData.length > 0) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
-                getTableData(100, reportListingData[0].TotalRecordCount, true);
+                getTableData(500, reportListingData[0].TotalRecordCount, true);
             }
             if (totalRecordCount !== 0) {
                 setWarningMessage(false)
             }
 
+
+
+
         }
-
-
 
 
 
@@ -545,7 +557,7 @@ function ReportListing(props) {
                         </select>
                     </div>
                     <div className="warning-text">
-                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading more data'} />}
                     </div>
                 </div>
             </div>
