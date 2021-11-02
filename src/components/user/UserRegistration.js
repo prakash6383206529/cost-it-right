@@ -1506,7 +1506,7 @@ class UserRegistration extends Component {
 
 
                     <div className=" row mb-4">
-                      <div className={'col-md-3'}>
+                      <div className={'col-md-4'}>
                         <label
                           className="custom-checkbox"
                           onChange={this.onPressUserPermission}

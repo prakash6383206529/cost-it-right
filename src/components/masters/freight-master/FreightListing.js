@@ -127,55 +127,8 @@ class FreightListing extends Component {
     });
   }
 
-  /**
-  * @method handleHeadChange
-  * @description called
-  */
-  handleHeadChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ costingHead: newValue, });
-    } else {
-      this.setState({ costingHead: [], })
-    }
-  };
 
-  /**
-  * @method handleVendorChange
-  * @description  VENDOR LIST
-  */
-  handleVendorChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendor: newValue });
-    } else {
-      this.setState({ vendor: [], });
 
-    }
-  }
-
-  /**
-  * @method handleSourceCity
-  * @description  HANDLE SOURCE CITY
-  */
-  handleSourceCity = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ sourceLocation: newValue });
-    } else {
-      this.setState({ sourceLocation: [], });
-
-    }
-  }
-
-  /**
-  * @method handleDestinationCity
-  * @description  HANDLE DESTINATION CITY
-  */
-  handleDestinationCity = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ destinationLocation: newValue });
-    } else {
-      this.setState({ destinationLocation: [], });
-    }
-  }
 
   /**
   * @method renderPaginationShowsTotal
@@ -236,74 +189,6 @@ class FreightListing extends Component {
   }
 
 
-
-
-  /**
-  * @method renderListing
-  * @description Used to show type of listing
-  */
-  renderListing = (label) => {
-    const { cityList, vendorListByVendorType, vendorWithVendorCodeSelectList } = this.props;
-    const temp = [];
-
-    if (label === 'costingHead') {
-      return costingHeadObjs;
-    }
-    if (label === 'SourceLocation') {
-      cityList && cityList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-
-    if (label === 'DestinationLocation') {
-      cityList && cityList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'vendor') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-  }
-
-  /**
-  * @method filterList
-  * @description Filter user listing on the basis of role and department
-  */
-  filterList = () => {
-    const { costingHead, vendor, sourceLocation, destinationLocation } = this.state;
-
-    const costingHeadTemp = costingHead ? costingHead.value : '';
-    const vendorTemp = vendor ? vendor.value : '';
-    const sourceTemp = sourceLocation ? sourceLocation.value : 0;
-    const destinationTemp = destinationLocation ? destinationLocation.value : 0;
-
-    this.getDataList(costingHeadTemp, vendorTemp, sourceTemp, destinationTemp)
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  resetFilter = () => {
-    this.setState({
-      costingHead: [],
-      vendor: [],
-      sourceLocation: [],
-      destinationLocation: [],
-    }, () => {
-      this.getDataList()
-      this.props.getVendorWithVendorCodeSelectList()
-    })
-
-  }
 
   formToggle = () => {
     this.props.displayForm()
@@ -424,118 +309,7 @@ class FreightListing extends Component {
         {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
-            {this.state.shown && (
-              <Col md="10" className="filter-block freight-filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills">
-                    <h5>{`Filter By:`}</h5>
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="costingHead"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"Costing Head"}
-                      isClearable={false}
-                      options={this.renderListing("costingHead")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={
-                        this.state.costingHead == null ||
-                          this.state.costingHead.length === 0
-                          ? [required]
-                          : []
-                      }
-                      required={true}
-                      handleChangeDescription={this.handleHeadChange}
-                      valueDescription={this.state.costingHead}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="vendor"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"Vendor"}
-                      isClearable={false}
-                      options={this.renderListing("vendor")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={
-                        this.state.vendor == null ||
-                          this.state.vendor.length === 0
-                          ? [required]
-                          : []
-                      }
-                      required={true}
-                      handleChangeDescription={this.handleVendorChange}
-                      valueDescription={this.state.vendor}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="SourceLocation"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"Source City"}
-                      isClearable={false}
-                      options={this.renderListing("SourceLocation")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={
-                        this.state.sourceLocation == null ||
-                          this.state.sourceLocation.length === 0
-                          ? [required]
-                          : []
-                      }
-                      required={true}
-                      handleChangeDescription={this.handleSourceCity}
-                      valueDescription={this.state.sourceLocation}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="DestinationLocation"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"Destination City"}
-                      isClearable={false}
-                      options={this.renderListing("DestinationLocation")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={
-                        this.state.destinationLocation == null ||
-                          this.state.destinationLocation.length === 0
-                          ? [required]
-                          : []
-                      }
-                      required={true}
-                      handleChangeDescription={this.handleDestinationCity}
-                      valueDescription={this.state.destinationLocation}
-                    />
-                  </div>
 
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {"Reset"}
-                    </button>
-
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="user-btn mr5"
-                    >
-                      {"Apply"}
-                    </button>
-                  </div>
-                </div>
-              </Col>)}
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
@@ -543,9 +317,7 @@ class FreightListing extends Component {
                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                       <div className="cancel-icon-white"></div></button>
                   ) : (
-                    <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <div className="filter mr-0"></div>
-                    </button>
+                    ""
                   )}
                   {AddAccessibility && (
                     <button
