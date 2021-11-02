@@ -554,7 +554,7 @@ function ApproveRejectDrawer(props) {
       setShowError(true)
     }
   }
-  console.log(attachmentsData, 'A attachmentsData')
+
   return (
     <>
       <Drawer
