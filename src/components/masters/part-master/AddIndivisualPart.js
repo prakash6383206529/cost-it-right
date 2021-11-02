@@ -233,11 +233,12 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
+    const { initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
-    let productArray = ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text }))
+    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
     if (isEditFlag) {
 
 
@@ -416,45 +417,44 @@ class AddIndivisualPart extends Component {
                               customClassName={"withBorder"}
                             />
                           </Col>
-
-                          {false &&
-                            initialConfiguration.IsGroupCodeDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`Group Code`}
-                                  name={"GroupCode"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
-                                  component={renderText}
-                                  //required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                />
-                              </Col>
-                            )}
-
-                          <Col md="3">
-                            <Field
-                              label="Group Code"
-                              name="ProductGroup"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
-                              options={this.renderListing("ProductGroup")}
-                              selectionChanged={this.handleProductGroup}
-                              validate={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
-                              required={true}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                            />
-                          </Col>
-
+                          {initialConfiguration?.IsProductMasterConfigurable ? (
+                            // initialConfiguration.IsGroupCodeDisplay && (
+                            <Col md="3">
+                              <Field
+                                label="Group Code"
+                                name="ProductGroup"
+                                type="text"
+                                placeholder={"Select"}
+                                selection={
+                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                                options={this.renderListing("ProductGroup")}
+                                selectionChanged={this.handleProductGroup}
+                                validate={
+                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                                required={true}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              />
+                            </Col>
+                          ) :
+                            <Col md="3">
+                              <Field
+                                label={`Group Code`}
+                                name={"GroupCode"}
+                                type="text"
+                                placeholder={""}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
+                                component={renderText}
+                                //required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                          }
                         </Row>
 
                         <Row>
@@ -720,13 +720,13 @@ function mapStateToProps({ comman, part, auth }) {
   const { initialConfiguration } = auth;
 
   let initialValues = {};
-  if (partData && partData !== undefined) {
+  if (partData && Object.keys(partData).length > 0) {
     initialValues = {
       PartNumber: partData.PartNumber,
       PartName: partData.PartName,
       BOMNumber: partData.BOMNumber,
       Description: partData.Description,
-      GroupCode: partData.GroupCode,
+      GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
       ECNNumber: partData.ECNNumber,
       DrawingNumber: partData.DrawingNumber,
       RevisionNumber: partData.RevisionNumber,

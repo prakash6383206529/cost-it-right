@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import { setPlasticArray } from '../../actions/Costing'
@@ -358,7 +358,7 @@ function LossStandardTable(props) {
               {tableData && tableData.length === 0 && (
                 <tr>
                   <td colspan="4">
-                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                    <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
               )}

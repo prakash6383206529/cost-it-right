@@ -6253,8 +6253,59 @@ body{
      }
   }
 }
+
+.part-manage-component {
+  .ag-paging-panel {
+    display: none !important;
+  }
+  .ag-paging-page-summary-panel, .ag-paging-row-summary-panel {
+    display: none !important;
+  }
+}
+.button-wrapper {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: baseline;
+}
 .pagination-button-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  grid-column-gap: 10px;
+}
+.previous-btn {
+  font-family: "agGridMaterial";
+  font-size: 22px;
+  line-height: 22px;
+  font-style: normal;
+  font-weight: normal;
+  font-feature-settings: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: #959cb6;
+  margin-top: 4px;
+  &:disabled {
+    background-color: #ffffff !important;
+    border: none !important;
+  }
+  &::before {
+    content: "\f125";
+  }
+}
+.next-btn {
+  @extend .previous-btn;
+}
+.next-btn::before {
+  content: "\f11f";
+}
+.warning-text{
+
+position:absolute;
+bottom: 1rem;
+left: 17rem;
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { useSelector } from 'react-redux';
 
@@ -94,7 +94,7 @@ function ViewPackagingAndFreight(props) {
                       {viewPackaging && viewPackaging.length === 0 && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -142,7 +142,7 @@ function ViewPackagingAndFreight(props) {
                         {viewFrieght.length === 0 && (
                           <tr>
                             <td colSpan={9}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}

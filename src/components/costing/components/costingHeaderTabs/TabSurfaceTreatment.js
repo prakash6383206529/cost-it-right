@@ -7,7 +7,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
-import { LEVEL0 } from '../../../../helper/AllConastant';
+import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 
 function TabSurfaceTreatment(props) {

@@ -19,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import moment from "moment";
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../helper/AllConastant";
+import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -700,7 +700,7 @@ class AddFreight extends Component {
                               onChange={this.onPressLoadUnload}
                             >
                               Loading/Unloading Charges
-                            <input
+                              <input
                                 type="checkbox"
                                 checked={this.state.IsLoadingUnloadingApplicable}
                                 disabled={false}
@@ -825,7 +825,7 @@ class AddFreight extends Component {
                             <div className="form-group">
                               <label>
                                 Effective Date
-                              {/* <span className="asterisk-required">*</span> */}
+                                {/* <span className="asterisk-required">*</span> */}
                               </label>
                               <div className="inputbox date-section">
                                 <DatePicker
@@ -859,14 +859,14 @@ class AddFreight extends Component {
                                     onClick={this.updateGrid}
                                   >
                                     Update
-                                </button>
+                                  </button>
                                   <button
                                     type="button"
                                     className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
                                     onClick={this.resetGridData}
                                   >
                                     Cancel
-                                </button>
+                                  </button>
                                 </>
                               ) : (
                                 <button
@@ -875,7 +875,7 @@ class AddFreight extends Component {
                                   onClick={this.gridHandler}
                                 >
                                   <div className={"plus"}></div>
-                                ADD
+                                  ADD
                                 </button>
                               )}
                             </div>
@@ -914,10 +914,10 @@ class AddFreight extends Component {
                               </tbody>
                             </Table>
                             {this.state.gridTable.length === 0 && (
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             )}
                           </Col>
-                          
+
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">

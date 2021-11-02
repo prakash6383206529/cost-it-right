@@ -17,7 +17,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -158,7 +158,7 @@ function SimulationApprovalSummary(props) {
                 }
             }))
         }
-        if(simulationDetail.SimulationId){
+        if (simulationDetail.SimulationId) {
             dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
@@ -815,6 +815,7 @@ function SimulationApprovalSummary(props) {
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                         </div>
+                                                        
                                                         <div
                                                             className="ag-theme-material"
                                                             style={{ height: '100%', width: '100%' }}
@@ -824,7 +825,6 @@ function SimulationApprovalSummary(props) {
                                                                 defaultColDef={defaultColDef}
                                                                 floatingFilter={true}
                                                                 domLayout='autoHeight'
-                                                                floatingFilter={true}
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -834,7 +834,7 @@ function SimulationApprovalSummary(props) {
                                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
-                                                                    title: CONSTANT.EMPTY_DATA,
+                                                                    title: EMPTY_DATA,
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
@@ -849,6 +849,8 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
 
                                                                 {
                                                                     String(SimulationTechnologyId) !== EXCHNAGERATE &&
@@ -938,7 +940,7 @@ function SimulationApprovalSummary(props) {
                             {lastRevisionDataAccordian &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={true} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
 
                                 </div>
                             }

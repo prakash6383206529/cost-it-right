@@ -7,7 +7,7 @@ import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../..
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -426,7 +426,7 @@ class ZBCPlantListing extends Component {
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
             clearSearch: true,
-            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
@@ -538,9 +538,8 @@ class ZBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        <>
+                                        </>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -583,8 +582,8 @@ class ZBCPlantListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            domLayout='autoHeight'
                             floatingFilter={true}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
@@ -594,7 +593,7 @@ class ZBCPlantListing extends Component {
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
+                                title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}

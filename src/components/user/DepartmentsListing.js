@@ -7,7 +7,7 @@ import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../act
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
@@ -196,7 +196,7 @@ class DepartmentsListing extends Component {
     const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: <NoContentFound title={EMPTY_DATA} />,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -274,8 +274,8 @@ class DepartmentsListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -285,8 +285,8 @@ class DepartmentsListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass'
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

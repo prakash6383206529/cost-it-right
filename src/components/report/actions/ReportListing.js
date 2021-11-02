@@ -3,7 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    GET_REPORT_LIST, config
+    GET_REPORT_LIST, config, EMPTY_GUID
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -41,25 +41,38 @@ const headers = config
  * @description Used to get RM Import Datalist
  */
 export function getReportListing(index, take, isPagination, data, callback) {
+
     return (dispatch) => {
-        const departmentQueryParams = `departmentCode=${userDepartmetList()}`
-        const queryParams = `costingNumber=${data.costingNumber}&toDate=${data.toDate}&fromDate=${data.fromDate}&statusId=${data.statusId}&technologyId=${data.technologyId}&plantCode=${data.plantCode}&vendorCode=${data.vendorCode}&userId=${data.userId}&isSortByOrderAsc=${data.isSortByOrderAsc}`
+        if (isPagination === true) {
+            const departmentQueryParams = `&departmentCode=${userDepartmetList()}`
+            const queryParams = `costingNumber=${data.costingNumber}&toDate=${data.toDate}&fromDate=${data.fromDate}&statusId=${data.statusId}&technologyId=${data.technologyId}&plantCode=${data.plantCode}&vendorCode=${data.vendorCode}&userId=${EMPTY_GUID}&isSortByOrderAsc=${data.isSortByOrderAsc}`
+            const queryParamsSecond = `&isApplyPagination=${true}&skip=${index}&take=${take}`
 
+            const request = axios.get(`${API.getReportListing}?${queryParams}${queryParamsSecond}${departmentQueryParams}`, headers);
+            request.then((response) => {
+                if (response.data.Result || response.status === 204) {
+                    dispatch({
+                        type: GET_REPORT_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                    callback(response);
 
-        const queryParamsSecond = `&isApplyPagination=${isPagination}&skip=${index}&take=${take}`
-        const request = axios.get(`${API.getReportListing}?${queryParams}${queryParamsSecond}${departmentQueryParams}`, headers);
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_REPORT_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            //apiErrors(error);
-        });
+                }
+
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+                //apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_REPORT_LIST,
+                payload: []
+            })
+
+            callback([]);
+        }
     };
+
+
 }
