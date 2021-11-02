@@ -588,6 +588,7 @@ function ApproveRejectDrawer(props) {
   const handleChangeStatus = ({ meta, file }, status) => {
 
 
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
@@ -608,6 +609,8 @@ function ApproveRejectDrawer(props) {
 
     if (status === 'rejected_file_type') {
       toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      toastr.warning("File size greater than 5mb not allowed")
     }
   }
 
@@ -895,7 +898,7 @@ function ApproveRejectDrawer(props) {
                               accept="*"
                               initialFiles={initialFiles}
                               maxFiles={4}
-                              maxSizeBytes={2000000000}
+                              maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
                                   "Image, audio and video files only"
