@@ -100,13 +100,7 @@ class SOBListing extends Component {
   * @method handleHeadChange
   * @description called
   */
-  handleHeadChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ costingHead: newValue, });
-    } else {
-      this.setState({ costingHead: [], })
-    }
-  };
+
 
   /**
   * @method renderPaginationShowsTotal
@@ -169,20 +163,7 @@ class SOBListing extends Component {
   * @method renderListing
   * @description Used to show type of listing
   */
-  renderListing = (label) => {
-    const { BOPVendorDataList, } = this.props;
-    const temp = [];
 
-    if (label === 'SOBVendors') {
-      BOPVendorDataList && BOPVendorDataList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.BoughtOutPartNumber, value: item.BoughtOutPartNumber })
-        return null;
-      });
-      return temp;
-    }
-
-  }
 
   /**
   * @method closeDrawer
@@ -198,33 +179,8 @@ class SOBListing extends Component {
     })
   }
 
-  /**
-  * @method filterList
-  * @description Filter listing
-  */
-  filterList = () => {
-    const { costingHead } = this.state;
 
-    const costingHeadTemp = costingHead ? costingHead.value : '';
 
-    this.getDataList(costingHeadTemp)
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  resetFilter = () => {
-    this.setState({
-      costingHead: [],
-      BOPCategory: [],
-      plant: [],
-      vendor: [],
-    }, () => {
-      this.getDataList()
-    })
-
-  }
   formToggle = () => {
     this.props.displayForm()
   }
@@ -384,48 +340,7 @@ class SOBListing extends Component {
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
-            {this.state.shown && (
-              <Col md="8" className="filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                  <div className="flex-fill">
-                    <Field
-                      name="BOPPartNumber"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={'BOP Part No.'}
-                      isClearable={false}
-                      options={this.renderListing('SOBVendors')}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                      required={true}
-                      handleChangeDescription={this.handleHeadChange}
-                      valueDescription={this.state.costingHead}
-                    />
-                  </div>
 
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {'Reset'}
-                    </button>
-
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="user-btn mr5"
-                    >
-                      {'Apply'}
-                    </button>
-                  </div>
-                </div>
-              </Col>)}
 
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
@@ -433,9 +348,8 @@ class SOBListing extends Component {
                   <button type="button" className="user-btn filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <div className="cancel-icon-white"></div></button>
                 ) : (
-                  <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                    <div className="filter mr-0"></div>
-                  </button>
+                  <>
+                  </>
                 )}
                 {
                   DownloadAccessibility &&
