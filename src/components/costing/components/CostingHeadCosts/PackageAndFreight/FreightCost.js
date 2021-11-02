@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../config/constants';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -141,7 +141,7 @@ function FreightCost(props) {
                     {gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={7}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }

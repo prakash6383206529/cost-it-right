@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { getTaxDetailsDataList, deleteTaxDetails, } from '../actions/TaxMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -287,7 +287,7 @@ class TaxListing extends Component {
                       loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
-                        title: CONSTANT.EMPTY_DATA,
+                        title: EMPTY_DATA,
                         imagClass: 'imagClass'
                       }}
                       frameworkComponents={frameworkComponents}

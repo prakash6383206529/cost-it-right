@@ -8,7 +8,7 @@ import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import { getAllPartSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../config/constants'
+import { EMPTY_DATA } from '../../../../config/constants'
 import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
@@ -518,7 +518,7 @@ function ApprovalListing(props) {
                       loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
-                        title: CONSTANT.EMPTY_DATA,
+                        title: EMPTY_DATA,
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}

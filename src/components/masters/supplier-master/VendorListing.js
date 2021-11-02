@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
@@ -58,11 +58,6 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: "",
             pageNo: 1,
-<<<<<<< HEAD
-            enableSearchFilterSearchButton:false,
-            enableExitFilterSearchButton:false,
-=======
->>>>>>> 9b73528ce (server site pagination button ui)
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -176,13 +171,8 @@ class VendorListing extends Component {
 
         this.getTableListData(0, '', "", "", 10, emptyObj, true)
         data.setState({ pageNo: 1 })
-<<<<<<< HEAD
-        data.setState({enableExitFilterSearchButton:false})
-        this.setState({enableSearchFilterSearchButton:false})
-=======
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
->>>>>>> 9b73528ce (server site pagination button ui)
     }
     /**
     * @method applyPermission
@@ -595,7 +585,7 @@ class VendorListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
@@ -793,7 +783,7 @@ class VendorListing extends Component {
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
+                                title: EMPTY_DATA,
                             }}
                             frameworkComponents={frameworkComponents}
                         >

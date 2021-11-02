@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from '../../layout/FormInputs'
 import { required } from '../../../helper/validation'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -557,7 +557,7 @@ class VolumeListing extends Component {
     } = this.state
     const options = {
       clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
@@ -832,7 +832,7 @@ class VolumeListing extends Component {
                 loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
+                  title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}

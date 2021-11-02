@@ -5,7 +5,7 @@ import { getOperationDrawerDataList, getOperationDrawerVBCDataList } from '../..
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../config/constants';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -96,7 +96,7 @@ function AddOperation(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: (tableData === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (tableData === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
     firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -290,7 +290,7 @@ function AddOperation(props) {
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
+                          title: EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
