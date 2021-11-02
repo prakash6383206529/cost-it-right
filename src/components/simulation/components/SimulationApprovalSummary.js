@@ -780,7 +780,7 @@ function SimulationApprovalSummary(props) {
                             {lastRevisionDataAccordian &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={true} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
 
                                 </div>
                             }
