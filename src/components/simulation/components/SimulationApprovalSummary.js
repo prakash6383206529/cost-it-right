@@ -815,6 +815,7 @@ function SimulationApprovalSummary(props) {
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                         </div>
+                                                        1
                                                         <div
                                                             className="ag-theme-material"
                                                             style={{ height: '100%', width: '100%' }}
@@ -824,7 +825,6 @@ function SimulationApprovalSummary(props) {
                                                                 defaultColDef={defaultColDef}
                                                                 floatingFilter={true}
                                                                 domLayout='autoHeight'
-                                                                floatingFilter={true}
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -849,6 +849,8 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
 
                                                                 {
                                                                     String(SimulationTechnologyId) !== EXCHNAGERATE &&
