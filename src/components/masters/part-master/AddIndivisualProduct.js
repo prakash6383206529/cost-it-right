@@ -220,12 +220,7 @@ class AddIndivisualProduct extends Component {
         if (isEditFlag) {
 
 
-            if (DropdownChanged
-                // && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
-                // DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-                // DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber
-                // && uploadAttachements
-            ) {
+            if (DropdownChanged) {
                 this.cancel()
                 return false;
             }
