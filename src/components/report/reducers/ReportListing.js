@@ -16,6 +16,7 @@ export default function ReportListingReducers(state = initialState, action) {
         case GET_REPORT_LIST:
             let temp = action.payload
             let Arr = []
+            let arr1 = []
             temp && temp.map(item => {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
@@ -24,7 +25,14 @@ export default function ReportListingReducers(state = initialState, action) {
                     return Arr
                 }
             })
-            let arr1 = [...state.reportListing, ...Arr]
+
+            if (temp.length > 0) {
+                arr1 = [...state.reportListing, ...Arr]
+
+
+            } else {
+                arr1 = Arr
+            }
 
             return {
                 ...state,
