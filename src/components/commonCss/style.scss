@@ -6259,3 +6259,8 @@ body{
   right: -20px;
   top: 8px;
 }
+.pagination-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
