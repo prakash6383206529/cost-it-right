@@ -218,84 +218,7 @@ class ZBCPlantListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
-    /**
-    * @method selectType
-    * @description Used show listing of unit of measurement
-    */
-    selectType = (label) => {
-        const { countryList, stateList, cityList } = this.props;
-        const temp = [];
 
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'state') {
-            stateList && stateList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'city') {
-            cityList && cityList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-    }
-
-    /**
-    * @method countryHandler
-    * @description Used to handle country
-    */
-    countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ country: newValue }, () => {
-                const { country } = this.state;
-                this.props.fetchStateDataAPI(country.value, () => { })
-            });
-        } else {
-            this.setState({ country: [], state: [], city: [], })
-            this.props.fetchStateDataAPI(0, () => { })
-        }
-    };
-
-    /**
-    * @method stateHandler
-    * @description Used to handle state
-    */
-    stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ state: newValue }, () => {
-                const { state } = this.state;
-                this.props.fetchCityDataAPI(state.value, () => { })
-            });
-        } else {
-            this.setState({ state: [], city: [] });
-            this.props.fetchCityDataAPI(0, () => { })
-        }
-
-    };
-
-    /**
-    * @method cityHandler
-    * @description Used to handle City
-    */
-    cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ city: newValue });
-        } else {
-            this.setState({ city: [] });
-        }
-    };
 
     /**
     * @method filterList
@@ -323,17 +246,6 @@ class ZBCPlantListing extends Component {
         })
     }
 
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({ country: [], state: [], city: [], }, () => {
-            this.props.fetchStateDataAPI(0, () => { })
-            this.props.fetchCityDataAPI(0, () => { })
-            this.getTableListData()
-        })
-    }
 
     formToggle = () => {
         this.setState({ isOpenVendor: true })
@@ -442,80 +354,7 @@ class ZBCPlantListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CountryId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Country"}
-                                            options={this.selectType("country")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.countryHandler}
-                                            valueDescription={this.state.country}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"State"}
-                                            options={this.selectType("state")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"City"}
-                                            options={this.selectType("city")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -523,9 +362,8 @@ class ZBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        <>
+                                        </>
                                     )}
                                     {AddAccessibility && (
                                         <button

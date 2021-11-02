@@ -15,6 +15,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
+import WarningMessage from '../common/WarningMessage'
+
 
 
 
@@ -62,6 +64,7 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(true)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
@@ -216,6 +219,9 @@ function ReportListing(props) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
                 getTableData(100, reportListingData[0].TotalRecordCount, true);
+            }
+            if (totalRecordCount !== 0) {
+                setWarningMessage(false)
             }
 
         }
@@ -443,6 +449,7 @@ function ReportListing(props) {
 
             </div>
 
+
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -536,6 +543,9 @@ function ReportListing(props) {
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
+                    </div>
+                    <div className="warning-text">
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
                     </div>
                 </div>
             </div>

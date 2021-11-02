@@ -16,7 +16,8 @@ import { func } from 'joi'
  * @param res
  */
 export const apiErrors = (res) => {
-  const response = res ? res.response : undefined
+  const response = res ? res : undefined
+
 
   if (response?.data?.error?.message?.value) {
     toastr.error(response.data.error.message.value)
@@ -34,6 +35,8 @@ export const apiErrors = (res) => {
  */
 const handleHTTPStatus = (response) => {
   switch (response.status) {
+    case 202:
+      return toastr.error('No Data Available.')
     case 203:
       return toastr.error('Data is inconsistent. Please refresh your session by re-login')
     case 204:

@@ -139,66 +139,6 @@ class BOPDomesticListing extends Component {
         })
     }
 
-    /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handleCategoryChange
-    * @description  used to handle BOP Category Selection
-    */
-    handleCategoryChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ BOPCategory: newValue });
-        } else {
-            this.setState({ BOPCategory: [], });
-
-        }
-    }
-
-    /**
-    * @method handlePlantChange
-    * @description  PLANT LIST
-    */
-    handlePlantChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue });
-        } else {
-            this.setState({ plant: [], });
-
-        }
-    }
-
-    /**
-    * @method handleVendorChange
-    * @description  VENDOR LIST
-    */
-    handleVendorChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendor: newValue }, () => {
-                const { vendor } = this.state;
-                if (getConfigurationKey().IsVendorPlantConfigurable) {
-
-                    this.props.getPlantSelectListByVendor(vendor.value, () => { })
-                } else {
-                    this.props.getPlantSelectList(() => { })
-                }
-            });
-        } else {
-            this.setState({ vendor: [], });
-
-        }
-    }
-
-
 
     /**
     * @method buttonFormatter
@@ -237,76 +177,8 @@ class BOPDomesticListing extends Component {
     renderPlant = (cell, row, enumObject, rowIndex) => {
         return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
     }
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { bopCategorySelectList, plantSelectList, vendorWithVendorCodeSelectList, } = this.props;
-        const temp = [];
 
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
 
-        if (label === 'BOPCategory') {
-            bopCategorySelectList && bopCategorySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'vendor') {
-            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-    }
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, BOPCategory, plant, vendor } = this.state;
-
-        const costingHeadTemp = costingHead ? costingHead.value : '';
-        const categoryTemp = BOPCategory ? BOPCategory.value : 0;
-        const vendorTemp = vendor ? vendor.value : '';
-        const plantTemp = plant ? plant.value : '';
-
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            BOPCategory: [],
-            plant: [],
-            vendor: [],
-        }, () => {
-            this.props.getBOPCategorySelectList(() => { })
-            this.props.getPlantSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList(() => { })
-            this.getDataList()
-        })
-
-    }
 
     formToggle = () => {
         this.props.displayForm()
@@ -453,97 +325,7 @@ class BOPDomesticListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                        {this.state.shown && (
-                            <Col md="12" lg="10" className="filter-block ">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Costing Head'}
-                                            isClearable={false}
-                                            options={this.renderListing('costingHead')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="category"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Category'}
-                                            isClearable={false}
-                                            options={this.renderListing('BOPCategory')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleCategoryChange}
-                                            valueDescription={this.state.BOPCategory}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="vendor"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Vendor'}
-                                            isClearable={false}
-                                            options={this.renderListing('vendor')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorChange}
-                                            valueDescription={this.state.vendor}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="plant"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Plant'}
-                                            isClearable={false}
-                                            options={this.renderListing('plant')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handlePlantChange}
-                                            valueDescription={this.state.plant}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -551,9 +333,8 @@ class BOPDomesticListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        <>
+                                        </>
                                     )}
                                     {AddAccessibility && (
                                         <button
