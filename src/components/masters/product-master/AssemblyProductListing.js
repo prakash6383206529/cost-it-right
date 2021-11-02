@@ -304,7 +304,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        var Temp = TempData.map((item) => {
+        temp = TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -320,11 +320,12 @@ class AssemblyProductListing extends Component {
                 item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
+
             return item
         })
         return (
 
-            <ExcelSheet data={Temp} name={AssemblyPart}>
+            <ExcelSheet data={temp} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

@@ -96,10 +96,10 @@ export function getPartData(PartId, callback) {
  * @method getPartDataList
  * @description get Parts
  */
-export function getPartDataList(skip, take, obj, callback) {
+export function getPartDataList(skip, take, obj, isPagination, callback) {
     return (dispatch) => {
 
-        var queryParams = `isApplyPagination=${true}`;
+        var queryParams = `isApplyPagination=${isPagination}`;
 
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`

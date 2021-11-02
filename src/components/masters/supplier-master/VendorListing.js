@@ -88,7 +88,7 @@ class VendorListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData)
+        this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData, true)
         this.applyPermission(this.props.topAndLeftMenuData)
     }
 
@@ -129,7 +129,7 @@ class VendorListing extends Component {
         const nextNo = data.state.currentRowIndex + 10;
 
         //     //gridApi.paginationGoToNextPage();
-        data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData)
+        data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData, true)
         data.setState({ currentRowIndex: nextNo })
 
     }
@@ -142,7 +142,7 @@ class VendorListing extends Component {
             const previousNo = data.state.currentRowIndex - 10;
 
 
-            data.getTableListData(previousNo, '', "", "", 10, this.state.floatingFilterData)
+            data.getTableListData(previousNo, '', "", "", 10, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
 
         }
@@ -153,8 +153,8 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-        this.getTableListData(0, '', "", "", 5000, data.state.floatingFilterData)
-        data.setState({enableExitFilterSearchButton:true})
+
+        this.getTableListData(0, '', "", "", 5000, data.state.floatingFilterData, false)
 
     }
 
@@ -163,7 +163,7 @@ class VendorListing extends Component {
         this.setState({ floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" } })
         let emptyObj = { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" }
 
-        this.getTableListData(0, '', "", "", 10, emptyObj)
+        this.getTableListData(0, '', "", "", 10, emptyObj, true)
         data.setState({ pageNo: 1 })
         data.setState({enableExitFilterSearchButton:false})
         this.setState({enableSearchFilterSearchButton:false})
@@ -201,16 +201,17 @@ class VendorListing extends Component {
     * @method getTableListData
     * @description GET VENDOR DATA LIST
     */
-    getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj) => {
+    getTableListData = (skip, vendorType = "", vendorName = "", country = "", take, obj, isPagination) => {
         let filterData = {
             vendorType: vendorType,
             vendorName: vendorName,
             country: country,
         }
-        this.props.getSupplierDataList(skip, obj, take, res => {
+        this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
+
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
@@ -454,7 +455,7 @@ class VendorListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(null, null, null)
+            this.getTableListData(this.state.currentRowIndex, '', "", "", 10, this.state.floatingFilterData, true)
         })
     }
 
@@ -467,7 +468,10 @@ class VendorListing extends Component {
         const vType = vendorType && vendorType != null ? vendorType.value : null;
         const vName = vendorName && vendorName != null ? vendorName.value : null;
         const Country = country && country != null ? country.value : null;
-        this.getTableListData(vType, vName, Country)
+
+
+        this.getTableListData(this.state.currentRowIndex, '', "", "", 10, this.state.floatingFilterData, true)
+        //this.getTableListData(vType, vName, Country)
     }
 
     /**
