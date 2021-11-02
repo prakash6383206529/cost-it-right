@@ -29,6 +29,7 @@ import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import WarningMessage from '../../common/WarningMessage'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -56,9 +57,9 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
             currentRowIndex: 0,
-            totalRecordCount: "",
+            totalRecordCount: 0,
             pageNo: 1,
-            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
+            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "", search: "" },
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
@@ -69,6 +70,7 @@ class VendorListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
+            warningMessage: false,
             sideBar: { toolPanels: ['columns'] },
             showData: false
 
@@ -99,10 +101,12 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        this.setState({enableSearchFilterSearchButton:true})
+        this.setState({ enableSearchFilterSearchButton: true })
+        this.setState({ warningMessage: true })
+
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-
+            this.setState({ warningMessage: false })
             return false
         } else {
 
@@ -156,7 +160,7 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-
+        this.setState({ warningMessage: false })
         this.setState({ pageNo: 1 })
         data.setState({ currentRowIndex: 0 })
         this.getTableListData(0, '', "", "", 10, data.state.floatingFilterData, true)
@@ -217,13 +221,14 @@ class VendorListing extends Component {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
+                if (this.state.totalRecordCount === 0) {
+                    let Data = res.data.DataList;
+                    this.setState({
+                        tableData: Data,
+                        totalRecordCount: Data[0].TotalRecordCount,
 
-                let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                    totalRecordCount: Data[0].TotalRecordCount,
-
-                })
+                    })
+                }
             } else {
 
             }
@@ -566,6 +571,13 @@ class VendorListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
+        if (e.target.value == "") {
+            this.setState({ warningMessage: false })
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
+        } else {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
+            this.setState({ warningMessage: true })
+        }
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
@@ -616,6 +628,7 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
+
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -625,7 +638,7 @@ class VendorListing extends Component {
                         <Col md="12" className="d-flex justify-content-between">
                             <h1 className="mb-0">Vendor Master</h1>
                         </Col>
-                        
+
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
                         {this.state.shown && (
@@ -761,6 +774,7 @@ class VendorListing extends Component {
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
                     </div>
                     <div
                         className="ag-theme-material"
@@ -797,19 +811,19 @@ class VendorListing extends Component {
                             <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
-                             <div className="paging-container d-inline-block float-right">
+                            <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
                                     <option value="10" selected={true}>10</option>
                                     <option value="50">50</option>
                                     <option value="100">100</option>
                                 </select>
-                             </div>
-                             <div className="d-flex pagination-button-container">
-                                <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                              <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
-                              <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
-                          </div>
+                            <div className="d-flex pagination-button-container">
+                                <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
+                                <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                                <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

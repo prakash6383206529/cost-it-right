@@ -64,7 +64,7 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
         var queryParams = `isApplyPagination=${isPagination}`;
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
-        const QueryParams = `vendorType=${obj.vendorType != null || obj.vendorType != "" ? obj.vendorType : ""}&vendorName=${obj.vendorName != null || obj.vendorName != "" ? obj.vendorName : ""}&country=${obj.Country != null || obj.Country != "" ? obj.Country : ""}&vendorCode=${obj.VendorCode != null || obj.VendorCode != "" ? obj.VendorCode : ""}&city=${obj.City != null || obj.City != "" ? obj.City : ""}&state=${obj.State != null || obj.State != "" ? obj.State : ""} `
+        const QueryParams = `vendorType=${obj.vendorType != null || obj.vendorType != "" ? obj.vendorType : ""}&vendorName=${obj.vendorName != null || obj.vendorName != "" ? obj.vendorName : ""}&country=${obj.Country != null || obj.Country != "" ? obj.Country : ""}&vendorCode=${obj.VendorCode != null || obj.VendorCode != "" ? obj.VendorCode : ""}&city=${obj.City != null || obj.City != "" ? obj.City : ""}&state=${obj.State != null || obj.State != "" ? obj.State : ""}&search=${obj.search != null || obj.search != "" ? obj.search : ""} `
         const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -74,11 +74,13 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
                 });
             }
             callback(response)
+            if (response.status == 202) { apiErrors(response) }
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE
             });
             apiErrors(error);
+
         });
     };
 }

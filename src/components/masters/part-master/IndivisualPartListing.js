@@ -20,6 +20,8 @@ import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import WarningMessage from '../../common/WarningMessage'
+import { apiErrors } from '../../../helper/util'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -47,10 +49,11 @@ class IndivisualPartListing extends Component {
             tableData: [],
             startIndexCurrentPage: 0,
             endIndexCurrentPage: 9,
-            totalRecordCount: "",
+            totalRecordCount: 0,
             pageNo: 1,
-            floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
+            floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", search: "" },
             currentRowIndex: 0,
+            warningMessage: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
             loader: true
@@ -64,16 +67,20 @@ class IndivisualPartListing extends Component {
 
 
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
+
+            if (res.status === 202) { apiErrors(res) }
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
 
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                    totalRecordCount: Data[0].TotalRecordCount,
+                if (this.state.totalRecordCount == 0) {
+                    this.setState({
+                        tableData: Data,
+                        totalRecordCount: Data[0].TotalRecordCount,
 
-                })
+                    })
+                }
             } else {
 
             }
@@ -116,6 +123,7 @@ class IndivisualPartListing extends Component {
 
     onSearch(data) {
 
+        this.setState({ warningMessage: false })
         this.setState({ pageNo: 1 })
         data.setState({ currentRowIndex: 0 })
         data.ApiActionCreator(0, 10, this.state.floatingFilterData, true)
@@ -137,11 +145,12 @@ class IndivisualPartListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
-      this.setState({enableSearchFilterSearchButton:true})
+        this.setState({ warningMessage: true })
+        this.setState({ enableSearchFilterSearchButton: true })
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            
+            this.setState({ warningMessage: false })
+
             return false
         } else {
 
@@ -441,6 +450,15 @@ class IndivisualPartListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
+
+        if (e.target.value == "") {
+            this.setState({ warningMessage: false })
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
+        } else {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, search: e.target.value } })
+            this.setState({ warningMessage: true })
+
+        }
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
@@ -452,7 +470,7 @@ class IndivisualPartListing extends Component {
     // resetState() {
     //     gridOptions.columnApi.resetColumnState();
     //     this.onSearchExit(null)
-       
+
     // }
 
     /**
@@ -510,7 +528,7 @@ class IndivisualPartListing extends Component {
                         <Col md="6" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -560,11 +578,10 @@ class IndivisualPartListing extends Component {
 
 
 
-
-
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
                         </div>
                         <div
                             className="ag-theme-material"
@@ -599,19 +616,19 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
-                             <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                             </div>
-                             <div className="d-flex pagination-button-container">
-                                <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                              <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
-                              <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div className="d-flex pagination-button-container">
+                                    <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
+                                    <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                                    <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
+                                </div>
                             </div>
-                          </div>
                         </div>
                     </div>
 
