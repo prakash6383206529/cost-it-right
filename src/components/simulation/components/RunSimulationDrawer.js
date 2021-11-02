@@ -288,7 +288,7 @@ function RunSimulationDrawer(props) {
                                                     if (el.Value === '0') return false;
                                                     return (
                                                         <Col md="12" className="mb-3 p-0">
-                                                            <div class={`custom-check1 d-inline-block ${el.Text ==="Additional Discount %" ? "drawer-side-input" : ''} ${el.Text==="Additional Other Cost" ? 'drawer-side-input-other': ''}`}>
+                                                            <div class={`custom-check1 d-inline-block ${el.Text === "Additional Discount %" ? "drawer-side-input" : ''} ${el.Text === "Additional Other Cost" ? 'drawer-side-input-other' : ''}`}>
                                                                 <label
                                                                     className="custom-checkbox mb-0"
                                                                     onChange={() => handleApplicabilityChange(el)}
@@ -310,47 +310,42 @@ function RunSimulationDrawer(props) {
                                                                     />
                                                                 </label>
                                                                 {(el.Text === "Additional Other Cost") && inputOtherCost ?
-
-
-
-
                                                                     <Fragment>
                                                                         <div className="toggle-button-per-and-fix">
-                                                                        <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span> 
-                                                                        <Switch
-                                                                            onChange={onChange}
-                                                                            checked={toggleSwitchLabel}
-                                                                            id="normal-switch"
-                                                                            disabled={false}
-                                                                            background="#4DC771"
-                                                                            onColor="#4DC771"
-                                                                            onHandleColor="#ffffff"
-                                                                            offColor="#4DC771"
-                                                                            uncheckedIcon={true}
-                                                                            checkedIcon={true}
-                                                                            height={20}
-                                                                            width={46}
-                                                                        />
-                                                                          <span className="ml-2">Percentage</span>
-				                                                     	</label>
-                                                                        {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-                                                                        <TextFieldHookForm
-                                                                            label=""
-                                                                            name={"OtherCost"}
-                                                                            Controller={Controller}
-                                                                            control={control}
-                                                                            register={register}
-                                                                            mandatory={false}
-                                                                            handleChange={() => { }}
-                                                                            defaultValue={""}
-                                                                            className=""
-                                                                            customClassName={"withBorder"}
-                                                                            errors={errors.OtherCost}
-                                                                            disabled={false}
-                                                                        />
-
-                                                                      </div>
-
+                                                                            <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                                <Switch
+                                                                                    onChange={onChange}
+                                                                                    checked={toggleSwitchLabel}
+                                                                                    id="normal-switch"
+                                                                                    disabled={false}
+                                                                                    background="#4DC771"
+                                                                                    onColor="#4DC771"
+                                                                                    onHandleColor="#ffffff"
+                                                                                    offColor="#4DC771"
+                                                                                    uncheckedIcon={true}
+                                                                                    checkedIcon={true}
+                                                                                    height={20}
+                                                                                    width={46}
+                                                                                />
+                                                                                <span className="ml-2">Percentage</span>
+                                                                            </label>
+                                                                            {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+                                                                            <TextFieldHookForm
+                                                                                label=""
+                                                                                name={"OtherCost"}
+                                                                                Controller={Controller}
+                                                                                rules={{ required: true }}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                className=""
+                                                                                customClassName={"withBorder"}
+                                                                                errors={errors.OtherCost}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </div>
                                                                     </Fragment>
 
                                                                     : " "
@@ -364,9 +359,9 @@ function RunSimulationDrawer(props) {
                                                                         Controller={Controller}
                                                                         control={control}
                                                                         register={register}
-                                                                        mandatory={false}
+                                                                        mandatory={true}
                                                                         rules={{
-                                                                            //required: true,
+                                                                            required: true,
                                                                             pattern: {
                                                                                 value: /^\d*\.?\d*$/,
                                                                                 message: 'Invalid Number.'
