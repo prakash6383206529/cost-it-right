@@ -9,7 +9,7 @@ import {
   setComponentDiscountOtherItemData
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { LEVEL1 } from '../../../../../helper/AllConastant';
+import { LEVEL1 } from '../../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';

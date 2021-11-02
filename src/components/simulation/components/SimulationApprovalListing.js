@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { CONSTANT } from '../../../config/constants'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
@@ -362,7 +362,6 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-        setApproveDrawer(true)
 
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')

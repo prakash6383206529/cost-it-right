@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { getManageBOPSOBDataList, getInitialFilterData, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -494,8 +494,8 @@ class SOBListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
                   floatingFilter={true}
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.bopSobList}
                   pagination={true}

@@ -1719,3 +1719,71 @@ export const RM_MASTER_ID = 1
 //approve reject drawer
 export const provisional = "Provisional"
 export const APPROVER = 'Approver'
+
+
+//AllConastant File Moved here
+
+export const CONSTANT = {
+  ADD: 'Add',
+  UPDATE: 'Update',
+  SAVE: 'Save',
+  PART: 'Part',
+  NAME: 'Name',
+  DESCRIPTION: 'Description',
+  UOM: 'Unit Of Measurement',
+  NUMBER: 'Number',
+  TYPE: 'Type',
+  GROUPCODE: 'Group Code',
+  MASTER: 'Master',
+  DETAILS: 'Details',
+  BOM: 'BOM',
+  CATEGORY: 'Category',
+  TITLE: 'Title',
+  MATERIAL: 'Raw Material',
+  PLANT: 'Plant',
+  SUPPLIER: 'Supplier',
+  ADDRESS: 'Address',
+  COUNTRY: 'Country',
+  STATE: 'State',
+  CITY: 'City',
+  EMAIL: 'email',
+  CODE: 'code',
+  GRADE: 'Grade',
+  SPECIFICATION: 'Specification',
+  QUANTITY: 'Quantity',
+  ASSEMBLY: 'Assembly',
+  LEVEL: 'Level',
+  REVISION: 'Revision',
+  BOP: 'Bought out parts',
+  BOPP: 'BOP',
+  BILL: 'Bill',
+  OTHER_OPERATION: 'Other Operation',
+  CED_OTHER_OPERATION: 'CED Other Operation',
+  MHR: 'MHR',
+  OPERATION: 'Operation',
+  MATERIAL_MASTER: 'Raw Material',
+  BASIC: 'Basic',
+  RATE: 'Rate',
+  SCRAP: 'Scrap',
+  REMARK: 'Remark',
+  NLC: 'Net Landed Cost',
+  SOURCE: 'Source',
+  DESTINATION: 'Destination',
+  LABOUR: 'Labour',
+  FREIGHT: 'Freight',
+  OVERHEAD_AND_PROFIT: 'OverHead and Profit',
+  TECHNOLOGY: 'Technology',
+  DATE: 'Created Date',
+  DEPRECIATION: 'Depreciation',
+  SHIFT: 'Shift',
+  INTEREST_RATE: 'Interest Rate',
+  LOCATION: 'Location',
+  FUEL: 'Fuel',
+  PROCESS: 'Process',
+  EMPTY_DATA: 'No Record Found',
+  COSTING: 'Costing',
+};
+
+export const LEVEL0 = 'L0';
+export const LEVEL1 = 'L1';
+export const SUB_ASSEMBLY = 'Sub Assembly';

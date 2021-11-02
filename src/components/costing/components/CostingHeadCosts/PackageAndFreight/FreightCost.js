@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { CONSTANT } from '../../../../../config/constants';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -109,7 +109,7 @@ function FreightCost(props) {
                       <th>{`Rate/Percentage`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Cost`}</th>
-                      <th style={{ width: "130px",textAlign:"right"}}>{`Action`}</th>
+                      <th style={{ width: "130px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody >
@@ -130,7 +130,7 @@ function FreightCost(props) {
                             <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Rate : '-')}</td>
                             <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
                             <td>{item.FreightCost}</td>
-                            <td style={{textAlign:"right"}}>
+                            <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>

@@ -12,7 +12,7 @@ import {
 } from '../../../../../helper'
 import Switch from 'react-switch'
 import NoContentFound from '../../../../common/NoContentFound'
-import { CONSTANT } from '../../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../../config/constants'
 import { deleteVendorPowerDetail } from '../../../../masters/actions/Fuel'
 
 function ColdForging(props) {

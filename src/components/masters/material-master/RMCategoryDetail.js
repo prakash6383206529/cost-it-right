@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getRowMaterialDataAPI, deleteCategoryAPI } from '../../actions/Material';
 import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';

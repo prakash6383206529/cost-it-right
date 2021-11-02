@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from '../../layout/FormInputs'
 import { required } from '../../../helper/validation'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { CONSTANT } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -820,8 +820,8 @@ class VolumeListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}
@@ -833,7 +833,7 @@ class VolumeListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >

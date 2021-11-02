@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { CONSTANT } from '../../../../config/constants'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useForm, Controller, useWatch } from 'react-hook-form';

@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { CONSTANT } from '../../../../config/constants';
 import { EMPTY_GUID } from '../../../../config/constants';
 
 function ViewRM(props) {

@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
 import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
@@ -798,8 +798,8 @@ class LabourListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
@@ -810,7 +810,7 @@ class LabourListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getMaterialDetailAPI, deleteMaterialTypeAPI } from '../../actions/Material';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import { convertISOToUtcDate } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
@@ -10,7 +10,7 @@ import { toastr } from 'react-redux-toastr';
 
 class MaterialTypeDetail extends Component {
     constructor(props) {
-        super(props); 
+        super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,

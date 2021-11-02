@@ -7,7 +7,7 @@ import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../act
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
@@ -273,8 +273,8 @@ class DepartmentsListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -285,7 +285,7 @@ class DepartmentsListing extends Component {
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass'
+                      imagClass: 'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

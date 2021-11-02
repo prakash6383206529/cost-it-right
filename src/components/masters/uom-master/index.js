@@ -5,7 +5,7 @@ import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CONSTANT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
@@ -282,6 +282,16 @@ class UOMMaster extends Component {
   }
 
 
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+  }
+
+
 
   /**
   * @method render
@@ -360,8 +370,8 @@ class UOMMaster extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}

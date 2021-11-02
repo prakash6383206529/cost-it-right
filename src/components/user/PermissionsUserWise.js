@@ -13,7 +13,7 @@ import { toastr } from "react-redux-toastr";
 import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
 import { EAccessType } from "../../config/masterData";
 import NoContentFound from '../common/NoContentFound';
-import { CONSTANT } from '../../helper/AllConastant';
+import { CONSTANT } from '../../config/constants';
 
 class PermissionsUserWise extends Component {
     constructor(props) {
