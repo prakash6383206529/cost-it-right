@@ -192,7 +192,7 @@ function ReportListing(props) {
     useEffect(() => {
 
 
-
+        setLoader(true)
         getTableData(0, 500, true);
 
         return () => {
@@ -218,9 +218,11 @@ function ReportListing(props) {
 
         setReportListingDataStateArray(reportListingData)
         if (reportListingData.length > 0) {
+
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
                 getTableData(500, reportListingData[0].TotalRecordCount, true);
+                setLoader(false)
             }
             if (totalRecordCount !== 0) {
                 setWarningMessage(false)
@@ -346,6 +348,7 @@ function ReportListing(props) {
     //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
     // }
 
+ 
 
     /**
     * @method resetHandler
@@ -494,15 +497,15 @@ function ReportListing(props) {
         customNoRowsOverlay: NoContentFound,
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom,
         revisionFormatter: revisionFormatter,
         requestterFormatter: requestterFormatter
     };
+  
 
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
