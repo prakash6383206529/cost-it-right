@@ -45,6 +45,7 @@ function ApproveRejectDrawer(props) {
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
+  const [maxCountofFile, setMaxCountofFile] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
@@ -604,6 +605,7 @@ function ApproveRejectDrawer(props) {
         files.push(Data)
         setFiles(files)
         setIsOpen(!IsOpen)
+        if (files.length > 1) { setMaxCountofFile(true) }
       }))
     }
 
@@ -885,7 +887,7 @@ function ApproveRejectDrawer(props) {
                       {<>
                         <Col md="12" className="p-0">
                           <label>Upload Attachment (upload up to 2 files)</label>
-                          {files && files.length >= 2 ? (
+                          {files && maxCountofFile && files.length >= 2 ? (
                             <div class="alert alert-danger" role="alert">
                               Maximum file upload limit has been reached.
                             </div>
@@ -898,6 +900,7 @@ function ApproveRejectDrawer(props) {
                               accept="*"
                               initialFiles={initialFiles}
                               maxFiles={4}
+                              multiple
                               maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
