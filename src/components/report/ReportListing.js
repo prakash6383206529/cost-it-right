@@ -223,14 +223,15 @@ function ReportListing(props) {
         //     temp.push({ label: item.Text, value: item.Value })
         //     return null;
         // });
-
+        const blank = () => { setWarningMessage(false) }
 
         setReportListingDataStateArray(reportListingData)
         if (reportListingData.length > 0) {
 
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
-                getTableData(500, reportListingData[0].TotalRecordCount, true);
+
+                reportListingData[0].TotalRecordCount > 500 ? getTableData(500, reportListingData[0].TotalRecordCount, true) : blank()
                 setLoader(false)
             }
             if (totalRecordCount !== 0) {
@@ -238,9 +239,9 @@ function ReportListing(props) {
             }
 
 
-
-
         }
+
+
 
 
 
