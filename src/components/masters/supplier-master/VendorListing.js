@@ -30,7 +30,6 @@ import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import WarningMessage from '../../common/WarningMessage'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -58,7 +57,7 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
             currentRowIndex: 0,
-            totalRecordCount: 0,
+            totalRecordCount: "",
             pageNo: 1,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
@@ -71,7 +70,6 @@ class VendorListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            warningMessage: false,
             sideBar: { toolPanels: ['columns'] },
             showData: false
 
@@ -103,11 +101,9 @@ class VendorListing extends Component {
 
     onFloatingFilterChanged = (value) => {
         this.setState({ enableSearchFilterSearchButton: true })
-        this.setState({ warningMessage: true })
-
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            this.setState({ warningMessage: false })
+
             return false
         } else {
 
@@ -161,7 +157,7 @@ class VendorListing extends Component {
 
     onSearch(data) {
 
-        this.setState({ warningMessage: false })
+
         this.setState({ pageNo: 1 })
         data.setState({ currentRowIndex: 0 })
         this.getTableListData(0, '', "", "", 10, data.state.floatingFilterData, true)
@@ -219,14 +215,7 @@ class VendorListing extends Component {
             country: country,
         }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-
-            if (res.status === 202) {
-                this.setState({ pageNo: 0 })
-                this.setState({ totalRecordCount: 0 })
-
-                return
-            }
-            else if (res.status === 204 && res.data === '') {
+            if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
 
@@ -236,7 +225,6 @@ class VendorListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
 
                 })
-
             } else {
 
             }
@@ -579,7 +567,6 @@ class VendorListing extends Component {
     }
 
     onFilterTextBoxChanged(e) {
-
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
@@ -599,7 +586,7 @@ class VendorListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
+            noDataText: <NoContentFound title={EMPTY_DATA} />,
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
             //paginationShowsTotal: true,
@@ -630,7 +617,6 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
-
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -775,9 +761,7 @@ class VendorListing extends Component {
                 </form>
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
-                        <Row className="pt-5 no-filter-row">
-                        </Row>
-                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div
                         className="ag-theme-material"
