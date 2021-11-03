@@ -12,8 +12,7 @@ import { toastr } from 'react-redux-toastr'
 
 
 function HPDC(props) {
-    const trimValue = getConfigurationKey()
-    const trim = trimValue.NumberOfDecimalForWeightCalculation
+
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
@@ -105,7 +104,7 @@ function HPDC(props) {
 
         let scrapWeight = 0
 
-
+        const castingWeight = Number(getValues("castingWeight"))
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
 
@@ -116,7 +115,7 @@ function HPDC(props) {
         }
         if (finishedWeight !== 0) {
 
-            scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+            scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
 
         }
 
@@ -171,7 +170,7 @@ function HPDC(props) {
         obj.RawMaterialType = rmRowData.MaterialType
         obj.BasicRatePerUOM = rmRowData.RMRate
         obj.ScrapRate = rmRowData.ScrapRate
-        obj.NetLandedCost = dataToSend.grossWeight * rmRowData.RMRate - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
+        obj.NetLandedCost = dataToSend.materialCost
         obj.PartNumber = costData.PartNumber
         obj.TechnologyName = costData.TechnologyName
         obj.Density = rmRowData.Density
