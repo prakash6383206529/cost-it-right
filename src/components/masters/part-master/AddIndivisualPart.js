@@ -453,7 +453,7 @@ class AddIndivisualPart extends Component {
                                 placeholder={""}
                                 validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                 component={renderText}
-                                //required={true}
+                                required={true}
                                 className=""
                                 customClassName={"withBorder"}
                               />
