@@ -202,7 +202,7 @@ function ReportListing(props) {
 
 
 
-        getTableData(0, 500, true);
+        getTableData(0, 100, true);
 
         return () => {
 
@@ -230,7 +230,7 @@ function ReportListing(props) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
 
-                reportListingData[0].TotalRecordCount > 500 ? getTableData(500, reportListingData[0].TotalRecordCount, true) : blank()
+                reportListingData[0].TotalRecordCount > 100 ? getTableData(100, reportListingData[0].TotalRecordCount, true) : blank()
                 setLoader(false)
             }
             if (totalRecordCount !== 0) {
