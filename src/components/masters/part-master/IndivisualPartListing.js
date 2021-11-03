@@ -484,7 +484,7 @@ class IndivisualPartListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.newPartsListing === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
+            noDataText: <NoContentFound title={EMPTY_DATA} />,
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,

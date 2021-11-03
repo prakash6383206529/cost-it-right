@@ -120,6 +120,8 @@ function ApproveRejectDrawer(props) {
   }, [])
 
 
+
+
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
@@ -703,6 +705,9 @@ function ApproveRejectDrawer(props) {
   }
 
   const deleteFile = (FileId, OriginalFileName) => {
+
+
+
     if (FileId != null) {
       let deleteData = {
         Id: FileId,
@@ -720,6 +725,8 @@ function ApproveRejectDrawer(props) {
       setFiles(tempArr)
       setIsOpen(!IsOpen)
     }
+
+
   }
   return (
     <>
@@ -989,7 +996,7 @@ function ApproveRejectDrawer(props) {
                               // onSubmit={handleImapctSubmit}
                               accept="*"
                               initialFiles={initialFiles}
-                              maxFiles={4}
+                              maxFiles={2}
                               multiple
                               maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
@@ -1027,14 +1034,15 @@ function ApproveRejectDrawer(props) {
                                 const withOutTild = f.FileURL.replace("~", "");
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
-                                  <div className={"attachment images"}>
+                                  <div className={"attachment images"} >
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
                                     <img
+
                                       alt={""}
                                       className="float-right"
-                                      onClick={() => deleteFile(f.FileId, f.FileName)}
+                                      onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
                                     ></img>
                                   </div>
