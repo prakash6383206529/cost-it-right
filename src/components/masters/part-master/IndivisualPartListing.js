@@ -524,7 +524,7 @@ class IndivisualPartListing extends Component {
                         <Col md="6" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -578,8 +578,10 @@ class IndivisualPartListing extends Component {
                         <div className="ag-grid-header">
                             <Row className="pt-5 no-filter-row">
                             </Row>
-
+                            <div className="warning-message">
                             {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
+                            </div>
+
                         </div>
                         <div
                             className="ag-theme-material"
