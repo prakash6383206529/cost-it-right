@@ -16,8 +16,7 @@ import { func } from 'joi'
  * @param res
  */
 export const apiErrors = (res) => {
-  const response = res ? res : undefined
-
+  const response = res ? res.response : undefined
 
   if (response?.data?.error?.message?.value) {
     toastr.error(response.data.error.message.value)
