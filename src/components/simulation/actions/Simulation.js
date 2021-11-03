@@ -21,7 +21,8 @@ import {
     SET_SELECTED_VENDOR_SIMULATION,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
-    GET_LAST_SIMULATION_DATA
+    GET_LAST_SIMULATION_DATA,
+    SET_ATTACHMENT_FILE_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
