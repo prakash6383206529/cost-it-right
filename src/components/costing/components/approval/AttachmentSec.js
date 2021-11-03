@@ -102,6 +102,8 @@ function AttachmentSec(props) {
 
         if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            toastr.warning("File size greater than 5mb not allowed")
         }
     }
 
@@ -135,6 +137,8 @@ function AttachmentSec(props) {
 
         if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            toastr.warning("File size greater than 5mb not allowed")
         }
     }
 
@@ -164,6 +168,8 @@ function AttachmentSec(props) {
 
         if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            toastr.warning("File size greater than 5mb not allowed")
         }
     }
     const handleOtherChangeStatus = ({ meta, file }, status) => {
@@ -195,6 +201,8 @@ function AttachmentSec(props) {
 
         if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            toastr.warning("File size greater than 5mb not allowed")
         }
     }
     const handleChangeAttachment = ({ meta, file }, status) => {
@@ -226,6 +234,8 @@ function AttachmentSec(props) {
 
         if (status === 'rejected_file_type') {
             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            toastr.warning("File size greater than 5mb not allowed")
         }
     }
 
@@ -376,7 +386,7 @@ function AttachmentSec(props) {
                                     accept="*"
                                     initialFiles={initialFiles}
                                     maxFiles={2}
-                                    maxSizeBytes={2000000000}
+                                    maxSizeBytes={5000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
                                             "Image, audio and video files only"
@@ -462,7 +472,7 @@ function AttachmentSec(props) {
                                     accept="*"
                                     initialFiles={initialFiles}
                                     maxFiles={2}
-                                    maxSizeBytes={2000000000}
+                                    maxSizeBytes={5000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
                                             "Image, audio and video files only"
@@ -549,7 +559,7 @@ function AttachmentSec(props) {
                                     accept="*"
                                     initialFiles={initialFiles}
                                     maxFiles={10}
-                                    maxSizeBytes={2000000000}
+                                    maxSizeBytes={5000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
                                             "Image, audio and video files only"
@@ -635,7 +645,7 @@ function AttachmentSec(props) {
                                     accept="*"
                                     initialFiles={initialFiles}
                                     maxFiles={10}
-                                    maxSizeBytes={2000000000}
+                                    maxSizeBytes={5000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
                                             "Image, audio and video files only"
@@ -721,7 +731,7 @@ function AttachmentSec(props) {
                                     accept="*"
                                     initialFiles={initialFiles}
                                     maxFiles={4}
-                                    maxSizeBytes={2000000000}
+                                    maxSizeBytes={5000000}
                                     inputContent={(files, extra) =>
                                         extra.reject ? (
                                             "Image, audio and video files only"
