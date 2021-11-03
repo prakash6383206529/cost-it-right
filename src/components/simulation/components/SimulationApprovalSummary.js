@@ -111,6 +111,7 @@ function SimulationApprovalSummary(props) {
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,
 
             })
+            setFiles(Attachements)
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -823,7 +824,7 @@ function SimulationApprovalSummary(props) {
                         <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
                         <Col md="12" className="px-4">
                           <label>Upload Attachment (upload up to 2 files)</label>
-                          {files && files.length >= 2 ? (
+                          {files && files.length > 2 ? (
                             <div class="alert alert-danger" role="alert">
                               Maximum file upload limit has been reached.
                             </div>
