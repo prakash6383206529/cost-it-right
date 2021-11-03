@@ -426,12 +426,13 @@ function AttachmentSec(props) {
                                                 <a href={fileURL} target="_blank">
                                                     {f.OriginalFileName}
                                                 </a>
-                                                <img
+                                                {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
                                                     onClick={() => deleteFile(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
+                                                }
                                             </div>
                                         );
                                     })}
@@ -512,12 +513,13 @@ function AttachmentSec(props) {
                                                 <a href={fileURL} target="_blank">
                                                     {f.OriginalFileName}
                                                 </a>
-                                                <img
+                                                {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
                                                     onClick={() => deleteFileSupplierConfirmation(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
+                                                }
                                             </div>
                                         );
                                     })}
@@ -599,12 +601,13 @@ function AttachmentSec(props) {
                                                 <a href={fileURL} target="_blank">
                                                     {f.OriginalFileName}
                                                 </a>
-                                                <img
+                                                {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
                                                     onClick={() => deleteFileInvoiceBackups(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
+                                                }
                                             </div>
                                         );
                                     })}
@@ -685,12 +688,13 @@ function AttachmentSec(props) {
                                                 <a href={fileURL} target="_blank">
                                                     {f.OriginalFileName}
                                                 </a>
-                                                <img
+                                                {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
                                                     onClick={() => deleteFileOthers(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
+                                                }
                                             </div>
                                         );
                                     })}
@@ -771,12 +775,13 @@ function AttachmentSec(props) {
                                                 <a href={fileURL} target="_blank">
                                                     {f.OriginalFileName}
                                                 </a>
-                                                <img
+                                                {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
                                                     onClick={() => deleteFileAttachments(f.FileId, f.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
+                                                }
                                             </div>
                                         );
                                     })}
