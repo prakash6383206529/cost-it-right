@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
@@ -268,7 +268,7 @@ function Tool(props) {
                       {gridData && gridData.length === 0 &&
                         <tr>
                           <td colSpan={8}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       }
@@ -337,7 +337,7 @@ function Tool(props) {
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
-                      label="Amortization Quantity(Tool Life)"
+                      label="Amortization Quantity (Tool Life)"
                       name={`Life`}
                       Controller={Controller}
                       control={control}

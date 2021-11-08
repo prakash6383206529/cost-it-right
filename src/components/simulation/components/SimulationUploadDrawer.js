@@ -10,6 +10,7 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
+import NewReport from '../../report/NewReport';
 import TooltipCustom from '../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -124,6 +125,7 @@ class SimulationUploadDrawer extends Component {
 
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
+
 
                 } else {
                     fileHeads = resp.rows[0];

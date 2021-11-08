@@ -5,10 +5,11 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, Non_Ferrous_HPDC } from '../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, Non_Ferrous_HPDC, CORRUGATEDBOX } from '../../../../config/masterData'
 import HPDC from './HPDC'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
-import RubberCalciTab from '../WeightCalculatorDrawer/rubber/index'
+import RubberCalciTab from './Rubber'
+import CorrugatedBox from './CorrugatedBox';
 
 
 function OpenWeightCalculator(props) {
@@ -76,6 +77,7 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
       case FORGINING:
@@ -107,12 +109,23 @@ function OpenWeightCalculator(props) {
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />)
       case Non_Ferrous_HPDC:
-        return <HPDC
+        return (<HPDC
           rmRowData={props.rmRowData}
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />
+        )
+
+      case CORRUGATEDBOX:
+        return (
+          <CorrugatedBox
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
+          />
+        )
       default:
         break;
     }

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getVerifyExchangeSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -276,8 +275,8 @@ function OtherVerifySimulation(props) {
                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
-                                                    title: CONSTANT.EMPTY_DATA,
-                                                    customClassName:'nodata-found-container'
+                                                    title: EMPTY_DATA,
+                                                    customClassName: 'nodata-found-container'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}

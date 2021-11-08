@@ -6,12 +6,11 @@ import { required } from "../../../helper/validation";
 import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI, getVendorWithVendorCodeSelectList, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -201,88 +200,6 @@ class OverheadListing extends Component {
 
 
     /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handleModelTypeChange
-    * @description called
-    */
-    handleModelTypeChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ ModelType: newValue, }, () => {
-                const { ModelType } = this.state;
-                this.props.getVendorFilterByModelTypeSelectList(ModelType.value, () => { })
-            });
-        } else {
-            this.setState({ ModelType: [], })
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue }, () => {
-                const { vendorName } = this.state;
-                this.props.getModelTypeFilterByVendorSelectList(vendorName.value, () => { })
-            });
-        } else {
-            this.setState({ vendorName: [] })
-        }
-    };
-
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { filterOverheadSelectList, costingHead } = this.props;
-        const temp = [];
-
-        if (label === 'costingHead') {
-            return costingHeadObj;
-        }
-
-        if (label === 'ModelType') {
-            filterOverheadSelectList && filterOverheadSelectList.modelTypeSelectList && filterOverheadSelectList.modelTypeSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'VendorNameList') {
-            filterOverheadSelectList && filterOverheadSelectList.VendorsSelectList && filterOverheadSelectList.VendorsSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'OverheadApplicability') {
-            costingHead && costingHead.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-    }
-
-    /**
     * @method statusButtonFormatter
     * @description Renders buttons
     */
@@ -323,36 +240,7 @@ class OverheadListing extends Component {
         })
     }
 
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, ModelType, vendorName, overheadAppli, } = this.state;
-        const costingHeadTemp = costingHead ? costingHead.value : null;
-        const vendorNameTemp = vendorName ? vendorName.value : null;
-        const OverheadAppliTemp = overheadAppli ? overheadAppli.value : null;
-        const ModelTypeTemp = ModelType ? ModelType.value : null;
 
-        this.getDataList(costingHeadTemp, vendorNameTemp, OverheadAppliTemp, ModelTypeTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            ModelType: [],
-            vendorName: [],
-            overheadAppli: [],
-        }, () => {
-            this.props.fetchModelTypeAPI('--Model Types--', res => { });
-            this.props.getVendorWithVendorCodeSelectList()
-            this.getDataList(null, null, null, null)
-        })
-    }
 
     formToggle = () => {
         this.props.formToggle()
@@ -365,15 +253,7 @@ class OverheadListing extends Component {
     onSubmit = (values) => {
 
     }
-    /**
-     * @method handleOverheadChange
-     * @description Handle overhead chnage
-    */
-    handleOverheadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ overheadAppli: newValue });
-        }
-    };
+
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -397,7 +277,7 @@ class OverheadListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } if (item.OverheadPercentage === null) {
@@ -421,6 +301,11 @@ class OverheadListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+
+            }
+
             return item
         })
         return (
@@ -450,7 +335,7 @@ class OverheadListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -486,103 +371,7 @@ class OverheadListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
-                        {this.state.shown && (
-                            <Col md="11" className="filter-block overhead-filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Costing Head"}
-                                            isClearable={false}
-                                            options={this.renderListing("costingHead")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={this.state.costingHead == null || this.state.costingHead.length === 0 ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        //disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="ModelType"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Model Type"}
-                                            isClearable={false}
-                                            options={this.renderListing("ModelType")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={this.state.ModelType == null || this.state.ModelType.length === 0 ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleModelTypeChange}
-                                            valueDescription={this.state.ModelType}
-                                        //disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="OverheadApplicability"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Overhead Applicability"}
-                                            options={this.renderListing("OverheadApplicability")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={this.state.overheadAppli == null || this.state.overheadAppli.length === 0 ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={
-                                                this.handleOverheadChange
-                                            }
-                                            valueDescription={this.state.overheadAppli}
-                                        //disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="vendorName"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Name"}
-                                            isClearable={false}
-                                            options={this.renderListing("VendorNameList")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" className="search-user-block mb-3 pl-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -591,9 +380,7 @@ class OverheadListing extends Component {
                                             <div className="cancel-icon-white"></div>
                                         </button>
                                         :
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        ""
                                     }
                                     {AddAccessibility && (
                                         <button
@@ -645,8 +432,8 @@ class OverheadListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
                                     floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -656,7 +443,8 @@ class OverheadListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

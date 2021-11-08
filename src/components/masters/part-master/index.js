@@ -13,6 +13,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
+import { getConfigurationKey } from '../../../helper/auth'
 
 class PartMaster extends Component {
     constructor(props) {
@@ -121,7 +122,7 @@ class PartMaster extends Component {
     */
     render() {
         const { isAddBOMForm, isPartForm, isProductForm } = this.state;
-
+        const { initialConfiguration } = this.props;
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
                 hideForm={this.hideForm}
@@ -162,11 +163,13 @@ class PartMaster extends Component {
                                         Manage Component/Part
                                     </NavLink>
                                 </NavItem>
-                                {/* <NavItem>
+                                {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
+                                {initialConfiguration?.IsProductMasterConfigurable && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                         Manage Products
                                 </NavLink>
-                                </NavItem> */}
+                                </NavItem>
+                                }
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&
@@ -220,8 +223,8 @@ class PartMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { leftMenuData, topAndLeftMenuData } = auth;
-    return { leftMenuData, topAndLeftMenuData }
+    const { leftMenuData, topAndLeftMenuData, initialConfiguration } = auth;
+    return { leftMenuData, topAndLeftMenuData, initialConfiguration }
 }
 
 

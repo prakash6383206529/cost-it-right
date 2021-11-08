@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -48,7 +48,8 @@ class BOPImportListing extends Component {
             gridColumnApi: null,
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
-            showData: false
+            showData: false,
+            loader: true
 
         }
     }
@@ -69,6 +70,8 @@ class BOPImportListing extends Component {
     * @description GET DATALIST OF IMPORT BOP
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
+
+
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -367,6 +370,10 @@ class BOPImportListing extends Component {
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
             }
+
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
             return item
         })
         return (
@@ -405,7 +412,7 @@ class BOPImportListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.bopImportList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.bopImportList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -435,7 +442,7 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="10" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -532,12 +539,11 @@ class BOPImportListing extends Component {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        <>
+                                        </>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -597,9 +603,12 @@ class BOPImportListing extends Component {
                                 className="ag-theme-material"
                                 style={{ height: '100%', width: '100%' }}
                             >
+                                {this.state.loader && <LoaderCustom />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
+
                                     floatingFilter={true}
+
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopImportList}
@@ -610,7 +619,8 @@ class BOPImportListing extends Component {
                                     // loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

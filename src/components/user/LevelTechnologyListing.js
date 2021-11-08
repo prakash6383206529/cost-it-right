@@ -4,9 +4,8 @@ import { Container, Row, Col, Button, Table } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
-import { CONSTANT } from '../../helper/AllConastant';
+import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ConfirmComponent from '../../helper/ConfirmComponent';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -206,7 +205,7 @@ class LevelTechnologyListing extends Component {
 		const { AddAccessibility } = this.props;
 		const options = {
 			//clearSearch: true,
-			noDataText: (this.props.levelMappingList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+			noDataText: (this.props.levelMappingList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 			afterSearch: this.afterSearch,
 			paginationShowsTotal: this.renderPaginationShowsTotal,
 			prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -287,6 +286,7 @@ class LevelTechnologyListing extends Component {
 							>
 								<AgGridReact
 									defaultColDef={defaultColDef}
+									floatingFilter={true}
 									domLayout='autoHeight'
 									// columnDefs={c}
 									rowData={this.state.tableData}
@@ -297,7 +297,7 @@ class LevelTechnologyListing extends Component {
 									loadingOverlayComponent={'customLoadingOverlay'}
 									noRowsOverlayComponent={'customNoRowsOverlay'}
 									noRowsOverlayComponentParams={{
-										title: CONSTANT.EMPTY_DATA,
+										title: EMPTY_DATA,
 									}}
 									frameworkComponents={frameworkComponents}
 								>
@@ -373,7 +373,7 @@ class LevelTechnologyListing extends Component {
 									loadingOverlayComponent={'customLoadingOverlay'}
 									noRowsOverlayComponent={'customNoRowsOverlay'}
 									noRowsOverlayComponentParams={{
-										title: CONSTANT.EMPTY_DATA,
+										title: EMPTY_DATA,
 									}}
 									frameworkComponents={frameworkComponents}
 								>
@@ -434,7 +434,7 @@ class LevelTechnologyListing extends Component {
 											loadingOverlayComponent={'customLoadingOverlay'}
 											noRowsOverlayComponent={'customNoRowsOverlay'}
 											noRowsOverlayComponentParams={{
-												title: CONSTANT.EMPTY_DATA,
+												title: EMPTY_DATA,
 											}}
 											frameworkComponents={frameworkComponents}
 										>

@@ -13,10 +13,9 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { GENERATOR_DIESEL, } from '../../../config/constants';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
@@ -274,7 +273,6 @@ class AddPower extends Component {
         isLoader: true,
         PowerDetailID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getVendorPowerDetailData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -310,7 +308,7 @@ class AddPower extends Component {
         isLoader: true,
         PowerDetailID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
+
       this.props.getPowerDetailData(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
@@ -1877,7 +1875,7 @@ class AddPower extends Component {
                                 <tbody>
                                   <tr>
                                     <td colSpan="5">
-                                      {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                      {this.state.powerGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                                     </td>
                                   </tr>
                                 </tbody>

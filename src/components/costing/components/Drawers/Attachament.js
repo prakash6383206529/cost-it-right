@@ -3,10 +3,12 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux'
 import { FILE_URL } from '../../../../config/constants'
+
 function Attachament(props) {
-  const viewCostingData = useSelector(
-    (state) => state.costing.viewCostingDetailData,
-  )
+  const { index } = props
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+
+  const Data = viewCostingData[index]
   /*
    * @method toggleDrawer
    * @description closing drawer
@@ -38,27 +40,22 @@ function Attachament(props) {
             </Row>
             <Row className="mx-0">
               <Col md="12">
-                {viewCostingData &&
-                  viewCostingData.map((data) => {
+
+                {Data.attachment &&
+                  Data.attachment.map((f) => {
+                    const withOutTild = f.FileURL
+                      ? f.FileURL.replace('~', '')
+                      : ''
+                    const fileURL = `${FILE_URL}${withOutTild}`
                     return (
-                      <>
-                        {data.attachment &&
-                          data.attachment.map((f) => {
-                            const withOutTild = f.FileURL
-                              ? f.FileURL.replace('~', '')
-                              : ''
-                            const fileURL = `${FILE_URL}${withOutTild}`
-                            return (
-                              <div className={"attachment-row"}>
-                                <a href={fileURL} target="_blank">
-                                  {f.OriginalFileName}
-                                </a>
-                              </div>
-                            )
-                          })}
-                      </>
+                      <div className={"attachment-row"}>
+                        <a href={fileURL} target="_blank">
+                          {f.OriginalFileName}
+                        </a>
+                      </div>
                     )
                   })}
+
               </Col>
             </Row>
           </div>

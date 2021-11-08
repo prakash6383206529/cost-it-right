@@ -147,7 +147,7 @@ class AddComponentForm extends Component {
   render() {
     const { handleSubmit, isEditFlag, componentPartSelectList } = this.props;
 
-    const filterColors = (inputValue) => {
+    const filterList = (inputValue) => {
       let tempArr = []
 
       tempArr = this.renderListing("part").filter(i =>
@@ -163,7 +163,7 @@ class AddComponentForm extends Component {
 
     const promiseOptions = inputValue =>
       new Promise(resolve => {
-        resolve(filterColors(inputValue));
+        resolve(filterList(inputValue));
       });
     return (
       <>
@@ -173,10 +173,10 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
+          <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
           <Row>
-          
+
             <Col md="6">
-            <TooltipCustom tooltipText="Please enter first few digits to see the part numbers"/>
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {/* <Field

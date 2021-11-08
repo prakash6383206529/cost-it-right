@@ -9,10 +9,9 @@ import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, 
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
-import $ from 'jquery'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
@@ -76,7 +75,6 @@ class AddLabour extends Component {
         isEditFlag: true,
         LabourId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow')
       this.props.getLabourData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
@@ -828,7 +826,7 @@ class AddLabour extends Component {
                         <div className="form-group date-filed pr-3">
                           <label>
                             Effective Date
-                              {/* <span className="asterisk-required">*</span> */}
+                            {/* <span className="asterisk-required">*</span> */}
                           </label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -859,7 +857,7 @@ class AddLabour extends Component {
                                 onClick={this.updateGrid}
                               >
                                 Update
-                                </button>
+                              </button>
 
                               <button
                                 type="button"
@@ -867,7 +865,7 @@ class AddLabour extends Component {
                                 onClick={this.resetGridData}
                               >
                                 Cancel
-                                </button>
+                              </button>
                             </>
                           ) : (
                             <button
@@ -926,7 +924,7 @@ class AddLabour extends Component {
                           </tbody>
                         </Table>
                         {this.state.gridTable.length === 0 && (
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         )}
                       </Col>
                     </Row>

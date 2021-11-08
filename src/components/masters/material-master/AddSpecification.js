@@ -12,13 +12,12 @@ import {
 import { fetchRMGradeAPI } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { SPECIFICATION } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
-import $, { data } from 'jquery'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -366,7 +365,6 @@ class AddSpecification extends Component {
     this.props.checkAndGetRawMaterialCode(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         toastr.warning(res.data.Message);
-        $('input[name="Code"]').focus()
       }
     })
   }
@@ -537,7 +535,7 @@ class AddSpecification extends Component {
                   <Row>
                     <Col md="12">
                       <Field
-                        label={`${CONSTANT.SPECIFICATION}`}
+                        label={`${SPECIFICATION}`}
                         name={"Specification"}
                         type="text"
                         placeholder={"Enter"}

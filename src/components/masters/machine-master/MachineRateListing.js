@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
@@ -366,7 +366,6 @@ class MachineRateListing extends Component {
 
     renderPlantFormatter = (props) => {
         const row = props?.data;
-        console.log('row: ', row);
         return row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
     }
 
@@ -452,6 +451,10 @@ class MachineRateListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate !== null) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
             return item
         })
 
@@ -517,7 +520,7 @@ class MachineRateListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="11" className="filter-block machine-rate-filter">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -631,9 +634,8 @@ class MachineRateListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        <>
+                                        </>
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -709,7 +711,8 @@ class MachineRateListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

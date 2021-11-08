@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { searchableSelect } from '../../layout/FormInputs'
 import { Loader } from '../../common/Loader'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import {
   getInitialPlantSelectList, getInitialMachineSelectList, deleteProcess,
   getProcessDataList,
@@ -14,7 +14,6 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -479,7 +478,7 @@ class ProcessListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -639,8 +638,8 @@ class ProcessListing extends Component {
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
-                  domLayout='autoHeight'
                   floatingFilter={true}
+                  domLayout='autoHeight'
                   // columnDefs={c}
                   rowData={this.props.processList}
                   pagination={true}
@@ -650,7 +649,7 @@ class ProcessListing extends Component {
                   loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
-                    title: CONSTANT.EMPTY_DATA,
+                    title: EMPTY_DATA,
                   }}
                   frameworkComponents={frameworkComponents}
                 >

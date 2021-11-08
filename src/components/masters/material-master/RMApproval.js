@@ -9,7 +9,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -36,6 +36,7 @@ function RMApproval(props) {
 
     useEffect(() => {
         getTableData()
+
     }, [])
 
 
@@ -345,7 +346,8 @@ function RMApproval(props) {
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     suppressRowClickSelection={true}
@@ -355,7 +357,7 @@ function RMApproval(props) {
                                 >
                                     <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                    <AgGridColumn width="145" field="CostingHead" headerName='Head' cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn width="145" field="CostingHead" headerName='Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
                                     <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>

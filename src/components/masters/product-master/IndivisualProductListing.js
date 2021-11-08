@@ -5,9 +5,8 @@ import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
@@ -174,7 +173,7 @@ class IndivisualProductListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch"  className="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
                             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -341,7 +340,7 @@ class IndivisualProductListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.newPartsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.newPartsListing === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -473,7 +472,7 @@ domLayout='autoHeight'
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
+                                title: EMPTY_DATA,
                             }}
                             frameworkComponents={frameworkComponents}
                         >

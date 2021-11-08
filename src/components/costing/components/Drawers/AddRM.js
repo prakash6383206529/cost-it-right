@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
@@ -69,7 +69,7 @@ function AddRM(props) {
   }
   const options = {
     clearSearch: true,
-    noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal,
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -356,7 +356,7 @@ function AddRM(props) {
 
               < form onSubmit={handleSubmit(onSubmit)} noValidate >
 
-                <div className="filter-row">
+                {/* <div className="filter-row">
                   <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
                     <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
                       <div className="flex-fills mb-0">
@@ -396,7 +396,7 @@ function AddRM(props) {
 
                     </div>
                   </Col>
-                </div>
+                </div> */}
 
               </form >
 
@@ -416,7 +416,7 @@ function AddRM(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-                        floatingFilter = {true}
+                        floatingFilter={true}
                         domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={rmDrawerList}
@@ -427,7 +427,7 @@ function AddRM(props) {
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
+                          title: EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={isMultipleRMAllow(costData.TechnologyName) && !IsApplyMasterBatch ? 'multiple' : 'single'}

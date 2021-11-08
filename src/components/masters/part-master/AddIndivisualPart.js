@@ -65,8 +65,8 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           let productArray = []
-          Data && Data.ProductList.map((item) => {
-            productArray.push({ Text: item.ProductGroupCode, Value: item.ProductId })
+          Data && Data.GroupCodeList.map((item) => {
+            productArray.push({ Text: item.GroupCode, Value: "", })
             return productArray
           })
           this.setState({ DataToCheck: Data })
@@ -232,11 +232,12 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
+    const { initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
-    let productArray = ProductGroup && ProductGroup.map((item) => ({ ProductId: item.Value, ProductGroupCode: item.Text }))
+    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
     if (isEditFlag) {
 
 
@@ -264,8 +265,7 @@ class AddIndivisualPart extends Component {
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
-        // ProductList: productArray
-        ProductList: []
+        GroupCodeList: productArray
       }
 
       if (isEditFlag) {
@@ -305,8 +305,7 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         // Plants: [],
         Attachements: files,
-        // ProductList: productArray
-        ProductList: []
+        GroupCodeList: productArray
       }
 
       this.props.reset()
@@ -417,45 +416,44 @@ class AddIndivisualPart extends Component {
                               customClassName={"withBorder"}
                             />
                           </Col>
-
-                          {initialConfiguration &&
-                            initialConfiguration.IsGroupCodeDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`Group Code`}
-                                  name={"GroupCode"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
-                                  component={renderText}
-                                  //required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                />
-                              </Col>
-                            )}
-
-                          {/* <Col md="3">
-                            <Field
-                              label="Product Group"
-                              name="ProductGroup"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
-                              options={this.renderListing("ProductGroup")}
-                              selectionChanged={this.handleProductGroup}
-                              validate={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
-                              required={true}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                            />
-                          </Col> */}
-
+                          {initialConfiguration?.IsProductMasterConfigurable ? (
+                            // initialConfiguration.IsGroupCodeDisplay && (
+                            <Col md="3">
+                              <Field
+                                label="Group Code"
+                                name="ProductGroup"
+                                type="text"
+                                placeholder={"Select"}
+                                selection={
+                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                                options={this.renderListing("ProductGroup")}
+                                selectionChanged={this.handleProductGroup}
+                                validate={
+                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                                required={true}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              />
+                            </Col>
+                          ) :
+                            <Col md="3">
+                              <Field
+                                label={`Group Code`}
+                                name={"GroupCode"}
+                                type="text"
+                                placeholder={""}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                          }
                         </Row>
 
                         <Row>
@@ -594,7 +592,7 @@ class AddIndivisualPart extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                                </label>
+                            </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -620,10 +618,10 @@ class AddIndivisualPart extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
@@ -721,13 +719,13 @@ function mapStateToProps({ comman, part, auth }) {
   const { initialConfiguration } = auth;
 
   let initialValues = {};
-  if (partData && partData !== undefined) {
+  if (partData && Object.keys(partData).length > 0) {
     initialValues = {
       PartNumber: partData.PartNumber,
       PartName: partData.PartName,
       BOMNumber: partData.BOMNumber,
       Description: partData.Description,
-      GroupCode: partData.GroupCode,
+      GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
       ECNNumber: partData.ECNNumber,
       DrawingNumber: partData.DrawingNumber,
       RevisionNumber: partData.RevisionNumber,

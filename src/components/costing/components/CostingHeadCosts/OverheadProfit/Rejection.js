@@ -305,7 +305,7 @@ function Rejection(props) {
                 {applicability.label !== 'Fixed' &&
                     <Col md="3">
                         <TextFieldHookForm
-                            label="Cost(Applicability)"
+                            label="Cost (Applicability)"
                             name={'RejectionCost'}
                             Controller={Controller}
                             control={control}

@@ -34,8 +34,6 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
-  console.log('getPlasticData: ', getPlasticData);
-
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
@@ -256,7 +254,7 @@ function Plastic(props) {
               <Row className={''}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Gross Weight(Kg)`}
+                    label={`Gross Weight (Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
                     control={control}
@@ -328,7 +326,7 @@ function Plastic(props) {
               <Row className={'mt25'}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Total Gross Weight(Kg)`}
+                    label={`Total Gross Weight (Kg)`}
                     name={'grossWeight'}
                     Controller={Controller}
                     control={control}
@@ -509,8 +507,8 @@ function Plastic(props) {
               className="reset mr15 cancel-btn"
             >
               <div className={'cancel-icon'}></div>
-                CANCEL
-              </button>
+              CANCEL
+            </button>
             <button
               type="submit"
               disabled={props.CostingViewMode}

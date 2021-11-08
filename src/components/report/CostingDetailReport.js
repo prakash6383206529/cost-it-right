@@ -3,17 +3,17 @@ import moment from 'moment'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, userDetails, } from '../../helper/auth'
+import { loggedInUserId, } from '../../helper/auth'
 import NoContentFound from '../common/NoContentFound'
 import { EMPTY_DATA } from '../../config/constants'
-import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
-import { getReportListing } from '../report/actions/ReportListing'
+import { getReportListing } from './actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
 
@@ -71,11 +71,6 @@ function ReportListing(props) {
 
     const dispatch = useDispatch()
 
-
-    // var CryptoJS = require("crypto-js");
-    // var next = CryptoJS.AES.encrypt('secret key 123').toString();
-
-
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -105,7 +100,7 @@ function ReportListing(props) {
 
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const reportListingData = useSelector((state) => state.report.reportListing)
+    let reportListingData = useSelector((state) => state.report.reportListing)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const approvalList = useSelector(state => state.approval.approvalList)
@@ -113,7 +108,21 @@ function ReportListing(props) {
     const userList = useSelector(state => state.auth.userList)
     // const { bopDrawerList } = useSelector(state => state.costing)
 
+    const getData = () => {
 
+        let temp = []
+        temp = reportListingData && reportListingData.map(item => {
+            if (item.Status === CREATED_BY_ASSEMBLY) {
+                return false
+            } else {
+                return item
+            }
+        })
+        setTableData(temp)
+        setTimeout(() => {
+            setLoader(false)
+        }, 200);
+    }
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -156,7 +165,7 @@ function ReportListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={cell}>{row.Status}</div>
     }
 
     /**
@@ -181,7 +190,6 @@ function ReportListing(props) {
         dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
-
             // var t1 = performance.now();
             // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         }))
@@ -193,7 +201,7 @@ function ReportListing(props) {
 
 
         setLoader(true)
-        getTableData(0, 100, true);
+        getTableData(0, 500, true);
 
         return () => {
 
@@ -222,7 +230,7 @@ function ReportListing(props) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
 
-                reportListingData[0].TotalRecordCount > 100 ? getTableData(100, reportListingData[0].TotalRecordCount, true) : blank()
+                reportListingData[0].TotalRecordCount > 500 ? getTableData(500, reportListingData[0].TotalRecordCount, true) : blank()
                 setLoader(false)
             }
             if (totalRecordCount !== 0) {
@@ -297,19 +305,15 @@ function ReportListing(props) {
         return thisIsFirstColumn;
     }
 
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
+    };
 
-    const revisionFormatter = (props) => {
-
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
-
-        return cell
-        // return params.value !== null ? params.value : '-'
-    }
-    const requestterFormatter = (props) => {
-
-        return userDetails().Name
-        // return params.value !== null ? params.value : '-'
-    }
 
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -326,7 +330,7 @@ function ReportListing(props) {
         //     setRowData(data);
         // };
 
-    
+       
 
 
         // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
@@ -343,13 +347,24 @@ function ReportListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+    useEffect(() => {
 
+    }, [tableData])
 
     // const renderColumn = (fileName) => {
     //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
     // }
 
- 
+    const frameworkComponents = {
+        linkableFormatter: linkableFormatter,
+        createDateFormatter: createDateFormatter,
+        hyphenFormatter: hyphenFormatter,
+        simulatedOnFormatter: simulatedOnFormatter,
+        customNoRowsOverlay: NoContentFound,
+        dateFormatter: dateFormatter,
+        statusFormatter: statusFormatter,
+        //customLoadingOverlay: LoaderCustom
+    };
 
     /**
     * @method resetHandler
@@ -391,79 +406,11 @@ function ReportListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        // console.log('TempData: ', TempData);
         let temp = []
 
 
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        </ExcelSheet>);
-    }
-    const renderColumnSAP = (fileName) => {
-        let tempData = []
-
-        if (selectedRowData.length == 0) {
-            tempData = reportListingData
-        }
-        else {
-            tempData = selectedRowData
-        }
-        return returnExcelColumnSAP(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
-
-
-    }
-
-
-    const renderColumnSAPEncoded = (fileName) => {
-        let tempData = []
-
-        if (selectedRowData.length == 0) {
-
-
-            tempData = reportListingData
-
-        }
-        else {
-            tempData = selectedRowData
-
-        }
-        return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
-
-
-    }
-
-
-
-
-    const returnExcelColumnSAP = (data = [], TempData) => {
-
-        // console.log('TempData: ', TempData);
-        let temp = []
-
-        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        </ExcelSheet>);
-    }
-
-
-    const returnExcelColumnSAPEncoded = (data = [], TempData) => {
-
-        // console.log('TempData: ', TempData);
-        let temp = []
-
-
-
-        TempData && TempData.map(item => {
-
-            temp.push({ SrNo: btoa(item.SrNo), SANumber: btoa(item.SANumber), LineNumber: btoa(item.LineNumber), CreatedDate: btoa(item.CreatedDate), NetPOPrice: btoa(item.NetPOPrice), Reason: btoa(item.Reason), Text: btoa(item.Text), PersonRequestingChange: btoa(item.PersonRequestingChange) })
-            return null;
-        });
-
-
-
-
-        return (<ExcelSheet data={temp} name={ReportSAPMaster}>
-            {data && data.map((ele, index) => < ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -480,28 +427,6 @@ function ReportListing(props) {
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
 
-    const defaultColDef = {
-        resizable: true,
-        filter: true,
-        sortable: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
-    };
-
-    const frameworkComponents = {
-        linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
-        hyphenFormatter: hyphenFormatter,
-        simulatedOnFormatter: simulatedOnFormatter,
-        customNoRowsOverlay: NoContentFound,
-        dateFormatter: dateFormatter,
-        statusFormatter: statusFormatter,
-        revisionFormatter: revisionFormatter,
-        requestterFormatter: requestterFormatter
-    };
-  
-
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
@@ -513,19 +438,10 @@ function ReportListing(props) {
                 <Row className="pt-4 blue-before">
 
 
-                    <Col md="8" lg="8" className="search-user-block mb-3">
+                    <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {renderColumn(ReportMaster)}
-                                </ExcelFile>
-                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
-                                    {renderColumnSAP(ReportSAPMaster)}
-                                </ExcelFile>
 
-                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
-                                    {renderColumnSAPEncoded(ReportSAPMaster)}
-                                </ExcelFile>
 
 
                             </div>
@@ -574,11 +490,10 @@ function ReportListing(props) {
                         noRowsOverlayComponentParams={{
                             title: EMPTY_DATA,
                         }}
-                        // suppressRowClickSelection={true}
+                        //suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
-
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
@@ -587,20 +502,20 @@ function ReportListing(props) {
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
-                        <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        {/* <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn> */}
+                        <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
-                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net Insert Cost"></AgGridColumn>
+                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>
                         <AgGridColumn field="NetOperationCost" headerName="Operation Cost"></AgGridColumn>
                         <AgGridColumn field="SurfaceTreatmentCost" headerName="Surface Treatment"></AgGridColumn>
@@ -633,9 +548,7 @@ function ReportListing(props) {
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
-                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
+                        <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right">
@@ -646,7 +559,7 @@ function ReportListing(props) {
                         </select>
                     </div>
                     <div className="warning-text">
-                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading more data'} />}
                     </div>
                 </div>
             </div>
@@ -656,16 +569,5 @@ function ReportListing(props) {
 }
 
 
-export default ReportListing
-// function mapStateToProps({ report, auth }) {
-//     const { reportDataList, loading } = report;
-//     const { initialConfiguration } = auth;
-//     return { reportDataList, loading, initialConfiguration, }
-// }
 
-// export default connect(mapStateToProps, {
-//     getReportListing,
-// })(reduxForm({
-//     form: 'ReportListing',
-//     enableReinitialize: true,
-// })(ReportListing));
+export default ReportListing

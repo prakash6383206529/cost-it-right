@@ -341,17 +341,17 @@ li.nav-item .logo {
     button {
       text-align: left;
       letter-spacing: 0px;
-      color: #8a91ac;
+      color: #256bd1;
       opacity: 1;
-      font-size: 14px;
+      font-size: 16px;
       border-radius: 0;
-      font-weight: 300;
+      font-weight: 400;
       padding-right: 0;
       background: $white !important;
       border: $white 1px solid !important;
       box-shadow: none;
       height: 43px;
-
+      margin-top: 1px;
       &:hover,
       &:focus,
       &:active,

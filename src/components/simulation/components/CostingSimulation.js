@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -59,6 +59,9 @@ function CostingSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
+    const [vendorIdState, setVendorIdState] = useState("")
+    const [simulationTypeState, setSimulationTypeState] = useState("")
+    const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
@@ -70,6 +73,7 @@ function CostingSimulation(props) {
         hideDiscount: false,
         hideOveheadAndProfit: false
     })
+    const [amendmentDetails, setAmendmentDetails] = useState({})
 
     const dispatch = useDispatch()
 
@@ -85,6 +89,13 @@ function CostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
+                var vendorId = Data.VendorId
+                var SimulationTechnologyId = Data.SimulationTechnologyId
+                var SimulationType = Data.SimulationType
+                setVendorIdState(vendorId)
+                setSimulationTechnologyIdState(SimulationTechnologyId)
+                setSimulationTypeState(SimulationType)
+
                 Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)
@@ -105,7 +116,17 @@ function CostingSimulation(props) {
                 setCostingArr(Data.SimulatedCostingList)
                 setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
                 setLoader(false)
+                let tempObj = {}
+                tempObj.EffectiveDate = Data.EffectiveDate
+                tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+                tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+                tempObj.Technology = Data.SimulatedCostingList[0].Technology
+                tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+                setAmendmentDetails(tempObj)
             }
+
+            // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
+            // SimulatedCostingList[0].Technology  ,VendorName
         }))
     }
 
@@ -564,7 +585,7 @@ function CostingSimulation(props) {
                                                     loadingOverlayComponent={'customLoadingOverlay'}
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
+                                                        title: EMPTY_DATA,
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                     suppressRowClickSelection={true}
@@ -575,17 +596,19 @@ function CostingSimulation(props) {
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor Name'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
                                                     <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
                                                     <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMSpec" headerName='RM Specs' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
-                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn> 
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price Old' cellRenderer='oldPOFormatter'></AgGridColumn>
@@ -610,9 +633,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>                                                   
 
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
@@ -652,7 +673,7 @@ function CostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
                                     {/* DO NOT UNCOMMENT THIS CODE UNTIL SAID BY TR */}
-                                    {/* 
+{/*                                     
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
@@ -666,6 +687,10 @@ function CostingSimulation(props) {
                         {isApprovalDrawer &&
                             <ApproveRejectDrawer
                                 isOpen={isApprovalDrawer}
+                                vendorId={vendorIdState}
+                                SimulationTechnologyId={SimulationTechnologyIdState}
+                                SimulationType={simulationTypeState}
+
                                 anchor={'right'}
                                 approvalData={[]}
                                 type={'Sender'}
@@ -686,6 +711,12 @@ function CostingSimulation(props) {
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
                                 isSimulation={true}
+                                SimulationTechnologyIdState={SimulationTechnologyIdState}
+                                simulationId={simulationId}
+                                tokenNo={tokenNo}
+                                vendorIdState={vendorIdState}
+                                EffectiveDate={simulationDetail.EffectiveDate}
+                                amendmentDetails={amendmentDetails}
                             />}
                     </div>
 

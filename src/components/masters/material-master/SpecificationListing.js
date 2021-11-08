@@ -9,11 +9,10 @@ import {
 import { searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { Loader } from '../../common/Loader';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import AddSpecification from './AddSpecification';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -375,7 +374,7 @@ class SpecificationListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.rmSpecificationList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -401,70 +400,14 @@ class SpecificationListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="MaterialTypeId"
-                                            type="text"
-                                            // label="Raw Material"
-                                            component={searchableSelect}
-                                            placeholder={'Raw Material'}
-                                            options={this.renderListing('material')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleMaterialChange}
-                                            valueDescription={this.state.RawMaterial}
 
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="GradeId"
-                                            type="text"
-                                            // label="RM Grade"
-                                            component={searchableSelect}
-                                            placeholder={'RM Grade'}
-                                            options={this.renderListing('grade')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleGrade}
-                                            valueDescription={this.state.RMGrade}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md={6} className="text-right mb-3 search-user-block">
                             {this.state.shown ? (
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                     <div className="cancel-icon-white"></div></button>
                             ) : (
-                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                    <div className="filter mr-0"></div>
-                                </button>
+                                <>
+                                </>
                             )}
                             {AddAccessibility && <button
                                 type={'button'}
@@ -549,7 +492,8 @@ class SpecificationListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

@@ -9,36 +9,38 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getAmmendentStatus } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC } from '../../../config/constants';
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmmendentStatus,getImpactedMasterData,getLastSimulationData,uploadSimulationAttachment } from '../actions/Simulation'
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL } from '../../../config/constants';
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
+import { toastr } from 'react-redux-toastr'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { Errorbox } from '../../common/ErrorBox';
 import { Redirect } from 'react-router';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
 import { Impactedmasterdata } from './ImpactedMasterData';
+import { Errorbox } from '../../common/ErrorBox';
+import redcrossImg from '../../../assests/images/red-cross.png'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master } = props;
+    const { isbulkUpload,approvalDetails, approvalData, list, technology, master } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
+    const [showImpactedData, setshowImpactedData] = useState(false)
     const [shown, setshown] = useState(false)
     const [amendment, setAmendment] = useState(true)
     const [token, setToken] = useState('')
     const [showverifyPage, setShowVerifyPage] = useState(false)
-    const [showImpactedData, setshowImpactedData] = useState(false)
-
-    const rmDomesticListing = useSelector(state => state.material.rmDataList)
 
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -54,42 +56,44 @@ function SimulationApprovalSummary(props) {
     const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [pushButton, setPushButton] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
     const [showPushDrawer, setShowPushDrawer] = useState(false)
+    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
 
     const [compareCosting, setCompareCosting] = useState(false)
+    const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [id, setId] = useState('')
     const [status, setStatus] = useState('')
     const [isSuccessfullyUpdated, setIsSuccessfullyUpdated] = useState(false)
     const [noContent, setNoContent] = useState(false)
+    const [initialFiles, setInitialFiles] = useState([]);
+    const [files, setFiles] = useState([]);
+    const [IsOpen, setIsOpen] = useState(false);
 
     const dispatch = useDispatch()
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
     const userList = useSelector(state => state.auth.userList)
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
+    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [acc1, setAcc1] = useState(false)
-    const [acc2, setAcc2] = useState(false)
-    const [acc3, setAcc3] = useState(false)
-
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
 
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+
+    const { setValue, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
-    let a
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
@@ -111,6 +115,9 @@ function SimulationApprovalSummary(props) {
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
+            setEffectiveDate(res.data.Data.EffectiveDate)
+
+
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
@@ -118,6 +125,7 @@ function SimulationApprovalSummary(props) {
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                 PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId
             })
+            setFiles(Attachements)
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -142,6 +150,34 @@ function SimulationApprovalSummary(props) {
         }))
 
     }
+
+
+    useEffect(() => {
+        if (costingList.length > 0 && effectiveDate) {
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                const Data = res.data.Data.ImpactedMasterDataList
+                const masterId = res.data.Data.SimulationTechnologyId;
+
+                if (res) {
+                    setImpactedMasterDataListForLastRevisionData(Data)
+                    setShowLastRevisionData(true)
+                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+
+                }
+            }))
+        }
+        if (simulationDetail.SimulationId) {
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+        }
+
+    }, [effectiveDate, costingList, simulationDetail.SimulationId])
+
+    useEffect(() => {
+        if (impactedMasterData) {
+            setImpactedMasterDataListForImpactedMaster(impactedMasterData)
+            setshowImpactedData(true)
+        }
+    }, [impactedMasterData])
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -223,17 +259,42 @@ function SimulationApprovalSummary(props) {
         }
     }
 
-    /**
-    * @method resetHandler
-    * @description Reseting all filter
-    */
-    const resetHandler = () => {
-        setValue('partNo', '')
-        setValue('plantCode', '')
-        setCostingList(oldCostingList)
-
+    const Preview = ({ meta }) => {
+        const { name, percent, status } = meta
+        return (
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
+        )
     }
+    const getUploadParams = ({ file, meta }) => {
+        return { url: 'https://httpbin.org/post', }
+    }
+    const handleChangeStatus = ({ meta, file }, status) => {
 
+
+        if (status === 'removed') {
+            const removedFileName = file.name;
+            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+            setFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            dispatch(uploadSimulationAttachment(data, (res) => {
+                let Data = res.data[0]
+                files.push(Data)
+                setFiles(files)
+                setIsOpen(!IsOpen)
+            }))
+        }
+
+        if (status === 'rejected_file_type') {
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        }
+    }
     const DisplayCompareCosting = (el, data) => {
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
@@ -404,12 +465,10 @@ function SimulationApprovalSummary(props) {
     }
     const freightCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? cell : '-';
     }
 
@@ -424,7 +483,6 @@ function SimulationApprovalSummary(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
@@ -434,7 +492,6 @@ function SimulationApprovalSummary(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
 
@@ -453,15 +510,6 @@ function SimulationApprovalSummary(props) {
         return cell != null ? `${cell}- ${row.RMGrade}` : '-';
     }
 
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-    };
-
     if (showListing === true) {
         return <Redirect to="/simulation-history" />
     }
@@ -478,6 +526,7 @@ function SimulationApprovalSummary(props) {
         params.api.paginationGoToPage(0);
 
         window.screen.width >= 1600 && params.api.sizeColumnsToFit()
+        
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -531,6 +580,25 @@ function SimulationApprovalSummary(props) {
         return temp
     }
 
+    const deleteFile = (FileId, OriginalFileName) => {
+        if (FileId != null) {
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            // dispatch(fileDeleteCosting(deleteData, (res) => {
+            //     toastr.success('File has been deleted successfully.')
+            //   }))
+            let tempArr = files && files.filter(item => item.FileId !== FileId)
+            setFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+        if (FileId == null) {
+            let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
+            setFiles(tempArr)
+            setIsOpen(!IsOpen)
+        }
+    }
     return (
         <>
             {showListing === false &&
@@ -597,10 +665,6 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
-                                            {/* <th className="align-top">
-                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
-                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
-                                            </th> */}
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -608,6 +672,10 @@ function SimulationApprovalSummary(props) {
                                                     <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</span>
                                                 </th>)
                                             }
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
+                                            </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`No. Of Costing:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
@@ -653,11 +721,17 @@ function SimulationApprovalSummary(props) {
                                     </button>
                                 </div>
                             </Col>
+                            {/* {lastRevisionDataAccordian && */}
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} />}
+                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
 
                             </div>
+                            {/* } */}
+                            {/* <div className="accordian-content w-100 px-3 impacted-min-height">
+                                {showImpactedData && <Impactedmasterdata data={simulationDetail.ImpactedMasterDataList} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+
+                            </div> */}
 
                         </Row>
 
@@ -804,6 +878,7 @@ function SimulationApprovalSummary(props) {
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                         </div>
+                                                        
                                                         <div
                                                             className="ag-theme-material"
                                                             style={{ height: '100%', width: '100%' }}
@@ -813,7 +888,6 @@ function SimulationApprovalSummary(props) {
                                                                 defaultColDef={defaultColDef}
                                                                 floatingFilter={true}
                                                                 domLayout='autoHeight'
-                                                                floatingFilter={true}
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
@@ -823,7 +897,7 @@ function SimulationApprovalSummary(props) {
                                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
-                                                                    title: CONSTANT.EMPTY_DATA,
+                                                                    title: EMPTY_DATA,
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
@@ -838,18 +912,20 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
 
                                                                 {
                                                                     String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
-                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "PO Price Old"}></AgGridColumn>
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
                                                                     (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
                                                                     </>
                                                                 }
 
@@ -857,8 +933,8 @@ function SimulationApprovalSummary(props) {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="PO Price Old(in Currency)"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="PO Price New(in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
                                                                     </>
@@ -899,21 +975,109 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
+
                         <Row className="mb-4">
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
                         </Row>
-                        {/* Costing Summary page here */}
-
-                        {/* <Row className="mb-4">
-                            <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
-                            <Col md="6">
-                                <div className={'right-details'}>
-                                    <a onClick={() => setAcc3(!acc3)} className={`${acc3 ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
-                                </div>
+                        <Row>
+                            <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
+                            <Col md="12" className="px-4">
+                                <label>Upload Attachment (upload up to 2 files)</label>
+                                {files && files.length > 2 ? (
+                                    <div class="alert alert-danger" role="alert">
+                                        Maximum file upload limit has been reached.
+                                    </div>
+                                ) : (
+                                    <Dropzone
+                                        getUploadParams={getUploadParams}
+                                        onChangeStatus={handleChangeStatus}
+                                        PreviewComponent={Preview}
+                                        // onSubmit={handleImapctSubmit}
+                                        accept="*"
+                                        initialFiles={initialFiles}
+                                        maxFiles={4}
+                                        maxSizeBytes={2000000000}
+                                        inputContent={(files, extra) =>
+                                            extra.reject ? (
+                                                "Image, audio and video files only"
+                                            ) : (
+                                                <div className="text-center">
+                                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                                    <span className="d-block">
+                                                        Drag and Drop or{" "}
+                                                        <span className="text-primary">Browse</span>
+                                                        <br />
+                                                        file to upload
+                                                    </span>
+                                                </div>
+                                            )
+                                        }
+                                        styles={{
+                                            dropzoneReject: {
+                                                borderColor: "red",
+                                                backgroundColor: "#DAA",
+                                            },
+                                            inputLabel: (files, extra) =>
+                                                extra.reject ? { color: "red" } : {},
+                                        }}
+                                        classNames="draper-drop"
+                                        disabled={true}
+                                    />
+                                )}
                             </Col>
-                            {acc3 &&
+                            <div className="w-100">
+                                <div className={"attachment-wrapper mt-0 mb-3 px-4"}>
+                                    {files &&
+                                        files.map((f) => {
+                                            const withOutTild = f.FileURL.replace("~", "");
+                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                            return (
+                                                <div className={"attachment images"}>
+                                                    <a href={fileURL} target="_blank">
+                                                        {f.OriginalFileName}
+                                                    </a>
+                                                    <img
+                                                        alt={""}
+                                                        className="float-right"
+                                                        onClick={() => false ? deleteFile(f.FileId, f.FileName) : ""}
+                                                        src={redcrossImg}
+                                                    ></img>
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            </div>
+                        </Row>
+                        {/* Costing Summary page here */}
+                        {/* page starts */}
+
+
+
+
+
+                        <Row className="mb-4">
+                            <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
+                            <Col md="6" className="text-right">
+                                <div className={'right-details'}>
+                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
+                                        <i className="fa fa-minus" ></i>
+                                    ) : (
+                                        <i className="fa fa-plus"></i>
+                                    )}</button>
+                                </div>
+
+                            </Col>
+
+                            {lastRevisionDataAccordian &&
+
+                                <div className="accordian-content w-100 px-3 impacted-min-height">
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
+
+                                </div>
+                            }
+                            {/* {lastRevisionDataAccordian &&
                                 <div className="accordian-content w-100">
                                     <div className={`ag-grid-react`}>
                                         <Col md="12" className="mb-3">
@@ -980,8 +1144,8 @@ domLayout='autoHeight'
                                         </Col>
                                     </div>
                                 </div>
-                            }
-                        </Row> */}
+                            } */}
+                        </Row>
 
                     </div>
 

@@ -5,7 +5,7 @@ import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
@@ -292,6 +292,16 @@ class UOMMaster extends Component {
     gridOptions.api.setFilterModel(null);
   }
 
+
+  onFilterTextBoxChanged(e) {
+    this.state.gridApi.setQuickFilter(e.target.value);
+  }
+
+  resetState() {
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+  }
+
   createCustomExportCSVButton = (onClick) => {
     return (
       <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
@@ -306,7 +316,7 @@ class UOMMaster extends Component {
     const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: <NoContentFound title={EMPTY_DATA} />,
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       exportCSVBtn: this.createCustomExportCSVButton,
@@ -389,8 +399,8 @@ class UOMMaster extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}
@@ -400,7 +410,8 @@ class UOMMaster extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
+                      title: EMPTY_DATA,
+                      imagClass:'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >

@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -24,9 +24,7 @@ import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
-
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
-import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
@@ -92,7 +90,7 @@ function CostingDetails(props) {
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
-  // client based costing
+
 
   const fieldValues = IsolateReRender(control);
 
@@ -188,6 +186,10 @@ function CostingDetails(props) {
       nextToggle()
     }
   }, [technology])
+
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
 
   /**
    * @method renderListing
@@ -1381,7 +1383,7 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
-  const filterColors = (inputValue) => {
+  const filterList = (inputValue) => {
     if (inputValue) {
       let tempArr = []
       tempArr = partDropdown && partDropdown.filter(i => {
@@ -1397,10 +1399,9 @@ function CostingDetails(props) {
       return partDropdown
     }
   };
-
   const promiseOptions = inputValue =>
     new Promise(resolve => {
-      resolve(filterColors(inputValue));
+      resolve(filterList(inputValue));
     });
 
   useEffect(() => {
@@ -1494,7 +1495,7 @@ function CostingDetails(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          options={renderListing("PartList")}
+                          asyncOptions={promiseOptions}
                           mandatory={true}
                           isLoading={false}
                           handleChange={handlePartChange}
@@ -1594,7 +1595,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
+                          label={`Current Price (Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1646,7 +1647,7 @@ function CostingDetails(props) {
                       <>
                         <Row className="align-items-center">
                           <Col md="6" className={"mb-2 mt-3"}>
-                            <h6 className="dark-blue-text sec-heading">ZBC:</h6>
+                            <h6 className="dark-blue-text sec-heading">NCC:</h6>
                           </Col>
                           <Col md="6" className={"mb-2 mt-3"}>
                             <button
@@ -1654,7 +1655,7 @@ function CostingDetails(props) {
                               className={"user-btn"}
                               onClick={plantDrawerToggle}
                             >
-                              <div className={"plus"}></div>ADD PLANT
+                              <div className={"plus"}></div>ADD NCC
                             </button>
                           </Col>
                         </Row>
@@ -1750,7 +1751,7 @@ function CostingDetails(props) {
                                         </td>
                                         <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td style={{ width: "250px" }}>
-                                          {/* {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />} */}
+                                          {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
                                           {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
                                           {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
@@ -1764,7 +1765,7 @@ function CostingDetails(props) {
                                   <tr>
                                     <td colSpan={7}>
                                       <NoContentFound
-                                        title={CONSTANT.EMPTY_DATA}
+                                        title={EMPTY_DATA}
                                       />
                                     </td>
                                   </tr>
@@ -1883,7 +1884,7 @@ function CostingDetails(props) {
                                       </td>
                                       <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        {/* {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />} */}
+                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
                                         {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
@@ -1897,7 +1898,7 @@ function CostingDetails(props) {
                                   <tr>
                                     <td colSpan={7}>
                                       <NoContentFound
-                                        title={CONSTANT.EMPTY_DATA}
+                                        title={EMPTY_DATA}
                                       />
                                     </td>
                                   </tr>
@@ -1934,6 +1935,7 @@ function CostingDetails(props) {
                       partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
                       costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
                       toggle={props.toggle}
+                      IsCostingViewMode={IsCostingViewMode}
                     />
                   </ViewCostingContext.Provider>
                 )}

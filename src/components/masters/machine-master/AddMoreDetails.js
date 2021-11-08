@@ -18,12 +18,11 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, WDM, SLM, ZBC, HOUR } from '../../../config/constants';
@@ -186,7 +185,7 @@ class AddMoreDetails extends Component {
         isLoader: true,
         MachineID: editDetails.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
+
       this.props.getMachineDetailsData(editDetails.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -1911,7 +1910,7 @@ class AddMoreDetails extends Component {
                           <div className="form-group">
                             <label>
                               Year Of Manufacturing
-                                                    {/* <span className="asterisk-required">*</span> */}
+                              {/* <span className="asterisk-required">*</span> */}
                             </label>
                             <div className="inputbox date-section">
                               <DatePicker
@@ -2364,7 +2363,7 @@ class AddMoreDetails extends Component {
                               <div className="form-group">
                                 <label>
                                   Date of Purchase
-                                                    {/* <span className="asterisk-required">*</span> */}
+                                  {/* <span className="asterisk-required">*</span> */}
                                 </label>
                                 <div className="inputbox date-section">
                                   <DatePicker
@@ -2973,7 +2972,7 @@ class AddMoreDetails extends Component {
                                   }
                                 </tbody>
                               </Table>
-                              {this.state.labourGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              {this.state.labourGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                             </Col>
                           </div>
                         }
@@ -3143,7 +3142,7 @@ class AddMoreDetails extends Component {
                                   }
                                 </tbody>
                               </Table>
-                              {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              {this.state.processGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                             </Col>
                           </div>
                         }
