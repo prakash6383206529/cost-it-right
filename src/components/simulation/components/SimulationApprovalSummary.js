@@ -867,7 +867,7 @@ function SimulationApprovalSummary(props) {
                                 )}
                             </Col>
                             <div className="w-100">
-                                <div className={"attachment-wrapper mt-0 mb-3"}>
+                                <div className={"attachment-wrapper mt-0 mb-3 px-4"}>
                                     {files &&
                                         files.map((f) => {
                                             const withOutTild = f.FileURL.replace("~", "");
