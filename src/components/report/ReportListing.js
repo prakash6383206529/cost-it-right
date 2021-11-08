@@ -326,7 +326,7 @@ function ReportListing(props) {
         //     setRowData(data);
         // };
 
-        console.log(params.api.paginationProxy.bottomDisplayedRowIndex, "new")
+    
 
 
         // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
@@ -415,7 +415,6 @@ function ReportListing(props) {
 
 
     const renderColumnSAPEncoded = (fileName) => {
-        console.log('fileName: ', fileName);
         let tempData = []
 
         if (selectedRowData.length == 0) {
