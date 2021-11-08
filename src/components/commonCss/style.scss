@@ -6184,8 +6184,9 @@ body{
   min-height: auto !important;
 }
 .costing-summary {
-   display: flex;
-   justify-content: flex-end;
+  button {
+    float: right;
+  }
 }
 .d-none {
   display: none !important;
