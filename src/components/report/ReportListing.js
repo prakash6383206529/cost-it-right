@@ -202,7 +202,7 @@ function ReportListing(props) {
 
 
 
-        getTableData(0, 500, true);
+        getTableData(0, 100, true);
 
         return () => {
 
@@ -223,22 +223,24 @@ function ReportListing(props) {
         //     temp.push({ label: item.Text, value: item.Value })
         //     return null;
         // });
-
+        const blank = () => { setWarningMessage(false) }
 
         setReportListingDataStateArray(reportListingData)
         if (reportListingData.length > 0) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
-                getTableData(500, reportListingData[0].TotalRecordCount, true);
+
+                reportListingData[0].TotalRecordCount > 100 ? getTableData(100, reportListingData[0].TotalRecordCount, true) : blank()
+                setLoader(false)
             }
             if (totalRecordCount !== 0) {
                 setWarningMessage(false)
             }
 
 
-
-
         }
+
+
 
 
 

@@ -13,8 +13,8 @@ import dashboardImg from '../../assests/images/dashboard-img.png'
 function Dashboard(props) {
   const { handleSubmit, menusData } = props
 
-  const [acc1, setAcc1] = useState(true)
-  const [acc2, setAcc2] = useState(false)
+  const [acc1, setAcc1] = useState(false)
+  const [acc2, setAcc2] = useState(true)
   const [acc3, setAcc3] = useState(false)
   const [costingApprovalListingView, setCostingApprovalListingView] = useState(false)
   const [simulationApprovalListingView, setSimulationApprovalListingView] = useState(false)

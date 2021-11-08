@@ -113,17 +113,19 @@ function ApproveRejectDrawer(props) {
   }, [])
 
 
+
+
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    let listForDropdown = []
+    let count = 0
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
     })
     if (values.length > 1) {
-      values.map(item => {
+      values.map((item, index) => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
@@ -139,6 +141,8 @@ function ApproveRejectDrawer(props) {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
+            let listForDropdown = []
+
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
@@ -175,19 +179,22 @@ function ApproveRejectDrawer(props) {
                 }
               })
             })
+
+
+            setApprovalDropDown(listForDropdown)
+            count = count + 1;
+            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+
+              toastr.warning('User does not exist on next level for selected simulation.')
+              setApprovalDropDown([])
+              return false
+            }
           },
           ),
         )
       })
 
 
-      if (listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) {
-
-        toastr.warning('User does not exist on next level for selected simulation.')
-        return false
-      }
-
-      setApprovalDropDown(listForDropdown)
     } else {
 
       let obj = {

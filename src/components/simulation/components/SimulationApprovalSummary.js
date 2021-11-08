@@ -30,9 +30,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
-
-
-
+import redcrossImg from '../../../assests/images/red-cross.png'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -71,6 +69,9 @@ function SimulationApprovalSummary(props) {
     const [status, setStatus] = useState('')
     const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [noContent, setNoContent] = useState(false)
+    const [initialFiles, setInitialFiles] = useState([]);
+    const [files, setFiles] = useState([]);
+    const [IsOpen, setIsOpen] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -841,6 +842,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
+
                         <Row className="mb-4">
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
