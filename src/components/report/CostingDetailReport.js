@@ -8,7 +8,7 @@ import NoContentFound from '../common/NoContentFound'
 import { EMPTY_DATA } from '../../config/constants'
 import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
-import { getReportListing } from '../report/actions/ReportListing'
+import { getReportListing } from './actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -189,7 +189,6 @@ function ReportListing(props) {
 
         dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
-
 
             // var t1 = performance.now();
             // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");

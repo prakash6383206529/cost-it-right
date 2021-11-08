@@ -1510,8 +1510,12 @@ export const CostingSummary_BulkUpload = 'Costing Summary BulkUpload'
 export const Simulation_History = 'Simulation History'
 export const Simulation_Page = "Simulation"
 export const Simulation_Upload = 'Simulation Upload'
-
+export const COSTING_SUMMARY_ = 'Costing Summary'
+export const APPROVAL_APP = 'Approval'
 export const TAX = 'Tax'
+export const COSTING_DETAILS_REPORT = 'Costing Details Report'
+export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
+//export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
 export const PLASTIC = 'Plastic';
